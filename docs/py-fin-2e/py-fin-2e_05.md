@@ -70,23 +70,23 @@ Out[3]:    numbers
         d       40
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO1-1)
+①
 
 导入`pandas`。
 
-![2](img/#co_data_analysis_with_pandas_CO1-2)
+②
 
 将数据定义为`list`对象。
 
-![3](img/#co_data_analysis_with_pandas_CO1-3)
+③
 
 指定列标签。
 
-![4](img/#co_data_analysis_with_pandas_CO1-4)
+④
 
 指定索引值/标签。
 
-![5](img/#co_data_analysis_with_pandas_CO1-5)
+⑤
 
 显示`DataFrame`对象的数据以及列和索引标签。
 
@@ -146,35 +146,35 @@ Out[11]:    numbers
          d     1600
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO2-1)
+①
 
 `index`属性和`Index`对象。
 
-![2](img/#co_data_analysis_with_pandas_CO2-2)
+②
 
 `columns`属性和`Index`对象。
 
-![3](img/#co_data_analysis_with_pandas_CO2-3)
+③
 
 选择与索引`c`对应的值。
 
-![4](img/#co_data_analysis_with_pandas_CO2-4)
+④
 
 选择与索引`a`和`d`对应的两个值。
 
-![5](img/#co_data_analysis_with_pandas_CO2-5)
+⑤
 
 通过索引位置选择第二行和第三行。
 
-![6](img/#co_data_analysis_with_pandas_CO2-6)
+⑥
 
 计算单列的总和。
 
-![7](img/#co_data_analysis_with_pandas_CO2-7)
+⑦
 
 使用`apply()`方法以向量化方式计算平方。
 
-![8](img/#co_data_analysis_with_pandas_CO2-8)
+⑧
 
 直接应用向量化，就像使用`ndarray`对象一样。
 
@@ -198,11 +198,11 @@ Out[14]: a    1.5
          Name: floats, dtype: float64
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO3-1)
+①
 
 使用提供的`float`对象作为`tuple`对象添加新列。
 
-![2](img/#co_data_analysis_with_pandas_CO3-2)
+②
 
 选择此列并显示其数据和索引标签。
 
@@ -220,7 +220,7 @@ Out[16]:    numbers  floats   names
          d       40     4.5    Yves
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO4-1)
+①
 
 基于`DataFrame`对象创建另一个新列。
 
@@ -265,19 +265,19 @@ Out[22]: floats     float64
          dtype: object
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO5-1)
+①
 
 通过`dict`对象添加新行；这是一个临时操作，在此期间索引信息会丢失。
 
-![2](img/#co_data_analysis_with_pandas_CO5-2)
+②
 
 这基于具有索引信息的`DataFrame`对象附加行；原始索引信息被保留。
 
-![3](img/#co_data_analysis_with_pandas_CO5-3)
+③
 
 这将不完整的数据行附加到`DataFrame`对象中，导致`NaN`值。
 
-![4](img/#co_data_analysis_with_pandas_CO5-4)
+④
 
 单列的不同`dtypes`；这类似于带有`NumPy`的记录数组。
 
@@ -295,11 +295,11 @@ Out[24]: numbers    35.355339
          dtype: float64
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO6-1)
+①
 
 对指定的两列求平均值（忽略具有`NaN`值的行）。
 
-![2](img/#co_data_analysis_with_pandas_CO6-2)
+②
 
 对指定的两列计算标准差（忽略具有`NaN`值的行）。
 
@@ -344,7 +344,7 @@ Out[30]:           0         1         2         3
          8 -0.756352  0.816454  0.750445 -0.455947
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO7-1)
+①
 
 从`ndarray`对象创建`DataFrame`对象。
 
@@ -381,11 +381,11 @@ In [33]: df['No2'].mean()  # ②
 Out[33]: 0.70103309414564585
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO8-1)
+①
 
 通过`list`对象指定列标签。
 
-![2](img/#co_data_analysis_with_pandas_CO8-2)
+②
 
 现在选择列变得很容易。
 
@@ -401,7 +401,7 @@ Out[35]: DatetimeIndex(['2019-01-31', '2019-02-28', '2019-03-31', '2019-04-30',
                        dtype='datetime64[ns]', freq='M')
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO9-1)
+①
 
 创建一个`DatetimeIndex`对象。
 
@@ -525,11 +525,11 @@ Out[41]:             No1       No2       No3       No4
          max    1.618982  1.541605  1.153036  1.361556
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO10-1)
+①
 
 提供有关数据、列和索引的元信息。
 
-![2](img/#co_data_analysis_with_pandas_CO10-2)
+②
 
 为每列提供有用的摘要统计信息（针对数值数据）。
 
@@ -582,19 +582,19 @@ Out[46]:                  No1       No2       No3       No4
          2019-09-30 -1.351906  6.309298  2.602739 -3.490089
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO11-1)
+①
 
 逐列求和。
 
-![2](img/#co_data_analysis_with_pandas_CO11-2)
+②
 
 逐列平均值。
 
-![3](img/#co_data_analysis_with_pandas_CO11-4)
+③
 
 逐行平均值。
 
-![4](img/#co_data_analysis_with_pandas_CO11-5)
+④
 
 逐列累积和（从第一个索引位置开始）。
 
@@ -656,23 +656,23 @@ Out[51]:                    No1         No2         No3         No4
  2019-09-30   24.364769  181.645401  175.044476   54.405307
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO12-1)
+①
 
 逐列平均值。
 
-![2](img/#co_data_analysis_with_pandas_CO12-2)
+②
 
 逐元素自然对数；会发出警告，但计算会继续进行，导致多个`NaN`值。
 
-![3](img/#co_data_analysis_with_pandas_CO12-3)
+③
 
 绝对值的逐元素平方根 …
 
-![4](img/#co_data_analysis_with_pandas_CO12-4)
+④
 
 … 以及结果的逐列平均值。
 
-![5](img/#co_data_analysis_with_pandas_CO12-5)
+⑤
 
 数值数据的线性变换。
 
@@ -696,11 +696,11 @@ In [53]: df.cumsum().plot(lw=2.0, figsize=(10, 6));  # ②
          # plt.savefig('../../images/ch05/pd_plot_01.png')
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO13-1)
+①
 
 自定义绘图样式。
 
-![2](img/#co_data_analysis_with_pandas_CO13-4)
+②
 
 将四列的累积和绘制成折线图。
 
@@ -747,7 +747,7 @@ In [54]: df.plot(kind='bar', figsize=(10, 6));  # ①
          # plt.savefig('../../images/ch05/pd_plot_02.png')
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO14-1)
+①
 
 使用 `kind` 参数来改变绘图类型。
 
@@ -850,23 +850,23 @@ Out[66]:           No1         No2         No3         No4
          Q3      -0.76  0.18  0.06  0.94  0.22  0.75 -1.44  1.36
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO15-1)
+①
 
 根据`Quarter`列进行分组。
 
-![2](img/#co_data_analysis_with_pandas_CO15-2)
+②
 
 给出组中的行数。
 
-![3](img/#co_data_analysis_with_pandas_CO15-3)
+③
 
 给出每列的均值。
 
-![4](img/#co_data_analysis_with_pandas_CO15-4)
+④
 
 给出每列的最大值。
 
-![5](img/#co_data_analysis_with_pandas_CO15-5)
+⑤
 
 给出每列的最小值和最大值。
 
@@ -938,19 +938,19 @@ Out[75]:           x         y
          9  0.108863  0.507810
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO16-1)
+①
 
 具有标准正态分布随机数的`ndarray`对象。
 
-![2](img/#co_data_analysis_with_pandas_CO16-2)
+②
 
 具有相同随机数的`DataFrame`对象。
 
-![3](img/#co_data_analysis_with_pandas_CO16-4)
+③
 
 通过`head()`方法获得前五行。
 
-![4](img/#co_data_analysis_with_pandas_CO16-5)
+④
 
 通过`tail()`方法获得最后五行。
 
@@ -997,15 +997,15 @@ Out[78]: 0     True
          dtype: bool
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO17-1)
+①
 
 检查`x`列中的值是否大于 0.5。
 
-![2](img/#co_data_analysis_with_pandas_CO17-2)
+②
 
 检查`x`列中的值是否为正*且*`y`列中的值是否为负。
 
-![3](img/#co_data_analysis_with_pandas_CO17-3)
+③
 
 检查`x`列中的值是否为正*或*`y`列中的值是否为负。
 
@@ -1037,15 +1037,15 @@ Out[81]:           x         y
          9  0.108863  0.507810
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO18-1)
+①
 
 所有`x`列的值大于 0.5 的行。
 
-![2](img/#co_data_analysis_with_pandas_CO18-2)
+②
 
 所有`x`列的值为正*且*`y`列的值为负的行。
 
-![3](img/#co_data_analysis_with_pandas_CO18-3)
+③
 
 所有列中 `x` 的值为正*或*列中 `y` 的值为负的所有行（这里通过各自的属性访问列）。
 
@@ -1079,11 +1079,11 @@ Out[83]:           x         y
          9  0.108863  0.507810
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO19-1)
+①
 
 `DataFrame` 对象中哪些值是正数？
 
-![2](img/#co_data_analysis_with_pandas_CO19-2)
+②
 
 选择所有这样的值，并在所有其他位置放置 `NaN`。
 
@@ -1160,19 +1160,19 @@ Out[91]:      A    B
          6  NaN   50
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO20-1)
+①
 
 将来自 `df2` 的数据附加为 `df1` 的新行。
 
-![2](img/#co_data_analysis_with_pandas_CO20-2)
+②
 
 做同样的事情，但忽略了索引。
 
-![3](img/#co_data_analysis_with_pandas_CO20-3)
+③
 
 具有与第一个相同的效果，并且…
 
-![4](img/#co_data_analysis_with_pandas_CO20-4)
+④
 
 第二个追加操作，分别。
 
@@ -1195,11 +1195,11 @@ Out[93]:      B    A
          d   50  400
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO21-1)
+①
 
 `df1` 的索引值相关。
 
-![2](img/#co_data_analysis_with_pandas_CO21-2)
+②
 
 `df2` 相关的索引值。
 
@@ -1233,19 +1233,19 @@ Out[97]:      A    B
          f  NaN  200
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO22-1)
+①
 
 左连接是默认操作。
 
-![2](img/#co_data_analysis_with_pandas_CO22-2)
+②
 
 右连接与颠倒 `DataFrame` 对象的顺序相同。
 
-![3](img/#co_data_analysis_with_pandas_CO22-3)
+③
 
 内连接仅保留那些在两个索引中都找到的索引值。
 
-![4](img/#co_data_analysis_with_pandas_CO22-4)
+④
 
 外连接保留来自两个索引的所有索引值。
 
@@ -1273,11 +1273,11 @@ Out[102]:      A    B
           3  NaN  NaN
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO23-1)
+①
 
 `df1` 作为第一列 `A`。
 
-![2](img/#co_data_analysis_with_pandas_CO23-2)
+②
 
 `df2` 作为第二列 `B`。
 
@@ -1295,7 +1295,7 @@ Out[104]:      A    B
           f  NaN  200
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO24-1)
+①
 
 `DataFrame` 对象的列被用作 `dict` 对象中的值。
 
@@ -1345,11 +1345,11 @@ Out[110]:      A      C    B
           3  400  150.0   50
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO25-1)
+①
 
 默认在列 `C` 上合并。
 
-![2](img/#co_data_analysis_with_pandas_CO25-3)
+②
 
 外部合并也是可能的，保留所有数据行。
 
@@ -1415,11 +1415,11 @@ In [120]: df.info()  # ②
           memory usage: 15.3 MB
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO26-1)
+①
 
 带有随机数字的 `ndarray` 对象。
 
-![2](img/#co_data_analysis_with_pandas_CO26-3)
+②
 
 带有随机数字的 `DataFrame` 对象。
 
@@ -1476,23 +1476,23 @@ In [130]: res[:3]
 Out[130]: array([ 0.3872424 , -0.96934273, -0.86315944])
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO27-1)
+①
 
 直接操作列（`Series`对象）是最快的方法。
 
-![2](img/#co_data_analysis_with_pandas_CO27-2)
+②
 
 这通过在 `DataFrame` 对象上调用 `sum()` 方法来计算总和。
 
-![3](img/#co_data_analysis_with_pandas_CO27-3)
+③
 
 这通过在 `ndarray` 对象上调用 `sum()` 方法来计算总和。
 
-![4](img/#co_data_analysis_with_pandas_CO27-4)
+④
 
 这通过在 `DataFrame` 对象上调用 `np.sum()` 方法来计算总和。
 
-![5](img/#co_data_analysis_with_pandas_CO27-5)
+⑤
 
 这通过在 `ndarray` 对象上使用通用函数 `np.sum()` 方法来计算总和。
 
@@ -1524,11 +1524,11 @@ Out[134]: 0    0.387242
 # tag::PD_34[]
 ```
 
-![1](img/#co_data_analysis_with_pandas_CO28-1)
+①
 
 `eval()` 是专门用于评估（复杂）数值表达式的方法；可以直接访问列。
 
-![2](img/#co_data_analysis_with_pandas_CO28-2)
+②
 
 最慢的选项是逐行使用 `apply()` 方法；这就像在 Python 级别上循环遍历所有行。
 

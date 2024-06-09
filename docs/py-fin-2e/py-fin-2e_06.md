@@ -46,31 +46,31 @@ In [1]: class HumanBeing(object):  # ①
                 self.position += steps  # ⑦
 ```
 
-![1](img/#co_object_orientated_programming_CO1-1)
+①
 
 类定义语句。
 
-![2](img/#co_object_orientated_programming_CO1-2)
+②
 
 在实例化时调用的特殊方法。
 
-![3](img/#co_object_orientated_programming_CO1-3)
+③
 
 名字属性初始化为参数值。
 
-![4](img/#co_object_orientated_programming_CO1-4)
+④
 
 眼睛颜色属性初始化为参数值。
 
-![5](img/#co_object_orientated_programming_CO1-5)
+⑤
 
 位置属性初始化为 0。
 
-![6](img/#co_object_orientated_programming_CO1-6)
+⑥
 
 使用`steps`作为参数的步行方法定义。
 
-![7](img/#co_object_orientated_programming_CO1-7)
+⑦
 
 给定`steps`值后改变位置的代码。
 
@@ -91,19 +91,19 @@ In [6]: Sandra.position  # ④
 Out[6]: 5
 ```
 
-![1](img/#co_object_orientated_programming_CO2-1)
+①
 
 实例化。
 
-![2](img/#co_object_orientated_programming_CO2-2)
+②
 
 访问属性值。
 
-![3](img/#co_object_orientated_programming_CO2-4)
+③
 
 调用方法。
 
-![4](img/#co_object_orientated_programming_CO2-5)
+④
 
 访问更新后的`position`值。
 
@@ -209,31 +209,31 @@ In [13]: n.__sizeof__()  # ⑦
 Out[13]: 28
 ```
 
-![1](img/#co_object_orientated_programming_CO3-1)
+①
 
 新实例 `n`。
 
-![2](img/#co_object_orientated_programming_CO3-2)
+②
 
 对象的类型。
 
-![3](img/#co_object_orientated_programming_CO3-3)
+③
 
 一个属性。
 
-![4](img/#co_object_orientated_programming_CO3-4)
+④
 
 一个方法。
 
-![5](img/#co_object_orientated_programming_CO3-5)
+⑤
 
 应用 + 运算符（加法）。
 
-![6](img/#co_object_orientated_programming_CO3-6)
+⑥
 
 应用 * 运算符（乘法）。
 
-![7](img/#co_object_orientated_programming_CO3-7)
+⑦
 
 调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。¹
 
@@ -265,35 +265,35 @@ In [21]: l.__sizeof__()  # ⑧
 Out[21]: 104
 ```
 
-![1](img/#co_object_orientated_programming_CO4-1)
+①
 
 新实例`l`。
 
-![2](img/#co_object_orientated_programming_CO4-2)
+②
 
 对象的类型。
 
-![3](img/#co_object_orientated_programming_CO4-3)
+③
 
 通过索引选择元素。
 
-![4](img/#co_object_orientated_programming_CO4-4)
+④
 
 一个方法。
 
-![5](img/#co_object_orientated_programming_CO4-5)
+⑤
 
 应用+运算符（连接）。
 
-![6](img/#co_object_orientated_programming_CO4-6)
+⑥
 
 应用*运算符（连接）。
 
-![7](img/#co_object_orientated_programming_CO4-7)
+⑦
 
 应用标准 Python 函数`sum()`。
 
-![8](img/#co_object_orientated_programming_CO4-8)
+⑧
 
 调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。
 
@@ -316,15 +316,15 @@ In [25]: type(a)  # ③
 Out[25]: numpy.ndarray
 ```
 
-![1](img/#co_object_orientated_programming_CO5-1)
+①
 
 导入`numpy`。
 
-![2](img/#co_object_orientated_programming_CO5-2)
+②
 
 新实例`a`。
 
-![3](img/#co_object_orientated_programming_CO5-4)
+③
 
 对象的类型。
 
@@ -365,35 +365,35 @@ In [33]: a.__sizeof__()  # ⑧
 Out[33]: 112
 ```
 
-![1](img/#co_object_orientated_programming_CO6-1)
+①
 
 一个属性。
 
-![2](img/#co_object_orientated_programming_CO6-2)
+②
 
 一个方法（聚合）。
 
-![3](img/#co_object_orientated_programming_CO6-3)
+③
 
 一个方法（没有聚合）。
 
-![4](img/#co_object_orientated_programming_CO6-4)
+④
 
 应用+运算符（加法）。
 
-![5](img/#co_object_orientated_programming_CO6-5)
+⑤
 
 应用*运算符（乘法）。
 
-![6](img/#co_object_orientated_programming_CO6-6)
+⑥
 
 应用标准 Python 函数`sum()`。
 
-![7](img/#co_object_orientated_programming_CO6-7)
+⑦
 
 应用`NumPy`通用函数`np.sum()`。
 
-![8](img/#co_object_orientated_programming_CO6-8)
+⑧
 
 调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。
 
@@ -410,15 +410,15 @@ In [36]: type(df)  # ③
 Out[36]: pandas.core.frame.DataFrame
 ```
 
-![1](img/#co_object_orientated_programming_CO7-1)
+①
 
 导入`pandas`。
 
-![2](img/#co_object_orientated_programming_CO7-2)
+②
 
 新实例`df`。
 
-![3](img/#co_object_orientated_programming_CO7-3)
+③
 
 对象的类型。
 
@@ -467,31 +467,31 @@ In [43]: df.__sizeof__()  # ⑦
 Out[43]: 208
 ```
 
-![1](img/#co_object_orientated_programming_CO8-1)
+①
 
 一个属性。
 
-![2](img/#co_object_orientated_programming_CO8-2)
+②
 
 一个方法（聚合）。
 
-![3](img/#co_object_orientated_programming_CO8-3)
+③
 
 一个方法（无聚合）。
 
-![4](img/#co_object_orientated_programming_CO8-4)
+④
 
 应用+运算符（加法）。
 
-![5](img/#co_object_orientated_programming_CO8-5)
+⑤
 
 应用*运算符（乘法）。
 
-![6](img/#co_object_orientated_programming_CO8-6)
+⑥
 
 应用`NumPy`通用函数`np.sum()`。
 
-![7](img/#co_object_orientated_programming_CO8-7)
+⑦
 
 调用特殊方法`__sizeof__()`以获取以字节为单位的内存使用情况。
 
@@ -520,27 +520,27 @@ In [50]: fi.price  # ⑥
 Out[50]: 100
 ```
 
-![1](img/#co_object_orientated_programming_CO9-1)
+①
 
 类定义语句。²
 
-![2](img/#co_object_orientated_programming_CO9-2)
+②
 
 一些代码；这里只是`pass`关键字。
 
-![3](img/#co_object_orientated_programming_CO9-3)
+③
 
 一个名为`fi`的类的新实例。
 
-![4](img/#co_object_orientated_programming_CO9-4)
+④
 
 每个 Python 对象都带有某些特殊属性和方法（来自`object`）；这里调用了用于检索字符串表示的特殊方法。
 
-![5](img/#co_object_orientated_programming_CO9-6)
+⑤
 
 所谓的数据属性 —— 与常规属性相对 —— 可以为每个对象即时定义。
 
-![6](img/#co_object_orientated_programming_CO9-7)
+⑥
 
 一个重要的特殊方法是`__init__`，它在每次实例化对象时被调用。它以对象自身（按照惯例为`self`）和可能的多个其他参数作为参数。除了实例属性之外
 
@@ -568,31 +568,31 @@ In [57]: aapl.price  # ⑦
 Out[57]: 105
 ```
 
-![1](img/#co_object_orientated_programming_CO10-1)
+①
 
 类属性的定义（=每个实例都继承的）。
 
-![2](img/#co_object_orientated_programming_CO10-2)
+②
 
 在初始化期间调用特殊方法`__init__`。
 
-![3](img/#co_object_orientated_programming_CO10-3)
+③
 
 实例属性的定义（=每个实例都是个别的）。
 
-![4](img/#co_object_orientated_programming_CO10-6)
+④
 
 一个名为`fi`的类的新实例。
 
-![5](img/#co_object_orientated_programming_CO10-7)
+⑤
 
 访问实例属性。
 
-![6](img/#co_object_orientated_programming_CO10-8)
+⑥
 
 访问类属性。
 
-![7](img/#co_object_orientated_programming_CO10-9)
+⑦
 
 更改实例属性的值。
 
@@ -619,35 +619,35 @@ In [63]: fi.price  # ⑧
 Out[63]: 105
 ```
 
-![1](img/#co_object_orientated_programming_CO11-1)
+①
 
 通过从上一个版本继承的方式进行类定义。
 
-![2](img/#co_object_orientated_programming_CO11-2)
+②
 
 定义`get_price`方法。
 
-![3](img/#co_object_orientated_programming_CO11-4)
+③
 
 定义`set_price`方法……
 
-![4](img/#co_object_orientated_programming_CO11-5)
+④
 
 ……并根据参数值更新实例属性值。
 
-![5](img/#co_object_orientated_programming_CO11-6)
+⑤
 
 基于新的类定义创建一个名为`fi`的新实例。
 
-![6](img/#co_object_orientated_programming_CO11-7)
+⑥
 
 调用`get_price()`方法来读取实例属性值。
 
-![7](img/#co_object_orientated_programming_CO11-8)
+⑦
 
 通过`set_price()`更新实例属性值。
 
-![8](img/#co_object_orientated_programming_CO11-10)
+⑧
 
 直接访问实例属性。
 
@@ -685,23 +685,23 @@ In [69]: fi._FinancialInstrument__price = 105  # ④
 In [70]: fi.set_price(100)  # ⑤
 ```
 
-![1](img/#co_object_orientated_programming_CO12-1)
+①
 
 价格被定义为私有实例属性。
 
-![2](img/#co_object_orientated_programming_CO12-2)
+②
 
 方法`get_price()`返回其值。
 
-![3](img/#co_object_orientated_programming_CO12-3)
+③
 
 尝试直接访问属性会引发错误。
 
-![4](img/#co_object_orientated_programming_CO12-5)
+④
 
 通过在类名前添加单个下划线，仍然可以直接访问和操作。
 
-![5](img/#co_object_orientated_programming_CO12-7)
+⑤
 
 将价格恢复到其原始值。
 
@@ -741,27 +741,27 @@ In [77]: pp.get_position_value()  # ⑥
 Out[77]: 1050
 ```
 
-![1](img/#co_object_orientated_programming_CO13-1)
+①
 
 基于`FinancialInstrument`类的实例的实例属性。
 
-![2](img/#co_object_orientated_programming_CO13-2)
+②
 
 `PortfolioPosition`类的私有实例属性。
 
-![3](img/#co_object_orientated_programming_CO13-3)
+③
 
 根据属性计算位置值。
 
-![4](img/#co_object_orientated_programming_CO13-5)
+④
 
 附加到实例属性对象的方法可以直接访问（也可能被隐藏）。
 
-![5](img/#co_object_orientated_programming_CO13-6)
+⑤
 
 更新金融工具的价格。
 
-![6](img/#co_object_orientated_programming_CO13-7)
+⑥
 
 根据更新后的价格计算新位置值。
 
@@ -800,15 +800,15 @@ In [80]: v  # ③
 Out[80]: <__main__.Vector at 0x10a245d68>
 ```
 
-![1](img/#co_object_orientated_programming_CO14-1)
+①
 
 三个预初始化的实例属性（想象成三维空间）。
 
-![2](img/#co_object_orientated_programming_CO14-5)
+②
 
 名为`v`的类的新实例。
 
-![3](img/#co_object_orientated_programming_CO14-6)
+③
 
 默认字符串表示。
 
@@ -829,7 +829,7 @@ In [84]: print(v)  # ①
          Vector(1, 2, 3)
 ```
 
-![1](img/#co_object_orientated_programming_CO15-1)
+①
 
 新的字符串表示。
 
@@ -864,15 +864,15 @@ In [92]: bool(v)
 Out[92]: False
 ```
 
-![1](img/#co_object_orientated_programming_CO16-1)
+①
 
 返回给定三个属性值的欧几里德范数。
 
-![2](img/#co_object_orientated_programming_CO16-2)
+②
 
 具有非零属性值的新`Vector`对象。
 
-![3](img/#co_object_orientated_programming_CO16-3)
+③
 
 仅具有零属性值的新`Vector`对象。
 
@@ -900,7 +900,7 @@ In [96]: v * 2
 Out[96]: Vector(2, 4, 6)
 ```
 
-![1](img/#co_object_orientated_programming_CO17-1)
+①
 
 在这种情况下，两个特殊方法都返回自己的类型对象。
 
@@ -943,7 +943,7 @@ In [102]: v[3]
           IndexError: Index out of range.
 ```
 
-![1](img/#co_object_orientated_programming_CO18-1)
+①
 
 `Vector` 类的所有实例都有长度为三。
 
@@ -972,11 +972,11 @@ In [106]: for coordinate in v:  # ②
           3
 ```
 
-![1](img/#co_object_orientated_programming_CO19-1)
+①
 
 使用索引值进行间接迭代（通过`__getitem__`）。
 
-![2](img/#co_object_orientated_programming_CO19-3)
+②
 
 对类实例进行直接迭代（使用`__iter__`）。
 

@@ -164,11 +164,11 @@ In [21]: f = Decimal(1) / Decimal (11)
 Out[21]: Decimal('0.090909090909090909090909090909090909090909090909091')
 ```
 
-![1](img/#co_mastering_the_basics_CO1-1)
+①
 
 低于默认精度。
 
-![2](img/#co_mastering_the_basics_CO1-2)
+②
 
 高于默认精度。
 
@@ -255,27 +255,27 @@ In [32]: 4 != 3  # ⑥
 Out[32]: True
 ```
 
-![1](img/#co_mastering_the_basics_CO2-1)
+①
 
 更大。
 
-![2](img/#co_mastering_the_basics_CO2-2)
+②
 
 大于或等于。
 
-![3](img/#co_mastering_the_basics_CO2-3)
+③
 
 更小。
 
-![4](img/#co_mastering_the_basics_CO2-4)
+④
 
 小于或等于。
 
-![5](img/#co_mastering_the_basics_CO2-5)
+⑤
 
 相等。
 
-![6](img/#co_mastering_the_basics_CO2-6)
+⑥
 
 不相等。
 
@@ -342,27 +342,27 @@ In [46]: i = 0  # ③
          condition true, i =  3
 ```
 
-![1](img/#co_mastering_the_basics_CO3-1)
+①
 
 如果条件成立，则执行要跟随的代码。
 
-![2](img/#co_mastering_the_basics_CO3-2)
+②
 
 如果条件成立，则执行要跟随的代码。
 
-![3](img/#co_mastering_the_basics_CO3-3)
+③
 
 使用 0 初始化参数`i`。
 
-![4](img/#co_mastering_the_basics_CO3-4)
+④
 
 只要条件成立，就执行并重复执行后续代码。
 
-![5](img/#co_mastering_the_basics_CO3-5)
+⑤
 
 打印文本和参数`i`的值。
 
-![6](img/#co_mastering_the_basics_CO3-6)
+⑥
 
 将参数值增加 1；`i += 1`等同于`i = i + 1`。
 
@@ -500,19 +500,19 @@ In [66]: i = 0
          0|1|2|3|
 ```
 
-![1](img/#co_mastering_the_basics_CO4-1)
+①
 
 打印一个`str`对象。
 
-![2](img/#co_mastering_the_basics_CO4-2)
+②
 
 打印由变量名引用的`str`对象。
 
-![3](img/#co_mastering_the_basics_CO4-3)
+③
 
 打印`int`对象的字符串表示。
 
-![4](img/#co_mastering_the_basics_CO4-4)
+④
 
 指定打印的最后一个字符（默认为前面看到的换行符`\n`）。
 
@@ -550,43 +550,43 @@ In [76]: 'this is a string %10s' % 'Python'  # ⑩
 Out[76]: 'this is a string     Python'
 ```
 
-![1](img/#co_mastering_the_basics_CO5-1)
+①
 
 `int`对象替换。
 
-![2](img/#co_mastering_the_basics_CO5-2)
+②
 
 带有固定数量的字符。
 
-![3](img/#co_mastering_the_basics_CO5-3)
+③
 
 如果必要，带有前导零。
 
-![4](img/#co_mastering_the_basics_CO5-4)
+④
 
 `float`对象替换。
 
-![5](img/#co_mastering_the_basics_CO5-5)
+⑤
 
 带有固定数量的小数位数。
 
-![6](img/#co_mastering_the_basics_CO5-6)
+⑥
 
 带有固定数量的字符（并填充小数）。
 
-![7](img/#co_mastering_the_basics_CO5-7)
+⑦
 
 带有固定数量的字符和小数位数…
 
-![8](img/#co_mastering_the_basics_CO5-8)
+⑧
 
 … 以及必要时的前导零。
 
-![9](img/#co_mastering_the_basics_CO5-9)
+⑨
 
 `str`对象替换。
 
-![10](img/#co_mastering_the_basics_CO5-10)
+⑩
 
 带有固定数量的字符。
 
@@ -814,23 +814,23 @@ In [109]: p = l.pop(3)  # ⑤
           [1, 'insert', 2.5, 1.0, 1.5, 2.0] [4, 3]
 ```
 
-![1](img/#co_mastering_the_basics_CO6-1)
+①
 
 在末尾附加`list`对象。
 
-![2](img/#co_mastering_the_basics_CO6-2)
+②
 
 添加`list`对象的元素。
 
-![3](img/#co_mastering_the_basics_CO6-3)
+③
 
 在索引位置之前插入对象。
 
-![4](img/#co_mastering_the_basics_CO6-4)
+④
 
 删除对象的第一次出现。
 
-![5](img/#co_mastering_the_basics_CO6-5)
+⑤
 
 删除并返回索引位置的对象。
 
@@ -841,7 +841,7 @@ In [110]: l[2:5]  # ①
 Out[110]: [2.5, 1.0, 1.5]
 ```
 
-![1](img/#co_mastering_the_basics_CO7-1)
+①
 
 第三到第五个元素。
 
@@ -888,7 +888,7 @@ In [113]: type(r)
 Out[113]: range
 ```
 
-![1](img/#co_mastering_the_basics_CO8-1)
+①
 
 参数是`start`、`end`、`step size`。
 
@@ -929,7 +929,7 @@ In [115]: for i in range(1, 10):
           9 is multiple of 3
 ```
 
-![1](img/#co_mastering_the_basics_CO9-1)
+①
 
 `%`代表取模。
 
@@ -1107,23 +1107,23 @@ In [137]: s.symmetric_difference(t)  # ⑤
 Out[137]: {'dd', 'du', 'ud', 'uu'}
 ```
 
-![1](img/#co_mastering_the_basics_CO10-1)
+①
 
 `s` 和 `t` 的全部。
 
-![2](img/#co_mastering_the_basics_CO10-2)
+②
 
 在 `s` 和 `t` 中都有。
 
-![3](img/#co_mastering_the_basics_CO10-3)
+③
 
 在 `s` 中但不在 `t` 中。
 
-![4](img/#co_mastering_the_basics_CO10-4)
+④
 
 在 `t` 中但不在 `s` 中。
 
-![5](img/#co_mastering_the_basics_CO10-5)
+⑤
 
 在其中一个但不是两者都。
 
@@ -1143,11 +1143,11 @@ In [140]: s = set(l)
 Out[140]: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 ```
 
-![1](img/#co_mastering_the_basics_CO11-1)
+①
 
 1,000 个 0 到 10 之间的随机整数。
 
-![2](img/#co_mastering_the_basics_CO11-2)
+②
 
 `l` 中的元素数量。
 

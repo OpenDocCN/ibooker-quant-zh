@@ -67,23 +67,23 @@ In [4]: path = '/Users/yves/Documents/Temp/data/'  # ④
 In [5]: pkl_file = open(path + 'data.pkl', 'wb')  # ⑤
 ```
 
-![1](img/#co_input_output_operations_CO1-1)
+①
 
 从标准库导入 `pickle` 模块。
 
-![2](img/#co_input_output_operations_CO1-2)
+②
 
 导入 `gauss` 以生成正态分布的随机数。
 
-![3](img/#co_input_output_operations_CO1-3)
+③
 
 创建一个更大的 `list` 对象，并填充随机数。
 
-![4](img/#co_input_output_operations_CO1-4)
+④
 
 指定存储数据文件的路径。
 
-![5](img/#co_input_output_operations_CO1-5)
+⑤
 
 以二进制模式打开文件进行写入（`wb`）。
 
@@ -119,27 +119,27 @@ In [13]: np.allclose(np.array(a), np.array(b))  # ⑥
 Out[13]: True
 ```
 
-![1](img/#co_input_output_operations_CO2-1)
+①
 
 序列化对象 `a` 并将其保存到文件中。
 
-![2](img/#co_input_output_operations_CO2-2)
+②
 
 关闭文件。
 
-![3](img/#co_input_output_operations_CO2-3)
+③
 
 显示磁盘上的文件及其大小（Mac/Linux）。
 
-![4](img/#co_input_output_operations_CO2-4)
+④
 
 以二进制模式打开文件进行读取（`rb`）。
 
-![5](img/#co_input_output_operations_CO2-5)
+⑤
 
 从磁盘读取对象并进行反序列化。
 
-![6](img/#co_input_output_operations_CO2-6)
+⑥
 
 将 `a` 和 `b` 转换为 `ndarrary` 对象，`np.allclose()` 验证两者包含相同的数据（数字）。
 
@@ -166,15 +166,15 @@ In [18]: ll $path*  # ③
          -rw-r--r--  1 yves  staff  163328824 Jan 18 10:05 /Users/yves/Documents/Temp/data/tstb.h5
 ```
 
-![1](img/#co_input_output_operations_CO3-1)
+①
 
 序列化 `a` 的 `ndarray` 版本并保存。
 
-![2](img/#co_input_output_operations_CO3-2)
+②
 
 序列化 `a` 的平方 `ndarray` 版本并保存。
 
-![3](img/#co_input_output_operations_CO3-3)
+③
 
 文件现在的大小大约是之前的两倍。
 
@@ -194,11 +194,11 @@ Out[21]: array([  9.48896651,   0.43380504,  11.0664328 ,   0.59637513])
 In [22]: pkl_file.close()
 ```
 
-![1](img/#co_input_output_operations_CO4-1)
+①
 
 这检索到了存储的对象*第一个*。
 
-![2](img/#co_input_output_operations_CO4-2)
+②
 
 这检索到了存储的对象*第二个*。
 
@@ -223,11 +223,11 @@ In [24]: pkl_file = open(path + 'data.pkl', 'rb')
 In [25]: !rm -f $path*
 ```
 
-![1](img/#co_input_output_operations_CO5-1)
+①
 
 存储包含两个`ndarray`对象的`dict`对象。
 
-![2](img/#co_input_output_operations_CO5-2)
+②
 
 检索`dict`对象。
 
@@ -288,35 +288,35 @@ In [36]: ll $path*
          -rw-r--r--  1 yves  staff  284621 Jan 18 10:05 /Users/yves/Documents/Temp/data/data.csv
 ```
 
-![1](img/#co_input_output_operations_CO6-1)
+①
 
 定义数据集的行数。
 
-![2](img/#co_input_output_operations_CO6-2)
+②
 
 创建具有随机数的`ndarray`对象。
 
-![3](img/#co_input_output_operations_CO6-4)
+③
 
 创建一个适当长度的`DatetimeIndex`对象（每小时间隔）。
 
-![4](img/#co_input_output_operations_CO6-6)
+④
 
 打开一个供写入的文件（`w`）。
 
-![5](img/#co_input_output_operations_CO6-7)
+⑤
 
 定义标题行（列标签）并将其写为第一行。
 
-![6](img/#co_input_output_operations_CO6-9)
+⑥
 
 数据以行为单位组合…
 
-![7](img/#co_input_output_operations_CO6-10)
+⑦
 
 …转换为`str`对象…
 
-![8](img/#co_input_output_operations_CO6-11)
+⑧
 
 …并逐行写入（追加到 CSV 文本文件中）。
 
@@ -350,19 +350,19 @@ Out[42]: ['date,no1,no2,no3,no4,no5\n',
 In [43]: csv_file.close()
 ```
 
-![1](img/#co_input_output_operations_CO7-1)
+①
 
 打开文件以供读取（`r`）。
 
-![2](img/#co_input_output_operations_CO7-2)
+②
 
 逐行读取文件内容并打印。
 
-![3](img/#co_input_output_operations_CO7-4)
+③
 
 一次性读取文件内容…
 
-![4](img/#co_input_output_operations_CO7-5)
+④
 
 … 其结果是一个包含所有行的`list`对象，每行作为单独的`str`对象。
 
@@ -409,11 +409,11 @@ Out[48]: [OrderedDict([('date', '2019-01-01 00:00:00'),
 In [49]: !rm -f $path*
 ```
 
-![1](img/#co_input_output_operations_CO8-1)
+①
 
 `csv.reader()`将每一行都返回为一个`list`对象。
 
-![2](img/#co_input_output_operations_CO8-3)
+②
 
 `csv.DictReader()`将每一行都返回为`OrderedDict`，它是`dict`对象的一种特殊情况。
 
@@ -443,27 +443,27 @@ Out[56]: [('table',
            'CREATE TABLE numbs (Date date, No1 real, No2 real)')]
 ```
 
-![1](img/#co_input_output_operations_CO9-1)
+①
 
 打开数据库连接；如果不存在，则创建一个文件。
 
-![2](img/#co_input_output_operations_CO9-2)
+②
 
 这是一个创建包含三列的表的`SQL`查询。³
 
-![3](img/#co_input_output_operations_CO9-3)
+③
 
 执行查询…
 
-![4](img/#co_input_output_operations_CO9-4)
+④
 
 … 并提交更改。
 
-![5](img/#co_input_output_operations_CO9-5)
+⑤
 
 这为`con.execute()`方法定义了一个简短的别名。
 
-![6](img/#co_input_output_operations_CO9-6)
+⑥
 
 这获取关于数据库的元信息，将刚创建的表显示为单个对象。
 
@@ -517,35 +517,35 @@ Out[66]: [('2018-01-18 10:05:24.072160', 0.9813, 0.5142),
           ('2018-01-18 10:05:24.072202', -0.1895, 0.255)]
 ```
 
-![1](img/#co_input_output_operations_CO10-1)
+①
 
 将单行（或记录）写入`numbs`表。
 
-![2](img/#co_input_output_operations_CO10-2)
+②
 
 创建一个较大的虚拟数据集作为`ndarray`对象。
 
-![3](img/#co_input_output_operations_CO10-3)
+③
 
 迭代`ndarray`对象的行。
 
-![4](img/#co_input_output_operations_CO10-4)
+④
 
 从表中检索多行。
 
-![5](img/#co_input_output_operations_CO10-5)
+⑤
 
 相同但在`no1`列的值上有条件。
 
-![6](img/#co_input_output_operations_CO10-6)
+⑥
 
 定义一个指针对象…
 
-![7](img/#co_input_output_operations_CO10-7)
+⑦
 
 …它的行为类似于生成器对象。
 
-![8](img/#co_input_output_operations_CO10-8)
+⑧
 
 `.fetchall()`检索所有剩余的行。
 
@@ -563,19 +563,19 @@ In [69]: con.close()  # ③
 In [70]: !rm -f $path*  # ④
 ```
 
-![1](img/#co_input_output_operations_CO11-1)
+①
 
 从数据库中删除表格。
 
-![2](img/#co_input_output_operations_CO11-2)
+②
 
 此操作后不再存在表格对象。
 
-![3](img/#co_input_output_operations_CO11-3)
+③
 
 关闭数据库连接。
 
-![4](img/#co_input_output_operations_CO11-4)
+④
 
 从磁盘中删除数据库文件。
 
@@ -616,31 +616,31 @@ In [78]: data.nbytes  # ⑦
 Out[78]: 58901760
 ```
 
-![1](img/#co_input_output_operations_CO12-1)
+①
 
 创建一个带有`datetime`作为`dtype`的`ndarray`对象。
 
-![2](img/#co_input_output_operations_CO12-2)
+②
 
 用于记录数组的特殊`dtype`对象。
 
-![3](img/#co_input_output_operations_CO12-3)
+③
 
 用特殊`dtype`实例化的`ndarray`对象。
 
-![4](img/#co_input_output_operations_CO12-4)
+④
 
 这将填充`Date`列。
 
-![5](img/#co_input_output_operations_CO12-5)
+⑤
 
 假数据集……
 
-![6](img/#co_input_output_operations_CO12-6)
+⑥
 
 …这填充了`No1`和`No2`列。
 
-![7](img/#co_input_output_operations_CO12-8)
+⑦
 
 记录数组的大小（以字节为单位）。
 
@@ -702,19 +702,19 @@ Out[86]: array([[ 0.3066,  0.5951,  0.5826, ...,  1.6773,  0.4294, -0.2216],
 In [87]: !rm -f $path*
 ```
 
-![1](img/#co_input_output_operations_CO13-1)
+①
 
 这将记录的`ndarray`对象保存到磁盘上。
 
-![2](img/#co_input_output_operations_CO13-2)
+②
 
 磁盘上的大小几乎与内存中的大小相同（由于二进制存储）。
 
-![3](img/#co_input_output_operations_CO13-3)
+③
 
 这会从磁盘加载记录的`ndarray`对象。
 
-![4](img/#co_input_output_operations_CO13-4)
+④
 
 一个较大的普通`ndarray`对象。
 
@@ -786,7 +786,7 @@ In [94]: q(query)
 Out[94]: <sqlite3.Cursor at 0x1054e2260>
 ```
 
-![1](img/#co_input_output_operations_CO14-1)
+①
 
 一张具有五列实数（`float` 对象）的表格。
 
@@ -825,19 +825,19 @@ In [99]: res = res[::100]  # ④
          plt.savefig('../../images/ch09/io_01.png');
 ```
 
-![1](img/#co_input_output_operations_CO15-1)
+①
 
 将整个数据集一次性插入表中。
 
-![2](img/#co_input_output_operations_CO15-2)
+②
 
 以单步操作从表中检索所有行。
 
-![3](img/#co_input_output_operations_CO15-3)
+③
 
 检索行的选择并将其转换为 `ndarray` 对象。
 
-![4](img/#co_input_output_operations_CO15-4)
+④
 
 绘制查询结果的子集。
 
@@ -866,7 +866,7 @@ Out[101]:       No1     No2     No3     No4     No5
           4 -0.1148 -1.5215 -0.7045 -1.0042 -0.0600
 ```
 
-![1](img/#co_input_output_operations_CO16-1)
+①
 
 将表的所有行读入名为 `data` 的 `DataFrame` 对象中。
 
@@ -897,11 +897,11 @@ In [104]: plt.figure(figsize=(10, 6))
           plt.savefig('../../images/ch09/io_02.png');
 ```
 
-![1](img/#co_input_output_operations_CO17-1)
+①
 
 两个条件逻辑上组合。
 
-![2](img/#co_input_output_operations_CO17-2)
+②
 
 逻辑上组合了四个条件。
 
@@ -928,19 +928,19 @@ Out[107]: <class 'pandas.io.pytables.HDFStore'>
 In [108]: h5s.close()  # ④
 ```
 
-![1](img/#co_input_output_operations_CO18-1)
+①
 
 打开 `HDF5` 数据库文件进行写入；在 `pandas` 中创建一个 `HDFStore` 对象。
 
-![2](img/#co_input_output_operations_CO18-2)
+②
 
 完整的 `DataFrame` 对象通过二进制存储存储在数据库文件中。
 
-![3](img/#co_input_output_operations_CO18-3)
+③
 
 `HDFStore` 对象的信息。
 
-![4](img/#co_input_output_operations_CO18-4)
+④
 
 关闭数据库文件。
 
@@ -975,27 +975,27 @@ In [113]: ll $path*  # ⑥
           -rw-r--r--  1 yves  staff  48007192 Jan 18 10:05 /Users/yves/Documents/Temp/data/numbers.h5s
 ```
 
-![1](img/#co_input_output_operations_CO19-1)
+①
 
 打开 `HDF5` 数据库文件进行读取。
 
-![2](img/#co_input_output_operations_CO19-2)
+②
 
 `DataFrame` 被读取并存储在内存中作为 `data_`。
 
-![3](img/#co_input_output_operations_CO19-3)
+③
 
 关闭数据库文件。
 
-![4](img/#co_input_output_operations_CO19-4)
+④
 
 这两个 `DataFrame` 对象不相同。
 
-![5](img/#co_input_output_operations_CO19-5)
+⑤
 
 然而，它们现在包含相同的数据。
 
-![6](img/#co_input_output_operations_CO19-7)
+⑥
 
 与 `SQL` 表相比，二进制存储通常具有更小的大小开销。
 
@@ -1025,11 +1025,11 @@ In [117]: df[['No1', 'No2', 'No3', 'No4']].hist(bins=20, figsize=(10, 6));
           plt.savefig('../../images/ch09/io_03.png');
 ```
 
-![1](img/#co_input_output_operations_CO20-1)
+①
 
 `.to_csv()` 方法将 `DataFrame` 数据以 `CSV` 格式写入磁盘。
 
-![2](img/#co_input_output_operations_CO20-2)
+②
 
 然后 `pd.read_csv()` 以新的 `DataFrame` 对象的形式将其再次读入内存。
 
@@ -1064,11 +1064,11 @@ In [121]: ll $path*
 In [122]: rm -f $path*
 ```
 
-![1](img/#co_input_output_operations_CO21-1)
+①
 
 `.to_excel()` 方法将 `DataFrame` 数据以 `XLSX` 格式写入磁盘。
 
-![2](img/#co_input_output_operations_CO21-2)
+②
 
 然后 `pd.read_excel()` 以新的 `DataFrame` 对象的形式将其再次读入内存，同时指定要从中读取的工作表。
 
@@ -1091,7 +1091,7 @@ In [123]: import tables as tb  # ①
           import datetime as dt
 ```
 
-![1](img/#co_input_output_operations_CO22-1)
+①
 
 包名是`PyTables`，导入名称是`tables`。
 
@@ -1137,43 +1137,43 @@ Out[131]: /ints_floats (Table(0,)) 'Integers and Floats'
             chunkshape := (2621,)
 ```
 
-![1](img/#co_input_output_operations_CO23-1)
+①
 
 以`HDF5`二进制存储格式打开数据库文件。
 
-![2](img/#co_input_output_operations_CO23-2)
+②
 
 用于日期时间信息的`date`列（作为`str`对象）。
 
-![3](img/#co_input_output_operations_CO23-3)
+③
 
 用于存储`int`对象的两列。
 
-![4](img/#co_input_output_operations_CO23-5)
+④
 
 用于存储`float`对象的两列。
 
-![5](img/#co_input_output_operations_CO23-7)
+⑤
 
 通过`Filters`对象，可以指定压缩级别等。
 
-![6](img/#co_input_output_operations_CO23-8)
+⑥
 
 表的节点（路径）和技术名称。
 
-![7](img/#co_input_output_operations_CO23-9)
+⑦
 
 行数据结构的描述。
 
-![8](img/#co_input_output_operations_CO23-10)
+⑧
 
 表的名称（标题）。
 
-![9](img/#co_input_output_operations_CO23-11)
+⑨
 
 预期的行数；允许进行优化。
 
-![10](img/#co_input_output_operations_CO23-12)
+⑩
 
 用于表格的`Filters`对象。
 
@@ -1215,31 +1215,31 @@ In [137]: ll $path*
           -rw-r--r--  1 yves  staff  100156248 Jan 18 10:06 /Users/yves/Documents/Temp/data/pytab.h5
 ```
 
-![1](img/#co_input_output_operations_CO24-1)
+①
 
 创建了一个指针对象。
 
-![2](img/#co_input_output_operations_CO24-2)
+②
 
 具有随机`int`对象的`ndarray`对象。
 
-![3](img/#co_input_output_operations_CO24-3)
+③
 
 具有随机`float`对象的`ndarray`对象。
 
-![4](img/#co_input_output_operations_CO24-4)
+④
 
 `datetime`对象，两个`int`和两个`float`对象被逐行写入。
 
-![5](img/#co_input_output_operations_CO24-9)
+⑤
 
 新行被附加。
 
-![6](img/#co_input_output_operations_CO24-10)
+⑥
 
 所有写入的行都会被刷新，即作为永久更改提交。
 
-![7](img/#co_input_output_operations_CO24-11)
+⑦
 
 更改反映在 `Table` 对象描述中。
 
@@ -1285,23 +1285,23 @@ Out[142]: /ints_floats_from_array (Table(2000000,)) 'Integers and Floats'
             chunkshape := (2621,)
 ```
 
-![1](img/#co_input_output_operations_CO25-1)
+①
 
 定义特殊的 `dtype` 对象。
 
-![2](img/#co_input_output_operations_CO25-2)
+②
 
 使用零（和空字符串）创建结构化数组。
 
-![3](img/#co_input_output_operations_CO25-3)
+③
 
 来自 `ndarray` 对象的几条记录。
 
-![4](img/#co_input_output_operations_CO25-4)
+④
 
 `ndarray` 对象的列一次性填充。
 
-![5](img/#co_input_output_operations_CO25-9)
+⑤
 
 这将创建 `Table` 对象，并用数据填充它。
 
@@ -1336,11 +1336,11 @@ Out[144]: File(filename=/Users/yves/Documents/Temp/data/pytab.h5, title='', mode
 In [145]: h5.remove_node('/', 'ints_floats_from_array')  # ②
 ```
 
-![1](img/#co_input_output_operations_CO26-1)
+①
 
 带有两个 `Table` 对象的 `File` 对象的描述。
 
-![2](img/#co_input_output_operations_CO26-2)
+②
 
 这会删除具有冗余数据的第二个 `Table` 对象。
 
@@ -1379,19 +1379,19 @@ In [150]: %%time
           Wall time: 340 ms
 ```
 
-![1](img/#co_input_output_operations_CO27-1)
+①
 
 通过索引选择行。
 
-![2](img/#co_input_output_operations_CO27-2)
+②
 
 仅通过索引选择列值。
 
-![3](img/#co_input_output_operations_CO27-3)
+③
 
 应用 `NumPy` 通用函数。
 
-![4](img/#co_input_output_operations_CO27-5)
+④
 
 从 `Table` 对象绘制列。
 
@@ -1422,19 +1422,19 @@ In [155]: plt.figure(figsize=(10, 6))
           plt.savefig('../../images/ch09/io_06.png');
 ```
 
-![1](img/#co_input_output_operations_CO28-1)
+①
 
 查询作为 `str` 对象，由逻辑运算符组合的四个条件。
 
-![2](img/#co_input_output_operations_CO28-2)
+②
 
 基于查询的迭代器对象。
 
-![3](img/#co_input_output_operations_CO28-3)
+③
 
 通过列表推导收集查询结果的行…
 
-![4](img/#co_input_output_operations_CO28-4)
+④
 
 … 并转换为 `ndarray` 对象。
 
@@ -1529,19 +1529,19 @@ Out[168]: array([[ 0.7694,  1.4866],
                  [ 1.4701,  1.8776]])
 ```
 
-![1](img/#co_input_output_operations_CO29-1)
+①
 
 压缩级别（`complevel`）可以取 0（无压缩）到 9（最高压缩）的值。
 
-![2](img/#co_input_output_operations_CO29-2)
+②
 
 使用了经过优化的`Blosc`压缩引擎（[Blosc](http://blosc.org)），该引擎旨在提高性能。
 
-![3](img/#co_input_output_operations_CO29-3)
+③
 
 给定前面查询的迭代器对象。
 
-![4](img/#co_input_output_operations_CO29-4)
+④
 
 通过列表推导收集查询结果行。
 
@@ -1578,19 +1578,19 @@ In [175]: ll $path*  # ③
 In [176]: h5c.close()  # ④
 ```
 
-![1](img/#co_input_output_operations_CO30-1)
+①
 
 从未压缩的`Table`对象`tab`中读取。
 
-![2](img/#co_input_output_operations_CO30-2)
+②
 
 从压缩的`Table`对象`tabc`中读取。
 
-![3](img/#co_input_output_operations_CO30-3)
+③
 
 压缩表的大小显着减小了。
 
-![4](img/#co_input_output_operations_CO30-4)
+④
 
 关闭数据库文件。
 
@@ -1653,15 +1653,15 @@ In [180]: h5.close()
 In [181]: !rm -f $path*
 ```
 
-![1](img/#co_input_output_operations_CO31-1)
+①
 
 存储`ran_int` `ndarray`对象。
 
-![2](img/#co_input_output_operations_CO31-2)
+②
 
 存储`ran_flo` `ndarray`对象。
 
-![3](img/#co_input_output_operations_CO31-3)
+③
 
 更改反映在对象描述中。
 
@@ -1716,27 +1716,27 @@ In [190]: ear.size_on_disk
 Out[190]: 1500032000
 ```
 
-![1](img/#co_input_output_operations_CO32-1)
+①
 
 这定义了固定的列数。
 
-![2](img/#co_input_output_operations_CO32-2)
+②
 
 `EArray`对象的路径和技术名称。
 
-![3](img/#co_input_output_operations_CO32-3)
+③
 
 单个值的原子`dtype`对象。
 
-![4](img/#co_input_output_operations_CO32-4)
+④
 
 用于实例化的形状（没有行，`n`列）。
 
-![5](img/#co_input_output_operations_CO32-5)
+⑤
 
 具有随机数的`ndarray`对象…
 
-![6](img/#co_input_output_operations_CO32-6)
+⑥
 
 … 多次附加。
 
@@ -1789,19 +1789,19 @@ Out[199]: array([-1.73369462,  3.74824436,  0.90627898,  2.86786818,  1.75424957
                  -0.91108973, -1.68313885,  1.29073295, -1.68665599, -1.71345309])
 ```
 
-![1](img/#co_input_output_operations_CO33-1)
+①
 
 这将基于`str`对象的表达式转换为`Expr`对象。
 
-![2](img/#co_input_output_operations_CO33-2)
+②
 
 这定义了输出为 `out` `EArray` 对象。
 
-![3](img/#co_input_output_operations_CO33-3)
+③
 
 这启动了表达式的评估。
 
-![4](img/#co_input_output_operations_CO33-4)
+④
 
 这将整个 `EArray` 读入内存。
 
@@ -1839,27 +1839,27 @@ In [206]: h5.close()
 In [207]: !rm -f $path*
 ```
 
-![1](img/#co_input_output_operations_CO34-1)
+①
 
 导入用于 *内存中* 评估数值表达式的模块。
 
-![2](img/#co_input_output_operations_CO34-2)
+②
 
 数值表达式作为 `str` 对象。
 
-![3](img/#co_input_output_operations_CO34-3)
+③
 
 将线程数设置为仅一个。
 
-![4](img/#co_input_output_operations_CO34-4)
+④
 
 使用一个线程在内存中评估数值表达式。
 
-![5](img/#co_input_output_operations_CO34-5)
+⑤
 
 将线程数设置为四。
 
-![6](img/#co_input_output_operations_CO34-6)
+⑥
 
 使用四个线程在内存中评估数值表达式。
 
@@ -1888,35 +1888,35 @@ In [209]: %%time
           Wall time: 1.2 s
 ```
 
-![1](img/#co_input_output_operations_CO35-1)
+①
 
 时间步数。
 
-![2](img/#co_input_output_operations_CO35-2)
+②
 
 时间序列的数量。
 
-![3](img/#co_input_output_operations_CO35-3)
+③
 
 年份间隔作为年分数。
 
-![4](img/#co_input_output_operations_CO35-4)
+④
 
 波动率。
 
-![5](img/#co_input_output_operations_CO35-5)
+⑤
 
 标准正态分布的随机数。
 
-![6](img/#co_input_output_operations_CO35-6)
+⑥
 
 初始随机数设为 0。
 
-![7](img/#co_input_output_operations_CO35-7)
+⑦
 
 基于 Euler 离散化的模拟。
 
-![8](img/#co_input_output_operations_CO35-8)
+⑧
 
 将路径的初始值设为 100。
 
@@ -1992,23 +1992,23 @@ In [222]: ls -n $path
           -rw-r--r--  1 501  20  157037368 Jan 18 10:07 tstab.h5
 ```
 
-![1](img/#co_input_output_operations_CO36-1)
+①
 
 时间戳的列。
 
-![2](img/#co_input_output_operations_CO36-2)
+②
 
 存储数字数据的列。
 
-![3](img/#co_input_output_operations_CO36-5)
+③
 
 为写入（`w`）打开`HDF5`数据库文件。
 
-![4](img/#co_input_output_operations_CO36-6)
+④
 
 基于`ts_desc`对象创建`TsTable`对象。
 
-![5](img/#co_input_output_operations_CO36-7)
+⑤
 
 将`DataFrame`对象中的数据附加到`TsTable`对象。
 
@@ -2050,19 +2050,19 @@ In [228]: (rows[::500] / rows.iloc[0]).plot(figsize=(10, 6));
           plt.savefig('../../images/ch09/io_08.png')
 ```
 
-![1](img/#co_input_output_operations_CO37-1)
+①
 
 时间间隔的开始时间。
 
-![2](img/#co_input_output_operations_CO37-2)
+②
 
 时间间隔的结束时间。
 
-![3](img/#co_input_output_operations_CO37-3)
+③
 
 函数`ts.read_range()`返回时间间隔的`DataFrame`对象。
 
-![4](img/#co_input_output_operations_CO37-4)
+④
 
 `DataFrame`对象有几十万行数据。
 
@@ -2103,19 +2103,19 @@ In [233]: rows.info()  # ④
 In [234]: !rm $path/tstab.h5
 ```
 
-![1](img/#co_input_output_operations_CO38-1)
+①
 
 连接到`TsTable`对象。
 
-![2](img/#co_input_output_operations_CO38-2)
+②
 
 数据检索重复多次。
 
-![3](img/#co_input_output_operations_CO38-3)
+③
 
 起始日值被随机化。
 
-![4](img/#co_input_output_operations_CO38-4)
+④
 
 最后检索到的`DataFrame`对象。
 

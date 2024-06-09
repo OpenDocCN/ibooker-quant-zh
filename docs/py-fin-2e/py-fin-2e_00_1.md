@@ -364,35 +364,35 @@ In [8]: print('Value of the European Call Option %5.3f:' % C0)  # ⑧
         Value of the European Call Option 8.019:
 ```
 
-![1](img/#co_python_and_finance_CO1-1)
+①
 
 模型参数值已定义。
 
-![2](img/#co_python_and_finance_CO1-6)
+②
 
 `NumPy` 在这里作为主要包被使用。
 
-![3](img/#co_python_and_finance_CO1-7)
+③
 
 随机数生成器的种子值是固定的。
 
-![4](img/#co_python_and_finance_CO1-8)
+④
 
 这绘制了标准正态分布的随机数。
 
-![5](img/#co_python_and_finance_CO1-9)
+⑤
 
 这模拟了期末值。
 
-![6](img/#co_python_and_finance_CO1-10)
+⑥
 
 到期时的期权回报是通过计算得出的。
 
-![7](img/#co_python_and_finance_CO1-11)
+⑦
 
 蒙特卡洛估算器被评估。
 
-![8](img/#co_python_and_finance_CO1-12)
+⑧
 
 这将打印出结果值的估计。
 
@@ -519,31 +519,31 @@ In [13]: data[['.SPX', 'vola']].plot(subplots=True, figsize=(10, 6));  # ⑦
          plt.savefig('../images/01_chapter/spx_volatility.png')
 ```
 
-![1](img/#co_python_and_finance_CO2-1)
+①
 
 这导入了`NumPy`和`pandas`。
 
-![2](img/#co_python_and_finance_CO2-3)
+②
 
 `read_csv`允许检索远程存储的数据集。
 
-![3](img/#co_python_and_finance_CO2-4)
+③
 
 选择数据的一个子集。
 
-![4](img/#co_python_and_finance_CO2-5)
+④
 
 这显示了数据集的一些元信息。
 
-![5](img/#co_python_and_finance_CO2-6)
+⑤
 
 对数收益以矢量化方式计算（“无循环”）。
 
-![6](img/#co_python_and_finance_CO2-7)
+⑥
 
 滚动、年化波动率是由此得出的。
 
-![7](img/#co_python_and_finance_CO2-8)
+⑦
 
 最后一行将这两个时间序列绘制出来。
 

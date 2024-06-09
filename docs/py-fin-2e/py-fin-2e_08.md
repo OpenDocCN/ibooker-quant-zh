@@ -79,27 +79,27 @@ In [5]: data.info()  # ⑥
         memory usage: 200.3 KB
 ```
 
-![1](img/#co_financial_time_series_CO1-1)
+①
 
 指定路径和文件名。
 
-![2](img/#co_financial_time_series_CO1-2)
+②
 
 显示原始数据的前五行（Linux/Mac）。
 
-![3](img/#co_financial_time_series_CO1-3)
+③
 
 传递给`pd.read_csv()`函数的文件名。
 
-![4](img/#co_financial_time_series_CO1-4)
+④
 
 这指定第一列将被处理为索引。
 
-![5](img/#co_financial_time_series_CO1-5)
+⑤
 
 这另外指定索引值的类型为日期时间。
 
-![6](img/#co_financial_time_series_CO1-6)
+⑥
 
 结果的`DataFrame`对象。
 
@@ -144,15 +144,15 @@ In [8]: data.plot(figsize=(10, 12), subplots=True)  # ③
         # plt.savefig('../../images/ch08/fts_01.png');
 ```
 
-![1](img/#co_financial_time_series_CO2-1)
+①
 
 前五行 …
 
-![2](img/#co_financial_time_series_CO2-2)
+②
 
 … 最后五行显示。
 
-![3](img/#co_financial_time_series_CO2-3)
+③
 
 这通过多个子图可视化完整数据集。
 
@@ -234,11 +234,11 @@ Out[12]:         AAPL.O   MSFT.O   INTC.O   AMZN.O     GS.N      SPY     .SPX   
          max       1.48  1897.10    66.63   184.59
 ```
 
-![1](img/#co_financial_time_series_CO3-1)
+①
 
 `.info()`提供有关`DataFrame`对象的一些元信息。
 
-![2](img/#co_financial_time_series_CO3-2)
+②
 
 `.describe()` 提供每列有用的标准统计数据。
 
@@ -284,27 +284,27 @@ Out[14]:         AAPL.O  MSFT.O  INTC.O   AMZN.O    GS.N     SPY     .SPX   .VIX
          max     1897.10  66.63  184.59
 ```
 
-![1](img/#co_financial_time_series_CO4-1)
+①
 
 每列的均值。
 
-![2](img/#co_financial_time_series_CO4-2)
+②
 
 每列的最小值。
 
-![3](img/#co_financial_time_series_CO4-3)
+③
 
 每列的均值。
 
-![4](img/#co_financial_time_series_CO4-4)
+④
 
 每列的标准偏差。
 
-![5](img/#co_financial_time_series_CO4-5)
+⑤
 
 每列的最大值。
 
-![6](img/#co_financial_time_series_CO4-6)
+⑥
 
 使用`.aggregate()`方法还允许传递自定义函数。
 
@@ -348,11 +348,11 @@ Out[16]: AAPL.O    0.070252
          dtype: float64
 ```
 
-![1](img/#co_financial_time_series_CO5-1)
+①
 
 `.diff()`提供了两个索引值之间的绝对变化。
 
-![2](img/#co_financial_time_series_CO5-2)
+②
 
 当然，还可以应用聚合操作。
 
@@ -380,11 +380,11 @@ In [18]: data.pct_change().mean().plot(kind='bar', figsize=(10, 6));  # ②
          # plt.savefig('../../images/ch08/fts_02.png');
 ```
 
-![1](img/#co_financial_time_series_CO6-1)
+①
 
 `.pct_change()`计算两个索引值之间的百分比变化。
 
-![2](img/#co_financial_time_series_CO6-2)
+②
 
 结果的均值作为条形图可视化。
 
@@ -418,15 +418,15 @@ In [21]: rets.cumsum().apply(np.exp).plot(figsize=(10, 6));  # ③
          # plt.savefig('../../images/ch08/fts_03.png');
 ```
 
-![1](img/#co_financial_time_series_CO7-1)
+①
 
 这以向量化方式计算对数收益。
 
-![2](img/#co_financial_time_series_CO7-2)
+②
 
 结果的子集。
 
-![3](img/#co_financial_time_series_CO7-3)
+③
 
 这绘制了随时间累积的对数收益；首先调用`.cumsum()`方法，然后将`np.exp()`应用于结果。
 
@@ -478,15 +478,15 @@ In [24]: rets.cumsum().resample('1m', label='right').last(
          # plt.savefig('../../images/ch08/fts_04.png');
 ```
 
-![1](img/#co_financial_time_series_CO8-1)
+①
 
 EOD 数据被重采样为
 
-![2](img/#co_financial_time_series_CO8-2)
+②
 
 结果的子集。
 
-![3](img/#co_financial_time_series_CO8-3)
+③
 
 这绘制了随时间累积的对数收益；首先调用`.cumsum()`方法，然后将`np.exp()`应用于结果。
 
@@ -537,31 +537,31 @@ In [33]: data['max'] = data[sym].rolling(window=window).max()  # ⑥
 In [34]: data['ewma'] = data[sym].ewm(halflife=0.5, min_periods=window).mean()  # ⑦
 ```
 
-![1](img/#co_financial_time_series_CO9-1)
+①
 
 定义窗口，即要包含的索引值的数量。
 
-![2](img/#co_financial_time_series_CO9-2)
+②
 
 计算滚动最小值。
 
-![3](img/#co_financial_time_series_CO9-3)
+③
 
 计算滚动均值。
 
-![4](img/#co_financial_time_series_CO9-4)
+④
 
 计算滚动标准差。
 
-![5](img/#co_financial_time_series_CO9-5)
+⑤
 
 计算滚动中位数。
 
-![6](img/#co_financial_time_series_CO9-6)
+⑥
 
 计算滚动最大值。
 
-![7](img/#co_financial_time_series_CO9-7)
+⑦
 
 这将计算指数加权移动平均值，衰减以半衰期`0.5`来计算。
 
@@ -593,11 +593,11 @@ In [36]: ax = data[['min', 'mean', 'max']].iloc[-200:].plot(
          # plt.savefig('../../images/ch08/fts_05.png');
 ```
 
-![1](img/#co_financial_time_series_CO10-1)
+①
 
 绘制最后 200 个数据行的三个滚动统计。
 
-![2](img/#co_financial_time_series_CO10-2)
+②
 
 将原始时间序列数据添加到图表中。
 
@@ -631,15 +631,15 @@ In [40]: data[[sym, 'SMA1', 'SMA2']].plot(figsize=(10, 6));  # ③
          # plt.savefig('../../images/ch08/fts_06.png');
 ```
 
-![1](img/#co_financial_time_series_CO11-1)
+①
 
 计算短期 SMA 的值。
 
-![2](img/#co_financial_time_series_CO11-2)
+②
 
 计算长期 SMA 的值。
 
-![3](img/#co_financial_time_series_CO11-3)
+③
 
 可视化股价数据和两条 SMAs 时间序列。
 
@@ -662,19 +662,19 @@ In [43]: ax = data[[sym, 'SMA1', 'SMA2', 'positions']].plot(figsize=(10, 6),
          # plt.savefig('../../images/ch08/fts_07.png');
 ```
 
-![1](img/#co_financial_time_series_CO12-1)
+①
 
 仅保留完整的数据行。
 
-![2](img/#co_financial_time_series_CO12-2)
+②
 
 如果短期 SMA 值大于长期 SMA 值…
 
-![3](img/#co_financial_time_series_CO12-3)
+③
 
 …买入股票（放置`1`）…
 
-![4](img/#co_financial_time_series_CO12-4)
+④
 
 …否则卖空股票（放置`-1`）。
 
@@ -764,19 +764,19 @@ In [53]: pd.plotting.scatter_matrix(rets,  # ①
          # plt.savefig('../../images/ch08/fts_11.png');
 ```
 
-![1](img/#co_financial_time_series_CO13-1)
+①
 
 要绘制的数据集。
 
-![2](img/#co_financial_time_series_CO13-2)
+②
 
 点的不透明度参数为`alpha`。
 
-![3](img/#co_financial_time_series_CO13-3)
+③
 
 放置在对角线上的内容；这里是列数据的直方图。
 
-![4](img/#co_financial_time_series_CO13-4)
+④
 
 这些是要传递给直方图绘图函数的关键字。
 
@@ -796,15 +796,15 @@ In [55]: ax = rets.plot(kind='scatter', x='.SPX', y='.VIX', figsize=(10, 6))  # 
          # plt.savefig('../../images/ch08/fts_12.png');
 ```
 
-![1](img/#co_financial_time_series_CO14-1)
+①
 
 这实现了线性 OLS 回归。
 
-![2](img/#co_financial_time_series_CO14-2)
+②
 
 这将对数收益绘制为散点图…
 
-![3](img/#co_financial_time_series_CO14-3)
+③
 
 … 添加了线性回归线。
 
@@ -828,15 +828,15 @@ In [57]: ax = rets['.SPX'].rolling(window=252).corr(
          # plt.savefig('../../images/ch08/fts_13.png');
 ```
 
-![1](img/#co_financial_time_series_CO15-1)
+①
 
 整个`DataFrame`的相关矩阵。
 
-![2](img/#co_financial_time_series_CO15-2)
+②
 
 这会绘制随时间变化的滚动相关性……
 
-![3](img/#co_financial_time_series_CO15-3)
+③
 
 … 并将静态值添加到绘图中作为水平线。
 
@@ -873,7 +873,7 @@ In [61]: tick['Mid'].plot(figsize=(10, 6));
          # plt.savefig('../../images/ch08/fts_14.png');
 ```
 
-![1](img/#co_financial_time_series_CO16-1)
+①
 
 计算每一行数据的`Mid`价格。
 

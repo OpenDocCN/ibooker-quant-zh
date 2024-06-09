@@ -989,6 +989,11 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节展示了如何在 [DigitalOcean](http://digitalocean.com) 云实例上设置一个完整的 Python 基础设施。还有许多其他的云服务提供商，其中包括
+    [亚马逊网络服务](http://aws.amazon.com)（AWS）作为领先的提供商。然而，DigitalOcean 以其简单性和相对较低的价格而闻名，他们称之为
+    *droplet* 的较小的云实例。最小的 droplet，通常足够用于探索和开发目的，每月只需 5 美元或每小时 0.007 美元。用户只按小时计费，因此您可以轻松地为
+    2 小时启动一个 droplet，然后销毁它，仅需收取 0.014 美元。如果您还没有账户，请在这个 [注册页面](https://m.do.co/c/fbe512dd3dac)
+    上注册一个账户，这可以为您提供 10 美元的起始信用额。
 - en: 'The goal of this section is to set up a droplet on DigitalOcean that has a
     Python 3.6 installation plus typically needed packages (e.g. `NumPy`, `pandas`)
     in combination with a password-protected and Secure Sockets Layer (SSL)-encrypted
@@ -998,6 +1003,9 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节的目标是在 DigitalOcean 上设置一个 droplet，其中包含 Python 3.6 安装和通常所需的包（例如 `NumPy`、`pandas`），以及一个密码保护和安全套接字层（SSL）加密的
+    [Jupyter Notebook](http://jupyter.org) 服务器安装。作为一个基于 Web 的工具套件，Jupyter Notebook
+    提供了三个主要工具，可以通过常规浏览器使用：
 - en: '**Jupyter Notebook**: this is the by now really popular interactive development
     environment that features a selection of different language kernels like for Python,
     R and Julia'
@@ -1005,6 +1013,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**Jupyter Notebook**：这是目前非常流行的交互式开发环境，具有不同语言内核的选择，如 Python、R 和 Julia。'
 - en: '**terminal**: a system shell implementation accessible via the browser which
     allows for all typical system administration tasks but also for usage of such
     helpful tools like [`Vim`](http://www.vim.org/download.ph) or [`git`](https://git-scm.com/)'
@@ -1012,6 +1021,8 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**终端**：通过浏览器访问的系统 shell 实现，允许进行所有典型的系统管理任务，但也可以使用诸如 [`Vim`](http://www.vim.org/download.ph)
+    或 [`git`](https://git-scm.com/) 等有用工具。'
 - en: '**editor**: the third major tool is a browser-based file editor with syntax
     highlighting for many different programming languages and file types as well as
     typical editing capabilities'
@@ -1019,49 +1030,59 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**编辑器**：第三个主要工具是一个基于浏览器的文件编辑器，具有许多不同的编程语言和文件类型的语法突出显示以及典型的编辑功能。'
 - en: Having Jupyter Notebook installed on a droplet allows to do Python development
     and deployment via the browser, circumventing the need to log in to the cloud
     instance via Secure Shell (SSH) access.
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 在一个 droplet 上安装 Jupyter Notebook 允许通过浏览器进行 Python 开发和部署，避免了通过安全外壳（SSH）访问登录云实例的需求。
 - en: To accomplish the goal of this section, a number of files is needed.
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了完成本节的目标，需要一些文件。
 - en: '**server set-up script**: this script orchestrates all steps necessary, like
     for instance copying other files to the droplet and running them on the droplet'
   id: totrans-164
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**服务器设置脚本**：这个脚本协调所有必要的步骤，比如将其他文件复制到 droplet 上并在 droplet 上运行它们。'
 - en: '**Python and Jupyter installation script**: this installs Python, additional
     packages, Jupyter Notebook and starts the Jupyter Notebook server'
   id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**Python 和 Jupyter 安装脚本**：这个脚本安装 Python、额外的包、Jupyter Notebook 并启动 Jupyter Notebook
+    服务器。'
 - en: '**Jupyter Notebook configuration file**: this file is for the configuration
     of the Jupyter Notebook server, e.g. with respect to password protection'
   id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**Jupyter Notebook 配置文件**：此文件用于配置 Jupyter Notebook 服务器，例如密码保护方面。'
 - en: '**RSA public and private key files**: these two files are needed for the SSL
     encryption of the Jupyter Notebook server'
   id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**RSA 公钥和私钥文件**：这两个文件用于对 Jupyter Notebook 服务器进行 SSL 加密。'
 - en: In what follows, we work backwards through this list of files.
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们将逆向处理这个文件列表。
 - en: RSA Public and Private Keys
   id: totrans-169
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: RSA 公钥和私钥
 - en: In order to accomplish a secure connection to the Jupyter Notebook server via
     an arbitrary browser, a SSL certificate consisting of RSA public and private keys
     (see [RSA Wikipedia page](https://en.wikipedia.org/wiki/RSA_(cryptosystem))) is

@@ -1,27 +1,36 @@
 - en: Chapter 8\. Financial Time Series
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第八章 金融时间序列
 - en: The only reason for time is so that everything doesn’t happen at once.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 时间的唯一目的是让一切不是同时发生。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Albert Einstein
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 阿尔伯特·爱因斯坦
 - en: Financial time series data is one of the most important types of data in finance.
     This is data indexed by date and/or time. For example, prices of stocks over time
     represent financial time series data. Similarly, the EUR/USD exchange rate over
     time represents a financial time series; the exchange rate is quoted in brief
     intervals of time, and a collection of such quotes then is a time series of exchange
     rates.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融时间序列数据是金融领域最重要的数据类型之一。这是按日期和/或时间索引的数据。例如，随着时间的推移，股票价格代表金融时间序列数据。类似地，随时间变化的欧元/美元汇率代表金融时间序列；汇率在较短的时间间隔内报价，一系列这样的报价则是汇率的时间序列。
 - en: There is no financial discipline that gets by without considering time an important
     factor. This mainly is the same as with physics and other sciences. The major
     tool to cope with time series data in Python is `pandas`. Wes McKinney, the original
@@ -29,838 +38,1298 @@
     analyst at AQR Capital Management, a large hedge fund. It is safe to say that
     `pandas` has been designed from the ground up to work with financial time series
     data.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有任何金融学科能够不考虑时间因素而存在。这与物理学和其他科学基本相同。在Python中处理时间序列数据的主要工具是`pandas`。`pandas`的原始和主要作者Wes
+    McKinney在AQR Capital Management，一家大型对冲基金的分析员时开始开发这个库。可以肯定地说`pandas`是从头开始设计用于处理金融时间序列数据的。
 - en: 'The chapter is mainly based on two financial time series data sets in the form
     of Comma Separated Value (CSV) files. It proceeds along the following lines:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章主要基于两个以逗号分隔值（CSV）文件形式的金融时间序列数据集。它沿以下线路进行：
 - en: '[“Financial Data”](#fts_financia_data)'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“金融数据”](#fts_financia_data)'
 - en: 'This section is about the basics of working with financial times series data
     using `pandas`: data import, deriving summary statistics, calculating changes
     over time and resampling.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一部分介绍了使用`pandas`处理金融时间序列数据的基础知识：数据导入，导出摘要统计信息，计算随时间变化的数据和重采样。
 - en: '[“Rolling Statistics”](#fts_rolling_statistics)'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“滚动统计”](#fts_rolling_statistics)'
 - en: In financial analysis, rolling statistics play an important role. These are
     statistics calculated in general over a fixed time interval the is *rolled forward*
     over the complete data set. A popular example are simple moving averages (SMAs).
     This section illustrates how `pandas` supports the calculation of such statistics.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融分析中，滚动统计起着重要作用。这些统计数据通常在一个固定的时间间隔内进行计算，并在整个数据集上“滚动前进”。简单移动平均线（SMAs）是一个流行的例子。这一部分说明了`pandas`如何支持计算这种统计数据。
 - en: '[“Correlation Analysis”](#fts_correlation_analysis)'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“相关性分析”](#fts_correlation_analysis)'
 - en: This section presents a case study based on financial time series data for the
     S&P 500 stock index and the VIX volatility index. It provides some support for
     the stylized fact that both indices are negatively correlated.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一部分提供了一个基于标普500股票指数和VIX波动率指数的金融时间序列数据的案例研究。它为两个指数都呈现负相关的模式提供了一些支持。
 - en: '[“High Frequency Data”](#fts_high_frequency_data)'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“高频数据”](#fts_high_frequency_data)'
 - en: High frequency data, or tick data, has become commonplace in finance. This section
     works with tick data. `pandas` again proves powerful in handling such data sets.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 高频数据或者说tick数据在金融领域已经变得司空见惯。这一部分处理tick数据。`pandas`再次在处理这样的数据集时表现强大。
 - en: Financial Data
+  id: totrans-15
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 金融数据
 - en: This section works with a locally stored financial data set in the form of a
     CSV file. Technically, such files are simply text files with a data row structure
     characterized by commas separating single values. Before importing the data, first
     some package imports and customizations.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一部分处理的是一个以CSV文件形式存储的本地金融数据集。从技术上讲，这些文件只是由逗号分隔单个值的数据行结构的文本文件。在导入数据之前，首先进行一些软件包导入和自定义。
 - en: '[PRE0]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Data Import
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据导入
 - en: '`pandas` provides a number of different functions and `DataFrame` methods to
     import data stored in different formats (CSV, SQL, Excel, etc.) and to export
     data to different formats (see [Chapter 9](ch09.html#input_output) for more details).
     The following code uses the `pd.read_csv()` function to import the time series
     data set from the CSV file.^([1](ch08.html#idm140277664362592))'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`提供了许多不同的函数和`DataFrame`方法来导入以不同格式存储的数据（CSV、SQL、Excel等）以及将数据导出为不同的格式（详见[第9章](ch09.html#input_output)）。下面的代码使用`pd.read_csv()`函数从CSV文件中导入时间序列数据集。^([1](ch08.html#idm140277664362592))'
 - en: '[PRE1]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO1-1)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO1-1)'
 - en: Specifies the path and file name .
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定路径和文件名。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO1-2)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO1-2)'
 - en: Shows the first five rows of the raw data (Linux/Mac).
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示原始数据的前五行（Linux/Mac）。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO1-3)'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO1-3)'
 - en: The file name passed to the `pd.read_csv()` function.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 传递给`pd.read_csv()`函数的文件名。
 - en: '[![4](images/4.png)](#co_financial_time_series_CO1-4)'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_time_series_CO1-4)'
 - en: This specifies that the first column shall be handled as an index.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 这指定第一列将被处理为索引。
 - en: '[![5](images/5.png)](#co_financial_time_series_CO1-5)'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_time_series_CO1-5)'
 - en: This in addition specifies that the index values are of type date-time.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 这另外指定索引值的类型为日期时间。
 - en: '[![6](images/6.png)](#co_financial_time_series_CO1-6)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_time_series_CO1-6)'
 - en: The resulting `DataFrame` object.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的`DataFrame`对象。
 - en: At this stage, a financial analyst probably takes a first look at the data,
     either by inspection of the data or by visualizing it (see [Figure 8-1](#fts_plot_01)).
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个阶段，金融分析师可能会通过检查数据或将其可视化（参见[图 8-1](#fts_plot_01)）来首次查看数据。
 - en: '[PRE2]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO2-1)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO2-1)'
 - en: The first five rows …
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 前五行 …
 - en: '[![2](images/2.png)](#co_financial_time_series_CO2-2)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO2-2)'
 - en: … and the final five rows are shown.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: … 最后五行显示。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO2-3)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO2-3)'
 - en: This visualizes the complete data set via multiple subplots.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过多个子图可视化完整数据集。
 - en: '![fts 01](images/fts_01.png)'
+  id: totrans-41
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 01](images/fts_01.png)'
 - en: Figure 8-1\. Financial time series data as line plots
+  id: totrans-42
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-1\. 金融时间序列数据的线图
 - en: 'The data used is from the Thomson Reuters (TR) Eikon Data API. In the TR world
     symbols for financial instruments are called "`Reuters Instrument Codes`" or `RICs`.
     The financial instruments that the single `RICs` represent are:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的数据来自汤森路透（TR）Eikon数据API。在TR世界中，金融工具的符号称为“`路透社仪器代码`”或`RICs`。单个`RICs`代表的金融工具是：
 - en: '[PRE3]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Summary Statistics
+  id: totrans-45
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要统计
 - en: A next step, the financial analyst might take, is to have a look at different
     summary statistics for the data set to get a "`feeling`" for what it is all about.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步，金融分析师可能会采取的步骤是查看数据集的不同摘要统计信息，以了解它的“`感觉`”。
 - en: '[PRE4]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO3-1)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO3-1)'
 - en: '`.info()` gives some meta information about the `DataFrame` object.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.info()`提供有关`DataFrame`对象的一些元信息。'
 - en: '[![2](images/2.png)](#co_financial_time_series_CO3-2)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO3-2)'
 - en: '`.describe()` provides useful standard statistics per column.'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.describe()` 提供每列有用的标准统计数据。'
 - en: Tip
+  id: totrans-52
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 提示
 - en: '`pandas` provides a number of methods to gain a quick overview over newly imported
     financial time series data sets, such as `.info()` and `.describe()`. They also
     allow for quick checks whether the importing procedure worked as desired (e.g.
     whether the `DataFrame` objects indeed has a `DatetimeIndex` as index).'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`提供了许多方法来快速查看新导入的金融时间序列数据集的概述，例如`.info()`和`.describe()`。它们还允许快速检查导入过程是否按预期工作（例如，`DataFrame`对象是否确实具有`DatetimeIndex`作为索引）。'
 - en: There are also options, of course, to customize what type of statistic to derive
     and display.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，也有选项来自定义要推导和显示的统计信息类型。
 - en: '[PRE5]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO4-1)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO4-1)'
 - en: The mean value per column.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 每列的均值。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO4-2)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO4-2)'
 - en: The minimum value per column.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 每列的最小值。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO4-3)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO4-3)'
 - en: The mean value per column.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 每列的均值。
 - en: '[![4](images/4.png)](#co_financial_time_series_CO4-4)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_time_series_CO4-4)'
 - en: The standard deviation per column.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 每列的标准偏差。
 - en: '[![5](images/5.png)](#co_financial_time_series_CO4-5)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_time_series_CO4-5)'
 - en: The maximum value per column.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 每列的最大值。
 - en: '[![6](images/6.png)](#co_financial_time_series_CO4-6)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_time_series_CO4-6)'
 - en: Using the `.aggregate()` method also allows to pass custom functions.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`.aggregate()`方法还允许传递自定义函数。
 - en: Changes over Time
+  id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 随时间变化
 - en: 'Most statistical analyses methods, for example, generally are based on changes
     of a time series over time and not the absolute values themselves. There are multiple
     options to calculate the changes of a time series over time, among others: absolute
     differences, percentage changes and logarithmic (log) returns.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数统计分析方法，例如，通常基于时间序列随时间的变化，而不是绝对值本身。有多种选项可以计算时间序列随时间的变化，包括：绝对差异、百分比变化和对数（对数）收益。
 - en: First, the absolute differences for which `pandas` provides a special method.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先是绝对差异，对于这个`pandas`提供了一个特殊的方法。
 - en: '[PRE6]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO5-1)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO5-1)'
 - en: '`.diff()` provides the absolute changes between two index values.'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.diff()`提供了两个索引值之间的绝对变化。'
 - en: '[![2](images/2.png)](#co_financial_time_series_CO5-2)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO5-2)'
 - en: Of course, aggregation operations can be applied in addition.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，还可以应用聚合操作。
 - en: 'From a statistics point of view, absolute changes are not optimal because they
     are dependent on the scale of the time series data itself. Therefore, percentage
     changes are usually preferred. The following code derives the percentage changes
     or percentage returns (also: simple returns) in a financial context and visualizes
     their mean values per column (see [Figure 8-2](#fts_plot_02)).'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 从统计学的角度来看，绝对变化不是最佳选择，因为它们依赖于时间序列数据本身的比例。因此，通常更喜欢百分比变化。以下代码推导了金融背景下的百分比变化或百分比收益（也称为：简单收益），并可视化其每列的均值（参见
+    [图 8-2](#fts_plot_02)）。
 - en: '[PRE7]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO6-1)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO6-1)'
 - en: '`.pct_change()` calculates the percentage change between two index values.'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.pct_change()`计算两个索引值之间的百分比变化。'
 - en: '[![2](images/2.png)](#co_financial_time_series_CO6-2)'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO6-2)'
 - en: The mean values of the results visualized as a bar plot.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的均值作为条形图可视化。
 - en: '![fts 02](images/fts_02.png)'
+  id: totrans-82
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 02](images/fts_02.png)'
 - en: Figure 8-2\. Mean values of percentage changes as bar plot
+  id: totrans-83
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-2\. 百分比变化的均值作为条形图
 - en: As an alternative to percentage returns, log returns can used. In some scenarios,
     they are more easy to handle and therefore often preferred in a financial context.^([2](ch08.html#idm140277661798016))
     [Figure 8-3](#fts_plot_03) show the cumulative log returns for the single financial
     times series. This type of plot leads some form of *normalization*.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为百分比收益的替代，可以使用对数收益。在某些情况下，它们更容易处理，因此在金融背景下通常更受欢迎。^([2](ch08.html#idm140277661798016))
+    [图 8-3](#fts_plot_03) 展示了单个金融时间序列的累积对数收益。这种类型的绘图导致某种形式的*归一化*。
 - en: '[PRE8]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO7-1)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO7-1)'
 - en: This calculates the log returns in vectorized fashion.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 这以向量化方式计算对数收益。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO7-2)'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO7-2)'
 - en: A sub-set of the results.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的子集。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO7-3)'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO7-3)'
 - en: This plots the cumulative log returns over time; first the `.cumsum()` method
     is called, then `np.exp()` is applied to the results.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 这绘制了随时间累积的对数收益；首先调用`.cumsum()`方法，然后将`np.exp()`应用于结果。
 - en: '![fts 03](images/fts_03.png)'
+  id: totrans-92
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 03](images/fts_03.png)'
 - en: Figure 8-3\. Cumulative log returns over time
+  id: totrans-93
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-3\. 随时间累积的对数收益
 - en: Resampling
+  id: totrans-94
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 重采样
 - en: 'Resampling is an important operation on financial time series data. Usually,
     this takes on the form of *up-sampling*, meaning that, for example, a time series
     with daily observations is resampled to a time series with weekly or monthly observations.
     It might also mean to resample a financial tick data series to one-minute intervals
     (also: bars).'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于金融时间序列数据，重采样是一项重要的操作。通常，这采取*上采样*的形式，意味着例如，具有每日观测的时间序列被重采样为具有每周或每月观测的时间序列。这也可能意味着将金融Tick数据系列重采样为一分钟间隔（也称为：柱）。
 - en: '[PRE9]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO8-1)'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO8-1)'
 - en: EOD data gets resampled to
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: EOD数据被重采样为
 - en: '[![2](images/2.png)](#co_financial_time_series_CO8-2)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO8-2)'
 - en: A sub-set of the results.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的子集。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO8-3)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO8-3)'
 - en: This plots the cumulative log returns over time; first the `.cumsum()` method
     is called, then `np.exp()` is applied to the results.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 这绘制了随时间累积的对数收益；首先调用`.cumsum()`方法，然后将`np.exp()`应用于结果。
 - en: '![fts 04](images/fts_04.png)'
+  id: totrans-103
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 04](images/fts_04.png)'
 - en: Figure 8-4\. Resampled cumulative log returns over time (monthly)
+  id: totrans-104
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-4\. 随时间重采样的累积对数收益（每月）
 - en: Caution
+  id: totrans-105
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: When resampling, `pandas` takes by default the left label (or index value) of
     the interval. To be financially consistent, make sure to use the right label (index
     value) and in general the last available data point in the interval. Otherwise,
     a foresight bias might sneak into the financial analysis.^([3](ch08.html#idm140277661032464))
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 在重新取样时，默认情况下，`pandas`采用区间的左标签（或索引值）。为了保持金融一致性，请确保使用右标签（索引值）和通常是区间中最后一个可用数据点。否则，可能会在金融分析中引入预见偏差。^（[3](ch08.html#idm140277661032464)）
 - en: Rolling Statistics
+  id: totrans-107
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 滚动统计
 - en: It is financial tradition, to work with *rolling statistics*, often also called
     *financial indicators* or *financial studies*. Such rolling statistics are basic
     tools for financial chartists and technical traders, for example. This section
     works with a single financial time series only.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融传统中，通常称为*滚动统计*，也称为*金融指标*或*金融研究*。这样的滚动统计是金融图表分析师和技术交易员的基本工具，例如。本节仅处理单个金融时间序列。
 - en: '[PRE10]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: An Overview
+  id: totrans-110
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 概览
 - en: It is straightforward to derive standard rolling statistics with `pandas`.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`pandas`很容易得出标准滚动统计。
 - en: '[PRE11]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO9-1)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO9-1)'
 - en: Defines the window, i.e. the number of index values to include.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义窗口，即要包含的索引值的数量。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO9-2)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO9-2)'
 - en: Calculates the rolling minimum value.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动最小值。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO9-3)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO9-3)'
 - en: Calculates the rolling mean value.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动均值。
 - en: '[![4](images/4.png)](#co_financial_time_series_CO9-4)'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_time_series_CO9-4)'
 - en: Calculates the rolling standard deviation.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动标准差。
 - en: '[![5](images/5.png)](#co_financial_time_series_CO9-5)'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_time_series_CO9-5)'
 - en: Calculates the rolling median value.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动中位数。
 - en: '[![6](images/6.png)](#co_financial_time_series_CO9-6)'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_time_series_CO9-6)'
 - en: Calculates the rolling maximum value.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动最大值。
 - en: '[![7](images/7.png)](#co_financial_time_series_CO9-7)'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_financial_time_series_CO9-7)'
 - en: This calculates the exponentially weighted moving average, with decay in terms
     of a half life of `0.5`.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将计算指数加权移动平均值，衰减以半衰期`0.5`来计算。
 - en: To derive more specialized financial indicators, additional packages are generally
     needed (see, for instance, the financial plots with `Cufflinks` in [“Interactive
     2D Plotting”](ch07.html#viz_int_2d_plotting).) Custom ones can also easily be
     applied via the `.apply()` method.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 要推导出更专业的金融指标，通常需要使用其他软件包（例如，使用`Cufflinks`进行金融图表，参见[“交互式二维绘图”](ch07.html#viz_int_2d_plotting)）。也可以通过`.apply()`方法轻松地应用自定义指标。
 - en: The following code shows a sub-set of the results and visualizes a selection
     of the calculated rolling statistics (see [Figure 8-5](#fts_plot_05)).
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码显示了部分结果，并可视化了计算的滚动统计的选择部分（参见[图 8-5](#fts_plot_05)）。
 - en: '[PRE12]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO10-1)'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO10-1)'
 - en: Plots three rolling statistics for the final 200 data rows.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制最后200个数据行的三个滚动统计。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO10-2)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO10-2)'
 - en: Add the original time series data to the plot.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 将原始时间序列数据添加到图表中。
 - en: '![fts 05](images/fts_05.png)'
+  id: totrans-134
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 05](images/fts_05.png)'
 - en: Figure 8-5\. Rolling statistics for minimum, mean, maximum values
+  id: totrans-135
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-5。最小、平均、最大值的滚动统计
 - en: A Technical Analysis Example
+  id: totrans-136
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 技术分析示例
 - en: Rolling statistics are a major tool in the so-called technical analysis of stocks
     as compared to the fundamental analysis which focuses, for instance, on financial
     reports and the strategic positions of the company whose stock is analyzed.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 与基本分析相比，滚动统计是所谓的技术分析中的主要工具，基本分析侧重于财务报告和被分析股票公司的战略位置等方面。
 - en: A decades-old trading strategy based on technical analysis is based on *two
     simple moving averages (SMAs)*. The idea is that the trader should be long a stock
     (or financial instrument in general) when the shorter-term SMA is above the longer-term
     SMA and should be short the stock when the opposite holds true. The concepts can
     be made precise with `pandas` and the capabilities of the `DataFrame` object.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于技术分析的几十年历史的交易策略基于*两个简单移动平均线（SMAs）*。这个想法是，当短期SMA高于长期SMA时，交易员应该持有一支股票（或者一般的金融工具），当情况相反时，应该空仓。这些概念可以通过`pandas`和`DataFrame`对象的功能来精确描述。
 - en: Rolling statistics are generally only calculated when there is enough data given
     the `window` parameter specification. As [Figure 8-6](#fts_plot_06) shows, the
     SMA time series only start at the day for which there is enough data given the
     specific parametrization.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 当给定了`window`参数规范并且有足够的数据时，通常才会计算滚动统计。如[图 8-6](#fts_plot_06) 所示，SMAs时间序列仅从有足够数据的那天开始。
 - en: '[PRE13]'
+  id: totrans-140
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO11-1)'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO11-1)'
 - en: Calculates the values for the shorter-term SMA.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算短期SMA的值。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO11-2)'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO11-2)'
 - en: Calculates the values for the longer-term SMA.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算长期SMA的值。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO11-3)'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO11-3)'
 - en: Visualizes the stock price data plus the two SMA time series.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 可视化股价数据和两条SMAs时间序列。
 - en: '![fts 06](images/fts_06.png)'
+  id: totrans-147
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 06](images/fts_06.png)'
 - en: Figure 8-6\. Apple stock price and two simple moving averages
+  id: totrans-148
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-6\. 苹果股价和两条简单移动平均线
 - en: In this context, the SMAs are only a means to an end. They are used to derive
     positionings to implement a trading strategy. [Figure 8-7](#fts_plot_07) visualizes
     a long position by a value of `1` and a short position by a value of `-1`. The
     change in the position is triggered (visually) by a crossover of the two lines
     representing the SMA time series.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个背景下，简单移动平均线（SMAs）仅仅是实现目标的手段。它们被用来推导出实施交易策略的定位。[图 8-7](#fts_plot_07) 通过数值`1`来可视化多头头寸，数值`-1`来可视化空头头寸。头寸的变化（在视觉上）由表示SMAs时间序列的两条线的交叉触发。
 - en: '[PRE14]'
+  id: totrans-150
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO12-1)'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO12-1)'
 - en: Only complete data rows are kept.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅保留完整的数据行。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO12-2)'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO12-2)'
 - en: If the shorter-term SMA value is greater than the longer-term one …
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果短期SMA值大于长期SMA值…
 - en: '[![3](images/3.png)](#co_financial_time_series_CO12-3)'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO12-3)'
 - en: … go long the stock (put a `1`) …
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: …买入股票（放置`1`）…
 - en: '[![4](images/4.png)](#co_financial_time_series_CO12-4)'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_time_series_CO12-4)'
 - en: … otherwise go short the stock (put a `-1`).
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: …否则卖空股票（放置`-1`）。
 - en: '![fts 07](images/fts_07.png)'
+  id: totrans-159
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 07](images/fts_07.png)'
 - en: Figure 8-7\. Apple stock price, two simple moving averages and positioning
+  id: totrans-160
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-7\. 苹果股价，两条简单移动平均线和头寸
 - en: 'The trading strategy implicitly derived here only leads to a few trades per
     se: only when the position value changes (i.e. a crossover happens), a trade takes
     place. Including opening and closing trades, this would add up to six trades only
     in total.'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里隐含地推导出的交易策略本质上只导致了很少的交易：只有当头寸价值变化（即发生交叉）时，才会进行交易。包括开仓和平仓交易，在总计中这将只增加到六次交易。
 - en: Correlation Analysis
+  id: totrans-162
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 相关性分析
 - en: As a further illustration of how to work with `pandas` and financial time series
     data, consider the case of the S&P 500 stock index and the VIX volatility index.
     It is a stylized fact, that when the S&P 500 rises, the VIX falls in general — and
     vice versa. This is about *correlation* and not *causation*. This section shows
     how to come up supporting statistical evidence for the stylized fact that the
     S&P 500 and the VIX are (highly) negatively correlated.^([4](ch08.html#idm140277659509120))
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为如何使用`pandas`和金融时间序列数据的进一步说明，考虑标准普尔500股指数和VIX波动率指数的情况。一个事实是，一般情况下，当标准普尔500上涨时，VIX下降，反之亦然。这涉及*相关性*而不是*因果关系*。本节展示了如何为标准普尔500和VIX之间（高度）负相关的事实提供支持性统计证据。^([4](ch08.html#idm140277659509120))
 - en: The Data
+  id: totrans-164
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据
 - en: The data set now consists of two financial times series, both visualized in
     [Figure 8-8](#fts_plot_08).
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据集现在包含两个金融时间序列，都在[图 8-8](#fts_plot_08)中可视化。
 - en: '[PRE15]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '![fts 08](images/fts_08.png)'
+  id: totrans-167
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 08](images/fts_08.png)'
 - en: Figure 8-8\. S&P 500 and VIX time series data (different scaling)
+  id: totrans-168
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-8\. S&P 500和VIX时间序列数据（不同的缩放）
 - en: When plotting (parts of) the two time series in a single plot and with adjusted
     scalings, the stylized fact of negative correlation between the two indices becomes
     already evident through simple visual inspection.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 当在单个图中绘制（部分）两个时间序列并进行调整缩放时，两个指数之间的负相关的事实通过简单的视觉检查就已经变得明显。
 - en: '[PRE16]'
+  id: totrans-170
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '![fts 09](images/fts_09.png)'
+  id: totrans-171
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 09](images/fts_09.png)'
 - en: Figure 8-9\. S&P 500 and VIX time series data (same scaling)
+  id: totrans-172
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-9\. S&P 500和VIX时间序列数据（相同的缩放）
 - en: Logarithmic Returns
+  id: totrans-173
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 对数收益率
 - en: As pointed out above, statistical analysis in general relies on returns instead
     of absolute changes or even absolute values. Therefore, the calculation of log
     returns first before any further analysis takes place. [Figure 8-10](#fts_plot_10)
     shows the high variability of the log returns over time. For both indices so-called
     volatility clusters can be spotted. And in general, periods of high volatility
     in the stock index are accompanied by the same phenomenon in the volatility index.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 如上所述，一般的统计分析依赖于收益而不是绝对变化或甚至绝对值。因此，在进行任何进一步分析之前，首先计算对数收益。[图 8-10](#fts_plot_10)显示了随时间变化的对数收益的高变异性。对于两个指数都可以发现所谓的波动率集群。总的来说，股票指数波动率高的时期伴随着波动率指数的同样现象。
 - en: '[PRE17]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '![fts 10](images/fts_10.png)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 10](images/fts_10.png)'
 - en: Figure 8-10\. Log returns of the S&P 500 and VIX over time
+  id: totrans-177
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-10。S&P 500和VIX的对数收益随时间变化
 - en: In such a context, the `pandas` `scatter_matrix()` plotting function comes in
     handy for visualizations. It plots the log returns of the two series against each
     other and one can add either histogram or a kernel density estimator (KDE) on
     the diagonal (see [Figure 8-11](#fts_plot_11)).
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，`pandas`的`scatter_matrix()`绘图函数非常方便用于可视化。它将两个系列的对数收益相互绘制，可以在对角线上添加直方图或核密度估计器（KDE）（请参见[图 8-11](#fts_plot_11)）。
 - en: '[PRE18]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO13-1)'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO13-1)'
 - en: The data set to be plotted.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制的数据集。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO13-2)'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO13-2)'
 - en: The `alpha` parameter for the opacity of the dots.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 点的不透明度参数为`alpha`。
 - en: '[![3](images/3.png)](#co_financial_time_series_CO13-3)'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO13-3)'
 - en: 'What to place on the diagonal; here: histogram of the column data.'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 放置在对角线上的内容；这里是列数据的直方图。
 - en: '[![4](images/4.png)](#co_financial_time_series_CO13-4)'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_time_series_CO13-4)'
 - en: These are keywords to be passed to the histogram plotting function.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是要传递给直方图绘图函数的关键字。
 - en: '![fts 11](images/fts_11.png)'
+  id: totrans-188
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 11](images/fts_11.png)'
 - en: Figure 8-11\. Log returns of the S&P 500 and VIX as a scatter matrix
+  id: totrans-189
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-11。S&P 500和VIX的对数收益作为散点矩阵
 - en: OLS Regression
+  id: totrans-190
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: OLS回归
 - en: With all these preparations, an ordinary least-squares (OLS) regression analysis
     is convenient to implement. [Figure 8-12](#fts_plot_12) shows a scatter plot of
     the log returns and the linear regression line through the cloud of dots. The
     slope is obviously negative providing support for the stylized fact about the
     negative correlation between the two indices.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过所有这些准备，普通最小二乘（OLS）回归分析很方便实现。[图 8-12](#fts_plot_12)显示了对数收益的散点图和通过点云的线性回归线。斜率明显为负，支持了关于两个指数之间负相关的事实。
 - en: '[PRE19]'
+  id: totrans-192
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO14-1)'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO14-1)'
 - en: This implements a linear OLS regression.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 这实现了线性OLS回归。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO14-2)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO14-2)'
 - en: This plots the log returns as a scatter plot …
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将对数收益绘制为散点图…
 - en: '[![3](images/3.png)](#co_financial_time_series_CO14-3)'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO14-3)'
 - en: … to which the linear regression line is added.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: … 添加了线性回归线。
 - en: '![fts 12](images/fts_12.png)'
+  id: totrans-199
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 12](images/fts_12.png)'
 - en: Figure 8-12\. Log returns of the S&P 500 and VIX as a scatter matrix
+  id: totrans-200
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-12。S&P 500和VIX的对数收益作为散点矩阵
 - en: Correlation
+  id: totrans-201
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 相关性
 - en: Finally, consider correlation measures directly. Two such measures are considered,
     a static one taking into account the complete data set and a rolling one showing
     the correlation for a fixed window over time. [Figure 8-13](#fts_plot_13) illustrates
     that the correlation indeed varies over time but that it is always, given the
     parametrization, negative. This provides indeed strong support for the stylized
     fact that the S&P 500 and the VIX indices are — even strongly — negatively correlated.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，直接考虑相关性度量。考虑到两种度量，一种是考虑完整数据集的静态度量，另一种是显示一定时间内相关性的滚动度量。[图 8-13](#fts_plot_13)说明了相关性确实随时间变化，但鉴于参数设置，始终为负。这确实强有力地支持了S&P
+    500和VIX指数之间甚至强烈的负相关的事实。
 - en: '[PRE20]'
+  id: totrans-203
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO15-1)'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO15-1)'
 - en: The correlation matrix for the whole `DataFrame`.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 整个`DataFrame`的相关矩阵。
 - en: '[![2](images/2.png)](#co_financial_time_series_CO15-2)'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_time_series_CO15-2)'
 - en: This plots the rolling correlation over time …
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会绘制随时间变化的滚动相关性……
 - en: '[![3](images/3.png)](#co_financial_time_series_CO15-3)'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_time_series_CO15-3)'
 - en: … and adds the static value to the plot as horizontal line.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: … 并将静态值添加到绘图中作为水平线。
 - en: '![fts 13](images/fts_13.png)'
+  id: totrans-210
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 13](images/fts_13.png)'
 - en: Figure 8-13\. Correlation between S&P 500 and VIX (static and rolling)
+  id: totrans-211
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-13\. 标普500和VIX之间的相关性（静态和滚动）
 - en: High Frequency Data
+  id: totrans-212
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 高频数据
 - en: This chapter is about financial time series analysis with `pandas`. A special
     case of a financial time series are tick data sets. Frankly, they can be handled
     more or less in the same ways as, for instance, the EOD data set used throughout
     this chapter so far. Importing such data sets also is quite fast in general with
     `pandas`. The data set used comprises 17,352 data rows (see also [Figure 8-14](#fts_plot_14)).
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了使用`pandas`进行金融时间序列分析。金融时间序列的一个特殊情况是tick数据集。坦率地说，它们可以更多或更少地以与本章迄今为止使用的EOD数据集相同的方式处理。一般来说，使用`pandas`导入这些数据集也是相当快的。所使用的数据集包含17,352行数据（另见[图8-14](#fts_plot_14)）。
 - en: '[PRE21]'
+  id: totrans-214
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[![1](images/1.png)](#co_financial_time_series_CO16-1)'
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_time_series_CO16-1)'
 - en: Calculates the `Mid` price for every data row.
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算每一行数据的`Mid`价格。
 - en: '![fts 14](images/fts_14.png)'
+  id: totrans-217
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 14](images/fts_14.png)'
 - en: Figure 8-14\. Tick data for EUR/USD exchange rate
+  id: totrans-218
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-14\. 欧元/美元汇率的tick数据
 - en: Working with tick data is generally as scenario where resampling of financial
     time series data is needed. The code that follows resamples the tick data to one
     minute bar data. Such a data set (see also [Figure 8-15](#fts_plot_15)) is then
     used, for example, to backtest algorithmic trading strategies or to implement
     a technical analysis.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理tick数据通常需要对金融时间序列数据进行重新采样。以下代码将tick数据重新采样为一分钟的条形数据。例如，这样的数据集（另见[图8-15](#fts_plot_15)）用于回测算法交易策略或实施技术分析。
 - en: '[PRE22]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '![fts 15](images/fts_15.png)'
+  id: totrans-221
   prefs: []
   type: TYPE_IMG
+  zh: '![fts 15](images/fts_15.png)'
 - en: Figure 8-15\. One minute bar data for EUR/USD exchange rate
+  id: totrans-222
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-15\. 欧元/美元汇率的一分钟条形数据
 - en: Conclusions
+  id: totrans-223
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter deals with financial time series, probably the most importat data
     type in the financial field. `pandas` is a powerful package to deal with such
     data sets, allowing not only for efficient data analyses but also easy visualizations,
     for instance. `pandas` is also helpful in reading such data sets from different
     sources as well as in exporting such data sets to different technical file formats.
     This is illustrated in the subsequent chapter [Chapter 9](ch09.html#input_output).
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涉及金融时间序列，可能是金融领域最重要的数据类型。`pandas`是处理这种数据集的强大工具包，不仅可以进行高效的数据分析，而且还可以轻松进行可视化。`pandas`还有助于从不同来源读取此类数据集，并将此类数据集导出为不同的技术文件格式。这在随后的第九章[第9章](ch09.html#input_output)中进行了说明。
 - en: Further Reading
+  id: totrans-225
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步阅读
 - en: 'Good references in book form for the topics covered in this chapter are:'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖的主题在书籍形式上有很好的参考资料：
 - en: 'McKinney, Wes (2017): *Python for Data Analysis*. 2nd ed., O’Reilly, Beijing
     et al.'
+  id: totrans-227
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'McKinney, Wes (2017): *Python for Data Analysis*. 2nd ed., O’Reilly, 北京等地.'
 - en: 'VanderPlas, Jake (2016): *Python Data Science Handbook*. O’Reilly, Beijing
     et al.'
+  id: totrans-228
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'VanderPlas, Jake (2016): *Python Data Science Handbook*. O’Reilly, 北京等地。'
 - en: ^([1](ch08.html#idm140277664362592-marker)) The file contains end-of-day (EOD)
     data for different financial instruments as retrieved from the Thomson Reuters
     Eikon Data API.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch08.html#idm140277664362592-marker)) 该文件包含了从汤姆森路透Eikon数据API检索的不同金融工具的每日结束数据（EOD数据）。
 - en: ^([2](ch08.html#idm140277661798016-marker)) One of the advantages is additivity
     over time which does not hold true for simple percentage changes/returns.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch08.html#idm140277661798016-marker)) 其中一个优点是随时间的可加性，这对于简单的百分比变化/回报并不成立。
 - en: ^([3](ch08.html#idm140277661032464-marker)) *Foresight bias* — or, in its stongest
     form, *perfect foresight* — means that at some point in the financial analysis,
     data is used that only becomes availble at a later point. The result might be
     "`too good`" results, for example, when backtesting a trading strategy.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch08.html#idm140277661032464-marker)) *预见偏见* ——或者，在其最强形式下，*完美预见* ——意味着在金融分析的某个点上使用的数据仅在以后才可用。结果可能是“`太好了`”的结果，例如，在回测交易策略时。
 - en: ^([4](ch08.html#idm140277659509120-marker)) One reasoning behind this is that
     when the stock index comes down — during a crisis, for instance — trading volume
     goes up and therewith also the volatility. When the stock index is on the rise,
     investors generally are calm and do not see much incentive to engage in heavy
     trading. In particular, long-only investors then try to ride the trend even further.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch08.html#idm140277659509120-marker)) 其背后的一个推理是，当股指下跌时——例如在危机期间——交易量会上升，因此波动性也会上升。当股指上涨时，投资者通常会保持冷静，并且不怎么有动力进行大量交易。特别是，仅持有多头头寸的投资者会试图进一步跟进趋势。

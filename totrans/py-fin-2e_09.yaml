@@ -1,61 +1,81 @@
 - en: Chapter 9\. Input/Output Operations
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第9章。输入/输出操作
 - en: It is a capital mistake to theorize before one has data.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 在有数据之前进行理论推断是一个大错误。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Sherlock Holmes
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 福尔摩斯
 - en: As a general rule, the majority of data, be it in a finance context or any other
     application area, is stored on hard disk drives (HDDs) or some other form of permanent
     storage device, like solid state disks (SSDs) or hybrid disk drives. Storage capacities
     have been steadily increasing over the years, while costs per storage unit (e.g.,
     per megabyte) have been steadily falling.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为一般规则，无论是在金融环境中还是在其他任何应用程序领域，大多数数据都存储在硬盘驱动器（HDDs）或其他形式的永久存储设备上，如固态硬盘（SSDs）或混合硬盘驱动器。多年来，存储容量一直在稳步增长，而存储单元的成本（例如，每兆字节）一直在稳步下降。
 - en: At the same time, stored data volumes have been increasing at a much faster
     pace than the typical random access memory (RAM) available even in the largest
     machines. This makes it necessary not only to store data to disk for permanent
     storage, but also to compensate for lack of sufficient RAM by swapping data from
     RAM to disk and back.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 与此同时，存储数据的容量增长速度远远快于即使是最大型机器中可用的典型随机访问内存（RAM）。这使得不仅需要将数据存储到磁盘上以进行永久存储，而且需要通过将数据从RAM交换到磁盘，然后再交换回来来弥补RAM不足的情况。
 - en: Input/output (I/O) operations are therefore in general important tasks when
     it comes to finance applications and data-intensive applications in general. Often
     they represent the bottleneck for performance-critical computations, since I/O
     operations cannot in general shuffle data fast enough to the RAM^([1](ch09.html#idm140277658125664))
     and from the RAM to the disk. In a sense, CPUs are often "`starving`" due to slow
     I/O operations.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，在金融应用程序和数据密集型应用程序中，输入/输出（I/O）操作通常是重要的任务。通常，它们代表了性能关键计算的瓶颈，因为I/O操作通常无法将数据快速地从RAM移动到RAM^([1](ch09.html#idm140277658125664))，然后再从RAM移动到磁盘。从某种意义上说，CPU经常由于I/O操作慢而“`饥饿`”。
 - en: 'Although the majority of today’s financial and corporate analytics efforts
     are confronted with big data (e.g., of petascale size), single analytics tasks
     generally use data sub-sets that fall in the mid data category. A study by Microsoft
     Research concludes:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管如今的大部分金融和企业分析工作都面临着大数据（例如，PB级别），但单个分析任务通常使用的数据子集属于中等数据类别。微软研究的一项研究得出了结论：
 - en: Our measurements as well as other recent work shows that the majority of real-world
     analytic jobs process less than 100 GB of input, but popular infrastructures such
     as Hadoop/MapReduce were originally designed for petascale processing.
+  id: totrans-8
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 我们的测量以及其他最近的工作显示，大多数现实世界的分析任务处理的输入量不超过100GB，但流行的基础设施，如Hadoop/MapReduce最初是为PB级处理而设计的。
 - en: ''
+  id: totrans-9
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Appuswamy et al. (2013)
+  id: totrans-10
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Appuswamy等人（2013年）
 - en: In terms of frequency, single financial analytics tasks generally process data
     of not more than a couple of gigabytes (GB) in size—and this is a sweet spot for
     Python and the libraries of its scientific stack, such as `NumPy`, `pandas`, and
@@ -63,223 +83,342 @@
     generally high speeds with today’s CPUs and GPUs. However, the data has to be
     read into RAM and the results have to be written to disk, meanwhile ensuring that
     today’s performance requirements are met.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 就频率而言，单个金融分析任务通常处理不超过几GB大小的数据，并且这是Python及其科学堆栈库（如`NumPy`，`pandas`和`PyTables`）的甜蜜点。这样大小的数据集也可以在内存中进行分析，利用今天的CPU和GPU通常会获得较高的速度。但是，必须将数据读入RAM并将结果写入磁盘，同时确保满足今天的性能要求。
 - en: 'This chapter addresses the following topics:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涉及以下主题：
 - en: '[“Basic I/O with Python”](#io_basic_io)'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“使用Python进行基本I/O”](#io_basic_io)'
 - en: Python has built-in functions to serialize and store any object on disk and
     to read it from disk into RAM; apart from that, Python is strong when it comes
     to working with text files and `SQL` databases. `NumPy` also provides dedicated
     functions for fast binary storage and retrieval of `ndarray` objects.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: Python具有内置函数，可以对任何对象进行序列化并将其存储到磁盘上，然后从磁盘中读取到RAM中；除此之外，在处理文本文件和`SQL`数据库时，Python也很强大。`NumPy`还提供了专用函数，用于快速二进制存储和检索`ndarray`对象。
 - en: '[“I/O with pandas”](#io_pandas)'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“使用pandas进行I/O”](#io_pandas)'
 - en: The `pandas` library provides a plentitude of convenience functions and methods
     to read data stored in different formats (e.g., `CSV`, `JSON`) and to write data
     to files in diverse formats.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`库提供了丰富的便利函数和方法，用于读取存储在不同格式中的数据（例如，`CSV`，`JSON`）并将数据写入不同格式的文件。'
 - en: '[“Fast I/O with PyTables”](#io_pytables)'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“使用PyTables进行快速I/O”](#io_pytables)'
 - en: '`PyTables` uses the [`HDF5`](http://www.hdfgroup.org) standard with hierarchical
     database structure and binary storage to accomplish fast I/O operations for large
     data sets; speed often is only bound by the hardware used.'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PyTables` 使用具有分层数据库结构和二进制存储的 [`HDF5`](http://www.hdfgroup.org) 标准来实现对大数据集的快速
+    I/O 操作；速度通常仅受使用的硬件限制。'
 - en: '[“I/O with TsTables”](#io_tstables)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“TsTables 的 I/O”](#io_tstables)'
 - en: '`TsTables` is a package that builds on top of `PyTables` and allows for fast
     storage and retrieval of time series data.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TsTables` 是一个构建在 `PyTables` 之上的包，允许快速存储和检索时间序列数据。'
 - en: Basic I/O with Python
+  id: totrans-21
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Python 的基本 I/O
 - en: Python itself comes with a multitude of I/O capabilities, some optimized for
     performance, others more for flexibility. In general, however, they are easily
     used in interactive as well as in production settings.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 本身具有多种 I/O 功能，有些针对性能进行了优化，而其他一些则更注重灵活性。然而，总的来说，它们既可以在交互式环境下使用，也可以在生产环境中轻松应用。
 - en: Writing Objects to Disk
+  id: totrans-23
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 将对象写入磁盘
 - en: For later use, for documentation, or for sharing with others, one might want
     to store Python objects on disk. One option is to use the `pickle` module. This
     module can serialize the majority of Python objects. *Serialization* refers to
     the conversion of an object (hierarchy) to a byte stream; *deserialization* is
     the opposite operation.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 以供以后使用、文档化或与他人共享，有人可能想要将 Python 对象存储在磁盘上。一个选项是使用 `pickle` 模块。该模块可以序列化大多数 Python
+    对象。*序列化* 指的是将对象（层次结构）转换为字节流；*反序列化* 是相反的操作。
 - en: 'As usual, some imports and customizations with regard to plotting first:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，首先进行一些与绘图相关的导入和自定义：
 - en: '[PRE0]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'The example that follows works with (pseudo)random data, this time stored in
     a `list` object:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来的示例使用（伪）随机数据，这次存储在 `list` 对象中：
 - en: '[PRE1]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO1-1)'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO1-1)'
 - en: Imports the `pickle` module from the standard library.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 从标准库导入 `pickle` 模块。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO1-2)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO1-2)'
 - en: Import `gauss` to generate normally distributed random numbers.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入 `gauss` 以生成正态分布的随机数。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO1-3)'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO1-3)'
 - en: Creates a larger `list` object with random numbers.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个更大的 `list` 对象，并填充随机数。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO1-4)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO1-4)'
 - en: Specifies the path where to store the data files.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定存储数据文件的路径。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO1-5)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO1-5)'
 - en: Opens a file for writing in binary mode (`wb`).
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 以二进制模式打开文件进行写入（`wb`）。
 - en: 'The two major functions to serialize and deserialize Python objects are `pickle.dump()`,
     for writing objects, and `pickle.load()`, for loading them into the memory:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于序列化和反序列化 Python 对象的两个主要函数是 `pickle.dump()`（用于写入对象）和 `pickle.load()`（用于将对象加载到内存中）：
 - en: '[PRE2]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO2-1)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO2-1)'
 - en: Serializes the object `a` and saves it to the file.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 序列化对象 `a` 并将其保存到文件中。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO2-2)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO2-2)'
 - en: Closes the file.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭文件。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO2-3)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO2-3)'
 - en: Shows the file on disk and its size (Mac/Linux).
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示磁盘上的文件及其大小（Mac/Linux）。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO2-4)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO2-4)'
 - en: Opens the file for reading in binary mode (`rb`).
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 以二进制模式打开文件进行读取（`rb`）。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO2-5)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO2-5)'
 - en: Reads the objects from disk and deserializes it.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 从磁盘读取对象并进行反序列化。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO2-6)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO2-6)'
 - en: Converting `a` and `b` to `ndarrary` objects, `np.allclose()` verifies that
     both contain the same data (numbers).
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 `a` 和 `b` 转换为 `ndarrary` 对象，`np.allclose()` 验证两者包含相同的数据（数字）。
 - en: Storing and retrieving a single object with `pickle` obviously is quite simple.
     What about two objects?
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `pickle` 存储和检索单个对象显然非常简单。那么两个对象呢？
 - en: '[PRE3]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO3-1)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO3-1)'
 - en: Serializes the `ndarray` version of `a` and saves it.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 序列化 `a` 的 `ndarray` 版本并保存。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO3-2)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO3-2)'
 - en: Serializes the squared `ndarray` version of `a` and saves it.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 序列化 `a` 的平方 `ndarray` 版本并保存。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO3-3)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO3-3)'
 - en: The file now has roughly double the size from before.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 文件现在的大小大约是之前的两倍。
 - en: What about reading the two `ndarray` objects back into memory?
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-62
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO4-1)'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: This retrieves the object that was stored *first*.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_input_output_operations_CO4-2)'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: This retrieves the object that was stored *second*.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: 'Obviously, `pickle` stores objects according to the *first in, first out* (FIFO)
     principle. There is one major problem with this: there is no meta-information
     available to the user to know beforehand what is stored in a `pickle` file.'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: 'A sometimes helpful workaround is to not store single objects, but a `dict`
     object containing all the other objects:'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO5-1)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: Stores a `dict` object containing the two `ndarray` objects.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_input_output_operations_CO5-2)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: Retrieves the `dict` objects.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: This approach, however, requires to write and read all objects at once. This
     is a compromise one can probably live with in many circumstances given the higher
     convenience it brings along.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: Reading and Writing Text Files
+  id: totrans-75
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -287,6 +426,7 @@
     and scientific users use Python for exactly this task. With Python you have a
     multitude of options to work with `str` objects, as well as with text files in
     general.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
 - en: Assume the case of quite a large set of data that that shall be shared as a
@@ -294,657 +434,1026 @@
     structure, they are basically plain text files. The following code creates a dummy
     data set as an `ndarray` object, a `DatetimeIndex` object, combines the two and
     stores the data as a CSV text file.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE6]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO6-1)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
 - en: Defines the number of rows for the data set.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_input_output_operations_CO6-2)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
 - en: Creates the `ndarray` object with the random numbers.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](images/3.png)](#co_input_output_operations_CO6-4)'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: Creates a `DatetimeIndex` object of appropriate length (hourly intervals).
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](images/4.png)](#co_input_output_operations_CO6-6)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: Opens a file for writing (`w`).
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](images/5.png)](#co_input_output_operations_CO6-7)'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
 - en: Defines the header row (column labels) and writes it as the first line.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](images/6.png)](#co_input_output_operations_CO6-9)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: The data is combined row-wise …
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](images/7.png)](#co_input_output_operations_CO6-10)'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: … into a `str` objects …
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: '[![8](images/8.png)](#co_input_output_operations_CO6-11)'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: … and written line-by-line (appended to the CSV text file).
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: 'The other way around works quite similarly. First, open the now-existing `CSV`
     file. Second, read its content line by line using the `.readline()` or `.readlines()`
     methods of the `file` object:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE7]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO7-1)'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: Opens the file for reading (`r`).
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_input_output_operations_CO7-2)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: Reads the file contents line-by-line and prints it.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](images/3.png)](#co_input_output_operations_CO7-4)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
 - en: Reads the file contents in a single step …
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](images/4.png)](#co_input_output_operations_CO7-5)'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO7-5)'
 - en: … the result of which is a `list` object with all lines as separate `str` objects.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: … 其结果是一个包含所有行的`list`对象，每行作为单独的`str`对象。
 - en: '`CSV` files are so important and commonplace that there is a `csv` module in
     the Python standard library that simplifies the processing of CSV files. Two helpful
     reader (iterator) objects of the `csv` module either return a `list` object of
     `list` objects or a `list` object of `dict` objects.'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSV`文件如此重要且常见，以至于Python标准库中有一个`csv`模块，简化了CSV文件的处理。`csv`模块的两个有用的读取器（迭代器）对象都返回一个`list`对象的`list`对象，或者一个`list`对象的`dict`对象。'
 - en: '[PRE8]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO8-1)'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO8-1)'
 - en: '`csv.reader()` returns every single line as a `list` object.'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '`csv.reader()`将每一行都返回为一个`list`对象。'
 - en: '[![2](images/2.png)](#co_input_output_operations_CO8-3)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO8-3)'
 - en: '`csv.DictReader()` returns every single line as a `OrderedDict` which is a
     special case of a `dict` object.'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '`csv.DictReader()`将每一行都返回为`OrderedDict`，它是`dict`对象的一种特殊情况。'
 - en: SQL Database
+  id: totrans-111
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: SQL数据库
 - en: Python can work with any kind of `SQL` database and in general also with any
     kind of `NoSQL` database. In this case, `SQL` stands for *structured query language*.
     One `SQL` or *relational* database that is delivered with Python by default is
     [`SQLite3`](http://www.sqlite.org). With it, the basic Python approach to `SQL`
     databases can be easily illustrated:^([2](ch09.html#idm140277655563600))
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: Python可以与任何类型的`SQL`数据库一起工作，并且通常也可以与任何类型的`NoSQL`数据库一起工作。在这种情况下，`SQL`代表*结构化查询语言*。Python默认提供的一个`SQL`或*关系*数据库是[`SQLite3`](http://www.sqlite.org)。借助它，可以轻松地说明Python对`SQL`数据库的基本方法:^([2](ch09.html#idm140277655563600))
 - en: '[PRE9]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO9-1)'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO9-1)'
 - en: Opens a database connection; a file is created if it does not exist.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开数据库连接；如果不存在，则创建一个文件。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO9-2)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO9-2)'
 - en: This is a `SQL` query that creates a table with three columns.^([3](ch09.html#idm140277655097520))
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个创建包含三列的表的`SQL`查询。^([3](ch09.html#idm140277655097520))
 - en: '[![3](images/3.png)](#co_input_output_operations_CO9-3)'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO9-3)'
 - en: The query is executed …
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 执行查询…
 - en: '[![4](images/4.png)](#co_input_output_operations_CO9-4)'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO9-4)'
 - en: … and the changes are committed.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: … 并提交更改。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO9-5)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO9-5)'
 - en: This defines a short alias for the `con.execute()` method.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 这为`con.execute()`方法定义了一个简短的别名。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO9-6)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO9-6)'
 - en: This fetches meta information about the database, showing the just created table
     as the single object.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 这获取关于数据库的元信息，将刚创建的表显示为单个对象。
 - en: 'Now that there is a database file with a table, this table can be populated
     with data. Each row consists of a `datetime` object and two `float` objects:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在有了一个带有表的数据库文件，可以使用数据填充该表。每行由一个`datetime`对象和两个`float`对象组成：
 - en: '[PRE10]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO10-1)'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO10-1)'
 - en: Writes as single row (or record) to the `numbs` table.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 将单行（或记录）写入`numbs`表。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO10-2)'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO10-2)'
 - en: Creates a larger dummy data set as `ndarray` object.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个较大的虚拟数据集作为`ndarray`对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO10-3)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO10-3)'
 - en: Iterates over the rows of the `ndarray` object.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 迭代`ndarray`对象的行。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO10-4)'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO10-4)'
 - en: Retrieves a number of rows from the table.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 从表中检索多行。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO10-5)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO10-5)'
 - en: The same but with a condition on the values in the `no1` column.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 相同但在`no1`列的值上有条件。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO10-6)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO10-6)'
 - en: Defines a pointer object …
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义一个指针对象…
 - en: '[![7](images/7.png)](#co_input_output_operations_CO10-7)'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_input_output_operations_CO10-7)'
 - en: … that behaves like a generator object.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: …它的行为类似于生成器对象。
 - en: '[![8](images/8.png)](#co_input_output_operations_CO10-8)'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](images/8.png)](#co_input_output_operations_CO10-8)'
 - en: '`.fetchall()` retrieves all the remaining rows.'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.fetchall()`检索所有剩余的行。'
 - en: Finally, one might want to delete the table object in the database if not required
     anymore.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，如果不再需要，可能会想要删除数据库中的表对象。
 - en: '[PRE11]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO11-1)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO11-1)'
 - en: Removes the table from the database.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 从数据库中删除表格。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO11-2)'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO11-2)'
 - en: There are no table objects left after this operation.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 此操作后不再存在表格对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO11-3)'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO11-3)'
 - en: Closes the database connection.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭数据库连接。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO11-4)'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO11-4)'
 - en: Removes the database file from disk.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 从磁盘中删除数据库文件。
 - en: '`SQL` databases are a rather broad topic; indeed, too broad and complex to
     be covered in any significant way in this chapter. The basic messages are:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SQL`数据库是一个相当广泛的主题；事实上，在本章中无法对其进行任何重要的涵盖，因为它太广泛且复杂了。基本信息如下：'
 - en: Python integrates well with almost any database technology.
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Python与几乎所有的数据库技术都能很好地集成。
 - en: The basic `SQL` syntax is mainly determined by the database in use; the rest
     is, as we say, `Pythonic`.
+  id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基本的`SQL`语法主要由所使用的数据库确定；其余部分如我们所说，都是`Pythonic`的。
 - en: A few more examples based on `SQLite3` follow further below.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来会有几个基于`SQLite3`的示例。
 - en: Writing and Reading NumPy Arrays
+  id: totrans-158
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 写入和读取NumPy数组
 - en: '`NumPy` itself has functions to write and read `ndarray` objects in a convenient
     and performant fashion. This saves effort in some circumstances, such as when
     you have to convert `NumPy` `dtype` objects into specific database types (e.g.,
     for `SQLite3`). To illustrate that `NumPy` can sometimes be an efficient replacement
     for a `SQL`-based approach, the following code replicates the example from before
     with `NumPy`.'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '`NumPy`本身有函数可以以方便和高效的方式写入和读取`ndarray`对象。在某些情况下，这节省了很多工作，比如当你必须将`NumPy`的`dtype`对象转换为特定的数据库类型时（例如对于`SQLite3`）。为了说明`NumPy`有时可以有效替代基于`SQL`的方法，以下代码复制了之前使用`NumPy`的示例。'
 - en: Instead of `pandas`, the code uses the `np.arange()` function of `NumPy` to
     generate a `ndarray` object with `datetime` objects stored:^([4](ch09.html#idm140277654035024))
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码使用`NumPy`的`np.arange()`函数生成一个存储了`datetime`对象的`ndarray`对象，而不是使用`pandas`：^([4](ch09.html#idm140277654035024))
 - en: '[PRE12]'
+  id: totrans-161
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO12-1)'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO12-1)'
 - en: Creates an `ndarray` object with `datetime` as `dtype`.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个带有`datetime`作为`dtype`的`ndarray`对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO12-2)'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO12-2)'
 - en: The special `dtype` object for the record array.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于记录数组的特殊`dtype`对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO12-3)'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO12-3)'
 - en: The `ndarray` objects instantiated with the special `dtype`.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 用特殊`dtype`实例化的`ndarray`对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO12-4)'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO12-4)'
 - en: This populates the `Date` column.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将填充`Date`列。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO12-5)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO12-5)'
 - en: The dummy data sets …
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 假数据集……
 - en: '[![6](images/6.png)](#co_input_output_operations_CO12-6)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO12-6)'
 - en: … which populates the `No1` and `No2` columns.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: …这填充了`No1`和`No2`列。
 - en: '[![7](images/7.png)](#co_input_output_operations_CO12-8)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_input_output_operations_CO12-8)'
 - en: The size of the record array in bytes.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 记录数组的大小（以字节为单位）。
 - en: Saving of `ndarray` objects is highly optimized and therefore quite fast. Almost
     60 MB of data take about 0.1 seconds to save on disk (here using a SSD). A larger
     `ndarray` object with 480 MB in size takes about 1 second to save on disk.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 保存`ndarray`对象是高度优化的，因此非常快速。大约 60 MB 的数据在磁盘上保存约 0.1 秒（这里使用 SSD）。大小为 480 MB 的较大`ndarray`对象在磁盘上保存大约需要
+    1 秒钟。
 - en: '[PRE13]'
+  id: totrans-177
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO13-1)'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO13-1)'
 - en: This saves the record `ndarray` object on disk.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将记录的`ndarray`对象保存到磁盘上。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO13-2)'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO13-2)'
 - en: The size on disk is hardly larger than in-memory (due to binary storage).
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 磁盘上的大小几乎与内存中的大小相同（由于二进制存储）。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO13-3)'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO13-3)'
 - en: This loads the record `ndarray` object from disk.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会从磁盘加载记录的`ndarray`对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO13-4)'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO13-4)'
 - en: A larger regular `ndarray` object.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个较大的普通`ndarray`对象。
 - en: These examples illustrate that writing to disk in this case is mainly hardware-bound,
     since 480 MB/s represents roughly the advertised writing speed of standard SSDs
     at the time of this writing (512 MB/s).
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些示例说明，在这种情况下，写入磁盘主要受硬件限制，因为 480 MB/s 大致代表了标准 SSD 在撰写本文时的宣传写入速度（512 MB/s）。
 - en: 'In any case, you can expect that this form of data storage and retrieval is
     much faster as compared to `SQL` databases or using the standard `pickle` library
     for serialization. There are two reasons: first, the data is mainly numeric; second,
     `NumPy` implements binary storage which reduces the overhead almost to zero. Of
     course, you do not have the functionality of a `SQL` database available with this
     approach, but `PyTables` will help in this regard, as subsequent sections show.'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论如何，可以预期，与使用标准 `SQL` 数据库或使用标准 `pickle` 库进行序列化相比，这种形式的数据存储和检索速度要快得多。有两个原因：首先，数据主要是数字；其次，`NumPy`
+    实现了二进制存储，几乎将开销降低到零。当然，使用这种方法不具备 `SQL` 数据库的功能，但是随后的部分将显示 `PyTables` 将在这方面提供帮助。
 - en: I/O with pandas
+  id: totrans-188
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '`pandas` 中的 I/O'
 - en: 'One of the major strengths of `pandas` is that it can read and write different
     data formats natively, among others, including:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 的一个主要优势之一是它可以原生地读取和写入不同的数据格式，其中包括：'
 - en: '`CSV` (comma-separated value)'
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`CSV`（逗号分隔值）'
 - en: '`SQL` (`Structured Query Language`)'
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`SQL`（结构化查询语言）'
 - en: '`XLS/XSLX` (Microsoft `Excel` files)'
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`XLS/XSLX`（微软 `Excel` 文件）'
 - en: '`JSON` (`JavaScript` `Object Notation`)'
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`JSON`（`JavaScript` `对象表示法`）'
 - en: '`HTML` (`HyperText Markup Language`)'
+  id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`HTML`（超文本标记语言）'
 - en: '[Table 9-1](#io_pandas_table) lists supported formats and the corresponding
     import and export functions/methods of `pandas` and the `DataFrame` class, respectively.
     The parameters that the import functions take are listed and described in [Link
     to Come] (depending on the functions, some other conventions might apply).'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 9-1](#io_pandas_table) 列出了 `pandas` 和 `DataFrame` 类的支持格式以及相应的导入和导出函数/方法。导入函数所接受的参数在
+    [Link to Come] 中列出并描述（根据函数，可能适用其他约定）。'
 - en: Table 9-1\. Import-export functions and methods
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 9-1\. 导入导出函数和方法
 - en: '| Format | Input | Output | Remark |'
+  id: totrans-197
   prefs: []
   type: TYPE_TB
+  zh: '| 格式 | 输入 | 输出 | 备注 |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-198
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `CSV` | `pd.read_csv()` | `.to_csv()` | Text file |'
+  id: totrans-199
   prefs: []
   type: TYPE_TB
+  zh: '| `CSV` | `pd.read_csv()` | `.to_csv()` | 文本文件 |'
 - en: '| `XLS/XLSX` | `pd.read_excel()` | `.to_excel()` | Spreadsheet |'
+  id: totrans-200
   prefs: []
   type: TYPE_TB
+  zh: '| `XLS/XLSX` | `pd.read_excel()` | `.to_excel()` | 电子表格 |'
 - en: '| `HDF` | `pd.read_hdf()` | `.to_hdf()` | `HDF5` database |'
+  id: totrans-201
   prefs: []
   type: TYPE_TB
+  zh: '| `HDF` | `pd.read_hdf()` | `.to_hdf()` | `HDF5` 数据库 |'
 - en: '| `SQL` | `pd.read_sql()` | `.to_sql()` | `SQL` table |'
+  id: totrans-202
   prefs: []
   type: TYPE_TB
+  zh: '| `SQL` | `pd.read_sql()` | `.to_sql()` | `SQL` 表 |'
 - en: '| `JSON` | `pd.read_json()` | `.to_json()` | `JavaScript Object Notation` |'
+  id: totrans-203
   prefs: []
   type: TYPE_TB
+  zh: '| `JSON` | `pd.read_json()` | `.to_json()` | `JavaScript 对象表示法` |'
 - en: '| `MSGPACK` | `pd.read_msgpack()` | `.to_msgpack()` | Portable binary format
     |'
+  id: totrans-204
   prefs: []
   type: TYPE_TB
+  zh: '| `MSGPACK` | `pd.read_msgpack()` | `.to_msgpack()` | 可移植二进制格式 |'
 - en: '| `HTML` | `pd.read_html()` | `.to_html()` | `HTML` code |'
+  id: totrans-205
   prefs: []
   type: TYPE_TB
+  zh: '| `HTML` | `pd.read_html()` | `.to_html()` | `HTML` 代码 |'
 - en: '| `GBQ` | `pd.read_gbq()` | `.to_gbq()` | `Google Big Query` format |'
+  id: totrans-206
   prefs: []
   type: TYPE_TB
+  zh: '| `GBQ` | `pd.read_gbq()` | `.to_gbq()` | `Google Big Query` 格式 |'
 - en: '| `DTA` | `pd.read_stata()` | `.to_stata()` | Formats 104, 105, 108, 113-115,
     117 |'
+  id: totrans-207
   prefs: []
   type: TYPE_TB
+  zh: '| `DTA` | `pd.read_stata()` | `.to_stata()` | 格式 104, 105, 108, 113-115, 117
+    |'
 - en: '| Any | `pd.read_clipboard()` | `.to_clipboard()` | E.g., from `HTML` page
     |'
+  id: totrans-208
   prefs: []
   type: TYPE_TB
+  zh: '| 任何 | `pd.read_clipboard()` | `.to_clipboard()` | 例如，从 `HTML` 页面 |'
 - en: '| Any | `pd.read_pickle()` | `.to_pickle()` | (Structured) Python object |'
+  id: totrans-209
   prefs: []
   type: TYPE_TB
+  zh: '| 任何 | `pd.read_pickle()` | `.to_pickle()` | （结构化的）Python 对象 |'
 - en: 'The test case is again a larger set of `float` objects:'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试案例再次是一个较大的 `float` 对象集合：
 - en: '[PRE14]'
+  id: totrans-211
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: To this end, we will also revisit `SQLite3` and will compare the performance
     with alternative formats using `pandas`.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 为此，我们还将重新审视 `SQLite3` 并将其性能与使用 `pandas` 的替代格式进行比较。
 - en: SQL Database
+  id: totrans-213
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: SQL 数据库
 - en: All that follows with regard to `SQLite3` should be familiar by now.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 至于 `SQLite3` 的一切，现在应该都很熟悉了。
 - en: '[PRE15]'
+  id: totrans-215
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO14-1)'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO14-1)'
 - en: A table with five columns for real numbers (`float` objects).
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 一张具有五列实数（`float` 对象）的表格。
 - en: This time, the `.executemany()` method can be applied since the data is available
     in a single `ndarray` object. Reading and working with the data works as before.
     Query results can also be visualized easily (see [Figure 9-1](#io_plot_01)).
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次，可以应用 `.executemany()` 方法，因为数据在一个单一的 `ndarray` 对象中可用。读取和处理数据与以前一样工作。查询结果也可以轻松可视化（参见
+    [图 9-1](#io_plot_01)）。
 - en: '[PRE16]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO15-1)'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO15-1)'
 - en: Inserts the whole data set in a single step into the table.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 将整个数据集一次性插入表中。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO15-2)'
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO15-2)'
 - en: Retrieves all the rows from the table in a single step.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 以单步操作从表中检索所有行。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO15-3)'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO15-3)'
 - en: Retrieves a selection of the rows and transforms it to a `ndarray` object.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索行的选择并将其转换为 `ndarray` 对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO15-4)'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO15-4)'
 - en: Plots a sub-set of the query result.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制查询结果的子集。
 - en: '![io 01](images/io_01.png)'
+  id: totrans-228
   prefs: []
   type: TYPE_IMG
+  zh: '![io 01](images/io_01.png)'
 - en: Figure 9-1\. Scatter plot of the query result (selection)
+  id: totrans-229
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-1\. 查询结果的散点图（选择）
 - en: From SQL to pandas
+  id: totrans-230
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 从 SQL 到 pandas
 - en: A generally more efficient approach, however, is the reading of either whole
     tables or query results with `pandas`. When you are able to read a whole table
     into memory, analytical queries can generally be executed much faster than when
     using the `SQL` disk-based approach.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个通常更高效的方法，然而，是使用 `pandas` 读取整个表或查询结果。当您能够将整个表读入内存时，分析查询通常可以比使用 `SQL` 基于磁盘的方法执行得快得多。
 - en: 'Reading the whole table with `pandas` takes roughly the same amount of time
     as reading it into a `NumPy` `ndarray` object. There as here, the bottleneck is
     the `SQL` database:'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `pandas` 读取整个表与将其读入 `NumPy` `ndarray` 对象大致需要相同的时间。在这里和那里，瓶颈是 `SQL` 数据库。
 - en: '[PRE17]'
+  id: totrans-233
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO16-1)'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO16-1)'
 - en: Reads all rows of the table into the `DataFrame` object named `data`.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 将表的所有行读入名为 `data` 的 `DataFrame` 对象中。
 - en: The data is now in-memory. This allows for much faster analytics. The speed-up
     is often an order of magnitude or more. `pandas` can also master more complex
     queries, although it is neither meant nor able to replace `SQL` databases when
     it comes to complex, relational data structures. The result of the query with
     multiple conditions combined is shown in [Figure 9-2](#io_plot_02).
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据现在在内存中。这样可以进行更快的分析。加速通常是一个数量级或更多。`pandas` 也可以处理更复杂的查询，尽管它既不意味着也不能替代 `SQL`
+    数据库，当涉及复杂的关系数据结构时。多个条件组合的查询结果显示在 [图 9-2](#io_plot_02) 中。
 - en: '[PRE18]'
+  id: totrans-237
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO17-1)'
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO17-1)'
 - en: Two conditions combined logically.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个条件逻辑上组合。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO17-2)'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO17-2)'
 - en: Four conditions combined logically.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 逻辑上组合了四个条件。
 - en: '![io 02](images/io_02.png)'
+  id: totrans-242
   prefs: []
   type: TYPE_IMG
+  zh: '![io 02](images/io_02.png)'
 - en: Figure 9-2\. Scatter plot of the query result (selection)
+  id: totrans-243
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-2\. 查询结果的散点图（选择）
 - en: As expected, using the in-memory analytics capabilities of `pandas` leads to
     a significant speedup, provided `pandas` is able to replicate the respective `SQL`
     statement.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 预期地，使用 `pandas` 的内存分析能力会显著加速，只要 `pandas` 能够复制相应的 `SQL` 语句。
 - en: 'This is not the only advantage of using `pandas` since `pandas`, among others,
     is tightly integrated with `PyTables` — the topic of the subsequent section. Here,
     it suffices to know that the combination of both can speed up I/O operations considerably.
     This is shown in the following:'
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `pandas` 的另一个优点不仅仅是这个，因为 `pandas` 与 `PyTables` 等紧密集成 — 后续部分的主题。在这里，知道它们的组合可以显著加速
+    I/O 操作就足够了。如下所示：
 - en: '[PRE19]'
+  id: totrans-246
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO18-1)'
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO18-1)'
 - en: Opens a `HDF5` database file for writing; in `pandas` a `HDFStore` object is
     created.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开 `HDF5` 数据库文件进行写入；在 `pandas` 中创建一个 `HDFStore` 对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO18-2)'
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO18-2)'
 - en: The complete `DataFrame` object is stored in the database file via binary storage.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 完整的 `DataFrame` 对象通过二进制存储存储在数据库文件中。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO18-3)'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO18-3)'
 - en: The `HDFStore` object information.
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: '`HDFStore` 对象的信息。'
 - en: '[![4](images/4.png)](#co_input_output_operations_CO18-4)'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO18-4)'
 - en: The database file is closed.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭数据库文件。
 - en: 'The whole `DataFrame` with all the data from the original `SQL` table is written
     much faster when compared to the same procedure with `SQLite3`. Reading is even
     faster:'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 与使用 `SQLite3` 相比，整个来自原始 `SQL` 表的所有数据的 `DataFrame` 写入速度快得多。读取甚至更快：
 - en: '[PRE20]'
+  id: totrans-256
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO19-1)'
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO19-1)'
 - en: Opens the `HDF5` database file for reading.
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开 `HDF5` 数据库文件进行读取。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO19-2)'
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO19-2)'
 - en: The `DataFrame` is read and stored in-memory as `data_`.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame` 被读取并存储在内存中作为 `data_`。'
 - en: '[![3](images/3.png)](#co_input_output_operations_CO19-3)'
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO19-3)'
 - en: The database file is closed.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭数据库文件。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO19-4)'
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO19-4)'
 - en: The two `DataFrame` objects are not the same.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个 `DataFrame` 对象不相同。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO19-5)'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO19-5)'
 - en: However, they contain now the same data.
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，它们现在包含相同的数据。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO19-7)'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO19-7)'
 - en: Binary storage generally comes with less size overhead compared to `SQL` tables,
     for instance.
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 `SQL` 表相比，二进制存储通常具有更小的大小开销。
 - en: Data as CSV File
+  id: totrans-269
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: CSV 文件中的数据
 - en: 'One of the most widely used formats to exchange financial data is the `CSV`
     format. Although it is not really standardized, it can be processed by any platform
     and the vast majority of applications concerned with data and financial analytics.
@@ -952,81 +1461,125 @@
     with standard Python functionality (see [“Reading and Writing Text Files”](#reading_and_writing_text_files)).
     `pandas` makes this whole procedure a bit more convenient, the code more concise,
     and the execution in general faster (see also [Figure 9-3](#io_plot_03)):'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 交换金融数据最广泛使用的格式之一是 `CSV` 格式。尽管它并没有真正标准化，但它可以被任何平台处理，并且绝大多数与数据和金融分析有关的应用程序都可以处理。前一节展示了如何使用标准
+    Python 功能将数据写入 `CSV` 文件并从 `CSV` 文件中读取数据（参见[“读写文本文件”](#reading_and_writing_text_files)）。`pandas`
+    使得整个过程更加方便，代码更加简洁，并且总体执行更快（还可以参见[图 9-3](#io_plot_03)）：
 - en: '[PRE21]'
+  id: totrans-271
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO20-1)'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO20-1)'
 - en: The `.to_csv()` method writes the `DataFrame` data to disk in `CSV` format.
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.to_csv()` 方法将 `DataFrame` 数据以 `CSV` 格式写入磁盘。'
 - en: '[![2](images/2.png)](#co_input_output_operations_CO20-2)'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO20-2)'
 - en: The `pd.read_csv()` then reads it again back into memory as a new `DataFrame`
     object.
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后 `pd.read_csv()` 以新的 `DataFrame` 对象的形式将其再次读入内存。
 - en: '![io 03](images/io_03.png)'
+  id: totrans-276
   prefs: []
   type: TYPE_IMG
+  zh: '![io 03](images/io_03.png)'
 - en: Figure 9-3\. Histograms for selected columns
+  id: totrans-277
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-3\. 选定列的直方图
 - en: Data as Excel File
+  id: totrans-278
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Excel 文件中的数据
 - en: 'Although working with `Excel` spreadsheets is the topic of a later chapter,
     the following code briefly demonstrate how `pandas` can write data in `Excel`
     format and read data from `Excel` spreadsheets. We restrict the data set to 100,000
     rows in this case:'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管处理 `Excel` 电子表格是本书的后续章节的主题，但以下代码简要地演示了 `pandas` 如何以 `Excel` 格式写入数据并从 `Excel`
+    电子表格中读取数据。在这种情况下，我们将数据集限制为 100,000 行：
 - en: '[PRE22]'
+  id: totrans-280
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO21-1)'
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO21-1)'
 - en: The `.to_excel()` method writes the `DataFrame` data to disk in `XLSX` format.
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.to_excel()` 方法将 `DataFrame` 数据以 `XLSX` 格式写入磁盘。'
 - en: '[![2](images/2.png)](#co_input_output_operations_CO21-2)'
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO21-2)'
 - en: The `pd.read_excel()` then reads it again back into memory as a new `DataFrame`
     object, also specifying the sheet from which to read.
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后 `pd.read_excel()` 以新的 `DataFrame` 对象的形式将其再次读入内存，同时指定要从中读取的工作表。
 - en: '![io 04](images/io_04.png)'
+  id: totrans-285
   prefs: []
   type: TYPE_IMG
+  zh: '![io 04](images/io_04.png)'
 - en: Figure 9-4\. Line plots for all columns
+  id: totrans-286
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-4\. 所有列的线性图
 - en: Generating the `Excel` spreadsheet file with a smaller subset of the data takes
     quite a while. This illustrates what kind of overhead the spreadsheet structure
     brings along with it.
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成包含较小数据子集的 `Excel` 电子表格文件需要相当长的时间。这说明了电子表格结构所带来的额外开销。
 - en: Inspection of the generated files reveals that the `DataFrame` with `HDFStore`
     combination is the most compact alternative (using compression, as described later
     in this chapter, further increases the benefits). The same amount of data as a
     `CSV` file—i.e., as a text file—is somewhat larger in size. This is one reason
     for the slower performance when working with `CSV` files, the other being the
     very fact that they are "`only`" general text files.
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: 对生成的文件进行检查后发现，`DataFrame` 与 `HDFStore` 结合是最紧凑的选择（使用压缩，正如本章后面所述，进一步增加了优势）。与文本文件相比，作为
+    `CSV` 文件的相同数量的数据的大小要大一些。这是处理 `CSV` 文件时性能较慢的另一个原因，另一个原因是它们只是“普通”文本文件。
 - en: Fast I/O with PyTables
+  id: totrans-289
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用 PyTables 进行快速 I/O
 - en: '`PyTables` is a Python binding for the `HDF5` database standard (see [*http://www.hdfgroup.org*](http://www.hdfgroup.org)).
     It is specifically designed to optimize the performance of I/O operations and
     make best use of the available hardware. The library’s import name is `tables`.
@@ -1036,302 +1589,486 @@
     can have many tables, and it supports compression and indexing and also nontrivial
     queries on tables. In addition, it can store `NumPy` arrays efficiently and has
     its own flavor of array-like data structures.'
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PyTables`是`HDF5`数据库标准的Python绑定（参见[*http://www.hdfgroup.org*](http://www.hdfgroup.org)）。它专门设计用于优化I/O操作的性能，并充分利用可用的硬件。库的导入名称是`tables`。与`pandas`类似，当涉及到内存分析时，`PyTables`既不能也不意味着是对`SQL`数据库的完全替代。然而，它带来了一些进一步缩小差距的特性。例如，一个`PyTables`数据库可以有很多表，它支持压缩和索引以及对表的非平凡查询。此外，它可以有效地存储`NumPy`数组，并具有其自己的数组数据结构的风格。'
 - en: 'To begin with, some imports:'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，一些导入：
 - en: '[PRE23]'
+  id: totrans-292
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO22-1)'
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO22-1)'
 - en: The package name is `PyTables`, the import name is `tables`.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 包名是`PyTables`，导入名称是`tables`。
 - en: Working with Tables
+  id: totrans-295
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 与表格一起工作
 - en: '`PyTables` provides a file-based database format, similar to `SQLite3`.^([5](ch09.html#idm140277650901008)).
     The following opens a database file and creates a table:'
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PyTables`提供了一种基于文件的数据库格式，类似于`SQLite3`。^([5](ch09.html#idm140277650901008))。以下是打开数据库文件并创建表格的示例：'
 - en: '[PRE24]'
+  id: totrans-297
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO23-1)'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO23-1)'
 - en: Opens the database file in `HDF5` binary storage format.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 以`HDF5`二进制存储格式打开数据库文件。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO23-2)'
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO23-2)'
 - en: The `date` column for date-time information (as a `str` object).
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于日期时间信息的`date`列（作为`str`对象）。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO23-3)'
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO23-3)'
 - en: The two columns to store `int` objects.
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于存储`int`对象的两列。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO23-5)'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO23-5)'
 - en: The two columns to store `float` objects.
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于存储`float`对象的两列。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO23-7)'
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO23-7)'
 - en: Via `Filters` objects, compression levels can be specified, among others.
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`Filters`对象，可以指定压缩级别等。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO23-8)'
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO23-8)'
 - en: The node (path) and technical name of the table.
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: 表的节点（路径）和技术名称。
 - en: '[![7](images/7.png)](#co_input_output_operations_CO23-9)'
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_input_output_operations_CO23-9)'
 - en: The description of the row data structure.
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: 行数据结构的描述。
 - en: '[![8](images/8.png)](#co_input_output_operations_CO23-10)'
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](images/8.png)](#co_input_output_operations_CO23-10)'
 - en: The name (title) of the table.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: 表的名称（标题）。
 - en: '[![9](images/9.png)](#co_input_output_operations_CO23-11)'
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](images/9.png)](#co_input_output_operations_CO23-11)'
 - en: The expected number of rows; allows for optimizations.
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
+  zh: 预期的行数；允许进行优化。
 - en: '[![10](images/10.png)](#co_input_output_operations_CO23-12)'
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](images/10.png)](#co_input_output_operations_CO23-12)'
 - en: The `Filters` object to be used for the table.
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于表格的`Filters`对象。
 - en: To populate the table with numerical data, two `ndarray` objects with random
     numbers are generated. One with random integers, the other one with random floating
     point numbers. The population of the table happens via a simple Python loop.
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了用数字数据填充表格，生成两个具有随机数字的`ndarray`对象。一个是随机整数，另一个是随机浮点数。通过一个简单的Python循环来填充表格。
 - en: '[PRE25]'
+  id: totrans-319
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO24-1)'
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO24-1)'
 - en: A pointer object is created.
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建了一个指针对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO24-2)'
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO24-2)'
 - en: The `ndarray` object with the random `int` objects.
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有随机`int`对象的`ndarray`对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO24-3)'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO24-3)'
 - en: The `ndarray` object with the random `float` objects.
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有随机`float`对象的`ndarray`对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO24-4)'
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO24-4)'
 - en: The `datetime` object, the two `int` and two `float` objects are written row-by-row.
+  id: totrans-327
   prefs: []
   type: TYPE_NORMAL
+  zh: '`datetime`对象，两个`int`和两个`float`对象被逐行写入。'
 - en: '[![5](images/5.png)](#co_input_output_operations_CO24-9)'
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO24-9)'
 - en: The new row is appended.
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 新行被附加。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO24-10)'
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO24-10)'
 - en: All written rows are flushed, i.e. committed as permanent changes.
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有写入的行都会被刷新，即作为永久更改提交。
 - en: '[![7](images/7.png)](#co_input_output_operations_CO24-11)'
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_input_output_operations_CO24-11)'
 - en: The changes are reflected in the `Table` object description.
+  id: totrans-333
   prefs: []
   type: TYPE_NORMAL
+  zh: 更改反映在 `Table` 对象描述中。
 - en: 'The Python loop is quite slow in this case. There is a more performant and
     Pythonic way to accomplish the same result, by the use of `NumPy` structured arrays.
     Equipped with the complete data set stored in a structured array, the creation
     of the table boils down to a single line of code. Note that the row description
     is not needed anymore; `PyTables` uses the `dtype` object of the structured array
     to infer the data types instead:'
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，Python 循环相当慢。 有一种更高效和 Pythonic 的方法可以实现相同的结果，即使用 `NumPy` 结构化数组。 使用存储在结构化数组中的完整数据集，表的创建归结为一行代码。
+    请注意，不再需要行描述; `PyTables` 使用结构化数组的 `dtype` 对象来推断数据类型：
 - en: '[PRE26]'
+  id: totrans-335
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO25-1)'
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO25-1)'
 - en: Defines the special `dtype` object.
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义特殊的 `dtype` 对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO25-2)'
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO25-2)'
 - en: Creates the structured array with zeros (and empty strings).
+  id: totrans-339
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用零（和空字符串）创建结构化数组。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO25-3)'
+  id: totrans-340
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO25-3)'
 - en: A few records from the `ndarray` object.
+  id: totrans-341
   prefs: []
   type: TYPE_NORMAL
+  zh: 来自 `ndarray` 对象的几条记录。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO25-4)'
+  id: totrans-342
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO25-4)'
 - en: The columns of the `ndarray` object are populated at once.
+  id: totrans-343
   prefs: []
   type: TYPE_NORMAL
+  zh: '`ndarray` 对象的列一次性填充。'
 - en: '[![5](images/5.png)](#co_input_output_operations_CO25-9)'
+  id: totrans-344
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO25-9)'
 - en: This creates the `Table` object *and* populates it with the data.
+  id: totrans-345
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将创建 `Table` 对象，并用数据填充它。
 - en: This approach is an order of magnitude faster, has more concise code and achieves
     the same result.
+  id: totrans-346
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法快了一个数量级，代码更简洁，且实现了相同的结果。
 - en: '[PRE27]'
+  id: totrans-347
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO26-1)'
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO26-1)'
 - en: The description of the `File` object with the two `Table` objects.
+  id: totrans-349
   prefs: []
   type: TYPE_NORMAL
+  zh: 带有两个 `Table` 对象的 `File` 对象的描述。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO26-2)'
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO26-2)'
 - en: This removes the second `Table` object with the redundant data.
+  id: totrans-351
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会删除具有冗余数据的第二个 `Table` 对象。
 - en: 'The `Table` object behaves pretty similar to `NumPy` structured `ndarray` objects
     in most cases (see also [Figure 9-5](#io_plot_05)):'
+  id: totrans-352
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Table` 对象在大多数情况下的行为与 `NumPy` 结构化的 `ndarray` 对象非常相似（另见 [图 9-5](#io_plot_05)）：'
 - en: '[PRE28]'
+  id: totrans-353
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO27-1)'
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO27-1)'
 - en: Selecting rows via indexing.
+  id: totrans-355
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过索引选择行。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO27-2)'
+  id: totrans-356
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO27-2)'
 - en: Selecting columns values only via indexing.
+  id: totrans-357
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅通过索引选择列值。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO27-3)'
+  id: totrans-358
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO27-3)'
 - en: Applying `NumPy` universal functions.
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用 `NumPy` 通用函数。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO27-5)'
+  id: totrans-360
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO27-5)'
 - en: Plotting a column from the `Table` object.
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: 从 `Table` 对象绘制列。
 - en: '![io 05](images/io_05.png)'
+  id: totrans-362
   prefs: []
   type: TYPE_IMG
+  zh: '![io 05](images/io_05.png)'
 - en: Figure 9-5\. Histogram of column data
+  id: totrans-363
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-5\. 列数据的直方图
 - en: '`PyTables` also provides flexible tools to query data via typical `SQL`-like
     statements, as in the following example (the result of which is illustrated in
     [Figure 9-6](#io_plot_06); compare it with [Figure 9-2](#io_plot_02), based on
     a `pandas` query):'
+  id: totrans-364
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PyTables` 还提供了通过典型的 `SQL`-like 语句查询数据的灵活工具，如下例所示（其结果如 [图 9-6](#io_plot_06)
+    所示；与 [图 9-2](#io_plot_02) 相比，基于 `pandas` 查询）：'
 - en: '[PRE29]'
+  id: totrans-365
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO28-1)'
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO28-1)'
 - en: The query as a `str` object, four conditions combined by logical operators.
+  id: totrans-367
   prefs: []
   type: TYPE_NORMAL
+  zh: 查询作为 `str` 对象，由逻辑运算符组合的四个条件。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO28-2)'
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO28-2)'
 - en: The iterator object based on the query.
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于查询的迭代器对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO28-3)'
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO28-3)'
 - en: The rows resulting from the query are collected via a list comprehension …
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过列表推导收集查询结果的行…
 - en: '[![4](images/4.png)](#co_input_output_operations_CO28-4)'
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO28-4)'
 - en: … and transformed to a `ndarray` object.
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: … 并转换为 `ndarray` 对象。
 - en: '![io 06](images/io_06.png)'
+  id: totrans-374
   prefs: []
   type: TYPE_IMG
+  zh: '![io 06](images/io_06.png)'
 - en: Figure 9-6\. Histogram of column data
+  id: totrans-375
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-6\. 列数据的直方图
 - en: Fast Queries
+  id: totrans-376
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 快速查询
 - en: Both `pandas` and `PyTables` are able to process relatively complex, `SQL`-like
     queries and selections. They are both optimized for speed when it comes to such
     operations. However, there are of course limits to these approaches compared to
     relational databases. But for most numerical and financial applications they are
     often not decisive.
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`和`PyTables`都能够处理相对复杂的、类似`SQL`的查询和选择。它们在执行此类操作时都进行了速度优化。但是，与关系型数据库相比，这些方法当然存在限制。但对于大多数数值和金融应用程序，它们通常并不决定性。'
 - en: 'As the following examples show, working with data stored in `PyTables` as a
     `Table` objects makes you feel like working with `NumPy` or `pandas` and in-memory,
     both from a *syntax* and a *performance* point of view:'
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如以下示例所示，使用存储在`PyTables`中的数据作为`Table`对象让您感觉就像是在`NumPy`或`pandas`中工作且是内存中的，从*语法*和*性能*方面都是如此：
 - en: '[PRE30]'
+  id: totrans-379
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: Working with Compressed Tables
+  id: totrans-380
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用压缩表
 - en: 'A major advantage of working with `PyTables` is the approach it takes to compression.
     It uses compression not only to save space on disk, but also to improve the performance
     of I/O operations in certain hardware scenarios. How does this work? When I/O
@@ -1339,291 +2076,458 @@
     of compression in terms of speed might be positive. Since the following examples
     are based on the I/O of a standard SSD, there is no speed advantage of compression
     to be observed. However, there is also almost no *disadvantage* of using compression:'
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`PyTables`的一个主要优势是它采用的压缩方法。它不仅使用压缩来节省磁盘空间，还利用了在某些硬件场景下改善I/O操作性能的压缩。这是如何实现的？当I/O成为瓶颈，而CPU能够快速（解）压缩数据时，压缩在速度方面的净效果可能是积极的。由于以下示例基于标准SSD的I/O，因此观察不到压缩的速度优势。但是，使用压缩也几乎没有*缺点*：
 - en: '[PRE31]'
+  id: totrans-382
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO29-1)'
+  id: totrans-383
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO29-1)'
 - en: The compression level (`complevel`) can take values between 0 (no compression)
     and 9 (highest compression).
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 压缩级别（`complevel`）可以取0（无压缩）到9（最高压缩）的值。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO29-2)'
+  id: totrans-385
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO29-2)'
 - en: The [`Blosc`](http://blosc.org) compression engine is used, which is optimized
     for performance.
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用了经过优化的`Blosc`压缩引擎（[Blosc](http://blosc.org)），该引擎旨在提高性能。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO29-3)'
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO29-3)'
 - en: The iterator object given the query from before.
+  id: totrans-388
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定前面查询的迭代器对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO29-4)'
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO29-4)'
 - en: The rows resulting from the query are collected via a list comprehension.
+  id: totrans-390
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过列表推导收集查询结果行。
 - en: 'Generating the compressed `Table` object with the original data and doing analytics
     on it is slightly slower compared to the uncompressed `Table` object. What about
     reading the data into a `ndarray` object? Let’s check:'
+  id: totrans-391
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用原始数据生成压缩的`Table`对象并对其进行分析比使用未压缩的`Table`对象稍慢一些。那么将数据读入`ndarray`对象呢？让我们来检查一下：
 - en: '[PRE32]'
+  id: totrans-392
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO30-1)'
+  id: totrans-393
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO30-1)'
 - en: Reading from the uncompressed `Table` object `tab`.
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: 从未压缩的`Table`对象`tab`中读取。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO30-2)'
+  id: totrans-395
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO30-2)'
 - en: Reading from the compressed `Table` object `tabc`.
+  id: totrans-396
   prefs: []
   type: TYPE_NORMAL
+  zh: 从压缩的`Table`对象`tabc`中读取。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO30-3)'
+  id: totrans-397
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO30-3)'
 - en: The size of the compressed table is significantly reduced.
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: 压缩表的大小显着减小了。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO30-4)'
+  id: totrans-399
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO30-4)'
 - en: Closing the database file.
+  id: totrans-400
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭数据库文件。
 - en: 'The examples show that there is hardly a speed difference when working with
     compressed `Table` objects as compared to uncompressed ones. However, file sizes
     on disk might — depending on the quality of the data — significantly reduced which
     has a number of benefits:'
+  id: totrans-401
   prefs: []
   type: TYPE_NORMAL
+  zh: 例子表明，与未压缩的`Table`对象相比，使用压缩的`Table`对象工作时几乎没有速度差异。但是，磁盘上的文件大小可能会根据数据的质量而显着减少，这有许多好处：
 - en: '**storage costs**: storage costs are reduced'
+  id: totrans-402
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**存储成本**：存储成本降低了'
 - en: '**backup costs**: backup costs are reduced'
+  id: totrans-403
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**备份成本**：备份成本降低了'
 - en: '**network traffic**: network traffic is reduced'
+  id: totrans-404
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**网络流量**：网络流量减少了'
 - en: '**network speed**: storage on and retrieval from remote servers are faster'
+  id: totrans-405
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**网络速度**：存储在远程服务器上并从中检索的速度更快'
 - en: '**CPU utilization**: CPU utilization is increased to overcome I/O bottlenecks'
+  id: totrans-406
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**CPU利用率**：为了克服I/O瓶颈而增加了CPU利用率'
 - en: Working with Arrays
+  id: totrans-407
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用数组
 - en: '[“Basic I/O with Python”](#io_basic_io) demonstrates that `NumPy` has built-in
     fast writing and reading capabilities for `ndarray` objects. `PyTables` is also
     quite fast and efficient when it comes to storing and retrieving `ndarray` objects.
     Since it is based on a hierarchical database structure, many convenience features
     come on top:'
+  id: totrans-408
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“Python 基本 I/O”](#io_basic_io)演示了`NumPy`对于`ndarray`对象具有内置的快速写入和读取功能。当涉及到存储和检索`ndarray`对象时，`PyTables`也非常快速和高效。由于它基于分层数据库结构，因此提供了许多便利功能：'
 - en: '[PRE33]'
+  id: totrans-409
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO31-1)'
+  id: totrans-410
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO31-1)'
 - en: Stores the `ran_int` `ndarray` object.
+  id: totrans-411
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储`ran_int` `ndarray`对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO31-2)'
+  id: totrans-412
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO31-2)'
 - en: Stores the `ran_flo` `ndarray` object.
+  id: totrans-413
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储`ran_flo` `ndarray`对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO31-3)'
+  id: totrans-414
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO31-3)'
 - en: The changes are reflected in the object description.
+  id: totrans-415
   prefs: []
   type: TYPE_NORMAL
+  zh: 更改反映在对象描述中。
 - en: Writing these objects directly to a `HDF5` database is faster than looping over
     the objects and writing the data row-by-row to a `Table` object or using the approach
     via structured `ndarray` objects.
+  id: totrans-416
   prefs: []
   type: TYPE_NORMAL
+  zh: 将这些对象直接写入`HDF5`数据库比遍历对象并逐行将数据写入`Table`对象或使用结构化`ndarray`对象的方法更快。
 - en: HDF5-Based Data Storage
+  id: totrans-417
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于 HDF5 的数据存储
 - en: The `HDF5` hierarchical database (file) format is a powerful alternative to,
     for example, relational databases when it comes to structured numerical and financial
     data. Both on a standalone basis when using `PyTables` directly and when combining
     it with the capabilities of `pandas`, you can expect to get almost the maximum
     I/O performance that the available hardware allows.
+  id: totrans-418
   prefs: []
   type: TYPE_NORMAL
+  zh: 当涉及到结构化的数值和金融数据时，`HDF5`分层数据库（文件）格式是一个强大的替代方案，例如，关系数据库。无论是在直接使用`PyTables`还是与`pandas`的功能结合使用时，您都可以期望获得几乎达到可用硬件允许的最大I/O性能。
 - en: Out-of-Memory Computations
+  id: totrans-419
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存外计算
 - en: '`PyTables` supports out-of-memory operations, which makes it possible to implement
     array-based computations that do not fit into the memory. To this end, consider
     the following code based on the `EArray` class. This type of object allows to
     be expanded in one dimension (row-wise) while the number columns (elements per
     row) needs to be fixed.'
+  id: totrans-420
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PyTables`支持内存外操作，这使得可以实现不适合内存的基于数组的计算。为此，请考虑以下基于`EArray`类的代码。这种类型的对象允许在一维（按行）中扩展，而列数（每行的元素）需要固定。'
 - en: '[PRE34]'
+  id: totrans-421
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO32-1)'
+  id: totrans-422
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO32-1)'
 - en: This defines the fixed number of columns.
+  id: totrans-423
   prefs: []
   type: TYPE_NORMAL
+  zh: 这定义了固定的列数。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO32-2)'
+  id: totrans-424
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO32-2)'
 - en: The path and technical name of the `EArray` object.
+  id: totrans-425
   prefs: []
   type: TYPE_NORMAL
+  zh: '`EArray`对象的路径和技术名称。'
 - en: '[![3](images/3.png)](#co_input_output_operations_CO32-3)'
+  id: totrans-426
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO32-3)'
 - en: The atomic `dtype` object of the single values.
+  id: totrans-427
   prefs: []
   type: TYPE_NORMAL
+  zh: 单个值的原子`dtype`对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO32-4)'
+  id: totrans-428
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO32-4)'
 - en: The shape for instantiation (no rows, `n` columns).
+  id: totrans-429
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于实例化的形状（没有行，`n`列）。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO32-5)'
+  id: totrans-430
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO32-5)'
 - en: The `ndarray` object with the random numbers …
+  id: totrans-431
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有随机数的`ndarray`对象…
 - en: '[![6](images/6.png)](#co_input_output_operations_CO32-6)'
+  id: totrans-432
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO32-6)'
 - en: … that gets appended many times.
+  id: totrans-433
   prefs: []
   type: TYPE_NORMAL
+  zh: … 多次附加。
 - en: For out-of-memory computations, that do not lead to aggregations, another `EArray`
     object of same shape (size) is needed. PyTables+ has a special module to cope
     with numerical expressions efficiently. It is called `Expr` and is based on the
     numerical expression library [`numexpr`](https://numexpr.readthedocs.io). The
     code that follows uses `Expr` to calculate the mathematical expression in [Equation
     9-1](#tab_expr) on the whole `EArray` object from before.
+  id: totrans-434
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于不会导致聚合的内存外计算，需要另一个相同形状（大小）的`EArray`对象。 PyTables+有一个特殊模块可以高效处理数值表达式。它称为`Expr`，基于数值表达式库[`numexpr`](https://numexpr.readthedocs.io)。接下来的代码使用`Expr`计算之前整个`EArray`对象中的[方程式
+    9-1](#tab_expr)的数学表达式。
 - en: Equation 9-1\. Example mathematical expression
+  id: totrans-435
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 方程式 9-1\. 示例数学表达式
 - en: <math display="block" alttext="y equals 3 sine left-parenthesis x right-parenthesis
     plus StartRoot StartAbsoluteValue x EndAbsoluteValue EndRoot"><mrow><mi>y</mi>
     <mo>=</mo> <mn>3</mn> <mo form="prefix">sin</mo> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow>
     <mo>+</mo> <msqrt><mrow><mo>|</mo> <mi>x</mi> <mo>|</mo></mrow></msqrt></mrow></math>
+  id: totrans-436
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block" alttext="y equals 3 sine left-parenthesis x right-parenthesis
+    plus StartRoot StartAbsoluteValue x EndAbsoluteValue EndRoot"><mrow><mi>y</mi>
+    <mo>=</mo> <mn>3</mn> <mo form="prefix">sin</mo> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow>
+    <mo>+</mo> <msqrt><mrow><mo>|</mo> <mi>x</mi> <mo>|</mo></mrow></msqrt></mrow></math>
 - en: The results are stored in the `out` `EArray` object, the expression evaluation
     happens chunk-wise.
+  id: totrans-437
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果存储在`out` `EArray`对象中，表达式评估以块方式进行。
 - en: '[PRE35]'
+  id: totrans-438
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO33-1)'
+  id: totrans-439
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO33-1)'
 - en: This transforms a `str` object based expression to a `Expr` object.
+  id: totrans-440
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将基于`str`对象的表达式转换为`Expr`对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO33-2)'
+  id: totrans-441
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO33-2)'
 - en: This defines the output to be the `out` `EArray` object.
+  id: totrans-442
   prefs: []
   type: TYPE_NORMAL
+  zh: 这定义了输出为 `out` `EArray` 对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO33-3)'
+  id: totrans-443
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO33-3)'
 - en: This initiates the evaluation of the expression.
+  id: totrans-444
   prefs: []
   type: TYPE_NORMAL
+  zh: 这启动了表达式的评估。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO33-4)'
+  id: totrans-445
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO33-4)'
 - en: This reads the whole `EArray` into the memory.
+  id: totrans-446
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将整个 `EArray` 读入内存。
 - en: 'Given that the whole operation takes place out-of-memory, it can be considered
     quite fast, in particular as it is executed on standard hardware. As a benchmark,
     the in-memory performance of the `numexpr` module (see also [Link to Come]) can
     be considered. It is faster, but not by a huge margin:'
+  id: totrans-447
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑到整个操作是在内存之外进行的，可以认为是相当快的，尤其是在标准硬件上执行。作为基准，可以考虑 `numexpr` 模块的内存性能（也见[Link to
+    Come]）。它更快，但并不是很大的优势：
 - en: '[PRE36]'
+  id: totrans-448
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO34-1)'
+  id: totrans-449
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO34-1)'
 - en: Import the module for *in-memory* evaluations of numerical expressions.
+  id: totrans-450
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入用于 *内存中* 评估数值表达式的模块。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO34-2)'
+  id: totrans-451
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO34-2)'
 - en: The numerical expression as a `str` object.
+  id: totrans-452
   prefs: []
   type: TYPE_NORMAL
+  zh: 数值表达式作为 `str` 对象。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO34-3)'
+  id: totrans-453
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO34-3)'
 - en: Sets the number of threads to be one only.
+  id: totrans-454
   prefs: []
   type: TYPE_NORMAL
+  zh: 将线程数设置为仅一个。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO34-4)'
+  id: totrans-455
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO34-4)'
 - en: Evaluates the numerical expression in-memory with one thread.
+  id: totrans-456
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用一个线程在内存中评估数值表达式。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO34-5)'
+  id: totrans-457
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO34-5)'
 - en: Sets the number of threads to be four.
+  id: totrans-458
   prefs: []
   type: TYPE_NORMAL
+  zh: 将线程数设置为四。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO34-6)'
+  id: totrans-459
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO34-6)'
 - en: Evaluates the numerical expression in-memory with four threads.
+  id: totrans-460
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用四个线程在内存中评估数值表达式。
 - en: I/O with TsTables
+  id: totrans-461
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 通过 TsTables 进行 I/O 操作。
 - en: The package `TsTables` uses `PyTables` to build a high performance storage for
     time series data. The major usage scenario is "`write once, retrieve multiple
     times`“. This is a typical scenario in financial analytics since data is created
@@ -1631,213 +2535,339 @@
     for later usage. Such usage might be a larger trading strategy backtesting program
     that requires different sub-sets of a historical financial time series over and
     over again. It is then important that data retrieval happens fast.
+  id: totrans-462
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TsTables` 包使用 `PyTables` 构建了一个高性能的时间序列数据存储。主要的使用场景是“`一次写入，多次检索`”。这是金融分析中的典型场景，因为数据是在市场上创建的，可能是实时或异步检索，并存储在磁盘上以供以后使用。这样的使用场景可能是一个较大的交易策略回测程序，需要反复使用历史金融时间序列的不同子集。因此，数据检索速度很重要。'
 - en: Sample Data
+  id: totrans-463
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 示例数据
 - en: As usual, first the generation of some sample data set that is large enough
     to illustrate the benefits of `TsTables`. The following code generates three rather
     long financial time series based on the simulation of a geometric Brownian motion
     (see [Link to Come]).
+  id: totrans-464
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，首先生成一些足够大的示例数据集，以说明 `TsTables` 的好处。以下代码基于几何布朗运动的模拟生成了三个相当长的金融时间序列（见[Link
+    to Come]）。
 - en: '[PRE37]'
+  id: totrans-465
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO35-1)'
+  id: totrans-466
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO35-1)'
 - en: The number of time steps.
+  id: totrans-467
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间步数。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO35-2)'
+  id: totrans-468
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO35-2)'
 - en: The number of time series.
+  id: totrans-469
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间序列的数量。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO35-3)'
+  id: totrans-470
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO35-3)'
 - en: The time interval as a year fraction.
+  id: totrans-471
   prefs: []
   type: TYPE_NORMAL
+  zh: 年份间隔作为年分数。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO35-4)'
+  id: totrans-472
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO35-4)'
 - en: The volatility.
+  id: totrans-473
   prefs: []
   type: TYPE_NORMAL
+  zh: 波动率。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO35-5)'
+  id: totrans-474
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO35-5)'
 - en: Standard-normally distributed random numbers.
+  id: totrans-475
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准正态分布的随机数。
 - en: '[![6](images/6.png)](#co_input_output_operations_CO35-6)'
+  id: totrans-476
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_input_output_operations_CO35-6)'
 - en: The initial random numbers set to 0.
+  id: totrans-477
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始随机数设为0。
 - en: '[![7](images/7.png)](#co_input_output_operations_CO35-7)'
+  id: totrans-478
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_input_output_operations_CO35-7)'
 - en: The simulation based on a Euler discretization.
+  id: totrans-479
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于 Euler 离散化的模拟。
 - en: '[![8](images/8.png)](#co_input_output_operations_CO35-8)'
+  id: totrans-480
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](images/8.png)](#co_input_output_operations_CO35-8)'
 - en: The initial values of the paths set to 100.
+  id: totrans-481
   prefs: []
   type: TYPE_NORMAL
+  zh: 将路径的初始值设为100。
 - en: Since `TsTables` works pretty well with `pandas` `DataFrame` objects, the data
     is transformed to such an object (see also [Figure 9-7](#io_plot_07)).
+  id: totrans-482
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于`TsTables`与`pandas` `DataFrame`对象很好地配合，因此数据被转换为这样的对象（另见[图 9-7](#io_plot_07)）。
 - en: '[PRE38]'
+  id: totrans-483
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '![io 07](images/io_07.png)'
+  id: totrans-484
   prefs: []
   type: TYPE_IMG
+  zh: '![io 07](images/io_07.png)'
 - en: Figure 9-7\. Selected data points of the financial time series
+  id: totrans-485
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-7\. 金融时间序列的选定数据点
 - en: Data Storage
+  id: totrans-486
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据存储
 - en: '`TsTables` stores financial time series data based on a specific chunk-based
     structure which allows for fast data retrieval of arbitrary data sub-sets defined
     by some time interval. To this end, the package adds the function `create_ts()`
     to `PyTables`. The following code uses the `class` based description method from
     `PyTables`, based on the `tb.IsDescription` class.'
+  id: totrans-487
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TsTables`基于特定的基于块的结构存储金融时间序列数据，该结构允许根据某个时间间隔快速检索任意数据子集。为此，该软件包将`create_ts()`函数添加到`PyTables`中。以下代码使用了来自`PyTables`的`class`基于描述方法，基于`tb.IsDescription`类。'
 - en: '[PRE39]'
+  id: totrans-488
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO36-1)'
+  id: totrans-489
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO36-1)'
 - en: The column for the time stamps.
+  id: totrans-490
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间戳的列。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO36-2)'
+  id: totrans-491
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO36-2)'
 - en: The columns to store the numerical data.
+  id: totrans-492
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储数字数据的列。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO36-5)'
+  id: totrans-493
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO36-5)'
 - en: Opens a `HDF5` database file for writing (`w`).
+  id: totrans-494
   prefs: []
   type: TYPE_NORMAL
+  zh: 为写入（`w`）打开`HDF5`数据库文件。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO36-6)'
+  id: totrans-495
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO36-6)'
 - en: Creates the `TsTable` object based on the `ts_desc` object.
+  id: totrans-496
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于`ts_desc`对象创建`TsTable`对象。
 - en: '[![5](images/5.png)](#co_input_output_operations_CO36-7)'
+  id: totrans-497
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_input_output_operations_CO36-7)'
 - en: Appends the data from the `DataFrame` object to the `TsTable` object.
+  id: totrans-498
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`DataFrame`对象中的数据附加到`TsTable`对象。
 - en: Data Retrieval
+  id: totrans-499
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据检索
 - en: Writing data with `TsTables` obviously is quite fast, even if hardware-dependent.
     The same holds true for reading chunks of the data back into memory. Conveniently,
     `TaTables` returns a `DataFrame` object (see also [Figure 9-8](#io_plot_08)).
+  id: totrans-500
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`TsTables`编写数据显然非常快，即使与硬件有关。对数据的块的读取也是如此。方便的是，`TaTables`返回一个`DataFrame`对象（另见[图 9-8](#io_plot_08)）。
 - en: '[PRE40]'
+  id: totrans-501
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO37-1)'
+  id: totrans-502
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO37-1)'
 - en: The start time of the interval.
+  id: totrans-503
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间间隔的开始时间。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO37-2)'
+  id: totrans-504
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO37-2)'
 - en: The end time of the interval.
+  id: totrans-505
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间间隔的结束时间。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO37-3)'
+  id: totrans-506
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO37-3)'
 - en: The function `ts.read_range()` returns a `DataFrame` object for the interval.
+  id: totrans-507
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`ts.read_range()`返回时间间隔的`DataFrame`对象。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO37-4)'
+  id: totrans-508
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO37-4)'
 - en: The `DataFrame` object has a few 100,000 data rows.
+  id: totrans-509
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame`对象有几十万行数据。'
 - en: '![io 08](images/io_08.png)'
+  id: totrans-510
   prefs: []
   type: TYPE_IMG
+  zh: '![io 08](images/io_08.png)'
 - en: Figure 9-8\. A specific time interval of the financial time series (normalized)
+  id: totrans-511
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-8\. 金融时间序列的特定时间间隔（归一化）
 - en: To better illustrate the performance of the `TsTables` based data retrieval,
     consider the following benchmark which retrieves 100 chunks of data consisting
     of three days worth of one-second bars. The retrieval of a `DataFrame` with 345,600
     rows of data takes less than one tenth of a second.
+  id: totrans-512
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了更好地说明基于`TsTables`的数据检索性能，考虑以下基准，该基准检索由三天的一秒钟柱状图组成的100个数据块。检索包含345,600行数据的`DataFrame`仅需不到十分之一秒。
 - en: '[PRE41]'
+  id: totrans-513
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: '[![1](images/1.png)](#co_input_output_operations_CO38-1)'
+  id: totrans-514
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_input_output_operations_CO38-1)'
 - en: This connects to the `TsTable` object.
+  id: totrans-515
   prefs: []
   type: TYPE_NORMAL
+  zh: 连接到`TsTable`对象。
 - en: '[![2](images/2.png)](#co_input_output_operations_CO38-2)'
+  id: totrans-516
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_input_output_operations_CO38-2)'
 - en: The data retrieval is repeated many times.
+  id: totrans-517
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据检索重复多次。
 - en: '[![3](images/3.png)](#co_input_output_operations_CO38-3)'
+  id: totrans-518
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_input_output_operations_CO38-3)'
 - en: The starting day value is randomized.
+  id: totrans-519
   prefs: []
   type: TYPE_NORMAL
+  zh: 起始日值被随机化。
 - en: '[![4](images/4.png)](#co_input_output_operations_CO38-4)'
+  id: totrans-520
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_input_output_operations_CO38-4)'
 - en: The last `DataFrame` object retrieved.
+  id: totrans-521
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后检索到的`DataFrame`对象。
 - en: Conclusions
+  id: totrans-522
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: '`SQL`-based or relational databases have advantages when it comes to complex
     data structures that exhibit lots of relations between single objects/tables.
     This might justify in some circumstances their performance disadvantage over pure
     `NumPy` `ndarray`-based or `pandas` `DataFrame`-based approaches.'
+  id: totrans-523
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于`SQL`或关系数据库的方法在处理展示了许多单个对象/表之间关系的复杂数据结构时具有优势。在某些情况下，这可能会使它们在纯`NumPy` `ndarray`或`pandas`
+    `DataFrame`方法上的性能劣势成为合理。
 - en: Many application areas in finance or science in general, can succeed with a
     mainly array-based data modeling approach. In these cases, huge performance improvements
     can be realized by making use of native `NumPy` I/O capabilities, a combination
@@ -1845,100 +2875,141 @@
     stores. `TsTables` is particularly useful when working with large (financial)
     time series data sets, in particular in "`write once, retrieve multiple times`"
     scenarios.
+  id: totrans-524
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融或一般科学中的许多应用领域可以通过主要基于数组的数据建模方法取得成功。在这些情况下，通过利用原生`NumPy`的I/O功能、`NumPy`和`PyTables`功能的组合，或通过`HDF5`-based存储的`pandas`方法，可以实现巨大的性能提升。当处理大型（金融）时间序列数据集时，尤其是在“一次写入，多次检索”的场景中，`TsTables`特别有用。
 - en: 'While a recent trend has been to use cloud-based solutions—where the cloud
     is made up of a large number of computing nodes based on commodity hardware—one
     should carefully consider, especially in a financial context, which hardware architecture
     best serves the analytics requirements. A study by Microsoft sheds some light
     on this topic:'
+  id: totrans-525
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然最近的一个趋势是使用基于商品硬件的大量计算节点组成的云解决方案，特别是在金融背景下，人们应该仔细考虑哪种硬件架构最适合分析需求。微软的一项研究对这个问题有所启发：
 - en: We claim that a single "`scale-up`" server can process each of these jobs and
     do as well or better than a cluster in terms of performance, cost, power, and
     server density.
+  id: totrans-526
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 我们声称一个“扩展”服务器可以处理这些工作中的每一个，并且在性能、成本、功耗和服务器密度等方面与集群一样好，甚至更好。
 - en: ''
+  id: totrans-527
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Appuswamy et al. (2013)
+  id: totrans-528
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Appuswamy等人（2013年）
 - en: 'Companies, research institutions, and others involved in data analytics should
     therefore analyze first what specific tasks have to be accomplished in general
     and then decide on the hardware/software architecture, in terms of:'
+  id: totrans-529
   prefs: []
   type: TYPE_NORMAL
+  zh: 从事数据分析的公司、研究机构等应该首先分析一般情况下必须完成的具体任务，然后根据以下方面的硬件/软件架构做出决策：
 - en: Scaling out
+  id: totrans-530
   prefs: []
   type: TYPE_NORMAL
+  zh: 扩展
 - en: Using a cluster with many commodity nodes with standard CPUs and relatively
     low memory
+  id: totrans-531
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用具有标准CPU和相对较低内存的许多商品节点的集群
 - en: Scaling up
+  id: totrans-532
   prefs: []
   type: TYPE_NORMAL
+  zh: 扩展
 - en: Using one or a few powerful servers with many-core CPUs — possibly also GPUs
     or even TPUs when machine and deep learning play a role — and large amounts of
     memory.
+  id: totrans-533
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用一台或多台强大的服务器，配备多核CPU，可能还有GPU甚至TPU，当机器学习和深度学习发挥作用时，并拥有大量内存。
 - en: Scaling up hardware and applying appropriate implementation approaches might
     significantly influence performance. More on performance in the next chapter.
+  id: totrans-534
   prefs: []
   type: TYPE_NORMAL
+  zh: 扩展硬件规模并应用适当的实现方法可能会显著影响性能。下一章将更多地涉及性能。
 - en: Further Reading
+  id: totrans-535
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步阅读
 - en: 'The paper cited at the beginning of the chapter as well as in [“Conclusions”](#io_conclusions)
     section is a good read, and a good starting point to think about hardware architecture
     for financial analytics:'
+  id: totrans-536
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章开头引用的论文以及[“结论”](#io_conclusions)部分是一篇不错的文章，也是思考金融分析硬件架构的良好起点：
 - en: 'Appuswamy, Raja et al. (2013): "`Nobody Ever Got Fired for Buying a Cluster.`"
     Microsoft Research, Cambridge, England, [*http://research.microsoft.com/apps/pubs/default.aspx?id=179615*](http://research.microsoft.com/apps/pubs/default.aspx?id=179615).'
+  id: totrans-537
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Appuswamy，Raja等人（2013年）：“`没有人因为购买集群而被解雇。`”微软研究，英格兰剑桥，[*http://research.microsoft.com/apps/pubs/default.aspx?id=179615*](http://research.microsoft.com/apps/pubs/default.aspx?id=179615)。
 - en: 'As usual, the Web provides many valuable resources with regard to the topics
     covered in this chapter:'
+  id: totrans-538
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，网络提供了许多有关本章涵盖主题的宝贵资源：
 - en: 'For serialization of Python objects with `pickle`, refer to the documentation:
     [*http://docs.python.org/3/library/pickle.html*](http://docs.python.org/3/library/pickle.html).'
+  id: totrans-539
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于使用`pickle`对Python对象进行序列化，请参阅文档：[*http://docs.python.org/3/library/pickle.html*](http://docs.python.org/3/library/pickle.html)。
 - en: 'An overview of the I/O capabilities of `NumPy` is provided on the `SciPy` website:
     [*http://docs.scipy.org/doc/numpy/reference/routines.io.html*](http://docs.scipy.org/doc/numpy/reference/routines.io.html).'
+  id: totrans-540
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 关于`NumPy`的I/O功能概述可在`SciPy`网站上找到：[*http://docs.scipy.org/doc/numpy/reference/routines.io.html*](http://docs.scipy.org/doc/numpy/reference/routines.io.html)。
 - en: 'For I/O with `pandas` see the respective section in the online documentation:
     [*http://pandas.pydata.org/pandas-docs/stable/io.html*](http://pandas.pydata.org/pandas-docs/stable/io.html).'
+  id: totrans-541
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于使用`pandas`进行I/O，请参阅在线文档中的相应部分：[*http://pandas.pydata.org/pandas-docs/stable/io.html*](http://pandas.pydata.org/pandas-docs/stable/io.html)。
 - en: 'The `PyTables` home page provides both tutorials and detailed documentation:
     [*http://www.pytables.org*](http://www.pytables.org).'
+  id: totrans-542
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PyTables`首页提供了教程和详细文档：[*http://www.pytables.org*](http://www.pytables.org)。'
 - en: The Github page of `TsTables` is found under [*https://github.com/afiedler/tstables*](https://github.com/afiedler/tstables).
+  id: totrans-543
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`TsTables` 的 Github 页面位于[*https://github.com/afiedler/tstables*](https://github.com/afiedler/tstables)。'
 - en: ^([1](ch09.html#idm140277658125664-marker)) Here, we do not distinguish between
     different levels of RAM and processor caches. The optimal use of current memory
     architectures is a topic in itself.
+  id: totrans-544
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch09.html#idm140277658125664-marker)) 这里，我们不区分不同级别的 RAM 和处理器缓存。当前内存架构的最佳使用是一个独立的主题。
 - en: ^([2](ch09.html#idm140277655563600-marker)) For an overview of available database
     connectors for Python, visit [*https://wiki.python.org/moin/DatabaseInterfaces*](https://wiki.python.org/moin/DatabaseInterfaces).
     Instead of working directly with relational databases, object relational mappers,
@@ -1946,17 +3017,27 @@
     an abstraction layer that allows for more Pythonic, object-oriented code. They
     also allow to more easily to exchange one relational database for another in the
     back end.
+  id: totrans-545
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch09.html#idm140277655563600-marker)) 要了解 Python 可用的数据库连接器的概述，请访问[*https://wiki.python.org/moin/DatabaseInterfaces*](https://wiki.python.org/moin/DatabaseInterfaces)。与直接使用关系型数据库不同，对象关系映射器，例如[SQLAlchemy](https://www.sqlalchemy.org/)，通常非常有用。它们引入了一个抽象层，允许更加
+    Pythonic、面向对象的代码。它们还允许更容易地在后端将一个关系型数据库更换为另一个。
 - en: ^([3](ch09.html#idm140277655097520-marker)) See [*https://www.sqlite.org/lang.html*](https://www.sqlite.org/lang.html)
     for an overview of the `SQLite3` language dialect.
+  id: totrans-546
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch09.html#idm140277655097520-marker)) 请参阅[*https://www.sqlite.org/lang.html*](https://www.sqlite.org/lang.html)以了解
+    `SQLite3` 语言方言的概述。
 - en: ^([4](ch09.html#idm140277654035024-marker)) See [*http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html*](http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html).
+  id: totrans-547
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch09.html#idm140277654035024-marker)) 请参阅[*http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html*](http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html)。
 - en: ^([5](ch09.html#idm140277650901008-marker)) Many other databases require a server-client
     architechture. For interactive data and financial analytics, file-based databases
     prove a bit more convenient and also sufficient for most purposes in general.
+  id: totrans-548
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([5](ch09.html#idm140277650901008-marker)) 许多其他数据库需要服务器-客户端架构。对于交互式数据和金融分析，基于文件的数据库在一般情况下会更加方便，也足够满足大多数目的。

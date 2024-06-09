@@ -45,23 +45,23 @@ In [5]: mpl.rcParams['font.family'] = 'serif'  ![3](img/3.png)
 In [6]: %matplotlib inline
 ```
 
-![1](img/#co_financial_data_science_CO1-1)
+①
 
 使用常见缩写`mpl`导入了`matplotlib`。
 
-![2](img/#co_financial_data_science_CO1-2)
+②
 
 使用的`matplotlib`版本。
 
-![3](img/#co_financial_data_science_CO1-5)
+③
 
 将所有图的字体设置为`serif`。
 
-![4](img/#co_financial_data_science_CO1-3)
+④
 
 使用常见缩写`plt`导入了主要的绘图（子）包。
 
-![5](img/#co_financial_data_science_CO1-4)
+⑤
 
 将绘图样式设置为`seaborn`（请参阅，例如，[此处](https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html)的概述）。
 
@@ -87,19 +87,19 @@ In [10]: x = np.arange(len(y))  ![3](img/3.png)
          # plt.savefig('../../images/ch07/mpl_01')
 ```
 
-![1](img/#co_financial_data_science_CO2-1)
+①
 
 为了可重复性，设置随机数生成器的种子。
 
-![2](img/#co_financial_data_science_CO2-2)
+②
 
 绘制随机数（y 值）。
 
-![3](img/#co_financial_data_science_CO2-3)
+③
 
 固定整数（x 值）。
 
-![4](img/#co_financial_data_science_CO2-4)
+④
 
 使用`x`和`y`对象调用`plt.plot()`函数。
 
@@ -141,7 +141,7 @@ In [13]: plt.plot(y.cumsum())
          # plt.savefig('../../images/ch07/mpl_04')
 ```
 
-![1](img/#co_financial_data_science_CO3-1)
+①
 
 关闭网格。
 
@@ -189,27 +189,27 @@ In [15]: plt.figure(figsize=(10, 6))  ![1](img/1.png)
          # plt.savefig('../../images/ch07/mpl_06')
 ```
 
-![1](img/#co_financial_data_science_CO4-1)
+①
 
 增加图的大小。
 
-![2](img/#co_financial_data_science_CO4-2)
+②
 
 将数据绘制为蓝色线条，线宽为 1.5 点。
 
-![3](img/#co_financial_data_science_CO4-3)
+③
 
 将数据绘制为红色（粗）点。
 
-![4](img/#co_financial_data_science_CO4-4)
+④
 
 在 x 轴上放置一个标签。
 
-![5](img/#co_financial_data_science_CO4-5)
+⑤
 
 在 y 轴上放置一个标签。
 
-![6](img/#co_financial_data_science_CO4-6)
+⑥
 
 放置一个标题。
 
@@ -307,11 +307,11 @@ In [18]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_08')
 ```
 
-![1](img/#co_financial_data_science_CO5-1)
+①
 
 为数据子集定义标签。
 
-![2](img/#co_financial_data_science_CO5-3)
+②
 
 将图例放在*最佳*位置。
 
@@ -354,7 +354,7 @@ In [20]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_09')
 ```
 
-![1](img/#co_financial_data_science_CO6-1)
+①
 
 重新调整第一个数据子集的比例。
 
@@ -386,11 +386,11 @@ In [21]: fig, ax1 = plt.subplots()  ![1](img/1.png)
          # plt.savefig('../../images/ch07/mpl_10')
 ```
 
-![1](img/#co_financial_data_science_CO7-1)
+①
 
 定义 `figure` 和 `axis` 对象。
 
-![2](img/#co_financial_data_science_CO7-2)
+②
 
 创建共享 x 轴的第二个 `axis` 对象。
 
@@ -426,11 +426,11 @@ In [22]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_11')
 ```
 
-![1](img/#co_financial_data_science_CO8-1)
+①
 
 定义了上方子图 1。
 
-![2](img/#co_financial_data_science_CO8-2)
+②
 
 定义了下方子图 2。
 
@@ -460,7 +460,7 @@ In [23]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_12')
 ```
 
-![1](img/#co_financial_data_science_CO9-1)
+①
 
 创建一个 `bar` 子图。
 
@@ -485,11 +485,11 @@ In [25]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_13')
 ```
 
-![1](img/#co_financial_data_science_CO10-1)
+①
 
 创建一个包含随机数的较大数据集。
 
-![2](img/#co_financial_data_science_CO10-2)
+②
 
 通过 `plt.plot()` 函数绘制散点图。
 
@@ -508,7 +508,7 @@ In [26]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_14')
 ```
 
-![1](img/#co_financial_data_science_CO11-1)
+①
 
 通过 `plt.scatter()` 函数绘制的散点图。
 
@@ -533,15 +533,15 @@ In [28]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_15')
 ```
 
-![1](img/#co_financial_data_science_CO12-1)
+①
 
 包含了第三个数据集。
 
-![2](img/#co_financial_data_science_CO12-2)
+②
 
 选择了颜色映射。
 
-![3](img/#co_financial_data_science_CO12-3)
+③
 
 将标记定义为粗点。
 
@@ -561,7 +561,7 @@ In [29]: plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_16')
 ```
 
-![1](img/#co_financial_data_science_CO13-1)
+①
 
 通过 `plt.hist()` 函数绘制直方图。
 
@@ -625,11 +625,11 @@ In [31]: fig, ax = plt.subplots(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_18')
 ```
 
-![1](img/#co_financial_data_science_CO14-1)
+①
 
 通过`plt.boxplot()`函数绘制箱线图。
 
-![2](img/#co_financial_data_science_CO14-2)
+②
 
 设置各个 x 标签。
 
@@ -664,31 +664,31 @@ In [32]: def func(x):
          verts = [(a, 0)] + list(zip(Ix, Iy)) + [(b, 0)]  ![7](img/7.png)
 ```
 
-![1](img/#co_financial_data_science_CO15-1)
+①
 
 函数定义。
 
-![2](img/#co_financial_data_science_CO15-2)
+②
 
 积分限制。
 
-![3](img/#co_financial_data_science_CO15-3)
+③
 
 用于绘制函数的 x 值。
 
-![4](img/#co_financial_data_science_CO15-4)
+④
 
 用于绘制函数的 y 值。
 
-![5](img/#co_financial_data_science_CO15-5)
+⑤
 
 积分限制内的 x 值。
 
-![6](img/#co_financial_data_science_CO15-6)
+⑥
 
 积分限制内的 y 值。
 
-![7](img/#co_financial_data_science_CO15-7)
+⑦
 
 包含多个表示要绘制的多边形的坐标的`list`对象。
 
@@ -713,31 +713,31 @@ In [33]: from matplotlib.patches import Polygon
 Out[33]: [<matplotlib.text.Text at 0x1066af438>, <matplotlib.text.Text at 0x10669ba20>]
 ```
 
-![1](img/#co_financial_data_science_CO16-1)
+①
 
 将函数值绘制为蓝线。
 
-![2](img/#co_financial_data_science_CO16-2)
+②
 
 定义纵坐标轴的最小 y 值。
 
-![3](img/#co_financial_data_science_CO16-3)
+③
 
 以灰色绘制多边形（积分区域）。
 
-![4](img/#co_financial_data_science_CO16-5)
+④
 
 将积分公式放置在图中。
 
-![5](img/#co_financial_data_science_CO16-6)
+⑤
 
 放置轴标签。
 
-![6](img/#co_financial_data_science_CO16-8)
+⑥
 
 放置 x 标签。
 
-![7](img/#co_financial_data_science_CO16-10)
+⑦
 
 放置 y 标签。
 
@@ -780,19 +780,19 @@ Out[39]: array([[1.        , 0.76695652, 0.58132045],
                 [0.58974359, 0.45230769, 0.34283001]])
 ```
 
-![1](img/#co_financial_data_science_CO17-1)
+①
 
 `ndarray`对象中的行权价值。
 
-![2](img/#co_financial_data_science_CO17-2)
+②
 
 `ndarray` 对象中的时间至到期值。
 
-![3](img/#co_financial_data_science_CO17-3)
+③
 
 创建的两个二维`ndarray`对象（网格）。
 
-![4](img/#co_financial_data_science_CO17-5)
+④
 
 虚拟的隐含波动率值。
 
@@ -812,31 +812,31 @@ In [40]: from mpl_toolkits.mplot3d import Axes3D  ![1](img/1.png)
          # plt.savefig('../../images/ch07/mpl_20')
 ```
 
-![1](img/#co_financial_data_science_CO18-1)
+①
 
 导入相关的 3D 绘图特性。
 
-![2](img/#co_financial_data_science_CO18-2)
+②
 
 为 3D 绘图设置画布。
 
-![3](img/#co_financial_data_science_CO18-3)
+③
 
 创建 3D 图。
 
-![4](img/#co_financial_data_science_CO18-4)
+④
 
 设置 x 标签。
 
-![5](img/#co_financial_data_science_CO18-5)
+⑤
 
 设置 y 标签。
 
-![6](img/#co_financial_data_science_CO18-6)
+⑥
 
 设置 z 标签。
 
-![7](img/#co_financial_data_science_CO18-7)
+⑦
 
 这将创建一个色标。
 
@@ -875,11 +875,11 @@ In [41]: fig = plt.figure(figsize=(10, 6))
          # plt.savefig('../../images/ch07/mpl_21')
 ```
 
-![1](img/#co_financial_data_science_CO19-1)
+①
 
 设置视角。
 
-![2](img/#co_financial_data_science_CO19-2)
+②
 
 创建 3D 散点图。
 
@@ -911,15 +911,15 @@ In [44]: import plotly.offline as plyo  ![2](img/2.png)
 In [45]: plyo.init_notebook_mode(connected=True)  ![3](img/3.png)
 ```
 
-![1](img/#co_financial_data_science_CO20-1)
+①
 
 导入 `Cufflinks`。
 
-![2](img/#co_financial_data_science_CO20-2)
+②
 
 导入 `Plotly` 的离线绘图功能。
 
-![3](img/#co_financial_data_science_CO20-3)
+③
 
 打开笔记本绘图模式。
 
@@ -949,35 +949,35 @@ Out[49]:                      a           b           c          d           e
          2019-01-07   93.941632  103.319168  105.674012  95.891062   86.547934
 ```
 
-![1](img/#co_financial_data_science_CO21-1)
+①
 
 标准正态分布的（伪）随机数。
 
-![2](img/#co_financial_data_science_CO21-2)
+②
 
 `DatetimeIndex`对象的开始日期。
 
-![3](img/#co_financial_data_science_CO21-3)
+③
 
 频率（“`business daily`“）。
 
-![4](img/#co_financial_data_science_CO21-4)
+④
 
 所需周期数。
 
-![5](img/#co_financial_data_science_CO21-5)
+⑤
 
 原始数据进行线性转换。
 
-![6](img/#co_financial_data_science_CO21-6)
+⑥
 
 将列标题作为单个字符。
 
-![7](img/#co_financial_data_science_CO21-7)
+⑦
 
 `DatetimeIndex`对象。
 
-![8](img/#co_financial_data_science_CO21-8)
+⑧
 
 前五行的数据。
 
@@ -991,19 +991,19 @@ In [50]: plyo.iplot(  ![1](img/1.png)
          )
 ```
 
-![1](img/#co_financial_data_science_CO22-1)
+①
 
 这利用了`Plotly`的离线（笔记本模式）功能。
 
-![2](img/#co_financial_data_science_CO22-2)
+②
 
 使用参数`asFigure=True`调用`df.iplot()`方法以允许本地绘图和嵌入。
 
-![3](img/#co_financial_data_science_CO22-3)
+③
 
 `image`选项还提供了绘图的静态位图版本。
 
-![4](img/#co_financial_data_science_CO22-4)
+④
 
 指定要保存的位图的文件名（文件类型扩展名会自动添加）。
 
@@ -1030,35 +1030,35 @@ In [51]: plyo.iplot(
          )
 ```
 
-![1](img/#co_financial_data_science_CO23-1)
+①
 
 选择绘图的主题（绘图样式）。
 
-![2](img/#co_financial_data_science_CO23-2)
+②
 
 添加标题。
 
-![3](img/#co_financial_data_science_CO23-3)
+③
 
 添加 x 标签。
 
-![4](img/#co_financial_data_science_CO23-4)
+④
 
 添加 y 标签。
 
-![5](img/#co_financial_data_science_CO23-5)
+⑤
 
 按列定义绘图*模式*（线条、标记等）。
 
-![6](img/#co_financial_data_science_CO23-6)
+⑥
 
 按列定义要用作标记的符号。
 
-![7](img/#co_financial_data_science_CO23-7)
+⑦
 
 为所有标记固定大小。
 
-![8](img/#co_financial_data_science_CO23-8)
+⑧
 
 按列指定绘图颜色
 
@@ -1079,15 +1079,15 @@ In [52]: plyo.iplot(
          )
 ```
 
-![1](img/#co_financial_data_science_CO24-1)
+①
 
 指定绘图类型。
 
-![2](img/#co_financial_data_science_CO24-2)
+②
 
 每列需要单独的子图。
 
-![3](img/#co_financial_data_science_CO24-3)
+③
 
 设置 `bins` 参数（要使用的桶=要绘制的条形图）。
 
@@ -1136,23 +1136,23 @@ Out[55]:             OpenAsk  HighAsk   LowAsk  CloseAsk
          2017-05-31  1.12434  1.12574  1.12027   1.12133
 ```
 
-![1](img/#co_financial_data_science_CO25-1)
+①
 
 从逗号分隔值（CSV）文件中读取财务数据。
 
-![2](img/#co_financial_data_science_CO25-2)
+②
 
 结果 `DataFrame` 对象包含多列和超过 2,800 行数据。
 
-![3](img/#co_financial_data_science_CO25-3)
+③
 
 从 `DataFrame` 对象中选择四列（开-高-低-收）。
 
-![4](img/#co_financial_data_science_CO25-4)
+④
 
 仅用于可视化的少量数据行。
 
-![5](img/#co_financial_data_science_CO25-5)
+⑤
 
 结果数据集 `quotes` 的最后五行。
 
@@ -1173,19 +1173,19 @@ In [57]: plyo.iplot(
          )
 ```
 
-![1](img/#co_financial_data_science_CO26-1)
+①
 
 `DataFrame` 对象传递给 `QuantFig` 构造函数。
 
-![2](img/#co_financial_data_science_CO26-2)
+②
 
 添加图标题。
 
-![3](img/#co_financial_data_science_CO26-3)
+③
 
 图例放置在图的顶部。
 
-![4](img/#co_financial_data_science_CO26-4)
+④
 
 这给数据集起了个名字。
 
@@ -1204,11 +1204,11 @@ In [59]: plyo.iplot(qf.iplot(asFigure=True),
               filename='qf_02')
 ```
 
-![1](img/#co_financial_data_science_CO27-1)
+①
 
 Bollinger 带的周期数。
 
-![2](img/#co_financial_data_science_CO27-2)
+②
 
 用于带宽的标准偏差数。
 
@@ -1229,11 +1229,11 @@ In [61]: plyo.iplot(
          )
 ```
 
-![1](img/#co_financial_data_science_CO28-1)
+①
 
 修复了 RSI 周期。
 
-![2](img/#co_financial_data_science_CO28-2)
+②
 
 不显示上限或下限带。
 

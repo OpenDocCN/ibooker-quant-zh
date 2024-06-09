@@ -1,0 +1,1752 @@
+- en: Chapter 7\. Data Visualization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Use a picture. It’s worth a thousand words.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Arthur Brisbane (1911)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter is about basic visualization capabilities of the [`matplotlib`](http://www.matplotlib.org)
+    and [`plotly`](http://plot.ly) libraries.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although there are many other visualization libraries available, `matplotlib`
+    has established itself as the benchmark and, in many situations, a robust and
+    reliable visualization tool. It is both easy to use for standard plots and flexible
+    when it comes to more complex plots and customizations. In addition, it is tightly
+    integrated with `NumPy` and `pandas` and the data structures they provide.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`matplotlib` only allows for the generation of plots in the form of bitmaps
+    (for example, in PNG or JPG format). On the other hand, modern web technologies
+    allow — based, for example, on the [Data-Driven Documents (D3.js)](https://d3js.org/)
+    standard — allow for nice interactive and also embeddable plots. Interactive,
+    for example, in that one can zoom in to inspect certain areas in greater detail.
+    A library that makes it really convenient to create such D3.js plots with Python
+    is `plotly`. A small additional library, called `Cufflinks`, tightly integrates
+    `plotly` with `pandas` `DataFrame` objects and allows for the creation of the
+    most popular financial plots (such as candlestick bars)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter mainly covers the following topics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Static 2D Plotting”](#viz_2d_plotting)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section introduces to `matplotlib` and presents a selection of typical
+    2D plots, from the most simple to some more advanced ones with two scales or different
+    subplots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Static 3D Plotting”](#viz_3d_plotting)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on `matplotlib`, a selection of 3D plots useful for certain financial
+    applications are presented.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Interactive 2D Plotting”](#viz_int_2d_plotting)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section introduces to `plotly` and `Cufflinks` to create interactive 2D
+    plots. Making use of the `QuantFigure` feature of `Cufflinks`, this section is
+    also about typical financial plots, used, for example, in technical stock analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter cannot be comprehensive with regard to data visualization with
+    `Python`, `matplotlib` or `plotly`, but it provides a number of examples for the
+    basic and important capabilities of these packages for finance. Other examples
+    are also found in later chapters. For instance, [Chapter 8](ch08.html#fin_time_series)
+    shows more in-depth how to visualize financial time series data with the `pandas`
+    library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Static 2D Plotting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Before creating the sample data and starting to plot, some imports and customizations
+    first:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports `matplotlib` with the usual abbreviation `mpl`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The version of `matplotlib` used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the font to be `serif` in all plots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the main plotting (sub-)package with the usual abbreviation `plt`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the plotting style to `seaborn` (see, for instance, this [overview](https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: One-Dimensional Data Set
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In all that follows, we will plot data stored in either `NumPy` `ndarray` objects
+    or `pandas` `DataFrame` objects. However, `matplotlib` is of course able to plot
+    data stored in different `Python` formats, like `list` objects, as well. The most
+    fundamental, but nevertheless quite powerful, plotting function is `plt.plot()`.
+    In principle, it needs two sets of numbers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**``x`` values**: a list or an array containing the ``x`` coordinates (values
+    of the abscissa)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**``y`` values**: a list or an array containing the ``y`` coordinates (values
+    of the ordinate)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The number of ``x`` and ``y`` values provided must match, of course. Consider
+    the following code, whose output is presented in [Figure 7-1](#matplotlib_0).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the seed for the random number generator for reproducibility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Draws the random numbers (y values).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the integers (x values).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calls the `plt.plot()` function with the `x` and `y` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 01](images/mpl_01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-1\. Plot given x and y values
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`plt.plot()` notices when you pass a `ndarray` object. In this case, there
+    is no need to provide the “extra” information of the ``x`` values. If you only
+    provide the ``y`` values, `plot` takes the index values as the respective ``x``
+    values. Therefore, the following single line of code generates exactly the same
+    output (cf. [Figure 7-2](#matplotlib_1)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mpl 02](images/mpl_02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-2\. Plot given data as `ndarray` object
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: NumPy Arrays and matplotlib
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: You can simply pass `NumPy` `ndarray` objects to `matplotlib` functions. `matplotlib`
+    is able to interpret the data structure for simplified plotting. However, be careful
+    to not pass a too large and/or complex array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since the majority of the `ndarray` methods return again a `ndarray` object,
+    you can also pass your object with a method (or even multiple methods, in some
+    cases) attached. By calling the `cumsum()` method on the `ndarray` object with
+    the sample data, we get the cumulative sum of this data and, as to be expected,
+    a different output (cf. [Figure 7-3](#matplotlib_2)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mpl 03](images/mpl_03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-3\. Plot given a `ndarray` object with method attached
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In general, the default plotting style does not satisfy typical requirements
+    for reports, publications, etc. For example, you might want to customize the font
+    used (e.g., for compatibility with `LaTeX` fonts), to have labels at the axes,
+    or to plot a grid for better readability. This is where plotting styles come in
+    to play (see above). In addition, `matplotlib` offers a large number of functions
+    to customize the plotting style. Some are easily accessible; for others one has
+    to dig a bit deeper. Easily accessible, for example, are those functions that
+    manipulate the axes and those that relate to grids and labels (cf. [Figure 7-4](#matplotlib_3_a)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turns off the grid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 04](images/mpl_04.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-4\. Plot without grid
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Other options for `plt.axis()` are given in [Table 7-1](#axis_opts), the majority
+    of which have to be passed as a `string` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 7-1\. Options for plt.axis()
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Parameter | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Empty | Returns current axis limits |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `off` | Turns axis lines and labels off |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `equal` | Leads to equal scaling |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `scaled` | Equal scaling via dimension changes |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `tight` | Makes all data visible (tightens limits) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `image` | Makes all data visible (with data limits) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `[xmin, xmax, ymin, ymax]` | Sets limits to given (`list` of) values |'
+  prefs: []
+  type: TYPE_TB
+- en: 'In addition, you can directly set the minimum and maximum values of each axis
+    by using `plt.xlim()` and `plt.ylim()`. The following code provides an example
+    whose output is shown in [Figure 7-5](#matplotlib_3_b):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mpl 05](images/mpl_05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-5\. Plot with custom axis limits
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'For the sake of better readability, a plot usually contains a number of labels—e.g.,
+    a title and labels describing the nature of ``x`` and ``y`` values. These are
+    added by the functions `plt.title`, `plt.xlabel`, and `plt.ylabel`, respectively.
+    By default, `plot` plots continuous lines, even if discrete data points are provided.
+    The plotting of discrete points is accomplished by choosing a different style
+    option. [Figure 7-6](#matplotlib_4) overlays (red) points and a (blue) line with
+    line width of 1.5 points:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Increases the size of the figure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the data as a line in blue with line width of 1.5 points.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the data as red (thick) dots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a label on the x-axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a label on the y-axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_data_science_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a title.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 06](images/mpl_06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-6\. Plot with typical labels
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: By default, `plt.plot()` supports the color abbreviations in [Table 7-2](#color_tab).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 7-2\. Standard color abbreviations
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Character | Color |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `b` | Blue |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `g` | Green |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r` | Red |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `c` | Cyan |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `m` | Magenta |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `y` | Yellow |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `k` | Black |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `w` | White |'
+  prefs: []
+  type: TYPE_TB
+- en: In terms of line and/or point styles, `plt.plot()` supports the characters listed
+    in [Table 7-3](#style_tab).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 7-3\. Standard style characters
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Character | Symbol |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `-` | Solid line style |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `--` | Dashed line style |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `-.` | Dash-dot line style |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `:` | Dotted line style |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `.` | Point marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `,` | Pixel marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `o` | Circle marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `v` | Triangle_down marker |'
+  prefs: []
+  type: TYPE_TB
+- en: "| `\x960\x97` | Triangle_up marker |"
+  prefs: []
+  type: TYPE_TB
+- en: '| `<` | Triangle_left marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `>` | Triangle_right marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `1` | Tri_down marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `2` | Tri_up marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `3` | Tri_left marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `4` | Tri_right marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `s` | Square marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `p` | Pentagon marker |'
+  prefs: []
+  type: TYPE_TB
+- en: "| `\x960\x97` | Star marker |"
+  prefs: []
+  type: TYPE_TB
+- en: '| `h` | Hexagon1 marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `H` | Hexagon2 marker |'
+  prefs: []
+  type: TYPE_TB
+- en: "| `\x960\x97` | Plus marker |"
+  prefs: []
+  type: TYPE_TB
+- en: '| `x` | X marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `D` | Diamond marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `d` | Thin diamond marker |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `pass:[ | ]` |'
+  prefs: []
+  type: TYPE_TB
+- en: "| Vline marker | `\x960\x97` |"
+  prefs: []
+  type: TYPE_TB
+- en: Any color abbreviation can be combined with any style character. In this way,
+    you can make sure that different data sets are easily distinguished. As we will
+    see, the plotting style will also be reflected in the legend.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two-Dimensional Data Set
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Plotting one-dimensional data can be considered a special case. In general,
+    data sets will consist of multiple separate subsets of data. The handling of such
+    data sets follows the same rules with `matplotlib` as with one-dimensional data.
+    However, a number of additional issues might arise in such a context. For example,
+    two data sets might have such a different scaling that they cannot be plotted
+    using the same y- and/or x-axis scaling. Another issue might be that you may want
+    to visualize two different data sets in different ways, e.g., one by a line plot
+    and the other by a bar plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code generates a two-dimensional sample data set as a `NumPy`
+    `ndarray` object of shape 20 × 2 with standard normally distributed (pseudo-)random
+    numbers. On this array, the method `cumsum()` is called to calculate the cumulative
+    sum of the sample data along axis 0 (i.e., the first dimension):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In general, you can also pass such two-dimensional arrays to `plt.plot`. It
+    will then automatically interpret the contained data as separate data sets (along
+    axis 1, i.e., the second dimension). A respective plot is shown in [Figure 7-7](#matplotlib_5):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mpl 07](images/mpl_07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-7\. Plot with two data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In such a case, further annotations might be helpful to better read the plot.
+    You can add individual labels to each data set and have them listed in the legend.
+    `plt.legend()` accepts different locality parameters. `0` stands for *best location*,
+    in the sense that as little data as possible is hidden by the legend. [Figure 7-8](#matplotlib_6)
+    shows the plot of the two data sets, this time with a legend. In the generating
+    code, we now do not pass the `ndarray` object as a whole but rather access the
+    two data subsets separately (`y[:, 0]` and `y[:, 0]`), which allows to attach
+    individual labels to them:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines labels for the data sub-sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a legend in the *best* location.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further location options for `plt.legend()` include those presented in [Table 7-4](#legend_opts).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 7-4\. Options for plt.legend()
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Loc | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Empty | Automatic |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0` | Best possible |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `1` | Upper right |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `2` | Upper left |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `3` | Lower left |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `4` | Lower right |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `5` | Right |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `6` | Center left |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `7` | Center right |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `8` | Lower center |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `9` | Upper center |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `10` | Center |'
+  prefs: []
+  type: TYPE_TB
+- en: '![mpl 08](images/mpl_08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-8\. Plot with labeled data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Multiple data sets with a similar scaling, like simulated paths for the same
+    financial risk factor, can be plotted using a single y-axis. However, often data
+    sets show rather different scalings and the plotting of such data with a single
+    y scale generally leads to a significant loss of visual information. To illustrate
+    the effect, we scale the first of the two data subsets by a factor of 100 and
+    plot the data again (cf. [Figure 7-9](#matplotlib_7)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Re-scales the first data sub-set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 09](images/mpl_09.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-9\. Plot with two differently scaled data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Inspection of [Figure 7-9](#matplotlib_7) reveals that the first data set is
+    still “visually readable,” while the second data set now looks like a straight
+    line with the new scaling of the y-axis. In a sense, information about the second
+    data set now gets “visually lost.” There are two basic approaches to resolve this
+    problem:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Use of two y-axes (left/right)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Use of two subplots (upper/lower, left/right)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Let us first introduce a second y-axis into the plot. [Figure 7-10](#matplotlib_8)
+    now has two different y-axes. The left y-axis is for the first data set while
+    the right y-axis is for the second. Consequently, there are also two legends:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the `figure` and `axis` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a second `axis` object that shares the x-axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 10](images/mpl_10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-10\. Plot with two data sets and two y-axes
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The key lines of code are those that help manage the axes. These are the ones
+    that follow:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: By using the `plt.subplots()` function, we get direct access to the underlying
+    plotting objects (the figure, subplots, etc.). It allows, for example, to generate
+    a second subplot that shares the x-axis with the first subplot. In [Figure 7-10](#matplotlib_8)
+    we have, then, actually two subplots that *overlay* each other.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, consider the case of two *separate* subplots. This option gives even
+    more freedom to handle the two data sets, as [Figure 7-11](#matplotlib_9) illustrates:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the upper subplot 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the lower subplot 2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 11](images/mpl_11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-11\. Plot with two subplots
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The placing of subplots in a `matplotlib` `figure` object is accomplished by
+    the use of a special coordinate system. `plt.subplot()` takes as arguments three
+    integers for `numrows`, `numcols`, and `fignum` (either separated by commas or
+    not). `numrows` specifies the number of *rows*, `numcols` the number of *columns*,
+    and `fignum` the number of the *subplot*, starting with 1 and ending with `numrows
+    * numcols`. For example, a figure with nine equally sized subplots would have
+    `numrows=3`, `numcols=3`, and `fignum=1,2,...,9`. The lower-right subplot would
+    have the following “coordinates”: `plt.subplot(3, 3, 9)`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Sometimes, it might be necessary or desired to choose two different plot types
+    to visualize such data. With the subplot approach you have the freedom to combine
+    arbitrary kinds of plots that `matplotlib` offers.^([1](ch07.html#idm140277668085472))
+    [Figure 7-12](#matplotlib_10) combines a line/point plot with a bar chart:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a `bar` subplot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 12](images/mpl_12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-12\. Plot combining line/point subplot with bar subplot
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Other Plot Styles
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When it comes to two-dimensional plotting, line and point plots are probably
+    the most important ones in finance; this is because many data sets embody time
+    series data, which generally is visualized by such plots. [Chapter 8](ch08.html#fin_time_series)
+    addresses financial times series data in detail. However, for the moment this
+    section sticks with a two-dimensional data set of random numbers and illustrates
+    some alternative, and for financial applications useful, visualization approaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first is the *scatter plot*, where the values of one data set serve as
+    the ``x`` values for the other data set. [Figure 7-13](#matplotlib_11_a) shows
+    such a plot. Such a plot type is used, for example, for plotting the returns of
+    one financial time series against those of another one. For this example we will
+    use a new two-dimensional data set with some more data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a larger data set with random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scatter plot via the `plt.plot()` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 13](images/mpl_13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-13\. Scatter plot via plot function
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`matplotlib` also provides a specific function to generate scatter plots. It
+    basically works in the same way, but provides some additional features. [Figure 7-14](#matplotlib_11_b)
+    shows the corresponding scatter plot to [Figure 7-13](#matplotlib_11_a), this
+    time generated using the `plt.scatter()` function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scatter plot via `plt.scatter()` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 14](images/mpl_14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-14\. Scatter plot via scatter function
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The `plt.scatter()` plotting function, for example, allows the addition of
+    a third dimension, which can be visualized through different colors and be described
+    by the use of a color bar. [Figure 7-15](#matplotlib_11_c) shows a scatter plot
+    where there is a third dimension illustrated by different colors of the single
+    dots and with a color bar as a legend for the colors. To this end, the following
+    code generates a third data set with random data, this time with integers between
+    0 and 10:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The third data sets is included.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The color map is chosen.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The marker is defined to be a thick dot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 15](images/mpl_15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-15\. Scatter plot with third dimension
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Another type of plot, the *histogram*, is also often used in the context of
+    financial returns. [Figure 7-16](#matplotlib_12_a) puts the frequency values of
+    the two data sets next to each other in the same plot:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The histogram plot via the `plt.hist()` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 16](images/mpl_16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-16\. Histogram for two data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Since the histogram is such an important plot type for financial applications,
+    let us take a closer look at the use of `plt.hist`. The following example illustrates
+    the parameters that are supported:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Table 7-5](#hist_params) provides a description of the main parameters of
+    the `plt.hist` function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 7-5\. Parameters for plt.hist()
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Parameter | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `x` | `list` object(s), `ndarray` object |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `bins` | Number of bins |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `range` | Lower and upper range of bins |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `normed` | Norming such that integral value is 1 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `weights` | Weights for every value in `x` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `cumulative` | Every bin contains the counts of the lower bins |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `histtype` | Options (strings): `bar`, `barstacked`, `step`, `stepfilled`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `align` | Options (strings): `left`, `mid`, `right` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `orientation` | Options (strings): `horizontal`, `vertical` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `rwidth` | Relative width of the bars |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `log` | Log scale |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `color` | Color per data set (array-like) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `label` | String or sequence of strings for labels |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `stacked` | Stacks multiple data sets |'
+  prefs: []
+  type: TYPE_TB
+- en: '[Figure 7-17](#matplotlib_12_b) shows a similar plot; this time, the data of
+    the two data sets is stacked in the histogram:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mpl 17](images/mpl_17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-17\. Stacked histogram for two data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Another useful plot type is the *boxplot*. Similar to the histogram, the boxplot
+    allows both a concise overview of the characteristics of a data set and easy comparison
+    of multiple data sets. [Figure 7-18](#matplotlib_13) shows such a plot for our
+    data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Boxplot via the `plt.boxplot()` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets individual x labels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This last example uses the function `plt.setp()`, which sets properties for
+    a (set of) plotting instance(s). For example, considering a line plot generated
+    by:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: changes the style of the line to “dashed.” This way, you can easily change parameters
+    after the plotting instance (“artist object”) has been generated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 18](images/mpl_18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-18\. Boxplot for two data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: As a final illustration in this section, consider a mathematically inspired
+    plot that can also be found as [an example in the gallery for `matplotlib`](http://www.matplotlib.org/gallery.html).
+    It plots a function and highlights graphically the area below the function from
+    a lower and to an upper limit—in other words, the integral value of the function
+    between the lower and upper limits highlighted as an area. The integral (value)
+    to be illustrated is <math alttext="integral Subscript a Superscript b Baseline
+    f left-parenthesis x right-parenthesis d x"><mrow><msubsup><mo>∫</mo> <mrow><mi>a</mi></mrow>
+    <mi>b</mi></msubsup> <mi>f</mi> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow>
+    <mi>d</mi> <mi>x</mi></mrow></math> with <math alttext="f left-parenthesis x right-parenthesis
+    equals one-half dot e Superscript x Baseline plus 1"><mrow><mi>f</mi> <mrow><mo>(</mo>
+    <mi>x</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac> <mo>·</mo>
+    <msup><mi>e</mi> <mi>x</mi></msup> <mo>+</mo> <mn>1</mn></mrow></math> , <math
+    alttext="a equals one-half"><mrow><mi>a</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
+    and <math><mrow><mi>b</mi> <mo>=</mo> <mfrac><mn>3</mn> <mn>2</mn></mfrac></mrow></math>
+    . [Figure 7-19](#matplotlib_math) shows the resulting plot and demonstrates that
+    `matplotlib` seamlessly handles `LaTeX` type setting for the inclusion of mathematical
+    formulae into plots. First, the function definition, integral limits as variables
+    and data sets for the x and y values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function definition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The integral limits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The x values to plot the function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO15-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The y values to plot the function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO15-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The x values within the integral limits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_data_science_CO15-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The y values within the integral limits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_financial_data_science_CO15-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `list` object with multiple `tuple` objects representing coordinates for
+    the polygon to be plotted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, the plotting itself which is a bit involved due to the many single objects
+    to be placed explicitly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the function values as a blue line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO16-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the minimum y value for the ordinate axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO16-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the polygon (integral area) in gray.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO16-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places the integral formula in the plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO16-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places axes labels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_data_science_CO16-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places the x labels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_financial_data_science_CO16-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places the y labels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 19](images/mpl_19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-19\. Exponential function, integral area, and LaTeX labels
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Static 3D Plotting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'There are not too many fields in finance that really benefit from visualization
+    in three dimensions. However, one application area is volatility surfaces showing
+    implied volatilities simultaneously for a number of times-to-maturity and strikes.
+    In what follows, the code artificially generates a plot that resembles a volatility
+    surface. To this end, consider:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Strike values* between 50 and 150'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Times-to-maturity* between 0.5 and 2.5 years'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'This provides a two-dimensional coordinate system. `NumPy`’s `np.meshgrid()`
+    function can generate such a system out of two one-dimensional `ndarray` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object with the strike values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object with the times-to-maturity values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO17-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The two two-dimensional `ndarray` objects (grids) created.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO17-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dummy implied volatility values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The plot resulting from the following code is shown in [Figure 7-20](#matplotlib_17):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the relevant 3D plotting features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets up a canvas for 3D plotting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the 3D plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO18-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the x label.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO18-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the y label.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_data_science_CO18-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the z label.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_financial_data_science_CO18-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This creates a color bar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 20](images/mpl_20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-20\. 3D surface plot for (dummy) implied volatilities
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Table 7-6](#plot_surface_params) provides a description of the different parameters
+    the `plt.plot_surface()` function can take.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 7-6\. Parameters for plot_surface
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Parameter | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `X, Y, Z` | Data values as 2D arrays |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `rstride` | Array row stride (step size) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `cstride` | Array column stride (step size) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `color` | Color of the surface patches |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `cmap` | A colormap for the surface patches |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `facecolors` | Face colors for the individual patches |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `norm` | An instance of `Normalize` to map values to colors |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `vmin` | Minimum value to map |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `vmax` | Maximum value to map |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `shade` | Whether to shade the face colors |'
+  prefs: []
+  type: TYPE_TB
+- en: 'As with two-dimensional plots, the line style can be replaced by single points
+    or, as in what follows, single triangles. [Figure 7-21](#matplotlib_18) plots
+    the same data as a 3D scatter plot, but now also with a different viewing angle,
+    using the `view_init()` method to set it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the viewing angle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a 3D scatter plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mpl 21](images/mpl_21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-21\. 3D scatter plot for (dummy) implied volatilities
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Interactive 2D Plotting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`matplotlib` allows to create plots that are statics bitmap objects or of PDF
+    format. Nowadays, there are many libraries available to create interactive plots
+    based on the `D3.js` standard. Such plots make, among others, zooming in and out
+    or hover effects for data inspection possible. They can in general also be easily
+    embedded in web pages.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A popular platform and plotting library is [`Plotly`](http://plot.ly). It is
+    dedicated to visualization for data science and is in wide spread use around the
+    world. Major benefits of Plotly are its tight integration with the Python ecosystem
+    and the ease of use — in particular when combined with `pandas` `DataFrame` objects
+    and the wrapper package [`Cufflinks`](http://github.com/santosjorge/cufflinks).
+  prefs: []
+  type: TYPE_NORMAL
+- en: For some functionality, a free account with Plotly is required for which users
+    can register on the platform itself under [*http://plot.ly*](http://plot.ly).
+    Once the credentials are granted they should be stored locally for permanent use
+    afterwards. All details in the regard are found under [Getting Started with Plotly
+    for Python](https://plot.ly/python/getting-started/).
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section focuses on selected aspects only in that `Cufflinks` is used exclusively
+    to create interactive plots from data stored in `DataFrame` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic Plots
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: To get started from within a Jupyter Notebook context, some imports are required
+    and the *notebook mode* should be turned on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports `Cufflinks`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO20-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the offline plotting capabilities of `Plotly`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO20-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turns on the notebook plotting mode.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tip
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: With `Plotly`, there is also the option to get the plots rendered on the `Plotly`
+    servers. However, the notebook mode is generally much faster, in particular when
+    dealing with larger data sets. However, some functionality, like the streaming
+    plot service of `Plotly`, is only available via communication with the server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The examples to follow rely again on random numbers, this time stored in a `DataFrame`
+    object with `DatetimeIndex`, i.e. as a time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard normally distributed (pseudo-)random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Start date for the `DatetimeIndex` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO21-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The frequency (”`business daily`“).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO21-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of periods needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO21-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The raw data is linearly transformed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_data_science_CO21-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The column headers as single characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_financial_data_science_CO21-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `DatetimeIndex` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_financial_data_science_CO21-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first five rows of data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Cufflinks` adds a new method to the `DataFrame` class: `df.iplot()`. This
+    method uses `Plotly` in the backend to create interactive plots. The code examples
+    in this section all make use of the option to download the interactive plot as
+    a static bitmap, which in turn embedded in the text. In the Jupyter Notebook environment,
+    the created plots are all interactive. The result of the following code is shown
+    as <<>>.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This makes use of the offline (notebook mode) capabilities of `Plotly`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `df.iplot()` method is called with parameter `asFigure=True` to allow for
+    local plotting and embedding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO22-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `image` option provides in addition a static bitmap version of the plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO22-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The filename for the bitmap to be saved is specified (file type extension is
+    added automatically).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ply 01](images/ply_01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-22\. Line plot for time series data with `Plotly`, `pandas` and `Cufflinks`
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'As with `matplotlib` in general or also with the `pandas` plotting functionality,
+    there are multiple parameters available to customize such plots (see [Figure 7-23](#plotly_02)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects a theme (plotting style) for the plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a title.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO23-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a x label.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO23-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a y label.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO23-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the plotting *mode* (line, marker, etc.) by column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_data_science_CO23-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the symbols to be used as markers by column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_financial_data_science_CO23-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the size for all markers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_financial_data_science_CO23-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the plotting color by column
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ply 02](images/ply_02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-23\. Line plot for two columns of the `DataFrame` object with customizations
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Similar to `matplotlib`, `Plotly` allows for a number of different plotting
+    types. Plotting available via `Cufflinks` are: `chart, scatter, bar, box, spread,
+    ratio, heatmap, surface, histogram, bubble, bubble3d, scatter3d, scattergeo, ohlc,
+    candle, pie` and `choroplet`. As an example for a plotting type different from
+    a line plot consider the histogram (see [Link to Come]):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the plotting type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO24-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Requires separate subplots for every column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO24-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the `bins` parameters (buckets to be used = bars to be plotted).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ply 03](images/ply_03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-24\. Histograms per column of the `DataFrame` object
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Financial Plots
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The combination of `Ploty`, `Cufflinks` and `pandas` proves particularly powerful
+    when working with financial time series data. `Cufflinks` provides specialized
+    functionality to create typical financial plots and to add typical financial charting
+    elements, such as the Relative-Strength Indicator (RSI), to name but one example.
+    To this end, a persistent `QuantFig` object is created that can be plotted the
+    same way as a `DataFrame` object with `Cufflinks`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This sub-section uses a real financial data sets: time series data for the
+    EUR/USD exchange rate (source: FXCM Forex Capital Markets Ltd.).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the financial data from a Comma Separated Value (CSV) file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO25-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting `DataFrame` objects consists of multiple columns and more than
+    2,800 data rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This selects four columns from the `DataFrame` object (Open-High-Low-Close of
+    OHLC).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO25-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Only a few data rows are used for the visualization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_data_science_CO25-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The final five rows of the resulting data set `quotes`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: During instantiation, the `QuantFig` object takes the `DataFrame` object as
+    input and allows for some basic customization. Plotting the data stored in the
+    `QuantFig` object `qf` then happens with the `qf.iplot()` method (see [Figure 7-25](#qf_01)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO26-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `DataFrame` object is passed to the `QuantFig` constructor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO26-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This adds a figure title.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_data_science_CO26-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The legend is placed at the top of the plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_data_science_CO26-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This gives the data set a name.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![qf 01](images/qf_01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-25\. OHLC plot of EUR/USD data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Adding typical financial charting elements, such as Bollinger bands, happens
+    via different methods available for the `QuantFig` object (see [Figure 7-26](#qf_02)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO27-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of periods for the Bollinger band.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO27-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of standard deviations to be used for the band width.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![qf 02](images/qf_02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-26\. OHLC plot of EUR/USD data with Bollinger band
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Certain financial indicators, such as RSI, are added as a subplot (see [Figure 7-27](#qf_03)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_data_science_CO28-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the RSI period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_data_science_CO28-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Does not show an upper or lower band.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![qf 03](images/qf_03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-27\. OHLC plot of EUR/USD data with Bollinger band and RSI
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`matplotlib` can be considered both the benchmark and the workhorse when it
+    comes to data visualization in `Python`. It is tightly integrated with `NumPy`
+    and `pandas`. The basic functionality is easily and conveniently accessed. However,
+    on the other hand, `matplotlib` is a rather mighty library with a somewhat complex
+    API. This makes it impossible to give a broader overview of all the capabilities
+    of `matplotlib` in this chapter.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter introduces the basic functions of `matplotlib` for 2D and 3D plotting
+    useful in many financial contexts. Other chapters provide further examples of
+    how to use this fundamental library for visualization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to `matplotlib`, this chapter covers `Plotly` in combination with
+    `Cufflinks`. This combination makes the creation of interactive `D3.js` plots
+    a convenient affair since only a single method call on a `DataFrame` object is
+    necessary in general. All technicalities are taken care of in the backend. Furthermore,
+    `Cufflinks` provides with the `QuantFig` object an easy way to create typical
+    financial plots with popular financial indicators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Reading
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The major resources for `matplotlib` can be found on the Web:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The home page of `matplotlib` is, of course, the best starting point: [*http://matplotlib.org*](http://matplotlib.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'There’s a gallery with many useful examples: [*http://matplotlib.org/gallery.html*](http://matplotlib.org/gallery.html).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'A tutorial for 2D plotting is found here: [*http://matplotlib.org/users/pyplot_tutorial.html*](http://matplotlib.org/users/pyplot_tutorial.html).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Another one for 3D plotting is here: [*http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html*](http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It has become kind of a standard routine to consult the gallery, to look there
+    for an appropriate visualization example, and to start with the corresponding
+    example code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The major resources for `Plotly` and `Cufflinks` are also online:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The major page: [*http://plot.ly*](http://plot.ly)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'A tutorial to get started with Python: [*https://plot.ly/python/getting-started/*](https://plot.ly/python/getting-started/)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The `Cufflinks` Github page: [*https://github.com/santosjorge/cufflinks*](https://github.com/santosjorge/cufflinks)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch07.html#idm140277668085472-marker)) For an overview of which plot types
+    are available, visit the [`matplotlib` gallery](http://matplotlib.org/gallery.html).
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,1330 @@
+- en: Chapter 5\. Data Analysis with pandas
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Data! Data! Data! I can’t make bricks without clay!
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Sherlock Holmes
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Introduction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter is about `pandas` a library for data analysis with a focus on tabular
+    data. `pandas` has become a powerful tool over the recent years which not only
+    brings powerful classes and functionalities, but does also a great job in wrapping
+    existing functionality from other packages. The result is a user interface that
+    makes data analysis, and in particular financial analytics, a convenient and efficient
+    task.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At the core of `pandas` and this chapter is the `DataFrame`, a class to efficiently
+    handle data in tabular form, i.e. data characterized by an organization along
+    columns. To this end, the `DataFrame` class provides, for instance, column labeling
+    as well as flexible indexing capabilities for the rows (records) of the data set — similar
+    to a table in a relational database or an Excel spreadsheet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The chapter covers the following fundamental data structures:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| object type | meaning | usage/model for |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `DataFrame` | 2-dimensional data object with index | tabular data organized
+    in columns |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `Series` | 1-dimensional data object with index | single (time) series of
+    data |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The chapter is organized as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“DataFrame Class”](#data_frame)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The chapter starts by exploring the basic characteristics and capabilities of
+    the `DataFrame` class of `pandas` by using simple and small data sets; it then
+    proceeds by using a `NumPy` `ndarray` object and transforming this to a `DataFrame`
+    object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Basic Analytics”](#basic_analytics) and [“Basic Visualization”](#basic_viz)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic analytics and visualization capabilities are also illustrated in this
+    chapter, although later chapters go deeper in this regard.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Series Class”](#series_class)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A rather brief section covers the `Series` class of `pandas`, which, in a sense,
+    represents a special case of the `DataFrame` class with a single column of data
+    only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“GroupBy Operations”](#groupby_ops)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: One of the strengths of the `DataFrame` class lies in grouping data according
+    to a single or multiple columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Complex Selection”](#complex_selection)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The usage of (complex) conditions allows for the easy selection of data from
+    a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Concatenation, Joining and Merging”](#joining)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The concatenation, joining and merging of different data sets into one is an
+    important operation in data analysis. `pandas` provides different options to accomplish
+    such a task.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Performance Aspects”](#pandas_perf)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As with Python in general, `pandas` provides multiple options in general to
+    accomplish the same goal. This section takes a brief look at potential performance
+    differences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: DataFrame Class
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section covers some fundamental aspects of the `DataFrame` class. The class
+    is that complex and powerful that only fraction of the capabilities can be presented
+    here. Subsequent chapters provide more examples and shed light on different aspects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First Steps with DataFrame Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'On a rather fundamental level, the `DataFrame` class is designed to manage
+    indexed and labeled data, not too different from a `SQL` database table or a worksheet
+    in a spreadsheet application. Consider the following creation of a `DataFrame`
+    object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports `pandas`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the data as a `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the column label.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the index values/labels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the data as well as column and index labels of `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This simple example already shows some major features of the `DataFrame` class
+    when it comes to storing data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data itself can be provided in different shapes and types (`list`, `tuple`,
+    `ndarray`, and `dict` objects are candidates).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Labels
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data is organized in columns, which can have custom names.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Index
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is an index that can take on different formats (e.g., numbers, strings,
+    time information).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Working with such a `DataFrame` object is in general pretty convenient and
+    efficient, e.g., compared to regular `ndarray` objects, which are more specialized
+    and more restricted when you want to do something like enlarging an existing object.
+    The following are simple examples showing how typical operations on a `DataFrame`
+    object work:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `index` attribute and `Index` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `columns` attribute and `Index` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the value corresponding to index `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the two values corresponding to indices `a` and `d`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the second and third rows via the index positions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_data_analysis_with_pandas_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum over the single column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_data_analysis_with_pandas_CO2-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Uses the `apply()` method to calculate squares in vectorized fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_data_analysis_with_pandas_CO2-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies vectorization directly as with `ndarray` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Contrary to `NumPy` `ndarray` objects, enlarging the `DataFrame` object in
+    both dimensions is possible:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a new columns with `float` objects provided as a `tuple` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects this column and shows its data and index labels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A whole `DataFrame` object can also be taken to define a new column. In such
+    a case, indices are aligned automatically:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another new column is created based on a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Appending data works similarly. However, in the following example we see a
+    side effect that is usually to be avoided—the index gets replaced by a simple
+    range index:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends a new row via a `dict` object; this is a temporary operation during
+    which index information gets lost.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This appends the row based on a `DataFrame` object with index information; the
+    original index information is preserved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This appends an incomplete data row to the `DataFrame` objects, resulting in
+    `NaN` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The different `dtypes` of the single columns; this is similar to record arrays
+    with `NumPy`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Although there are now missing values, the majority of method calls will still
+    work. For example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mean over the two columns specified (ignoring rows with `NaN` values).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard deviation over the two columns specified (ignoring rows with `NaN`
+    values).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second Steps with DataFrame Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The example in this sub-section is based on a `ndarray` object with standard
+    normally distributed random numbers. It explores further features such as a `DatetimeIndex`
+    to manage time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Although you can construct `DataFrame` objects more directly (as we have seen
+    before), using an `ndarray` object is generally a good choice since `pandas` will
+    retain the basic structure and will “only” add meta-information (e.g., index values).
+    It also represents a typical use case for financial applications and scientific
+    research in general. For example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a `DataFrame` object from the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Table 5-1](#DataFrame_params) lists the parameters that the `DataFrame` function
+    takes. In the table, “array-like” means a data structure similar to an `ndarray`
+    object—a `list`, for example. `Index` is an instance of the `pandas` `Index` class.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 5-1\. Parameters of DataFrame function
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Parameter | Format | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ``data`` | ``ndarray``/``dict``/``DataFrame`` | Data for `DataFrame`; `dict`
+    can contain `Series`, +`ndarray`+s, +`list`+s |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `index` | ``Index``/array-like | Index to use; defaults to `range(n)` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `columns` | ``Index``/array-like | Column headers to use; defaults to `range(n)`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `dtype` | ``dtype``, default `None` | Data type to use/force; otherwise,
+    it is inferred |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `copy` | ``bool``, default `None` | Copy data from inputs |'
+  prefs: []
+  type: TYPE_TB
+- en: 'As with structured arrays, and as we have already seen, `DataFrame` objects
+    have column names that can be defined directly by assigning a `list` with the
+    right number of elements. This illustrates that you can define/change the attributes
+    of the `DataFrame` object as you go:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the column labels via a `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picking a column is now made easy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To work with financial time series data efficiently, you must be able to handle
+    time indices well. This can also be considered a major strength of `pandas`. For
+    example, assume that our nine data entries in the four columns correspond to month-end
+    data, beginning in January 2019\. A `DatetimeIndex` object is then generated with
+    the `date_range()` function as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a `DatetimeIndex` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Table 5-2](#date_range_params) lists the parameters that the `date_range`
+    function takes.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 5-2\. Parameters of date_range function
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Parameter | Format | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `start` | ``string``/``datetime`` | left bound for generating dates |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `end` | ``string``/``datetime`` | right bound for generating dates |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `periods` | ``integer``/``None`` | number of periods (if `start` or `end`
+    is `None`) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `freq` | ``string``/``DateOffset`` | frequency string, e.g., `5D` for 5 days
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `tz` | ``string``/``None`` | time zone name for localized index |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `normalize` | `bool`, default `None` | normalize `start` and `end` to midnight
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `name` | `string`, default `None` | name of resulting index |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The following code defines the just created `DatetimeIndex` object as the relevant
+    index object, making a time series of the original data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: When it comes to the generation of `DatetimeIndex` objects with the help of
+    the `date_range` function, there are a number of choices for the frequency parameter
+    `freq`. [Table 5-3](#freq_params) lists all the options.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 5-3\. Frequency parameter values for date_range function
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Alias | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `B` | Business day frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `C` | Custom business day frequency (experimental) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `D` | Calendar day frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `W` | Weekly frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `M` | Month end frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BM` | Business month end frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `MS` | Month start frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BMS` | Business month start frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `Q` | Quarter end frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BQ` | Business quarter end frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `QS` | Quarter start frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BQS` | Business quarter start frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `A` | Year end frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BA` | Business year end frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `AS` | Year start frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BAS` | Business year start frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `H` | Hourly frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `T` | Minutely frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `S` | Secondly frequency |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `L` | Milliseconds |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `U` | Microseconds |'
+  prefs: []
+  type: TYPE_TB
+- en: In some circumstances, it pays off to have access to the original data set in
+    the form of the `ndarray` object. The `values` attribute, for instance, provides
+    direct access to it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: Arrays and DataFrames
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: You can generate a `DataFrame` object in general from an `ndarray` object. But
+    you can also easily generate an `ndarray` object out of a `DataFrame` by using
+    the `values` attribute of the `DataFrame` class or the function `np.array()` of
+    `NumPy`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic Analytics
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Like `NumPy` `ndarray` objects, the `pandas` `DataFrame` class has built in
+    a multitude of convenience methods. As a starter, consider the methods `info()`
+    and +describe().
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Provides meta information regarding the data, columns and the index.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Provides helpful summary statistics per column (for numerical data).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In addition, you can easily get the column-wise or row-wise sums, means, and
+    cumulative sums as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Column-wise sum.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Column-wise mean.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Row-wise mean.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Column-wise cumulative sum (starting at first index position).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`DataFrame` objects also understand `NumPy` universal functions as expected:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Column-wise mean.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Element-wise natural logarithm; a warning is raised but the calculations runs
+    through, resulting in multiple `NaN` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Element-wise square root for the absolute values …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and the column-wise mean values for the results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A linear transform of the numerical data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: NumPy Universal Functions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In general, you can apply `NumPy` universal functions to `pandas` `DataFrame`
+    objects whenever they could be applied to an `ndarray` object containing the same
+    type of data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`pandas` is quite error tolerant, in the sense that it captures errors and
+    just puts a `NaN` value where the respective mathematical operation fails. Not
+    only this, but as briefly shown before, you can also work with such incomplete
+    data sets as if they were complete in a number of cases. This comes in handy,
+    since reality is characterized by incomplete data sets more often than one wishes
+    for.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic Visualization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Plotting of data is only one line of code away in general, once the data is
+    stored in a `DataFrame` object (cf. [Figure 5-1](#dataframe_plot_01)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Customizing the plotting style.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting the cumulative sums of the four columns as line plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pd plot 01](images/pd_plot_01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-1\. Line plot of a DataFrame object
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Basically, `pandas` provides a wrapper around `matplotplib` (cf. [Chapter 7](ch07.html#visualization)),
+    specifically designed for `DataFrame` objects. [Table 5-4](#plot_params) lists
+    the parameters that the `plot` method takes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 5-4\. Parameters of plot method
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Parameter | Format | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `x` | Label/position, default `None` | Only used when column values are x-ticks
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `y` | Label/position, default `None` | Only used when column values are y-ticks
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `subplots` | Boolean, default `False` | Plot columns in subplots |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `sharex` | Boolean, default `True` | Sharing of the x-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `sharey` | Boolean, default `False` | Sharing of the y-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `use_index` | Boolean, default `True` | Use of `DataFrame.index` as x-ticks
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `stacked` | Boolean, default `False` | Stack (only for bar plots) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `sort_columns` | Boolean, default `False` | Sort columns alphabetically before
+    plotting |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `title` | String, default `None` | Title for the plot |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `grid` | Boolean, default `False` | Horizontal and vertical grid lines |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `legend` | Boolean, default `True` | Legend of labels |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ax` | `matplotlib` axis object | `matplotlib` axis object to use for plotting
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `style` | String or list/dictionary | line plotting style (for each column)
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `kind` | "`line`“/”`bar`“/”`barh`“/”`kde`“/”`density`" | type of plot |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `logx` | Boolean, default `False` | Logarithmic scaling of x-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `logy` | Boolean, default `False` | Logarithmic scaling of y-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `xticks` | Sequence, default `Index` | x-ticks for the plot |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `yticks` | Sequence, default `Values` | y-ticks for the plot |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `xlim` | 2-tuple, list | Boundaries for x-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ylim` | 2-tuple, list | Boundaries for y-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `rot` | Integer, default `None` | Rotation of x-ticks |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `secondary_y` | Boolean/sequence, default `False` | Secondary y-axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `mark_right` | Boolean, default `True` | Automatic labeling of secondary
+    axis |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `colormap` | String/colormap object, default `None` | Colormap to use for
+    plotting |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `kwds` | Keywords | Options to pass to `matplotlib` |'
+  prefs: []
+  type: TYPE_TB
+- en: As another example consider a bar plot of the same data (see [Figure 5-1](#dataframe_plot_01)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Uses the `kind` parameter to change the plot type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pd plot 02](images/pd_plot_02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-2\. Bar plot of a DataFrame object
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Series Class
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'So far, we have worked mainly with the `pandas` `DataFrame` class. The `Series`
+    class is another important class that comes with `pandas`. It is characterized
+    by the fact that it has only a single column of data. In that sense, it is a specialization
+    of the `DataFrame` class that shares many but not all characteristics and capabilities.
+    Regularly, a `Series` object is obtained when a single column is selected from
+    the multi-column `DataFrame` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The main `DataFrame` methods are available for `Series` objects as well. For
+    illustration, consider the `mean()` and `plot()` methods (see [Figure 5-3](#series_plot)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pd plot 03](images/pd_plot_03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-3\. Line plot of a Series object
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: GroupBy Operations
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`pandas` has powerful and flexible grouping capabilities. They work similarly
+    to grouping in `SQL` as well as pivot tables in Microsoft `Excel`. To have something
+    to group by, we add a column indicating the quarter the respective data of the
+    index belongs to:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now, we can group by the `Quarter` column and can output statistics for the
+    single groups:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Groups according to the `Quarter` column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gives the number of rows in the group.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gives the mean per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO15-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gives the maximum value per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO15-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gives both the minimum and maximum values per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Grouping can also be done with multiple columns. To this end, another column,
+    indicating whether the month of the index date is odd or even, is introduced:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: This concludes the introduction into `pandas` and the use of `DataFrame` objects.
+    Subsequent sections apply this tool set to real-world financial data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Complex Selection
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Often, data selection is accomplished by formulation conditions on column values,
+    and potentially combining multiple such conditions logically. Consider the following
+    data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`ndarray` object with standard normally distributed random numbers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO16-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`DataFrame` object with the same random numbers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first five rows via the `head()` method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO16-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The final five rows via the `tail()` method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following code illustrates the application of Python’s comparison operators
+    and logical operators on values in the two columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Check whether value in column `x` is greater than 0.5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Check whether value in column `x` is positive *and* value in column `y` is negative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO17-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Check whether value in column `x` is positive *or* value in column `y` is negative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using the resulting Boolean `Series` objects, complex data (row) selection is
+    straightforward.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: All rows for which the value in column `x` is greater than 0.5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: All rows for which the value in column `x` is positive *and* the value in column
+    `y` is negative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: All rows for which the value in column `x` is positive *or* the value in column
+    `y` is negative (columns are accessed here via the respective attributes).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Comparison operators can also be applied to complete `DataFrame` objects at
+    once.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Which values in the `DataFrame` object are positive?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Select all such values and put a `NaN` in all other places.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Concatenation, Joining and Merging
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This section walks through different approaches to combine two simple data
+    sets in the form of `DataFrame` objects. The two simple data sets are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: Concatenation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Concatenation or appending basically mean that rows are added from one `DataFrame`
+    objects to another one. This can be accomplished via the `append()` method or
+    via the `pd.concat()` function. A major question is how the index values are handled.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends data from `df2` as new rows to `df1`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO20-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Does the same but ignores the indices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO20-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Has the same effect as the first and …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO20-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: second append operation, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Joining
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When joining the two data sets, the sequence of the `DataFrame` objects also
+    matters but in a different way. Only the index values from the first `DataFrame`
+    object are used. This default behavior is called a *left join*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Index values of `df1` relevant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Index values of `df2` relevant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a total of four different join methods available, each leading to a
+    different behavior with regard to how index values and the corresponding data
+    rows are handled.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Left join is the default operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Right join is the same as reversing the sequence of the `DataFrame` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO22-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Inner join only preserves those index values found in both indices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO22-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Outer join preserves all index values from both indices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A join can also happen based on an empty `DataFrame` object. In this case, the
+    columns are created *sequentially* leading to a behavior similar to a left join.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`df1` as first column `A`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`df2` as second column `B`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Making use of a dictionary to combine the data sets yields a result similar
+    to an outer join since the columns are created *simultaneously*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The columns of the `DataFrame` objects are used as values in the `dict` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Merging
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'While a join operation takes place based on the indices of the `DataFrame`
+    objects to be joined, a merge operation typically takes place on a column shared
+    between the two data sets. To this end, a new column `C` is added to both original
+    `DataFrame` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: By default, the merge operation in this case takes place based on the single
+    shared column `C`. Other options are available, however.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The default merge on column `C`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An outer merge is also possible, preserving all data rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Many more types of merge operations are available, a few of which are illustrated
+    in the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: Performance Aspects
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Many examples in this chapter illustrate that there are often multiple options
+    to achieve the same goal with `pandas`. This section compares such options for
+    adding up element-wise two columns. First, the data set, generated with `NumPy`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO26-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object with random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO26-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `DataFrame` object with the random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, some options to accomplish the task at hand with performance values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO27-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Working with the columns (`Series` objects) directly is the fastest approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO27-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the sums by calling the `sum()` method on the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO27-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the sums by calling the `sum()` method on the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO27-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the sums by using the universal function `np.sum()` method on
+    the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO27-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the sums by using the universal function `np.sum()` method on
+    the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, to more options which are based on the methods `eval()` and `apply()`,
+    respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO28-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`eval()` is a method dedicated to evaluation (complex) numerical expressions;
+    columns can be directly addressed.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO28-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The slowest option is to use the `apply()` method row-by-row; this is like looping
+    on the Python level over all rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Caution
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`pandas` provides multiple options in general to accomplish the same goal.
+    If unsure, one should compare some options to make sure that the best possible
+    performance is achieved when time is critical. In the simple example, execution
+    times differ by orders or magnitude.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`pandas` is a powerful tool for data analysis and has become the central package
+    in the so-called PyData stack. Its `DataFrame` class is particularly suited to
+    work with tabular data of any kind. Most operations on such objects are vectorized,
+    leading not only — as in the `NumPy` case — to concise code but also to a high
+    performance in general. In addition, `pandas` also makes working with incomplete
+    data sets convenient, something not that convenient with `NumPy`, for instance.
+    `pandas` and the `DataFrame` class will be central in many later chapters of the
+    book where additional features will also be used and illustrated when necessary.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Reading
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`pandas` is a well documented open source project with both an online documentation
+    as well as a PDF version available for download.^([1](ch05.html#idm140277674718672)).
+    The following page provides all resources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[*http://pandas.pydata.org/*](http://pandas.pydata.org/)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'As for `NumPy`, recommended references for `pandas` in book form are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'McKinney, Wes (2017): *Python for Data Analysis*. 2nd ed., O’Reilly, Beijing
+    et al.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VanderPlas, Jake (2016): *Python Data Science Handbook*. O’Reilly, Beijing
+    et al.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch05.html#idm140277674718672-marker)) At the time of this writing the
+    PDF version has 2,207 pages (version 0.21.1).
+  prefs: []
+  type: TYPE_NORMAL

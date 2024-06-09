@@ -1,0 +1,1476 @@
+- en: Chapter 4\. Numerical Computing with NumPy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Computers are useless. They can only give answers.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Pablo Picasso
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Introduction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter introduces basic data types and data structures of `Python`. Although
+    the `Python` interpreter itself already brings a rich variety of data structures
+    with it, `NumPy` and other libraries add to these in a valuable fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The chapter is organized as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arrays of data
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section discusses the concept of arrays in some detail and illustrates
+    basic options to work with arrays of data in Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: NumPy data structures
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section is devoted to the characteristics and capabilities of the `NumPy`
+    `ndarray` class and illustrates some of the benefits of this class for scientific
+    and financial applications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorization of code
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section illustrates that, thanks to `NumPy`’s array class, vectorized code
+    is easily implemented, leading to more compact and also better-performing code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The chapter covers the following data structures:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| object type | meaning | usage/model for |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ndarray` (regular) | n-dimensional array object | large arrays of numerical
+    data |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ndarray` (record) | 2-dimensional array object | tabular data organized
+    in columns |'
+  prefs: []
+  type: TYPE_TB
+- en: 'This chapter is organized as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Arrays of Data”](#arrays)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section is about the handling of arrays of data with pure Python code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Link to Come]'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the core section about the regular `NumPy` `ndarray` class; it is the
+    work horse in almost all data intensive Python use cases.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Link to Come]'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This brief section introduces structured (or record) `ndarray` objects for the
+    handling of tabular data with columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Vectorization of Code”](#vec_code)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, vectorization of code is discusses with its benefits; the section
+    also discusses the importance of memory layout in certain scenarios.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arrays of Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The previous chapter shows that `Python` provides some quite useful and flexible
+    general data structures. In particular, `list` objects can be considered a real
+    workhorse with many convenient characteristics and application areas. The cost
+    to pay when using such a flexible (mutable) data structure in general comes in
+    the form of relatively high memory usage, slower performance or both. However,
+    scientific and financial applications generally have a need for high-performing
+    operations on special data structures. One of the most important data structures
+    in this regard is the *array*. Arrays generally structure other (fundamental)
+    objects of the *same data type* in rows and columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assume for the moment that we work with numbers only, although the concept generalizes
+    to other types of data as well. In the simplest case, a one-dimensional array
+    then represents, mathematically speaking, a *vector* of, in general, real numbers,
+    internally represented by `float` objects. It then consists of a *single* row
+    or column of elements only. In a more common case, an array represents an *i*
+    × *j* *matrix* of elements. This concept generalizes to *i* × *j* × *k* *cubes*
+    of elements in three dimensions as well as to general *n*-dimensional arrays of
+    shape *i* × *j* × *k* × *l* × … .
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mathematical disciplines like linear algebra and vector space theory illustrate
+    that such mathematical structures are of high importance in a number of scientific
+    disciplines and fields. It can therefore prove fruitful to have available a specialized
+    class of data structures explicitly designed to handle arrays conveniently and
+    efficiently. This is where the `Python` library `NumPy` comes into play, with
+    its `ndarray` class. Before introducing its powerful `ndarray` class in the next
+    section, this section illustrates two alternatives for the handling of arrays.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arrays with Python Lists
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Before we turn to `NumPy`, let us first construct arrays with the built-in
+    data structures presented in the previous section. `list` objects are particularly
+    suited to accomplishing this task. A simple `list` can already be considered a
+    one-dimensional array:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`list` object with numbers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since `list` objects can contain arbitrary other objects, they can also contain
+    other `list` objects. In that way, two- and higher-dimensional arrays are easily
+    constructed by nested `list` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`list` object with `list` objects …'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … resulting in a matrix of numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We can also easily select rows via simple indexing or single elements via double
+    indexing (whole columns, however, are not so easy to select):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Nesting can be pushed further for even more general structures:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cube of numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Note that combining objects in the way just presented generally works with
+    reference pointers to the original objects. What does that mean in practice? Let
+    us have a look at the following operations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now change the value of the first element of the `v` object and see what happens
+    to the `m` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This can be avoided by using the `deepcopy` function of the `copy` module:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead of reference pointer, physical copies are used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a consequence, a change in the original object …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … does not have any impact anymore.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Python Array Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The is a dedicated `array` module in Python available . As you can read on
+    the documentation page (see [*https://docs.python.org/3/library/array.html*](https://docs.python.org/3/library/array.html)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This module defines an object type which can compactly represent an array of
+    basic values: characters, integers, floating point numbers. Arrays are sequence
+    types and behave very much like lists, except that the type of objects stored
+    in them is constrained. The type is specified at object creation time by using
+    a type code, which is a single character.'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Consider the following code, that instantiates an `array` object out of a `list`
+    object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The instantiation of the `array` object with `float` as the type code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Major methods work similar to those of the `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although “scalar multiplication” works in principle, the result is not the mathematically
+    expected one; rather the elements are repeated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trying to append an object of a different than the specified data type, raises
+    a `TypeError`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Only `float` objects can be appended; other data types/type codes raise errors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, the `array` object can easily be converted back to a `list` object
+    if such flexibility is required.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An advantage of the `array` class is that it has built-in storage and retrieval
+    functionality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a file on disk for writing binary data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writes the `array` data to the file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alternatively, a `with` context can be used for the same operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO7-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This shows the file as written on disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As before, the data type of the `array` object is of importance when reading
+    the data from disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A new `array` object with type code `float`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the file for reading binary data …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and reads five elements in the `b` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A new `array` object with type code `double`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading two elements from the file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO8-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The difference in type codes leads to “wrong” numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_numerical_computing_with_numpy_CO8-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regular NumPy Arrays
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Obviously, composing array structures with `list` objects works, somewhat. But
+    it is not really convenient, and the `list` class has not been built with this
+    specific goal in mind. It has rather been built with a much broader and more general
+    scope. The `array` class is already a bit more specialized providing some useful
+    features for working with arrays of data. However, some kind of “highly” specialized
+    class could therefore be really beneficial to handle array-type structures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Basics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Such a specialized class is the `numpy.ndarray` class, which has been built
+    with the specific goal of handling *n*-dimensional arrays both conveniently and
+    efficiently—i.e., in a highly performing manner. The basic handling of instances
+    of this class is again best illustrated by examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Import the `numpy` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates an `ndarray` object out of a `list` object with floats.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates an `ndarray` object out of a `list` object with strings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`np.arange` works similar to `range`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, it takes as additional input the `dtype` parameter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: With one-dimensional `ndarray` objects, indexing works as usual.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A major feature of the `ndarray` class is the *multitude of built-in methods*.
+    For instance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The sum of all elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard deviation of the elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cumulative sum over all elements (starting at index position 0).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Another major feature is the (vectorized) *mathematical operations* defined
+    on `ndarray` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: “Scalar multiplication” with `list` objects leads to a repetition of elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: By contrast, working with `ndarray` objects implements a proper scalar multiplication,
+    for instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates element-wise the square values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This interprets the elements of the `ndarray` as the powers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the power of every element to itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another important feature of the `NumPy` package are *universal functions*.
+    They are “universal” in the sense that they in general operate on `ndarray` object
+    as well as on basic Python data types. However, when applying universal functions
+    to, say, a Python `float` object, one needs to be aware of the reduced performance
+    compared to the same functionality found in the `math` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the exponential values element-wise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the square root for every element.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the square root for a Python `float` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same calculation, this time using the `math` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `math.sqrt` cannot be applied to the `ndarray` object directly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying the universal function `np.sqrt` to a Python `float` object …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_numerical_computing_with_numpy_CO12-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … is much slower than the same operation with the `math.sqrt` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multiple Dimensions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The transition to more than one dimension is seamless, and all features presented
+    so far carry over to the more general cases. In particular, the indexing system
+    is made consistent across all dimensions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Constructs a two-dimensional `ndarray` object out of the one-dimensional one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the first row.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the third element in the first row; indices are separated, within the
+    brackets, by a comma.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the second column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO13-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum over *all* values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum along the first axis, i.e. column-wise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_numerical_computing_with_numpy_CO13-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum along the second axis, i.e. row-wise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are a number of ways to initialize (instantiate) `ndarray` objects. One
+    is as presented before, via `np.array`. However, this assumes that all elements
+    of the array are already available. In contrast, one would maybe like to have
+    the `ndarray` objects instantiated first to populate them later with results generated
+    during the execution of code. To this end, we can use the following functions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`ndarray` object pre-populated with zeros.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`ndarray` object pre-populated with ones.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same but taking another `ndarray` object to infer the shape.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO14-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`ndarray` object not pre-populated with anything (numbers depend on the bits
+    present in the memory).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO14-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a square matrix as `ndarray` object with diagonal populated by ones.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO14-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a one-dimensional `ndarray` object with evenly spaced intervals between
+    numbers; parameters used are `start`, `end`, `num` (number of elements).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With all these functions we can provide the following parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`shape`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Either an `int`, a sequence of ``int`+s, or a reference to another +numpy.ndarray`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`dtype` (optional)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A ``dtype``—these are `NumPy`-specific data types for `numpy.ndarray` objects
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`order` (optional)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The order in which to store elements in memory: `C` for `C`-like (i.e., row-wise)
+    or `F` for `Fortran`-like (i.e., column-wise)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here, it becomes obvious how `NumPy` specializes the construction of arrays
+    with the `ndarray` class, in comparison to the `list` -based approach:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object has built-in *dimensions* (axes).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `ndarray` object is *immutable*, its shape is fixed.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It only allows for a *single data type* (`numpy.dtype`) for the whole array.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `array` class by contrast shares only the characteristic of allowing for
+    unique data type (type code, `dtype`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The role of the `order` parameter is discussed later in the chapter. [Table 4-1](#numpy_dtypes)
+    provides an overview of `numpy.dtype` objects (i.e., the basic data types `NumPy`
+    allows).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 4-1\. NumPy dtype objects
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| dtype | Description | Example |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `t` | Bit field | `t4` (4 bits) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `b` | Boolean | `b` (true or false) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `i` | Integer | `i8` (64 bit) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `u` | Unsigned integer | `u8` (64 bit) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `f` | Floating point | `f8` (64 bit) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `c` | Complex floating point | `c16` (128 bit) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `O` | Object | `0` (pointer to object) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `S`, `a` | String | `S24` (24 characters) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `U` | Unicode | `U24` (24 Unicode characters) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `V` | Other | `V12` (12-byte data block) |'
+  prefs: []
+  type: TYPE_TB
+- en: Meta-Information
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Every `ndarray` object provides access to a number of useful attributes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of bytes used to represent one element.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of dimensions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO15-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The shape of the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO15-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `dtype` of the elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO15-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The total number of bytes used in memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reshaping and Resizing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Although `ndarray` objects are immutable by default, there are multiple options
+    to reshape and resize such an object. While the first operation in general just
+    provides another *view* on the same data, the second operation in general creates
+    a *new* (temporary) object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The shape of the original `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO16-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reshaping to two dimensions (memory view).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a new object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO16-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The transpose of the new `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: During a reshaping operations the total number of elements in the `ndarray`
+    object is unchanged. During a resizing operation, this number changes, i.e. it
+    either decreases (“down-sizing”) or increases (“up-sizing”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two dimensions, down-sizing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO17-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two dimensions, up-sizing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stacking is a special operation that allows the horizontal or vertical combination
+    of two `ndarray` objects. However, the size of the “connecting” dimension must
+    be the same.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Horizontal stacking of two `ndarray` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vertical stacking of two `ndarray` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another special operation is the flattening of a multi-dimensional `ndarray`
+    object to a one-dimensional one. One can choose whether the flatting happens row-by-row
+    (`C` order) or column-by-column (`F` order).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The default order for flatting is `C`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO19-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Flattening with `F` order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO19-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `flat` attribute provides a flat iterator (`C` order).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO19-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ravel()` method is an alternative to `flatten()`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Boolean Arrays
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Comparison and logical operations in general work on `ndarray` objects the same
+    way, element-wise, as on standard Python data types. Evaluating conditions yield
+    by default a Boolean `ndarray` object (`dtype` is `bool`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is value greater than …?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO20-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is value smaller or equal then …?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO20-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is value equal to …?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO20-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Present `True` and `False` as integer values 0 and 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO20-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is value greater than … and smaller or equal to …?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Such Boolean arrays can be used for indexing and data selection. Notice that
+    the following operations flatten the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Give me all values greater than …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Give me all values greater than … *and* smaller or equal to …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO21-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Give me all values greater than … *or* smaller or equal to …
+  prefs: []
+  type: TYPE_NORMAL
+- en: A powerful tool in this regard it the `np.where()` function which allows the
+    definition of actions/operations depending on the whether a condition is `True`
+    or `False`. The result of applying `np.where()` is a new `ndarray` object of the
+    same shape as the original one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the new object, set `1` if `True` and `0` otherwise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the new object, set `even` if `True` and `odd` otherwise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO22-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the new object, set two times the `h` element if `True` and half the `h`
+    element otherwise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Later chapters provide more examples for these important operations on `ndarray`
+    objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Speed Comparison
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before moving on to structured arrays with `NumPy`, let us stick with regular
+    arrays for a moment and see what the specialization brings in terms of performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a simple example, suppose we want to generate a matrix/array of shape 5,000
+    × 5,000 elements, populated with (pseudo)random, standard normally distributed
+    numbers. We then want to calculate the sum of all elements. First, the pure `Python`
+    approach, where we make use of `list` comprehensions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The creation of the matrix via a nested list comprehension.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some selected random numbers from those drawn.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO23-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The sums of the single `list` objects are first calculated during a list comprehension;
+    then the sum of the sums is taken.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO23-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds up the memory usage of all `list` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let us now turn to `NumPy` and see how the same problem is solved there. For
+    convenience, the `NumPy` sublibrary `random` offers a multitude of functions to
+    instantiate a `ndarray` object and populate it at the same time with (pseudo)random
+    numbers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the `ndarray` object with standard normally distributed random numbers;
+    it is faster by a factor of about 20.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO24-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum of all values in the `ndarray` object; it is faster by a
+    factor of 6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO24-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `NumPy` approach also saves some memory since the memory overhead of the
+    `ndarray` object is tiny compared to the size of the data itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We observe the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Syntax
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although we use several approaches to compact the pure `Python` code, the `NumPy`
+    version is even more compact and better readable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: The generation of the `ndarray` object is roughly 20 times faster and the calculation
+    of the sum is roughly 6 times faster than the respective operations in pure `Python`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using NumPy Arrays
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The use of `NumPy` for array-based operations and algorithms generally results
+    in compact, easily readable code and significant performance improvements over
+    pure `Python` code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Structured NumPy Arrays
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The specialization of the `ndarray` class obviously brings a number of valuable
+    benefits with it. However, a too-narrow specialization might turn out to be too
+    large a burden to carry for the majority of array-based algorithms and applications.
+    Therefore, `NumPy` provides *structured* or *record* `ndarray` objects that allow
+    to have a different `dtype` *per column*. What does “per column” mean? Consider
+    the following initialization of a structured array object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The complex `dtype` is composed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An alternative syntax to achieve the same result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO25-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The structured `ndarray` is instantiated with two records.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO25-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The object type is still `numpy.ndarray`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In a sense, this construction comes quite close to the operation for initializing
+    tables in a `SQL` database. We have column names and column data types, with maybe
+    some additional information (e.g., maximum number of characters per `string` object).
+    The single columns can now be easily accessed by their names and the rows by their
+    index values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO26-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selecting a column by name.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO26-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calling a method on a selected column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO26-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selecting a record.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO26-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selecting a field in a record.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In summary, structured arrays are a generalization of the regular `numpy.ndarray`
+    object types in that the data type only has to be the same *per column*, as one
+    is used to in the context of tables in `SQL` databases. One advantage of structured
+    arrays is that a single element of a column can be another multidimensional object
+    and does not have to conform to the basic `NumPy` data types.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Structured Arrays
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`NumPy` provides, in addition to regular arrays, structured (record) arrays
+    that allow the description and handling of table-like data structures with a variety
+    of different data types per (named) column. They bring `SQL` table-like data structures
+    to `Python`, with most of the benefits of regular `ndarray` objects (syntax, methods,
+    performance).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorization of Code
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Vectorization of code is a strategy to get more compact code that is possibly
+    executed faster. The fundamental idea is to conduct an operation on or to apply
+    a function to a complex object “at once” and not by looping over the single elements
+    of the object. In `Python`, functional programming tools such as `map` and `filter`
+    provide some basic means for vectorization. However, `NumPy` has vectorization
+    built in deep down in its core.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic Vectorization
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'As we learned in the previous section, simple mathematical operations — such
+    as calculating the sum over all elements — can be implemented on `ndarray` objects
+    directly (via methods or universal functions). More general vectorized operations
+    are also possible. For example, we can add two `NumPy` arrays element-wise as
+    follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO27-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first `ndarray` object with random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO27-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second `ndarray` object with random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO27-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Element-wise addition as an vectorized operation (no looping).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`NumPy` also supports what is called *broadcasting*. This allows to combine
+    objects of different shape within a single operation. We have already made use
+    of this before. Consider the following examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO28-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: During scalar addition, the scalar is broadcast and added to every element.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO28-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: During scalar multiplication, the scalar is also broadcast to and multiplied
+    with every element.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO28-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This linear transformation combines both operations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'These operations work with differently shaped `ndarray` objects as well, up
+    to a certain point:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO29-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A new one-dimensional `ndarray` object of length 3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO29-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `r` (matrix) and `s` (vector) objects can be added straightforwardly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO29-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another one-dimensional `ndarray` object of length 4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO29-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The length of the new `s` (vector) object is now different from the length of
+    the second dimension of the `r` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO29-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transposing the `r` object again allows for the vectorized addition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO29-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alternatively, the shape of `s` can be changed to `(4, 1)` to make the addition
+    work (the results are different, however).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a general rule, custom-defined `Python` functions work with `numpy.ndarray`s
+    as well. If the implementation allows, arrays can be used with functions just
+    as `int` or `float` objects can. Consider the following function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO30-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A simple Python function implementing a linear transform on parameter `x`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO30-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function `f` applied to a Python `float` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO30-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same function applied to a `ndarray` object, resulting in a vectorized and
+    element-wise evaluation of the function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What `NumPy` does is to simply apply the function `f` to the object element-wise.
+    In that sense, by using this kind of operation we do *not* avoid loops; we only
+    avoid them on the `Python` level and delegate the looping to `NumPy`. On the `NumPy`
+    level, looping over the `ndarray` object is taken care of by highly optimized
+    code, most of it written in `C` and therefore generally much faster than pure
+    `Python`. This explains the “secret” behind the performance benefits of using
+    `NumPy` for array-based use cases.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Memory Layout
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When we first initialized `numpy.ndarray` objects by using `np.zero`, we provided
+    an optional argument for the memory layout. This argument specifies, roughly speaking,
+    which elements of an array get stored in memory next to each other (contiguously).
+    When working with small arrays, this has hardly any measurable impact on the performance
+    of array operations. However, when arrays get large and depending on the (financial)
+    algorithm to be implemented on them the story might be different. This is when
+    *memory layout* comes into play (see, for instance [Memory Layout of Multi-Dimensional
+    Arrays](https://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/).)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To illustrate the potential importance of the memory layout of arrays in science
+    and finance, consider the following construction of multidimensional `ndarray`
+    objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO31-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `ndarray` object with large asymmetry in the two dimensions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO31-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A linear transform of the original object data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO31-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This creates a two-dimensional `ndarray` object with `C` order (row-major).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_numerical_computing_with_numpy_CO31-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This creates a two-dimensional `ndarray` object with `F` order (column-major).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_numerical_computing_with_numpy_CO31-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Memory is freed up (contingent on garbage collection).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_numerical_computing_with_numpy_CO31-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some numbers from the `C` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s look at some really fundamental examples and use cases for both types
+    of `ndarray` objects and consider the speed with which they are executed given
+    the different memory layouts:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_numerical_computing_with_numpy_CO32-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum over all elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_numerical_computing_with_numpy_CO32-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sums per row (“many”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_numerical_computing_with_numpy_CO32-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sums per columns (“few”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We can summarize the performance results as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: When calculating the sum over *all elements*, the memory layout does not really
+    matter.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The summing up over the `C`-ordered `ndarray` objects is faster both over rows
+    as well as columns (*absolute* speed advantage).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: With the `C`-ordered (row-major) `ndarray` object, summing up over rows is *relatively*
+    faster compared to summing up over columns.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: With the `F`-ordered (column-major) `ndarray` object, summing up over columns
+    is *relatively* faster compared to summing up over rows.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`NumPy` is the package of choice for numerical computing in Python. The `ndarray`
+    class is a class specifically designed to be convenient and efficient in the handling
+    of (large) numerical data. Powerful methods and `NumPy`’s universal functions
+    allow for vectorized code the mostly avoids slow loops on the Python level. Many
+    approaches introduced in this chapter carry over to `pandas` and its `DataFrame`
+    class as well (see [Chapter 5](ch05.html#pandas))'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Helpful resources are provided under:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[*http://www.numpy.org/*](http://www.numpy.org/)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Excellent introductions to `NumPy` in book form are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'McKinney, Wes (2017): *Python for Data Analysis*. 2nd ed., O’Reilly, Beijing
+    et al.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VanderPlas, Jake (2016): *Python Data Science Handbook*. O’Reilly, Beijing
+    et al.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

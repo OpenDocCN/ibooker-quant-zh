@@ -1,0 +1,866 @@
+- en: Chapter 8\. Financial Time Series
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The only reason for time is so that everything doesn’t happen at once.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Albert Einstein
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Financial time series data is one of the most important types of data in finance.
+    This is data indexed by date and/or time. For example, prices of stocks over time
+    represent financial time series data. Similarly, the EUR/USD exchange rate over
+    time represents a financial time series; the exchange rate is quoted in brief
+    intervals of time, and a collection of such quotes then is a time series of exchange
+    rates.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is no financial discipline that gets by without considering time an important
+    factor. This mainly is the same as with physics and other sciences. The major
+    tool to cope with time series data in Python is `pandas`. Wes McKinney, the original
+    and main author of `pandas`, started developing the library when working as an
+    analyst at AQR Capital Management, a large hedge fund. It is safe to say that
+    `pandas` has been designed from the ground up to work with financial time series
+    data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The chapter is mainly based on two financial time series data sets in the form
+    of Comma Separated Value (CSV) files. It proceeds along the following lines:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Financial Data”](#fts_financia_data)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This section is about the basics of working with financial times series data
+    using `pandas`: data import, deriving summary statistics, calculating changes
+    over time and resampling.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Rolling Statistics”](#fts_rolling_statistics)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In financial analysis, rolling statistics play an important role. These are
+    statistics calculated in general over a fixed time interval the is *rolled forward*
+    over the complete data set. A popular example are simple moving averages (SMAs).
+    This section illustrates how `pandas` supports the calculation of such statistics.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Correlation Analysis”](#fts_correlation_analysis)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section presents a case study based on financial time series data for the
+    S&P 500 stock index and the VIX volatility index. It provides some support for
+    the stylized fact that both indices are negatively correlated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“High Frequency Data”](#fts_high_frequency_data)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: High frequency data, or tick data, has become commonplace in finance. This section
+    works with tick data. `pandas` again proves powerful in handling such data sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section works with a locally stored financial data set in the form of a
+    CSV file. Technically, such files are simply text files with a data row structure
+    characterized by commas separating single values. Before importing the data, first
+    some package imports and customizations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: Data Import
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`pandas` provides a number of different functions and `DataFrame` methods to
+    import data stored in different formats (CSV, SQL, Excel, etc.) and to export
+    data to different formats (see [Chapter 9](ch09.html#input_output) for more details).
+    The following code uses the `pd.read_csv()` function to import the time series
+    data set from the CSV file.^([1](ch08.html#idm140277664362592))'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the path and file name .
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the first five rows of the raw data (Linux/Mac).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The file name passed to the `pd.read_csv()` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_time_series_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This specifies that the first column shall be handled as an index.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_time_series_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This in addition specifies that the index values are of type date-time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_time_series_CO1-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At this stage, a financial analyst probably takes a first look at the data,
+    either by inspection of the data or by visualizing it (see [Figure 8-1](#fts_plot_01)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first five rows …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and the final five rows are shown.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This visualizes the complete data set via multiple subplots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 01](images/fts_01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-1\. Financial time series data as line plots
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The data used is from the Thomson Reuters (TR) Eikon Data API. In the TR world
+    symbols for financial instruments are called "`Reuters Instrument Codes`" or `RICs`.
+    The financial instruments that the single `RICs` represent are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Summary Statistics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A next step, the financial analyst might take, is to have a look at different
+    summary statistics for the data set to get a "`feeling`" for what it is all about.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`.info()` gives some meta information about the `DataFrame` object.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`.describe()` provides useful standard statistics per column.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tip
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`pandas` provides a number of methods to gain a quick overview over newly imported
+    financial time series data sets, such as `.info()` and `.describe()`. They also
+    allow for quick checks whether the importing procedure worked as desired (e.g.
+    whether the `DataFrame` objects indeed has a `DatetimeIndex` as index).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are also options, of course, to customize what type of statistic to derive
+    and display.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mean value per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The minimum value per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mean value per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_time_series_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard deviation per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_time_series_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The maximum value per column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_time_series_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using the `.aggregate()` method also allows to pass custom functions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Changes over Time
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Most statistical analyses methods, for example, generally are based on changes
+    of a time series over time and not the absolute values themselves. There are multiple
+    options to calculate the changes of a time series over time, among others: absolute
+    differences, percentage changes and logarithmic (log) returns.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, the absolute differences for which `pandas` provides a special method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`.diff()` provides the absolute changes between two index values.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Of course, aggregation operations can be applied in addition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From a statistics point of view, absolute changes are not optimal because they
+    are dependent on the scale of the time series data itself. Therefore, percentage
+    changes are usually preferred. The following code derives the percentage changes
+    or percentage returns (also: simple returns) in a financial context and visualizes
+    their mean values per column (see [Figure 8-2](#fts_plot_02)).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`.pct_change()` calculates the percentage change between two index values.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mean values of the results visualized as a bar plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 02](images/fts_02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-2\. Mean values of percentage changes as bar plot
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: As an alternative to percentage returns, log returns can used. In some scenarios,
+    they are more easy to handle and therefore often preferred in a financial context.^([2](ch08.html#idm140277661798016))
+    [Figure 8-3](#fts_plot_03) show the cumulative log returns for the single financial
+    times series. This type of plot leads some form of *normalization*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the log returns in vectorized fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A sub-set of the results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This plots the cumulative log returns over time; first the `.cumsum()` method
+    is called, then `np.exp()` is applied to the results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 03](images/fts_03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-3\. Cumulative log returns over time
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Resampling
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Resampling is an important operation on financial time series data. Usually,
+    this takes on the form of *up-sampling*, meaning that, for example, a time series
+    with daily observations is resampled to a time series with weekly or monthly observations.
+    It might also mean to resample a financial tick data series to one-minute intervals
+    (also: bars).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: EOD data gets resampled to
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A sub-set of the results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This plots the cumulative log returns over time; first the `.cumsum()` method
+    is called, then `np.exp()` is applied to the results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 04](images/fts_04.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-4\. Resampled cumulative log returns over time (monthly)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Caution
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: When resampling, `pandas` takes by default the left label (or index value) of
+    the interval. To be financially consistent, make sure to use the right label (index
+    value) and in general the last available data point in the interval. Otherwise,
+    a foresight bias might sneak into the financial analysis.^([3](ch08.html#idm140277661032464))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling Statistics
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: It is financial tradition, to work with *rolling statistics*, often also called
+    *financial indicators* or *financial studies*. Such rolling statistics are basic
+    tools for financial chartists and technical traders, for example. This section
+    works with a single financial time series only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: An Overview
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: It is straightforward to derive standard rolling statistics with `pandas`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the window, i.e. the number of index values to include.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling minimum value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling mean value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_time_series_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling standard deviation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_financial_time_series_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling median value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_financial_time_series_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling maximum value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_financial_time_series_CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the exponentially weighted moving average, with decay in terms
+    of a half life of `0.5`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To derive more specialized financial indicators, additional packages are generally
+    needed (see, for instance, the financial plots with `Cufflinks` in [“Interactive
+    2D Plotting”](ch07.html#viz_int_2d_plotting).) Custom ones can also easily be
+    applied via the `.apply()` method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following code shows a sub-set of the results and visualizes a selection
+    of the calculated rolling statistics (see [Figure 8-5](#fts_plot_05)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots three rolling statistics for the final 200 data rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Add the original time series data to the plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 05](images/fts_05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-5\. Rolling statistics for minimum, mean, maximum values
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: A Technical Analysis Example
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Rolling statistics are a major tool in the so-called technical analysis of stocks
+    as compared to the fundamental analysis which focuses, for instance, on financial
+    reports and the strategic positions of the company whose stock is analyzed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A decades-old trading strategy based on technical analysis is based on *two
+    simple moving averages (SMAs)*. The idea is that the trader should be long a stock
+    (or financial instrument in general) when the shorter-term SMA is above the longer-term
+    SMA and should be short the stock when the opposite holds true. The concepts can
+    be made precise with `pandas` and the capabilities of the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling statistics are generally only calculated when there is enough data given
+    the `window` parameter specification. As [Figure 8-6](#fts_plot_06) shows, the
+    SMA time series only start at the day for which there is enough data given the
+    specific parametrization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the values for the shorter-term SMA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the values for the longer-term SMA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the stock price data plus the two SMA time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 06](images/fts_06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-6\. Apple stock price and two simple moving averages
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In this context, the SMAs are only a means to an end. They are used to derive
+    positionings to implement a trading strategy. [Figure 8-7](#fts_plot_07) visualizes
+    a long position by a value of `1` and a short position by a value of `-1`. The
+    change in the position is triggered (visually) by a crossover of the two lines
+    representing the SMA time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Only complete data rows are kept.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the shorter-term SMA value is greater than the longer-term one …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … go long the stock (put a `1`) …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_time_series_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … otherwise go short the stock (put a `-1`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 07](images/fts_07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-7\. Apple stock price, two simple moving averages and positioning
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The trading strategy implicitly derived here only leads to a few trades per
+    se: only when the position value changes (i.e. a crossover happens), a trade takes
+    place. Including opening and closing trades, this would add up to six trades only
+    in total.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Correlation Analysis
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As a further illustration of how to work with `pandas` and financial time series
+    data, consider the case of the S&P 500 stock index and the VIX volatility index.
+    It is a stylized fact, that when the S&P 500 rises, the VIX falls in general — and
+    vice versa. This is about *correlation* and not *causation*. This section shows
+    how to come up supporting statistical evidence for the stylized fact that the
+    S&P 500 and the VIX are (highly) negatively correlated.^([4](ch08.html#idm140277659509120))
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The data set now consists of two financial times series, both visualized in
+    [Figure 8-8](#fts_plot_08).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![fts 08](images/fts_08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-8\. S&P 500 and VIX time series data (different scaling)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: When plotting (parts of) the two time series in a single plot and with adjusted
+    scalings, the stylized fact of negative correlation between the two indices becomes
+    already evident through simple visual inspection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![fts 09](images/fts_09.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-9\. S&P 500 and VIX time series data (same scaling)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Logarithmic Returns
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As pointed out above, statistical analysis in general relies on returns instead
+    of absolute changes or even absolute values. Therefore, the calculation of log
+    returns first before any further analysis takes place. [Figure 8-10](#fts_plot_10)
+    shows the high variability of the log returns over time. For both indices so-called
+    volatility clusters can be spotted. And in general, periods of high volatility
+    in the stock index are accompanied by the same phenomenon in the volatility index.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![fts 10](images/fts_10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-10\. Log returns of the S&P 500 and VIX over time
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In such a context, the `pandas` `scatter_matrix()` plotting function comes in
+    handy for visualizations. It plots the log returns of the two series against each
+    other and one can add either histogram or a kernel density estimator (KDE) on
+    the diagonal (see [Figure 8-11](#fts_plot_11)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data set to be plotted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `alpha` parameter for the opacity of the dots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'What to place on the diagonal; here: histogram of the column data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_financial_time_series_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: These are keywords to be passed to the histogram plotting function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 11](images/fts_11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-11\. Log returns of the S&P 500 and VIX as a scatter matrix
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: OLS Regression
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: With all these preparations, an ordinary least-squares (OLS) regression analysis
+    is convenient to implement. [Figure 8-12](#fts_plot_12) shows a scatter plot of
+    the log returns and the linear regression line through the cloud of dots. The
+    slope is obviously negative providing support for the stylized fact about the
+    negative correlation between the two indices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This implements a linear OLS regression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This plots the log returns as a scatter plot …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … to which the linear regression line is added.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 12](images/fts_12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-12\. Log returns of the S&P 500 and VIX as a scatter matrix
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Correlation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Finally, consider correlation measures directly. Two such measures are considered,
+    a static one taking into account the complete data set and a rolling one showing
+    the correlation for a fixed window over time. [Figure 8-13](#fts_plot_13) illustrates
+    that the correlation indeed varies over time but that it is always, given the
+    parametrization, negative. This provides indeed strong support for the stylized
+    fact that the S&P 500 and the VIX indices are — even strongly — negatively correlated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The correlation matrix for the whole `DataFrame`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_financial_time_series_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This plots the rolling correlation over time …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_financial_time_series_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and adds the static value to the plot as horizontal line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 13](images/fts_13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-13\. Correlation between S&P 500 and VIX (static and rolling)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: High Frequency Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter is about financial time series analysis with `pandas`. A special
+    case of a financial time series are tick data sets. Frankly, they can be handled
+    more or less in the same ways as, for instance, the EOD data set used throughout
+    this chapter so far. Importing such data sets also is quite fast in general with
+    `pandas`. The data set used comprises 17,352 data rows (see also [Figure 8-14](#fts_plot_14)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_financial_time_series_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the `Mid` price for every data row.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![fts 14](images/fts_14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-14\. Tick data for EUR/USD exchange rate
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Working with tick data is generally as scenario where resampling of financial
+    time series data is needed. The code that follows resamples the tick data to one
+    minute bar data. Such a data set (see also [Figure 8-15](#fts_plot_15)) is then
+    used, for example, to backtest algorithmic trading strategies or to implement
+    a technical analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![fts 15](images/fts_15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-15\. One minute bar data for EUR/USD exchange rate
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter deals with financial time series, probably the most importat data
+    type in the financial field. `pandas` is a powerful package to deal with such
+    data sets, allowing not only for efficient data analyses but also easy visualizations,
+    for instance. `pandas` is also helpful in reading such data sets from different
+    sources as well as in exporting such data sets to different technical file formats.
+    This is illustrated in the subsequent chapter [Chapter 9](ch09.html#input_output).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Reading
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Good references in book form for the topics covered in this chapter are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'McKinney, Wes (2017): *Python for Data Analysis*. 2nd ed., O’Reilly, Beijing
+    et al.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VanderPlas, Jake (2016): *Python Data Science Handbook*. O’Reilly, Beijing
+    et al.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch08.html#idm140277664362592-marker)) The file contains end-of-day (EOD)
+    data for different financial instruments as retrieved from the Thomson Reuters
+    Eikon Data API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch08.html#idm140277661798016-marker)) One of the advantages is additivity
+    over time which does not hold true for simple percentage changes/returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch08.html#idm140277661032464-marker)) *Foresight bias* — or, in its stongest
+    form, *perfect foresight* — means that at some point in the financial analysis,
+    data is used that only becomes availble at a later point. The result might be
+    "`too good`" results, for example, when backtesting a trading strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch08.html#idm140277659509120-marker)) One reasoning behind this is that
+    when the stock index comes down — during a crisis, for instance — trading volume
+    goes up and therewith also the volatility. When the stock index is on the rise,
+    investors generally are calm and do not see much incentive to engage in heavy
+    trading. In particular, long-only investors then try to ride the trend even further.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,1962 @@
+- en: Chapter 9\. Input/Output Operations
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: It is a capital mistake to theorize before one has data.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Sherlock Holmes
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: As a general rule, the majority of data, be it in a finance context or any other
+    application area, is stored on hard disk drives (HDDs) or some other form of permanent
+    storage device, like solid state disks (SSDs) or hybrid disk drives. Storage capacities
+    have been steadily increasing over the years, while costs per storage unit (e.g.,
+    per megabyte) have been steadily falling.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At the same time, stored data volumes have been increasing at a much faster
+    pace than the typical random access memory (RAM) available even in the largest
+    machines. This makes it necessary not only to store data to disk for permanent
+    storage, but also to compensate for lack of sufficient RAM by swapping data from
+    RAM to disk and back.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input/output (I/O) operations are therefore in general important tasks when
+    it comes to finance applications and data-intensive applications in general. Often
+    they represent the bottleneck for performance-critical computations, since I/O
+    operations cannot in general shuffle data fast enough to the RAM^([1](ch09.html#idm140277658125664))
+    and from the RAM to the disk. In a sense, CPUs are often "`starving`" due to slow
+    I/O operations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Although the majority of today’s financial and corporate analytics efforts
+    are confronted with big data (e.g., of petascale size), single analytics tasks
+    generally use data sub-sets that fall in the mid data category. A study by Microsoft
+    Research concludes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Our measurements as well as other recent work shows that the majority of real-world
+    analytic jobs process less than 100 GB of input, but popular infrastructures such
+    as Hadoop/MapReduce were originally designed for petascale processing.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Appuswamy et al. (2013)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In terms of frequency, single financial analytics tasks generally process data
+    of not more than a couple of gigabytes (GB) in size—and this is a sweet spot for
+    Python and the libraries of its scientific stack, such as `NumPy`, `pandas`, and
+    `PyTables`. Data sets of such a size can also be analyzed in-memory, leading to
+    generally high speeds with today’s CPUs and GPUs. However, the data has to be
+    read into RAM and the results have to be written to disk, meanwhile ensuring that
+    today’s performance requirements are met.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter addresses the following topics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Basic I/O with Python”](#io_basic_io)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python has built-in functions to serialize and store any object on disk and
+    to read it from disk into RAM; apart from that, Python is strong when it comes
+    to working with text files and `SQL` databases. `NumPy` also provides dedicated
+    functions for fast binary storage and retrieval of `ndarray` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“I/O with pandas”](#io_pandas)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `pandas` library provides a plentitude of convenience functions and methods
+    to read data stored in different formats (e.g., `CSV`, `JSON`) and to write data
+    to files in diverse formats.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Fast I/O with PyTables”](#io_pytables)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PyTables` uses the [`HDF5`](http://www.hdfgroup.org) standard with hierarchical
+    database structure and binary storage to accomplish fast I/O operations for large
+    data sets; speed often is only bound by the hardware used.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“I/O with TsTables”](#io_tstables)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`TsTables` is a package that builds on top of `PyTables` and allows for fast
+    storage and retrieval of time series data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic I/O with Python
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Python itself comes with a multitude of I/O capabilities, some optimized for
+    performance, others more for flexibility. In general, however, they are easily
+    used in interactive as well as in production settings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing Objects to Disk
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: For later use, for documentation, or for sharing with others, one might want
+    to store Python objects on disk. One option is to use the `pickle` module. This
+    module can serialize the majority of Python objects. *Serialization* refers to
+    the conversion of an object (hierarchy) to a byte stream; *deserialization* is
+    the opposite operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As usual, some imports and customizations with regard to plotting first:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The example that follows works with (pseudo)random data, this time stored in
+    a `list` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `pickle` module from the standard library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Import `gauss` to generate normally distributed random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a larger `list` object with random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the path where to store the data files.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a file for writing in binary mode (`wb`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The two major functions to serialize and deserialize Python objects are `pickle.dump()`,
+    for writing objects, and `pickle.load()`, for loading them into the memory:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Serializes the object `a` and saves it to the file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the file on disk and its size (Mac/Linux).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the file for reading in binary mode (`rb`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the objects from disk and deserializes it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Converting `a` and `b` to `ndarrary` objects, `np.allclose()` verifies that
+    both contain the same data (numbers).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing and retrieving a single object with `pickle` obviously is quite simple.
+    What about two objects?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Serializes the `ndarray` version of `a` and saves it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Serializes the squared `ndarray` version of `a` and saves it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The file now has roughly double the size from before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What about reading the two `ndarray` objects back into memory?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This retrieves the object that was stored *first*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This retrieves the object that was stored *second*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Obviously, `pickle` stores objects according to the *first in, first out* (FIFO)
+    principle. There is one major problem with this: there is no meta-information
+    available to the user to know beforehand what is stored in a `pickle` file.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A sometimes helpful workaround is to not store single objects, but a `dict`
+    object containing all the other objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores a `dict` object containing the two `ndarray` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the `dict` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This approach, however, requires to write and read all objects at once. This
+    is a compromise one can probably live with in many circumstances given the higher
+    convenience it brings along.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading and Writing Text Files
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Text processing can be considered a strength of Python. In fact, many corporate
+    and scientific users use Python for exactly this task. With Python you have a
+    multitude of options to work with `str` objects, as well as with text files in
+    general.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assume the case of quite a large set of data that that shall be shared as a
+    Comma Separated Value (`CSV`) file. Although such files have a special internal
+    structure, they are basically plain text files. The following code creates a dummy
+    data set as an `ndarray` object, a `DatetimeIndex` object, combines the two and
+    stores the data as a CSV text file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the number of rows for the data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the `ndarray` object with the random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a `DatetimeIndex` object of appropriate length (hourly intervals).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO6-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a file for writing (`w`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO6-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the header row (column labels) and writes it as the first line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO6-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data is combined row-wise …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_input_output_operations_CO6-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … into a `str` objects …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_input_output_operations_CO6-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and written line-by-line (appended to the CSV text file).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The other way around works quite similarly. First, open the now-existing `CSV`
+    file. Second, read its content line by line using the `.readline()` or `.readlines()`
+    methods of the `file` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the file for reading (`r`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the file contents line-by-line and prints it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the file contents in a single step …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … the result of which is a `list` object with all lines as separate `str` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`CSV` files are so important and commonplace that there is a `csv` module in
+    the Python standard library that simplifies the processing of CSV files. Two helpful
+    reader (iterator) objects of the `csv` module either return a `list` object of
+    `list` objects or a `list` object of `dict` objects.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`csv.reader()` returns every single line as a `list` object.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`csv.DictReader()` returns every single line as a `OrderedDict` which is a
+    special case of a `dict` object.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: SQL Database
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Python can work with any kind of `SQL` database and in general also with any
+    kind of `NoSQL` database. In this case, `SQL` stands for *structured query language*.
+    One `SQL` or *relational* database that is delivered with Python by default is
+    [`SQLite3`](http://www.sqlite.org). With it, the basic Python approach to `SQL`
+    databases can be easily illustrated:^([2](ch09.html#idm140277655563600))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a database connection; a file is created if it does not exist.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a `SQL` query that creates a table with three columns.^([3](ch09.html#idm140277655097520))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The query is executed …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and the changes are committed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This defines a short alias for the `con.execute()` method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This fetches meta information about the database, showing the just created table
+    as the single object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now that there is a database file with a table, this table can be populated
+    with data. Each row consists of a `datetime` object and two `float` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writes as single row (or record) to the `numbs` table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a larger dummy data set as `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Iterates over the rows of the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves a number of rows from the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same but with a condition on the values in the `no1` column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO10-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a pointer object …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_input_output_operations_CO10-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … that behaves like a generator object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_input_output_operations_CO10-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`.fetchall()` retrieves all the remaining rows.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, one might want to delete the table object in the database if not required
+    anymore.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Removes the table from the database.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are no table objects left after this operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the database connection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Removes the database file from disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`SQL` databases are a rather broad topic; indeed, too broad and complex to
+    be covered in any significant way in this chapter. The basic messages are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python integrates well with almost any database technology.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The basic `SQL` syntax is mainly determined by the database in use; the rest
+    is, as we say, `Pythonic`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A few more examples based on `SQLite3` follow further below.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing and Reading NumPy Arrays
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`NumPy` itself has functions to write and read `ndarray` objects in a convenient
+    and performant fashion. This saves effort in some circumstances, such as when
+    you have to convert `NumPy` `dtype` objects into specific database types (e.g.,
+    for `SQLite3`). To illustrate that `NumPy` can sometimes be an efficient replacement
+    for a `SQL`-based approach, the following code replicates the example from before
+    with `NumPy`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead of `pandas`, the code uses the `np.arange()` function of `NumPy` to
+    generate a `ndarray` object with `datetime` objects stored:^([4](ch09.html#idm140277654035024))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates an `ndarray` object with `datetime` as `dtype`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The special `dtype` object for the record array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` objects instantiated with the special `dtype`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This populates the `Date` column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dummy data sets …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … which populates the `No1` and `No2` columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_input_output_operations_CO12-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The size of the record array in bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Saving of `ndarray` objects is highly optimized and therefore quite fast. Almost
+    60 MB of data take about 0.1 seconds to save on disk (here using a SSD). A larger
+    `ndarray` object with 480 MB in size takes about 1 second to save on disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This saves the record `ndarray` object on disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The size on disk is hardly larger than in-memory (due to binary storage).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This loads the record `ndarray` object from disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A larger regular `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These examples illustrate that writing to disk in this case is mainly hardware-bound,
+    since 480 MB/s represents roughly the advertised writing speed of standard SSDs
+    at the time of this writing (512 MB/s).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In any case, you can expect that this form of data storage and retrieval is
+    much faster as compared to `SQL` databases or using the standard `pickle` library
+    for serialization. There are two reasons: first, the data is mainly numeric; second,
+    `NumPy` implements binary storage which reduces the overhead almost to zero. Of
+    course, you do not have the functionality of a `SQL` database available with this
+    approach, but `PyTables` will help in this regard, as subsequent sections show.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: I/O with pandas
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'One of the major strengths of `pandas` is that it can read and write different
+    data formats natively, among others, including:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`CSV` (comma-separated value)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`SQL` (`Structured Query Language`)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`XLS/XSLX` (Microsoft `Excel` files)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`JSON` (`JavaScript` `Object Notation`)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`HTML` (`HyperText Markup Language`)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[Table 9-1](#io_pandas_table) lists supported formats and the corresponding
+    import and export functions/methods of `pandas` and the `DataFrame` class, respectively.
+    The parameters that the import functions take are listed and described in [Link
+    to Come] (depending on the functions, some other conventions might apply).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 9-1\. Import-export functions and methods
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Format | Input | Output | Remark |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `CSV` | `pd.read_csv()` | `.to_csv()` | Text file |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `XLS/XLSX` | `pd.read_excel()` | `.to_excel()` | Spreadsheet |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `HDF` | `pd.read_hdf()` | `.to_hdf()` | `HDF5` database |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `SQL` | `pd.read_sql()` | `.to_sql()` | `SQL` table |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `JSON` | `pd.read_json()` | `.to_json()` | `JavaScript Object Notation` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `MSGPACK` | `pd.read_msgpack()` | `.to_msgpack()` | Portable binary format
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `HTML` | `pd.read_html()` | `.to_html()` | `HTML` code |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `GBQ` | `pd.read_gbq()` | `.to_gbq()` | `Google Big Query` format |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `DTA` | `pd.read_stata()` | `.to_stata()` | Formats 104, 105, 108, 113-115,
+    117 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Any | `pd.read_clipboard()` | `.to_clipboard()` | E.g., from `HTML` page
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Any | `pd.read_pickle()` | `.to_pickle()` | (Structured) Python object |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The test case is again a larger set of `float` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: To this end, we will also revisit `SQLite3` and will compare the performance
+    with alternative formats using `pandas`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SQL Database
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: All that follows with regard to `SQLite3` should be familiar by now.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A table with five columns for real numbers (`float` objects).
+  prefs: []
+  type: TYPE_NORMAL
+- en: This time, the `.executemany()` method can be applied since the data is available
+    in a single `ndarray` object. Reading and working with the data works as before.
+    Query results can also be visualized easily (see [Figure 9-1](#io_plot_01)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Inserts the whole data set in a single step into the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves all the rows from the table in a single step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves a selection of the rows and transforms it to a `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO15-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots a sub-set of the query result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 01](images/io_01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-1\. Scatter plot of the query result (selection)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: From SQL to pandas
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A generally more efficient approach, however, is the reading of either whole
+    tables or query results with `pandas`. When you are able to read a whole table
+    into memory, analytical queries can generally be executed much faster than when
+    using the `SQL` disk-based approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Reading the whole table with `pandas` takes roughly the same amount of time
+    as reading it into a `NumPy` `ndarray` object. There as here, the bottleneck is
+    the `SQL` database:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads all rows of the table into the `DataFrame` object named `data`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data is now in-memory. This allows for much faster analytics. The speed-up
+    is often an order of magnitude or more. `pandas` can also master more complex
+    queries, although it is neither meant nor able to replace `SQL` databases when
+    it comes to complex, relational data structures. The result of the query with
+    multiple conditions combined is shown in [Figure 9-2](#io_plot_02).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two conditions combined logically.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Four conditions combined logically.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 02](images/io_02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-2\. Scatter plot of the query result (selection)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: As expected, using the in-memory analytics capabilities of `pandas` leads to
+    a significant speedup, provided `pandas` is able to replicate the respective `SQL`
+    statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This is not the only advantage of using `pandas` since `pandas`, among others,
+    is tightly integrated with `PyTables` — the topic of the subsequent section. Here,
+    it suffices to know that the combination of both can speed up I/O operations considerably.
+    This is shown in the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a `HDF5` database file for writing; in `pandas` a `HDFStore` object is
+    created.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The complete `DataFrame` object is stored in the database file via binary storage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `HDFStore` object information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO18-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The database file is closed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The whole `DataFrame` with all the data from the original `SQL` table is written
+    much faster when compared to the same procedure with `SQLite3`. Reading is even
+    faster:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the `HDF5` database file for reading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `DataFrame` is read and stored in-memory as `data_`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO19-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The database file is closed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO19-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The two `DataFrame` objects are not the same.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO19-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, they contain now the same data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO19-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Binary storage generally comes with less size overhead compared to `SQL` tables,
+    for instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data as CSV File
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'One of the most widely used formats to exchange financial data is the `CSV`
+    format. Although it is not really standardized, it can be processed by any platform
+    and the vast majority of applications concerned with data and financial analytics.
+    The previous section shows how to write and read data to and from `CSV` files
+    with standard Python functionality (see [“Reading and Writing Text Files”](#reading_and_writing_text_files)).
+    `pandas` makes this whole procedure a bit more convenient, the code more concise,
+    and the execution in general faster (see also [Figure 9-3](#io_plot_03)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `.to_csv()` method writes the `DataFrame` data to disk in `CSV` format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO20-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `pd.read_csv()` then reads it again back into memory as a new `DataFrame`
+    object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 03](images/io_03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-3\. Histograms for selected columns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Data as Excel File
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Although working with `Excel` spreadsheets is the topic of a later chapter,
+    the following code briefly demonstrate how `pandas` can write data in `Excel`
+    format and read data from `Excel` spreadsheets. We restrict the data set to 100,000
+    rows in this case:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `.to_excel()` method writes the `DataFrame` data to disk in `XLSX` format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `pd.read_excel()` then reads it again back into memory as a new `DataFrame`
+    object, also specifying the sheet from which to read.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 04](images/io_04.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-4\. Line plots for all columns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Generating the `Excel` spreadsheet file with a smaller subset of the data takes
+    quite a while. This illustrates what kind of overhead the spreadsheet structure
+    brings along with it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Inspection of the generated files reveals that the `DataFrame` with `HDFStore`
+    combination is the most compact alternative (using compression, as described later
+    in this chapter, further increases the benefits). The same amount of data as a
+    `CSV` file—i.e., as a text file—is somewhat larger in size. This is one reason
+    for the slower performance when working with `CSV` files, the other being the
+    very fact that they are "`only`" general text files.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fast I/O with PyTables
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`PyTables` is a Python binding for the `HDF5` database standard (see [*http://www.hdfgroup.org*](http://www.hdfgroup.org)).
+    It is specifically designed to optimize the performance of I/O operations and
+    make best use of the available hardware. The library’s import name is `tables`.
+    Similar to `pandas` when it comes to in-memory analytics, `PyTables` is neither
+    able nor meant to be a full replacement for `SQL` databases. However, it brings
+    along some features that further close the gap. For example, a `PyTables` database
+    can have many tables, and it supports compression and indexing and also nontrivial
+    queries on tables. In addition, it can store `NumPy` arrays efficiently and has
+    its own flavor of array-like data structures.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To begin with, some imports:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The package name is `PyTables`, the import name is `tables`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Working with Tables
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`PyTables` provides a file-based database format, similar to `SQLite3`.^([5](ch09.html#idm140277650901008)).
+    The following opens a database file and creates a table:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the database file in `HDF5` binary storage format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `date` column for date-time information (as a `str` object).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO23-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The two columns to store `int` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO23-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The two columns to store `float` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO23-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Via `Filters` objects, compression levels can be specified, among others.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO23-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The node (path) and technical name of the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_input_output_operations_CO23-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The description of the row data structure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_input_output_operations_CO23-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The name (title) of the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](images/9.png)](#co_input_output_operations_CO23-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected number of rows; allows for optimizations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](images/10.png)](#co_input_output_operations_CO23-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `Filters` object to be used for the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To populate the table with numerical data, two `ndarray` objects with random
+    numbers are generated. One with random integers, the other one with random floating
+    point numbers. The population of the table happens via a simple Python loop.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A pointer object is created.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO24-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object with the random `int` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO24-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object with the random `float` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO24-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `datetime` object, the two `int` and two `float` objects are written row-by-row.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO24-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The new row is appended.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO24-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: All written rows are flushed, i.e. committed as permanent changes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_input_output_operations_CO24-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The changes are reflected in the `Table` object description.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Python loop is quite slow in this case. There is a more performant and
+    Pythonic way to accomplish the same result, by the use of `NumPy` structured arrays.
+    Equipped with the complete data set stored in a structured array, the creation
+    of the table boils down to a single line of code. Note that the row description
+    is not needed anymore; `PyTables` uses the `dtype` object of the structured array
+    to infer the data types instead:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the special `dtype` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO25-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the structured array with zeros (and empty strings).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A few records from the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO25-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The columns of the `ndarray` object are populated at once.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO25-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This creates the `Table` object *and* populates it with the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This approach is an order of magnitude faster, has more concise code and achieves
+    the same result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO26-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The description of the `File` object with the two `Table` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO26-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This removes the second `Table` object with the redundant data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Table` object behaves pretty similar to `NumPy` structured `ndarray` objects
+    in most cases (see also [Figure 9-5](#io_plot_05)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO27-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selecting rows via indexing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO27-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selecting columns values only via indexing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO27-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying `NumPy` universal functions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO27-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting a column from the `Table` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 05](images/io_05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-5\. Histogram of column data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`PyTables` also provides flexible tools to query data via typical `SQL`-like
+    statements, as in the following example (the result of which is illustrated in
+    [Figure 9-6](#io_plot_06); compare it with [Figure 9-2](#io_plot_02), based on
+    a `pandas` query):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO28-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The query as a `str` object, four conditions combined by logical operators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO28-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The iterator object based on the query.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO28-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rows resulting from the query are collected via a list comprehension …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO28-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … and transformed to a `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 06](images/io_06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-6\. Histogram of column data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Fast Queries
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Both `pandas` and `PyTables` are able to process relatively complex, `SQL`-like
+    queries and selections. They are both optimized for speed when it comes to such
+    operations. However, there are of course limits to these approaches compared to
+    relational databases. But for most numerical and financial applications they are
+    often not decisive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As the following examples show, working with data stored in `PyTables` as a
+    `Table` objects makes you feel like working with `NumPy` or `pandas` and in-memory,
+    both from a *syntax* and a *performance* point of view:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: Working with Compressed Tables
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A major advantage of working with `PyTables` is the approach it takes to compression.
+    It uses compression not only to save space on disk, but also to improve the performance
+    of I/O operations in certain hardware scenarios. How does this work? When I/O
+    is the bottleneck and the CPU is able to (de)compress data fast, the net effect
+    of compression in terms of speed might be positive. Since the following examples
+    are based on the I/O of a standard SSD, there is no speed advantage of compression
+    to be observed. However, there is also almost no *disadvantage* of using compression:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO29-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The compression level (`complevel`) can take values between 0 (no compression)
+    and 9 (highest compression).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO29-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The [`Blosc`](http://blosc.org) compression engine is used, which is optimized
+    for performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO29-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The iterator object given the query from before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO29-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rows resulting from the query are collected via a list comprehension.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Generating the compressed `Table` object with the original data and doing analytics
+    on it is slightly slower compared to the uncompressed `Table` object. What about
+    reading the data into a `ndarray` object? Let’s check:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO30-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading from the uncompressed `Table` object `tab`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO30-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading from the compressed `Table` object `tabc`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO30-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The size of the compressed table is significantly reduced.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO30-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closing the database file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The examples show that there is hardly a speed difference when working with
+    compressed `Table` objects as compared to uncompressed ones. However, file sizes
+    on disk might — depending on the quality of the data — significantly reduced which
+    has a number of benefits:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**storage costs**: storage costs are reduced'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**backup costs**: backup costs are reduced'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**network traffic**: network traffic is reduced'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**network speed**: storage on and retrieval from remote servers are faster'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**CPU utilization**: CPU utilization is increased to overcome I/O bottlenecks'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Working with Arrays
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[“Basic I/O with Python”](#io_basic_io) demonstrates that `NumPy` has built-in
+    fast writing and reading capabilities for `ndarray` objects. `PyTables` is also
+    quite fast and efficient when it comes to storing and retrieving `ndarray` objects.
+    Since it is based on a hierarchical database structure, many convenience features
+    come on top:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO31-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores the `ran_int` `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO31-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores the `ran_flo` `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO31-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The changes are reflected in the object description.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing these objects directly to a `HDF5` database is faster than looping over
+    the objects and writing the data row-by-row to a `Table` object or using the approach
+    via structured `ndarray` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: HDF5-Based Data Storage
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The `HDF5` hierarchical database (file) format is a powerful alternative to,
+    for example, relational databases when it comes to structured numerical and financial
+    data. Both on a standalone basis when using `PyTables` directly and when combining
+    it with the capabilities of `pandas`, you can expect to get almost the maximum
+    I/O performance that the available hardware allows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Out-of-Memory Computations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`PyTables` supports out-of-memory operations, which makes it possible to implement
+    array-based computations that do not fit into the memory. To this end, consider
+    the following code based on the `EArray` class. This type of object allows to
+    be expanded in one dimension (row-wise) while the number columns (elements per
+    row) needs to be fixed.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO32-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This defines the fixed number of columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO32-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The path and technical name of the `EArray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO32-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The atomic `dtype` object of the single values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO32-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The shape for instantiation (no rows, `n` columns).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO32-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `ndarray` object with the random numbers …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO32-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: … that gets appended many times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For out-of-memory computations, that do not lead to aggregations, another `EArray`
+    object of same shape (size) is needed. PyTables+ has a special module to cope
+    with numerical expressions efficiently. It is called `Expr` and is based on the
+    numerical expression library [`numexpr`](https://numexpr.readthedocs.io). The
+    code that follows uses `Expr` to calculate the mathematical expression in [Equation
+    9-1](#tab_expr) on the whole `EArray` object from before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 9-1\. Example mathematical expression
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math display="block" alttext="y equals 3 sine left-parenthesis x right-parenthesis
+    plus StartRoot StartAbsoluteValue x EndAbsoluteValue EndRoot"><mrow><mi>y</mi>
+    <mo>=</mo> <mn>3</mn> <mo form="prefix">sin</mo> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow>
+    <mo>+</mo> <msqrt><mrow><mo>|</mo> <mi>x</mi> <mo>|</mo></mrow></msqrt></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The results are stored in the `out` `EArray` object, the expression evaluation
+    happens chunk-wise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO33-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This transforms a `str` object based expression to a `Expr` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO33-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This defines the output to be the `out` `EArray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO33-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This initiates the evaluation of the expression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO33-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This reads the whole `EArray` into the memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Given that the whole operation takes place out-of-memory, it can be considered
+    quite fast, in particular as it is executed on standard hardware. As a benchmark,
+    the in-memory performance of the `numexpr` module (see also [Link to Come]) can
+    be considered. It is faster, but not by a huge margin:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO34-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Import the module for *in-memory* evaluations of numerical expressions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO34-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The numerical expression as a `str` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO34-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the number of threads to be one only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO34-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the numerical expression in-memory with one thread.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO34-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the number of threads to be four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO34-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the numerical expression in-memory with four threads.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I/O with TsTables
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The package `TsTables` uses `PyTables` to build a high performance storage for
+    time series data. The major usage scenario is "`write once, retrieve multiple
+    times`“. This is a typical scenario in financial analytics since data is created
+    in the markets, retrieved maybe in real-time or asynchronously and stored on disk
+    for later usage. Such usage might be a larger trading strategy backtesting program
+    that requires different sub-sets of a historical financial time series over and
+    over again. It is then important that data retrieval happens fast.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sample Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As usual, first the generation of some sample data set that is large enough
+    to illustrate the benefits of `TsTables`. The following code generates three rather
+    long financial time series based on the simulation of a geometric Brownian motion
+    (see [Link to Come]).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO35-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of time steps.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO35-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO35-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The time interval as a year fraction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO35-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO35-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Standard-normally distributed random numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](images/6.png)](#co_input_output_operations_CO35-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial random numbers set to 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](images/7.png)](#co_input_output_operations_CO35-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simulation based on a Euler discretization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](images/8.png)](#co_input_output_operations_CO35-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial values of the paths set to 100.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since `TsTables` works pretty well with `pandas` `DataFrame` objects, the data
+    is transformed to such an object (see also [Figure 9-7](#io_plot_07)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![io 07](images/io_07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-7\. Selected data points of the financial time series
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Data Storage
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`TsTables` stores financial time series data based on a specific chunk-based
+    structure which allows for fast data retrieval of arbitrary data sub-sets defined
+    by some time interval. To this end, the package adds the function `create_ts()`
+    to `PyTables`. The following code uses the `class` based description method from
+    `PyTables`, based on the `tb.IsDescription` class.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO36-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The column for the time stamps.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO36-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The columns to store the numerical data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO36-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a `HDF5` database file for writing (`w`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO36-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the `TsTable` object based on the `ts_desc` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](images/5.png)](#co_input_output_operations_CO36-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends the data from the `DataFrame` object to the `TsTable` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data Retrieval
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Writing data with `TsTables` obviously is quite fast, even if hardware-dependent.
+    The same holds true for reading chunks of the data back into memory. Conveniently,
+    `TaTables` returns a `DataFrame` object (see also [Figure 9-8](#io_plot_08)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO37-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The start time of the interval.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO37-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The end time of the interval.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO37-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function `ts.read_range()` returns a `DataFrame` object for the interval.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO37-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `DataFrame` object has a few 100,000 data rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![io 08](images/io_08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-8\. A specific time interval of the financial time series (normalized)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: To better illustrate the performance of the `TsTables` based data retrieval,
+    consider the following benchmark which retrieves 100 chunks of data consisting
+    of three days worth of one-second bars. The retrieval of a `DataFrame` with 345,600
+    rows of data takes less than one tenth of a second.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](images/1.png)](#co_input_output_operations_CO38-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This connects to the `TsTable` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](images/2.png)](#co_input_output_operations_CO38-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data retrieval is repeated many times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](images/3.png)](#co_input_output_operations_CO38-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The starting day value is randomized.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](images/4.png)](#co_input_output_operations_CO38-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The last `DataFrame` object retrieved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`SQL`-based or relational databases have advantages when it comes to complex
+    data structures that exhibit lots of relations between single objects/tables.
+    This might justify in some circumstances their performance disadvantage over pure
+    `NumPy` `ndarray`-based or `pandas` `DataFrame`-based approaches.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many application areas in finance or science in general, can succeed with a
+    mainly array-based data modeling approach. In these cases, huge performance improvements
+    can be realized by making use of native `NumPy` I/O capabilities, a combination
+    of `NumPy` and `PyTables` capabilities, or of the `pandas` approach via `HDF5`-based
+    stores. `TsTables` is particularly useful when working with large (financial)
+    time series data sets, in particular in "`write once, retrieve multiple times`"
+    scenarios.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'While a recent trend has been to use cloud-based solutions—where the cloud
+    is made up of a large number of computing nodes based on commodity hardware—one
+    should carefully consider, especially in a financial context, which hardware architecture
+    best serves the analytics requirements. A study by Microsoft sheds some light
+    on this topic:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: We claim that a single "`scale-up`" server can process each of these jobs and
+    do as well or better than a cluster in terms of performance, cost, power, and
+    server density.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Appuswamy et al. (2013)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Companies, research institutions, and others involved in data analytics should
+    therefore analyze first what specific tasks have to be accomplished in general
+    and then decide on the hardware/software architecture, in terms of:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scaling out
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using a cluster with many commodity nodes with standard CPUs and relatively
+    low memory
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scaling up
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using one or a few powerful servers with many-core CPUs — possibly also GPUs
+    or even TPUs when machine and deep learning play a role — and large amounts of
+    memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scaling up hardware and applying appropriate implementation approaches might
+    significantly influence performance. More on performance in the next chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Reading
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The paper cited at the beginning of the chapter as well as in [“Conclusions”](#io_conclusions)
+    section is a good read, and a good starting point to think about hardware architecture
+    for financial analytics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Appuswamy, Raja et al. (2013): "`Nobody Ever Got Fired for Buying a Cluster.`"
+    Microsoft Research, Cambridge, England, [*http://research.microsoft.com/apps/pubs/default.aspx?id=179615*](http://research.microsoft.com/apps/pubs/default.aspx?id=179615).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'As usual, the Web provides many valuable resources with regard to the topics
+    covered in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For serialization of Python objects with `pickle`, refer to the documentation:
+    [*http://docs.python.org/3/library/pickle.html*](http://docs.python.org/3/library/pickle.html).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'An overview of the I/O capabilities of `NumPy` is provided on the `SciPy` website:
+    [*http://docs.scipy.org/doc/numpy/reference/routines.io.html*](http://docs.scipy.org/doc/numpy/reference/routines.io.html).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For I/O with `pandas` see the respective section in the online documentation:
+    [*http://pandas.pydata.org/pandas-docs/stable/io.html*](http://pandas.pydata.org/pandas-docs/stable/io.html).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The `PyTables` home page provides both tutorials and detailed documentation:
+    [*http://www.pytables.org*](http://www.pytables.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The Github page of `TsTables` is found under [*https://github.com/afiedler/tstables*](https://github.com/afiedler/tstables).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch09.html#idm140277658125664-marker)) Here, we do not distinguish between
+    different levels of RAM and processor caches. The optimal use of current memory
+    architectures is a topic in itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch09.html#idm140277655563600-marker)) For an overview of available database
+    connectors for Python, visit [*https://wiki.python.org/moin/DatabaseInterfaces*](https://wiki.python.org/moin/DatabaseInterfaces).
+    Instead of working directly with relational databases, object relational mappers,
+    such as [SQLAlchemy](https://www.sqlalchemy.org/), prove often useful. They introduce
+    an abstraction layer that allows for more Pythonic, object-oriented code. They
+    also allow to more easily to exchange one relational database for another in the
+    back end.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch09.html#idm140277655097520-marker)) See [*https://www.sqlite.org/lang.html*](https://www.sqlite.org/lang.html)
+    for an overview of the `SQLite3` language dialect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch09.html#idm140277654035024-marker)) See [*http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html*](http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch09.html#idm140277650901008-marker)) Many other databases require a server-client
+    architechture. For interactive data and financial analytics, file-based databases
+    prove a bit more convenient and also sufficient for most purposes in general.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,4 +1,4 @@
-# 第二章 Python 基础设施
+# 第二章：Python 基础设施
 
 > 在建造房屋时，有木材选择的问题。
 > 
@@ -8,13 +8,13 @@
 
 # 介绍
 
-对于新接触Python的人来说，Python部署似乎一切都不简单。对于可以选择安装的丰富库和包也是如此。首先，Python不只有 *一个* 版本。 Python有许多不同的版本，如CPython，Jython，IronPython或PyPy。然后仍然存在Python 2.7和3.x世界之间的差异。[^1] 接下来，本章重点关注 *CPython*，迄今为止最流行的Python编程语言版本，以及 *版本3.6*。
+对于新接触 Python 的人来说，Python 部署似乎一切都不简单。对于可以选择安装的丰富库和包也是如此。首先，Python 不只有 *一个* 版本。 Python 有许多不同的版本，如 CPython，Jython，IronPython 或 PyPy。然后仍然存在 Python 2.7 和 3.x 世界之间的差异。[¹] 接下来，本章重点关注 *CPython*，迄今为止最流行的 Python 编程语言版本，以及 *版本 3.6*。
 
 即使专注于 CPython 3.6（以下简称`Python`），部署也因许多其他原因变得困难：
 
-+   解释器（标准CPython安装）只带有所谓的 *标准库*（例如，涵盖典型的数学函数）
++   解释器（标准 CPython 安装）只带有所谓的 *标准库*（例如，涵盖典型的数学函数）
 
-+   可选的Python包需要单独安装 —— 而且有数百个
++   可选的 Python 包需要单独安装 —— 而且有数百个
 
 +   由于依赖关系和操作系统特定要求，编译/构建这些非标准包可能会很棘手
 
@@ -24,43 +24,43 @@
 
 +   更改或替换一个包可能会在（许多）其他地方引起麻烦
 
-幸运的是，有一些工具和策略可用于帮助解决Python部署问题。本章介绍了以下几种有助于Python部署的技术类型：
+幸运的是，有一些工具和策略可用于帮助解决 Python 部署问题。本章介绍了以下几种有助于 Python 部署的技术类型：
 
-+   **包管理器**：像[`pip`](https://pypi.python.org/pypi/pip)或[`conda`](http://conda.pydata.org/docs/intro.html)这样的包管理器有助于安装、更新和删除Python包；它们还有助于不同包的版本一致性
++   **包管理器**：像[`pip`](https://pypi.python.org/pypi/pip)或[`conda`](http://conda.pydata.org/docs/intro.html)这样的包管理器有助于安装、更新和删除 Python 包；它们还有助于不同包的版本一致性
 
-+   **虚拟环境管理器**：虚拟环境管理器如[`virtualenv`](https://pypi.python.org/pypi/virtualenv)或`conda`允许并行管理多个Python安装（例如，在单个计算机上同时拥有Python 2.7和3.6安装，或者在不冒风险的情况下测试最新的流行Python包的开发版本）
++   **虚拟环境管理器**：虚拟环境管理器如[`virtualenv`](https://pypi.python.org/pypi/virtualenv)或`conda`允许并行管理多个 Python 安装（例如，在单个计算机上同时拥有 Python 2.7 和 3.6 安装，或者在不冒风险的情况下测试最新的流行 Python 包的开发版本）
 
-+   **容器**：[Docker](http://docker.com)容器代表包含运行某个软件所需的所有系统部件的完整文件系统，如代码、运行时或系统工具；例如，你可以在运行Mac OS或Windows 10的机器上运行一个包含Ubuntu 16.04操作系统、Python 3.6安装和相应Python代码的Docker容器中运行。
++   **容器**：[Docker](http://docker.com)容器代表包含运行某个软件所需的所有系统部件的完整文件系统，如代码、运行时或系统工具；例如，你可以在运行 Mac OS 或 Windows 10 的机器上运行一个包含 Ubuntu 16.04 操作系统、Python 3.6 安装和相应 Python 代码的 Docker 容器中运行。
 
 +   **云实例**：部署用于算法交易的 Python 代码通常需要高可用性、安全性和性能；这些要求通常只能通过使用现在以有吸引力条件提供的专业计算和存储基础设施来满足，这些基础设施形式可从相对较小到真正大型和强大的云实例；与长期租用的专用服务器相比，云实例，即虚拟服务器的一个好处是，用户通常只需支付实际使用的小时数；另一个优点是，如果需要，这些云实例可以在一两分钟内立即使用，这有助于敏捷开发和可扩展性。
 
 本章的结构如下所示
 
-[“Conda作为包管理器”](#conda_package)
+“Conda 作为包管理器”
 
 本节介绍了`conda`作为 Python 的包管理器。
 
-[“作为虚拟环境管理器的Conda”](#conda_environment)
+“作为虚拟环境管理器的 Conda”
 
 本节重点介绍`conda`作为虚拟环境管理器的功能。
 
-[“使用Docker容器化”](#docker_container)
+“使用 Docker 容器化”
 
 本节简要介绍 Docker 作为容器化技术，并侧重于构建具有 Python 3.6 安装的基于 Ubuntu 的容器。
 
-[“使用云实例”](#cloud_instance)
+“使用云实例”
 
 本节展示了如何在云中部署 Python 和 Jupyter Notebook —— 作为强大的基于浏览器的工具套件 —— 用于 Python 开发。
 
 本章的目标是在专业基础设施上具有正确的 Python 安装，并可用最重要的数值和数据分析包，然后这种组合作为在后续章节中实现和部署 Python 代码的骨干，无论是交互式的金融分析代码还是脚本和模块形式的代码。
 
-# Conda作为包管理器
+# Conda 作为包管理器
 
 虽然`conda`可以单独安装，但高效的方式是通过 Miniconda，这是一个包括`conda`作为包和虚拟环境管理器的最小 Python 发行版。
 
 ## 安装 Miniconda 3.6
 
-您可以在[Miniconda页面](http://conda.pydata.org/miniconda.html)上下载不同版本的 Miniconda。在接下来的内容中，假定使用 Python 3.6 64位版本，该版本适用于 Linux、Windows 和 Mac OS。本小节的主要示例是在基于 Ubuntu 的 Docker 容器中进行会话，通过 `wget` 下载 Linux 64位安装程序，然后安装 Miniconda。如所示的代码应在任何其他基于 Linux 或 Mac OS 的机器上无需修改即可正常工作。
+您可以在[Miniconda 页面](http://conda.pydata.org/miniconda.html)上下载不同版本的 Miniconda。在接下来的内容中，假定使用 Python 3.6 64 位版本，该版本适用于 Linux、Windows 和 Mac OS。本小节的主要示例是在基于 Ubuntu 的 Docker 容器中进行会话，通过 `wget` 下载 Linux 64 位安装程序，然后安装 Miniconda。如所示的代码应在任何其他基于 Linux 或 Mac OS 的机器上无需修改即可正常工作。
 
 ```py
 $ docker run -ti -h py4fi -p 9999:9999 ubuntu:latest /bin/bash
@@ -435,7 +435,7 @@ Solving package specifications: .
 root@py4fi:/#
 ```
 
-注意，在激活环境后提示符如何变为 `(py27)`。^([2](ch02.html#idm140277702388192))
+注意，在激活环境后提示符如何变为 `(py27)`。^(2)
 
 ```py
 root@py4fi:/# source activate py27
@@ -561,31 +561,31 @@ Proceed ([y]/n)? y
 
 # 使用 Docker 容器化
 
-Docker容器已经风靡了IT世界。尽管技术仍然很年轻，但它已经确立了自己作为几乎任何类型软件应用的高效开发和部署的基准之一。
+Docker 容器已经风靡了 IT 世界。尽管技术仍然很年轻，但它已经确立了自己作为几乎任何类型软件应用的高效开发和部署的基准之一。
 
-对于我们的目的，将Docker容器视为一个分离的（“容器化的”）文件系统足以包含操作系统（例如服务器上的Ubuntu 16.04），一个（Python）运行时，额外的系统和开发工具以及根据需要的其他（Python）库和软件包。这样的Docker容器可以在具有Windows 10的本地机器上运行，也可以在具有Linux操作系统的云实例上运行，例如。
+对于我们的目的，将 Docker 容器视为一个分离的（“容器化的”）文件系统足以包含操作系统（例如服务器上的 Ubuntu 16.04），一个（Python）运行时，额外的系统和开发工具以及根据需要的其他（Python）库和软件包。这样的 Docker 容器可以在具有 Windows 10 的本地机器上运行，也可以在具有 Linux 操作系统的云实例上运行，例如。
 
-本节不允许深入探讨Docker容器的有趣细节。它更多地是对Docker技术在Python部署上的简要说明。^([4](ch02.html#idm140277702366912))
+本节不允许深入探讨 Docker 容器的有趣细节。它更多地是对 Docker 技术在 Python 部署上的简要说明。^(4)
 
-## Docker镜像和容器
+## Docker 镜像和容器
 
-然而，在进入说明之前，谈论Docker时需要区分两个基本术语。第一个是*Docker镜像*，可以类比为Python类。第二个是*Docker容器*，可以类比为相应Python类的实例。
+然而，在进入说明之前，谈论 Docker 时需要区分两个基本术语。第一个是*Docker 镜像*，可以类比为 Python 类。第二个是*Docker 容器*，可以类比为相应 Python 类的实例。
 
-在更技术层面上，在[Docker术语表](https://docs.docker.com/engine/reference/glossary/)中找到了对*Docker镜像*的以下定义：
+在更技术层面上，在[Docker 术语表](https://docs.docker.com/engine/reference/glossary/)中找到了对*Docker 镜像*的以下定义：
 
-> Docker镜像是容器的基础。一个镜像是一组有序的根文件系统更改和相应的执行参数，用于容器运行时。一个镜像通常包含叠加在彼此上面的分层文件系统的联合。镜像没有状态，永远不会改变。
+> Docker 镜像是容器的基础。一个镜像是一组有序的根文件系统更改和相应的执行参数，用于容器运行时。一个镜像通常包含叠加在彼此上面的分层文件系统的联合。镜像没有状态，永远不会改变。
 
-同样，您可以在[Docker术语表](https://docs.docker.com/engine/reference/glossary/)中找到对*Docker容器*的以下定义，它将类比为Python类和这些类的实例：
+同样，您可以在[Docker 术语表](https://docs.docker.com/engine/reference/glossary/)中找到对*Docker 容器*的以下定义，它将类比为 Python 类和这些类的实例：
 
-> 容器是Docker镜像的运行时实例。Docker容器包括：一个Docker镜像，一个执行环境和一组标准指令。
+> 容器是 Docker 镜像的运行时实例。Docker 容器包括：一个 Docker 镜像，一个执行环境和一组标准指令。
 
-根据操作系统的不同，安装Docker的方式略有不同。这就是为什么本节不涉及相应细节的原因。详细信息请参阅[安装Docker引擎页面](https://docs.docker.com/engine/installation/)。
+根据操作系统的不同，安装 Docker 的方式略有不同。这就是为什么本节不涉及相应细节的原因。详细信息请参阅[安装 Docker 引擎页面](https://docs.docker.com/engine/installation/)。
 
-## 构建一个Ubuntu和Python Docker镜像
+## 构建一个 Ubuntu 和 Python Docker 镜像
 
-本小节说明了基于最新版本的Ubuntu构建Docker镜像的过程，该镜像包含Miniconda以及一些重要的Python包。此外，它还通过更新Linux软件包索引，必要时升级软件包，并安装某些额外的系统工具来进行一些Linux的维护工作。为此，需要两个脚本。一个是在Linux级别执行所有工作的`bash`脚本。^([5](ch02.html#idm140277702354096))另一个是所谓的`Dockerfile`，它控制镜像本身的构建过程。
+本小节说明了基于最新版本的 Ubuntu 构建 Docker 镜像的过程，该镜像包含 Miniconda 以及一些重要的 Python 包。此外，它还通过更新 Linux 软件包索引，必要时升级软件包，并安装某些额外的系统工具来进行一些 Linux 的维护工作。为此，需要两个脚本。一个是在 Linux 级别执行所有工作的`bash`脚本。^(5)另一个是所谓的`Dockerfile`，它控制镜像本身的构建过程。
 
-[示例 2-1](#docker_install) 中的 `bash` 脚本负责安装，由三个主要部分组成。第一部分处理 Linux 的基本事务。第二部分安装 Miniconda，而第三部分安装可选的 Python 包。内联还有更详细的注释。
+示例 2-1 中的 `bash` 脚本负责安装，由三个主要部分组成。第一部分处理 Linux 的基本事务。第二部分安装 Miniconda，而第三部分安装可选的 Python 包。内联还有更详细的注释。
 
 ##### 示例 2-1\. 安装 Python 和可选包的脚本
 
@@ -619,7 +619,7 @@ conda install -y pandas  # installs pandas
 conda install -y ipython  # installs IPython shell
 ```
 
-[示例 2-2](#docker_file) 中的 `Dockerfile` 使用 [示例 2-1](#docker_install) 中的 `bash` 脚本构建新的 Docker 镜像。它还将其主要部分作为注释内联。
+示例 2-2 中的 `Dockerfile` 使用 示例 2-1 中的 `bash` 脚本构建新的 Docker 镜像。它还将其主要部分作为注释内联。
 
 ##### 示例 2-2\. 构建镜像的 Dockerfile
 
@@ -797,7 +797,7 @@ macbookpro:~/Docker$ docker rmi 60a180
 
 ## RSA 公钥和私钥
 
-为了通过任意浏览器安全连接到 Jupyter Notebook 服务器，需要一个由 RSA 公钥和私钥组成的 SSL 证书（参见[RSA 维基百科页面](https://zh.wikipedia.org/wiki/RSA%E5%8A%A0%E5%AF%86%E6%BC%94%E7%AE%97%E6%B3%95)）。一般来说，人们期望这样的证书来自所谓的证书颁发机构（CA）。然而，在本书的目的下，自动生成的证书已经“`足够好`“了。[^6] 生成 RSA 密钥对的流行工具是[`OpenSSL`](http://openssl.org)。接下来的简要交互式会话生成了适用于 Jupyter Notebook 服务器的证书。
+为了通过任意浏览器安全连接到 Jupyter Notebook 服务器，需要一个由 RSA 公钥和私钥组成的 SSL 证书（参见[RSA 维基百科页面](https://zh.wikipedia.org/wiki/RSA%E5%8A%A0%E5%AF%86%E6%BC%94%E7%AE%97%E6%B3%95)）。一般来说，人们期望这样的证书来自所谓的证书颁发机构（CA）。然而，在本书的目的下，自动生成的证书已经“`足够好`“了。[⁶] 生成 RSA 密钥对的流行工具是[`OpenSSL`](http://openssl.org)。接下来的简要交互式会话生成了适用于 Jupyter Notebook 服务器的证书。
 
 ```py
 macbookpro:~/cloud$ openssl req -x509 -nodes -days 365 -newkey \
@@ -846,7 +846,7 @@ Out[2]: 'sha1:4c72b4542011:0a8735a18ef2cba12fde3744886e61f76706299b'
 In [3]: exit
 ```
 
-此哈希代码需要放置在 Jupyter Notebook 配置文件中，如[示例 2-3](#jupyter_config_file) 所示。该代码假定 RSA 密钥文件已复制到了滴管的 `/root/.jupyter/` 文件夹中。
+此哈希代码需要放置在 Jupyter Notebook 配置文件中，如示例 2-3 所示。该代码假定 RSA 密钥文件已复制到了滴管的 `/root/.jupyter/` 文件夹中。
 
 ##### 示例 2-3. Jupyter Notebook 配置文件
 
@@ -886,7 +886,7 @@ c.NotebookApp.open_browser = False
 
 ## Python 和 Jupyter Notebook 的安装脚本
 
-用于安装 Python 和 Jupyter Notebook 的 bash 脚本类似于在[“使用 Docker 容器化”](#docker_container)一节中介绍的用于在 Docker 容器中通过 Miniconda 安装 Python 的脚本。然而，这里的脚本还需要启动 Jupyter Notebook 服务器。所有主要部分和代码行都在内联注释中。
+用于安装 Python 和 Jupyter Notebook 的 bash 脚本类似于在“使用 Docker 容器化”一节中介绍的用于在 Docker 容器中通过 Miniconda 安装 Python 的脚本。然而，这里的脚本还需要启动 Jupyter Notebook 服务器。所有主要部分和代码行都在内联注释中。
 
 ##### 示例 2-4. 安装 Python 并运行 Jupyter Notebook 服务器的 bash 脚本
 
@@ -954,7 +954,7 @@ jupyter notebook --allow-root
 
 ## 管理滴管设置的脚本
 
-设置滴水筹的第二个bash脚本是最短的。它主要将所有其他文件复制到滴水筹中，其中预期的是相应的IP地址作为参数。在最后一行，它启动`install.sh` bash脚本，后者又会进行安装并启动Jupyter Notebook服务器。
+设置滴水筹的第二个 bash 脚本是最短的。它主要将所有其他文件复制到滴水筹中，其中预期的是相应的 IP 地址作为参数。在最后一行，它启动`install.sh` bash 脚本，后者又会进行安装并启动 Jupyter Notebook 服务器。
 
 ##### 示例 2-5\. 用于设置滴水筹的`bash`脚本
 
@@ -980,49 +980,49 @@ scp cert.* jupyter_notebook_config.py root@${MASTER_IP}:
 ssh root@${MASTER_IP} bash /root/install.sh
 ```
 
-现在一切都准备好尝试设置代码。在DigitalOcean上，创建一个新的滴水筹，并选择类似于以下选项：
+现在一切都准备好尝试设置代码。在 DigitalOcean 上，创建一个新的滴水筹，并选择类似于以下选项：
 
-+   **操作系统**：Ubuntu 16.04.3 x64（截至2017年11月4日的默认选择）
++   **操作系统**：Ubuntu 16.04.3 x64（截至 2017 年 11 月 4 日的默认选择）
 
-+   **规模**：1核心，512 MB，20GB SSD（最小的滴水筹）
++   **规模**：1 核心，512 MB，20GB SSD（最小的滴水筹）
 
 +   **数据中心区域**：法兰克福（因为作者居住在德国）
 
-+   **SSH密钥**：添加（新的）SSH密钥以实现无密码登录 ^（[7](ch02.html#idm140277701971712)）
++   **SSH 密钥**：添加（新的）SSH 密钥以实现无密码登录 ^（7）
 
 +   **滴水筹名称**：您可以选择预先指定的名称，也可以选择像`py4fi`这样的名称
 
-最后，点击`创建`按钮启动滴水筹建过程，通常需要约一分钟。进行设置过程的主要结果是IP地址，例如，当您选择法兰克福作为数据中心位置时，可能为46.101.156.199。现在设置滴水筹非常简单：
+最后，点击`创建`按钮启动滴水筹建过程，通常需要约一分钟。进行设置过程的主要结果是 IP 地址，例如，当您选择法兰克福作为数据中心位置时，可能为 46.101.156.199。现在设置滴水筹非常简单：
 
 ```py
 (py3) macbookpro:~/cloud$ bash setup.sh 46.101.156.199
 ```
 
-结果过程可能需要几分钟。当Jupyter Notebook服务器出现类似于以下消息时，过程结束：
+结果过程可能需要几分钟。当 Jupyter Notebook 服务器出现类似于以下消息时，过程结束：
 
 ```py
 The Jupyter Notebook is running at: https://[all ip addresses on your system]:8888/
 ```
 
-在任何当前浏览器中，访问以下地址即可访问正在运行的Jupyter Notebook（注意`https`协议）：
+在任何当前浏览器中，访问以下地址即可访问正在运行的 Jupyter Notebook（注意`https`协议）：
 
 ```py
 https://46.101.156.199:8888
 ```
 
-可能需要添加安全例外，然后Jupyter Notebook登录屏幕会提示输入密码（在我们的情况下为`jupyter`）。现在一切准备就绪，可以通过Jupyter Notebook在浏览器中开始Python开发，通过终端窗口进行`IPython`或文本文件编辑器。还提供了其他文件管理功能，如文件上传，删除文件或创建文件夹。
+可能需要添加安全例外，然后 Jupyter Notebook 登录屏幕会提示输入密码（在我们的情况下为`jupyter`）。现在一切准备就绪，可以通过 Jupyter Notebook 在浏览器中开始 Python 开发，通过终端窗口进行`IPython`或文本文件编辑器。还提供了其他文件管理功能，如文件上传，删除文件或创建文件夹。
 
 ###### 小贴士
 
-像DigitalOcean和Jupyter Notebook这样的云实例是算法交易员的强大组合，可以利用专业的计算和存储基础设施。专业的云和数据中心提供商确保您的（虚拟）机器在物理上安全且高度可用。使用云实例也可以使探索和开发阶段的成本相对较低，因为通常按小时收费，而无需签订长期协议。
+像 DigitalOcean 和 Jupyter Notebook 这样的云实例是算法交易员的强大组合，可以利用专业的计算和存储基础设施。专业的云和数据中心提供商确保您的（虚拟）机器在物理上安全且高度可用。使用云实例也可以使探索和开发阶段的成本相对较低，因为通常按小时收费，而无需签订长期协议。
 
 # 结论
 
-Python是本书选择的编程语言和技术平台。然而，Python部署可能最多时甚至令人厌烦和心神不宁。幸运的是，今天有一些技术可用 — 都不到五年的时间 — 有助于解决部署问题。开源软件`conda`有助于Python包和虚拟环境的管理。Docker容器甚至可以进一步扩展，可以在一个技术上受到保护的"`沙箱`"中轻松创建完整的文件系统和运行时环境。更进一步，像DigitalOcean这样的云提供商在几分钟内提供由专业管理和安全的数据中心提供的计算和存储容量，并按小时计费。这与Python 3.6安装和安全的Jupyter Notebook服务器安装结合在一起，为算法交易项目的Python开发和部署提供了专业的环境。
+Python 是本书选择的编程语言和技术平台。然而，Python 部署可能最多时甚至令人厌烦和心神不宁。幸运的是，今天有一些技术可用 — 都不到五年的时间 — 有助于解决部署问题。开源软件`conda`有助于 Python 包和虚拟环境的管理。Docker 容器甚至可以进一步扩展，可以在一个技术上受到保护的"`沙箱`"中轻松创建完整的文件系统和运行时环境。更进一步，像 DigitalOcean 这样的云提供商在几分钟内提供由专业管理和安全的数据中心提供的计算和存储容量，并按小时计费。这与 Python 3.6 安装和安全的 Jupyter Notebook 服务器安装结合在一起，为算法交易项目的 Python 开发和部署提供了专业的环境。
 
 # 进一步资源
 
-对于*Python包管理*，请参考以下资源：
+对于*Python 包管理*，请参考以下资源：
 
 +   [`pip`包管理器页面](https://pypi.python.org/pypi/pip)
 
@@ -1036,30 +1036,30 @@ Python是本书选择的编程语言和技术平台。然而，Python部署可�
 
 +   [`conda`环境管理页面](http://conda.pydata.org/docs/using/envs.html)
 
-关于*Docker容器*的信息请见此处：
+关于*Docker 容器*的信息请见此处：
 
-+   [Docker首页](http://docker.com)
++   [Docker 首页](http://docker.com)
 
-+   Matthias、Karl和Sean Kane (2015): *Docker: Up and Running.* O’Reilly, 北京等。
++   Matthias、Karl 和 Sean Kane (2015): *Docker: Up and Running.* O’Reilly, 北京等。
 
 Robbins (2016)提供了对`bash` *脚本语言*的简明介绍和概述。
 
-+   Robbins, Arnold (2016): *Bash Pocket Reference*. 第2版，O’Reilly, 北京等。
++   Robbins, Arnold (2016): *Bash Pocket Reference*. 第 2 版，O’Reilly, 北京等。
 
-如何安全运行*公共Jupyter Notebook服务器*请参阅[运行笔记本服务器](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)。
+如何安全运行*公共 Jupyter Notebook 服务器*请参阅[运行笔记本服务器](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)。
 
-要在DigitalOcean上注册一个新帐户并获得10美元的起始信用，请访问此[注册页面](https://m.do.co/c/fbe512dd3dac)。这可以支付最小水滴两个月的使用费。
+要在 DigitalOcean 上注册一个新帐户并获得 10 美元的起始信用，请访问此[注册页面](https://m.do.co/c/fbe512dd3dac)。这可以支付最小水滴两个月的使用费。
 
-^([1](ch02.html#idm140277702866800-marker))在撰写本文时，Python 3.7beta刚刚发布。
+^(1)在撰写本文时，Python 3.7beta 刚刚发布。
 
-^([2](ch02.html#idm140277702388192-marker))在Windows上，激活新环境的命令仅为`activate py27` — 省略了`source`。
+^(2)在 Windows 上，激活新环境的命令仅为`activate py27` — 省略了`source`。
 
-^([3](ch02.html#idm140277702377552-marker))在官方文档中，您会找到以下解释：“`Python '虚拟环境'允许将Python包安装在特定应用程序的隔离位置，而不是全局安装。`"参见[创建虚拟环境页面](https://packaging.python.org/installing/#creating-virtual-environments)。
+^(3)在官方文档中，您会找到以下解释：“`Python '虚拟环境'允许将 Python 包安装在特定应用程序的隔离位置，而不是全局安装。`"参见[创建虚拟环境页面](https://packaging.python.org/installing/#creating-virtual-environments)。
 
-^([4](ch02.html#idm140277702366912-marker)) 有关 Docker 技术的全面介绍，请参阅 Matthias 和 Kane (2015) 的书籍。
+^(4) 有关 Docker 技术的全面介绍，请参阅 Matthias 和 Kane (2015) 的书籍。
 
-^([5](ch02.html#idm140277702354096-marker)) 要了解 `bash` 脚本的简明介绍和快速概述，请参考 Robbins (2016) 的书籍。
+^(5) 要了解 `bash` 脚本的简明介绍和快速概述，请参考 Robbins (2016) 的书籍。
 
-^([6](ch02.html#idm140277702285376-marker)) 使用这样一个自行生成的证书时，可能需要在浏览器提示时添加安全异常。
+^(6) 使用这样一个自行生成的证书时，可能需要在浏览器提示时添加安全异常。
 
-^([7](ch02.html#idm140277701971712-marker)) 如果需要帮助，请访问[如何在 DigitalOcean Droplets 上使用 SSH 密钥](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-digitalocean-droplets)或[如何在 DigitalOcean Droplets 上使用 PuTTY（Windows 用户）](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-putty-on-digitalocean-droplets-windows-users)。
+^(7) 如果需要帮助，请访问[如何在 DigitalOcean Droplets 上使用 SSH 密钥](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-digitalocean-droplets)或[如何在 DigitalOcean Droplets 上使用 PuTTY（Windows 用户）](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-putty-on-digitalocean-droplets-windows-users)。

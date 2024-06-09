@@ -1,4 +1,4 @@
-# 第三章：第3章 数据类型和结构
+# 第三章：数据类型和结构
 
 > 糟糕的程序员担心代码。优秀的程序员担心数据结构及其关系。
 > 
@@ -10,11 +10,11 @@
 
 本章组织如下：
 
-[“基本数据类型”](#data_types)
+“基本数据类型”
 
 第一节介绍了基本数据类型，如`int`、`float`和`string`。
 
-[“基本数据结构”](#data_structures)
+“基本数据结构”
 
 下一节介绍了`Python`的基本数据结构（例如`list`对象）并说明了控制结构、函数式编程范式和匿名函数。
 
@@ -35,7 +35,7 @@
 
 # 基本数据类型
 
-`Python` 是一种*动态类型*语言，这意味着`Python`解释器在运行时推断对象的类型。相比之下，像`C`这样的编译语言通常是*静态类型*的。在这些情况下，对象的类型必须在编译时与对象关联。^([1](ch03.html#idm140277701762352))
+`Python` 是一种*动态类型*语言，这意味着`Python`解释器在运行时推断对象的类型。相比之下，像`C`这样的编译语言通常是*静态类型*的。在这些情况下，对象的类型必须在编译时与对象关联。^(1)
 
 ## 整数
 
@@ -62,9 +62,9 @@ In [3]: a = 100000
 Out[3]: 17
 ```
 
-一般来说，有很多不同的方法，很难记住所有类和对象的所有方法。高级`Python`环境，如`IPython`，提供了可以显示附加到对象的所有方法的制表符完成功能。您只需键入对象名称，然后跟一个点（例如，`a.`），然后按Tab键，例如，`a.*tab*`。然后，这将提供您可以调用的对象的方法集合。或者，`Python`内置函数`dir`提供了任何对象的完整属性和方法列表。
+一般来说，有很多不同的方法，很难记住所有类和对象的所有方法。高级`Python`环境，如`IPython`，提供了可以显示附加到对象的所有方法的制表符完成功能。您只需键入对象名称，然后跟一个点（例如，`a.`），然后按 Tab 键，例如，`a.*tab*`。然后，这将提供您可以调用的对象的方法集合。或者，`Python`内置函数`dir`提供了任何对象的完整属性和方法列表。
 
-`Python`的一个特殊之处在于整数可以是任意大的。例如，考虑谷歌数10^(100)。`Python`对于这样的大数没有问题，这些大数在技术上是`long`对象：
+`Python`的一个特殊之处在于整数可以是任意大的。例如，考虑谷歌数 10¹⁰⁰。`Python`对于这样的大数没有问题，这些大数在技术上是`long`对象：
 
 ```py
 In [4]: googol = 10 ** 100
@@ -94,7 +94,7 @@ Out[8]: float
 
 ## 浮点数
 
-最后一个表达式返回通常*期望*的结果0.25（在基本的Python 2.7中不同）。这使我们进入了下一个基本数据类型，即`float`对象。在整数值后添加一个点，如`1.`或`1.0`，会导致`Python`将对象解释为`float`。涉及`float`的表达式通常也返回一个`float`对象：^（[2](ch03.html#idm140277701533120)）
+最后一个表达式返回通常*期望*的结果 0.25（在基本的 Python 2.7 中不同）。这使我们进入了下一个基本数据类型，即`float`对象。在整数值后添加一个点，如`1.`或`1.0`，会导致`Python`将对象解释为`float`。涉及`float`的表达式通常也返回一个`float`对象：^（2）
 
 ```py
 In [9]: 1.6 / 4
@@ -104,7 +104,7 @@ In [10]: type (1.6 / 4)
 Out[10]: float
 ```
 
-`float`稍微复杂一些，因为有理数或实数的计算机化表示通常不是精确的，而是取决于所采取的具体技术方法。为了说明这意味着什么，让我们定义另一个`float`对象`b`。像这样的`float`对象总是内部表示为仅具有一定精度的。当向`b`添加0.1时，这变得明显：
+`float`稍微复杂一些，因为有理数或实数的计算机化表示通常不是精确的，而是取决于所采取的具体技术方法。为了说明这意味着什么，让我们定义另一个`float`对象`b`。像这样的`float`对象总是内部表示为仅具有一定精度的。当向`b`添加 0.1 时，这变得明显：
 
 ```py
 In [11]: b = 0.35
@@ -115,7 +115,7 @@ In [12]: b + 0.1
 Out[12]: 0.44999999999999996
 ```
 
-这是因为+`float`+s在内部以二进制格式表示；也就是说，十进制数<math alttext="0 less-than n less-than 1"><mrow><mn>0</mn> <mo><</mo> <mi>n</mi> <mo><</mo> <mn>1</mn></mrow></math>通过形式为<math alttext="n equals StartFraction x Over 2 EndFraction plus StartFraction y Over 4 EndFraction plus StartFraction z Over 8 EndFraction plus period period period"><mrow><mi>n</mi> <mo>=</mo> <mfrac><mi>x</mi> <mn>2</mn></mfrac> <mo>+</mo> <mfrac><mi>y</mi> <mn>4</mn></mfrac> <mo>+</mo> <mfrac><mi>z</mi> <mn>8</mn></mfrac> <mo>+</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo></mrow></math>的系列表示。对于某些浮点数，二进制表示可能涉及大量元素，甚至可能是一个无限级数。然而，给定用于表示此类数字的固定位数-即表示系列中的固定项数-不准确是其结果。其他数字可以*完美*表示，因此即使只有有限数量的位可用，它们也会被精确地存储。考虑以下示例：
+这是因为+`float`+s 在内部以二进制格式表示；也就是说，十进制数<math alttext="0 less-than n less-than 1"><mrow><mn>0</mn> <mo><</mo> <mi>n</mi> <mo><</mo> <mn>1</mn></mrow></math>通过形式为<math alttext="n equals StartFraction x Over 2 EndFraction plus StartFraction y Over 4 EndFraction plus StartFraction z Over 8 EndFraction plus period period period"><mrow><mi>n</mi> <mo>=</mo> <mfrac><mi>x</mi> <mn>2</mn></mfrac> <mo>+</mo> <mfrac><mi>y</mi> <mn>4</mn></mfrac> <mo>+</mo> <mfrac><mi>z</mi> <mn>8</mn></mfrac> <mo>+</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo></mrow></math>的系列表示。对于某些浮点数，二进制表示可能涉及大量元素，甚至可能是一个无限级数。然而，给定用于表示此类数字的固定位数-即表示系列中的固定项数-不准确是其结果。其他数字可以*完美*表示，因此即使只有有限数量的位可用，它们也会被精确地存储。考虑以下示例：
 
 ```py
 In [13]: c = 0.5
@@ -123,14 +123,14 @@ In [13]: c = 0.5
 Out[13]: (1, 2)
 ```
 
-一半，即0.5，被准确地存储，因为它有一个精确（有限）的二进制表示：<math alttext="normal dollar-sign 0.5 equals one-half normal dollar-sign"><mrow><mi>$</mi> <mn>0</mn> <mo>.</mo> <mn>5</mn> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac> <mi>$</mi></mrow></math> 。然而，对于`b = 0.35`，我们得到的结果与期望的有理数<math alttext="normal dollar-sign 0.35 equals seven-twenty-ths normal dollar-sign"><mrow><mi>$</mi> <mn>0</mn> <mo>.</mo> <mn>35</mn> <mo>=</mo> <mfrac><mn>7</mn> <mn>20</mn></mfrac> <mi>$</mi></mrow></math> 不同：
+一半，即 0.5，被准确地存储，因为它有一个精确（有限）的二进制表示：<math alttext="normal dollar-sign 0.5 equals one-half normal dollar-sign"><mrow><mi>$</mi> <mn>0</mn> <mo>.</mo> <mn>5</mn> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac> <mi>$</mi></mrow></math> 。然而，对于`b = 0.35`，我们得到的结果与期望的有理数<math alttext="normal dollar-sign 0.35 equals seven-twenty-ths normal dollar-sign"><mrow><mi>$</mi> <mn>0</mn> <mo>.</mo> <mn>35</mn> <mo>=</mo> <mfrac><mn>7</mn> <mn>20</mn></mfrac> <mi>$</mi></mrow></math> 不同：
 
 ```py
 In [14]: b.as_integer_ratio()
 Out[14]: (3152519739159347, 9007199254740992)
 ```
 
-精度取决于用于表示数字的位数。一般来说，所有`Python`运行的平台都使用IEEE 754双精度标准（即64位）来进行内部表示。[^3](ch03.html#idm140277701447424) 这意味着相对精度为15位数字。
+精度取决于用于表示数字的位数。一般来说，所有`Python`运行的平台都使用 IEEE 754 双精度标准（即 64 位）来进行内部表示。³ 这意味着相对精度为 15 位数字。
 
 由于这个主题在金融等几个应用领域非常重要，有时需要确保数字的确切或至少是最佳可能的表示。例如，在对一大堆数字求和时，这个问题可能很重要。在这种情况下，某种类型和/或数量级别的表示误差可能导致与基准值的显著偏差。
 
@@ -151,24 +151,24 @@ Out[17]: Decimal('0.09090909090909090909090909091')
 您可以通过改变`Context`对象的相应属性值来改变表示的精度：
 
 ```py
-In [18]: decimal.getcontext().prec = 4  ![1](images/1.png)
+In [18]: decimal.getcontext().prec = 4  ![1](img/1.png)
 
 In [19]: e = Decimal(1) / Decimal (11)
          e
 Out[19]: Decimal('0.09091')
 
-In [20]: decimal.getcontext().prec = 50  ![2](images/2.png)
+In [20]: decimal.getcontext().prec = 50  ![2](img/2.png)
 
 In [21]: f = Decimal(1) / Decimal (11)
          f
 Out[21]: Decimal('0.090909090909090909090909090909090909090909090909091')
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO1-1)
+![1](img/#co_mastering_the_basics_CO1-1)
 
 低于默认精度。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO1-2)
+![2](img/#co_mastering_the_basics_CO1-2)
 
 高于默认精度。
 
@@ -182,11 +182,11 @@ Out[22]: Decimal('0.27272818181818181818181818181909090909090909090909')
 
 # 任意精度浮点数
 
-模块`decimal`提供了一个任意精度浮点数对象。在金融中，有时需要确保高精度并超越64位双精度标准。
+模块`decimal`提供了一个任意精度浮点数对象。在金融中，有时需要确保高精度并超越 64 位双精度标准。
 
 ## 布尔值
 
-在编程中，评估比较或逻辑表达式，例如`4 > 3`，`4.5 <= 3.25`或`(4 > 3) and (3 > 2)`，会产生`True`或`False`之一作为输出，这是两个重要的Python关键字。其他例如`def`，`for`或`if`。Python关键字的完整列表可在`keyword`模块中找到。
+在编程中，评估比较或逻辑表达式，例如`4 > 3`，`4.5 <= 3.25`或`(4 > 3) and (3 > 2)`，会产生`True`或`False`之一作为输出，这是两个重要的 Python 关键字。其他例如`def`，`for`或`if`。Python 关键字的完整列表可在`keyword`模块中找到。
 
 ```py
 In [23]: import keyword
@@ -227,10 +227,10 @@ Out[24]: ['False',
           'yield']
 ```
 
-`True`和`False`是`bool`数据类型，代表布尔值。以下代码展示了Python对相同操作数应用*比较*操作符后生成的`bool`对象。
+`True`和`False`是`bool`数据类型，代表布尔值。以下代码展示了 Python 对相同操作数应用*比较*操作符后生成的`bool`对象。
 
 ```py
-In [25]: 4 > 3  ![1](images/1.png)
+In [25]: 4 > 3  ![1](img/1.png)
 Out[25]: True
 
 In [26]: type(4 > 3)
@@ -239,43 +239,43 @@ Out[26]: bool
 In [27]: type(False)
 Out[27]: bool
 
-In [28]: 4 >= 3  ![2](images/2.png)
+In [28]: 4 >= 3  ![2](img/2.png)
 Out[28]: True
 
-In [29]: 4 < 3  ![3](images/3.png)
+In [29]: 4 < 3  ![3](img/3.png)
 Out[29]: False
 
-In [30]: 4 <= 3  ![4](images/4.png)
+In [30]: 4 <= 3  ![4](img/4.png)
 Out[30]: False
 
-In [31]: 4 == 3  ![5](images/5.png)
+In [31]: 4 == 3  ![5](img/5.png)
 Out[31]: False
 
-In [32]: 4 != 3  ![6](images/6.png)
+In [32]: 4 != 3  ![6](img/6.png)
 Out[32]: True
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO2-1)
+![1](img/#co_mastering_the_basics_CO2-1)
 
 更大。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO2-2)
+![2](img/#co_mastering_the_basics_CO2-2)
 
 大于或等于。
 
-[![3](images/3.png)](#co_mastering_the_basics_CO2-3)
+![3](img/#co_mastering_the_basics_CO2-3)
 
 更小。
 
-[![4](images/4.png)](#co_mastering_the_basics_CO2-4)
+![4](img/#co_mastering_the_basics_CO2-4)
 
 小于或等于。
 
-[![5](images/5.png)](#co_mastering_the_basics_CO2-5)
+![5](img/#co_mastering_the_basics_CO2-5)
 
 相等。
 
-[![6](images/6.png)](#co_mastering_the_basics_CO2-6)
+![6](img/#co_mastering_the_basics_CO2-6)
 
 不相等。
 
@@ -323,18 +323,18 @@ In [44]: (not (4 != 4)) and (2 == 3)
 Out[44]: False
 ```
 
-其一主要应用是通过其他Python关键字（例如`if`或`while`）来控制代码流程（本章后面将有更多示例）。
+其一主要应用是通过其他 Python 关键字（例如`if`或`while`）来控制代码流程（本章后面将有更多示例）。
 
 ```py
-In [45]: if 4 > 3:  ![1](images/1.png)
-             print('condition true')  ![2](images/2.png)
+In [45]: if 4 > 3:  ![1](img/1.png)
+             print('condition true')  ![2](img/2.png)
 
          condition true
 
-In [46]: i = 0  ![3](images/3.png)
-         while i < 4:  ![4](images/4.png)
-             print('condition true, i = ', i)  ![5](images/5.png)
-             i += 1  ![6](images/6.png)
+In [46]: i = 0  ![3](img/3.png)
+         while i < 4:  ![4](img/4.png)
+             print('condition true, i = ', i)  ![5](img/5.png)
+             i += 1  ![6](img/6.png)
 
          condition true, i =  0
          condition true, i =  1
@@ -342,31 +342,31 @@ In [46]: i = 0  ![3](images/3.png)
          condition true, i =  3
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO3-1)
+![1](img/#co_mastering_the_basics_CO3-1)
 
 如果条件成立，则执行要跟随的代码。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO3-2)
+![2](img/#co_mastering_the_basics_CO3-2)
 
 如果条件成立，则执行要跟随的代码。
 
-[![3](images/3.png)](#co_mastering_the_basics_CO3-3)
+![3](img/#co_mastering_the_basics_CO3-3)
 
-使用0初始化参数`i`。
+使用 0 初始化参数`i`。
 
-[![4](images/4.png)](#co_mastering_the_basics_CO3-4)
+![4](img/#co_mastering_the_basics_CO3-4)
 
 只要条件成立，就执行并重复执行后续代码。
 
-[![5](images/5.png)](#co_mastering_the_basics_CO3-5)
+![5](img/#co_mastering_the_basics_CO3-5)
 
 打印文本和参数`i`的值。
 
-[![6](images/6.png)](#co_mastering_the_basics_CO3-6)
+![6](img/#co_mastering_the_basics_CO3-6)
 
-将参数值增加1；`i += 1`等同于`i = i + 1`。
+将参数值增加 1；`i += 1`等同于`i = i + 1`。
 
-在数值上，Python将`False`赋值为0，将`True`赋值为1。通过`bool()`函数将数字转换为`bool`对象时，0给出`False`，而所有其他数字给出`True`。
+在数值上，Python 将`False`赋值为 0，将`True`赋值为 1。通过`bool()`函数将数字转换为`bool`对象时，0 给出`False`，而所有其他数字给出`True`。
 
 ```py
 In [47]: int(True)
@@ -447,7 +447,7 @@ In [62]: 'http://www.python.org'.strip('htp:/')
 Out[62]: 'www.python.org'
 ```
 
-[表格 3-1](#string_methods) 列出了`string`对象的许多有用方法。
+表格 3-1 列出了`string`对象的许多有用方法。
 
 表格 3-1\. 选择的字符串方法
 
@@ -467,24 +467,24 @@ Out[62]: 'www.python.org'
 
 ###### 注意
 
-从Python 2.7（本书的第一版）到Python 3.6（本书的第二版使用的版本）的基本变化是字符串对象的编码和解码以及Unicode的引入（参见[*https://docs.python.org/3/howto/unicode.html*](https://docs.python.org/3/howto/unicode.html)）。本章不允许详细讨论此上下文中重要的许多细节。对于本书的目的，主要涉及包含英文单词的数字数据和标准字符串，这种省略似乎是合理的。
+从 Python 2.7（本书的第一版）到 Python 3.6（本书的第二版使用的版本）的基本变化是字符串对象的编码和解码以及 Unicode 的引入（参见[*https://docs.python.org/3/howto/unicode.html*](https://docs.python.org/3/howto/unicode.html)）。本章不允许详细讨论此上下文中重要的许多细节。对于本书的目的，主要涉及包含英文单词的数字数据和标准字符串，这种省略似乎是合理的。
 
 ## 附录：打印和字符串替换
 
-打印`str`对象或其他Python对象的字符串表示通常是通过`print()`函数完成的（在Python 2.7中是一个语句）。
+打印`str`对象或其他 Python 对象的字符串表示通常是通过`print()`函数完成的（在 Python 2.7 中是一个语句）。
 
 ```py
-In [63]: print('Python for Finance')  ![1](images/1.png)
+In [63]: print('Python for Finance')  ![1](img/1.png)
 
          Python for Finance
 
-In [64]: print(t)  ![2](images/2.png)
+In [64]: print(t)  ![2](img/2.png)
 
          this is a string object
 
 In [65]: i = 0
          while i < 4:
-             print(i)  ![3](images/3.png)
+             print(i)  ![3](img/3.png)
              i += 1
 
          0
@@ -494,99 +494,99 @@ In [65]: i = 0
 
 In [66]: i = 0
          while i < 4:
-             print(i, end='|')  ![4](images/4.png)
+             print(i, end='|')  ![4](img/4.png)
              i += 1
 
          0|1|2|3|
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO4-1)
+![1](img/#co_mastering_the_basics_CO4-1)
 
 打印一个`str`对象。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO4-2)
+![2](img/#co_mastering_the_basics_CO4-2)
 
 打印由变量名引用的`str`对象。
 
-[![3](images/3.png)](#co_mastering_the_basics_CO4-3)
+![3](img/#co_mastering_the_basics_CO4-3)
 
 打印`int`对象的字符串表示。
 
-[![4](images/4.png)](#co_mastering_the_basics_CO4-4)
+![4](img/#co_mastering_the_basics_CO4-4)
 
 指定打印的最后一个字符（默认为前面看到的换行符`\n`）。
 
-Python提供了强大的字符串替换操作。有通过`%`字符进行的旧方法和通过花括号`{}`和`format()`进行的新方法。两者在实践中仍然适用。本节不能提供所有选项的详尽说明，但以下代码片段显示了一些重要的内容。首先，*旧*的方法。
+Python 提供了强大的字符串替换操作。有通过`%`字符进行的旧方法和通过花括号`{}`和`format()`进行的新方法。两者在实践中仍然适用。本节不能提供所有选项的详尽说明，但以下代码片段显示了一些重要的内容。首先，*旧*的方法。
 
 ```py
-In [67]: 'this is an integer %d' % 15  ![1](images/1.png)
+In [67]: 'this is an integer %d' % 15  ![1](img/1.png)
 Out[67]: 'this is an integer 15'
 
-In [68]: 'this is an integer %4d' % 15  ![2](images/2.png)
+In [68]: 'this is an integer %4d' % 15  ![2](img/2.png)
 Out[68]: 'this is an integer   15'
 
-In [69]: 'this is an integer %04d' % 15  ![3](images/3.png)
+In [69]: 'this is an integer %04d' % 15  ![3](img/3.png)
 Out[69]: 'this is an integer 0015'
 
-In [70]: 'this is a float %f' % 15.3456  ![4](images/4.png)
+In [70]: 'this is a float %f' % 15.3456  ![4](img/4.png)
 Out[70]: 'this is a float 15.345600'
 
-In [71]: 'this is a float %.2f' % 15.3456  ![5](images/5.png)
+In [71]: 'this is a float %.2f' % 15.3456  ![5](img/5.png)
 Out[71]: 'this is a float 15.35'
 
-In [72]: 'this is a float %8f' % 15.3456  ![6](images/6.png)
+In [72]: 'this is a float %8f' % 15.3456  ![6](img/6.png)
 Out[72]: 'this is a float 15.345600'
 
-In [73]: 'this is a float %8.2f' % 15.3456  ![7](images/7.png)
+In [73]: 'this is a float %8.2f' % 15.3456  ![7](img/7.png)
 Out[73]: 'this is a float    15.35'
 
-In [74]: 'this is a float %08.2f' % 15.3456  ![8](images/8.png)
+In [74]: 'this is a float %08.2f' % 15.3456  ![8](img/8.png)
 Out[74]: 'this is a float 00015.35'
 
-In [75]: 'this is a string %s' % 'Python'  ![9](images/9.png)
+In [75]: 'this is a string %s' % 'Python'  ![9](img/9.png)
 Out[75]: 'this is a string Python'
 
-In [76]: 'this is a string %10s' % 'Python'  ![10](images/10.png)
+In [76]: 'this is a string %10s' % 'Python'  ![10](img/10.png)
 Out[76]: 'this is a string     Python'
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO5-1)
+![1](img/#co_mastering_the_basics_CO5-1)
 
 `int`对象替换。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO5-2)
+![2](img/#co_mastering_the_basics_CO5-2)
 
 带有固定数量的字符。
 
-[![3](images/3.png)](#co_mastering_the_basics_CO5-3)
+![3](img/#co_mastering_the_basics_CO5-3)
 
 如果必要，带有前导零。
 
-[![4](images/4.png)](#co_mastering_the_basics_CO5-4)
+![4](img/#co_mastering_the_basics_CO5-4)
 
 `float`对象替换。
 
-[![5](images/5.png)](#co_mastering_the_basics_CO5-5)
+![5](img/#co_mastering_the_basics_CO5-5)
 
 带有固定数量的小数位数。
 
-[![6](images/6.png)](#co_mastering_the_basics_CO5-6)
+![6](img/#co_mastering_the_basics_CO5-6)
 
 带有固定数量的字符（并填充小数）。
 
-[![7](images/7.png)](#co_mastering_the_basics_CO5-7)
+![7](img/#co_mastering_the_basics_CO5-7)
 
 带有固定数量的字符和小数位数…
 
-[![8](images/8.png)](#co_mastering_the_basics_CO5-8)
+![8](img/#co_mastering_the_basics_CO5-8)
 
 … 以及必要时的前导零。
 
-[![9](images/9.png)](#co_mastering_the_basics_CO5-9)
+![9](img/#co_mastering_the_basics_CO5-9)
 
 `str`对象替换。
 
-[![10](images/10.png)](#co_mastering_the_basics_CO5-10)
+![10](img/#co_mastering_the_basics_CO5-10)
 
 带有固定数量的字符。
 
@@ -666,7 +666,7 @@ In [90]: series = """
  """
 ```
 
-以下正则表达式描述了提供在`string`对象中的日期时间信息的格式：^([4](ch03.html#idm140277697069680))
+以下正则表达式描述了提供在`string`对象中的日期时间信息的格式：^(4)
 
 ```py
 In [91]: dt = re.compile("'[0-9/:\s]+'")  # datetime
@@ -742,7 +742,7 @@ In [97]: t = 1, 2.5, 'data'
 Out[97]: tuple
 ```
 
-像几乎所有的`Python`数据结构一样，``tuple``具有内置索引，借助它可以检索单个或多个`tuple`元素。重要的是要记住，`Python`使用*零基编号*，因此`tuple`的第三个元素位于索引位置2：
+像几乎所有的`Python`数据结构一样，``tuple``具有内置索引，借助它可以检索单个或多个`tuple`元素。重要的是要记住，`Python`使用*零基编号*，因此`tuple`的第三个元素位于索引位置 2：
 
 ```py
 In [98]: t[2]
@@ -754,7 +754,7 @@ Out[99]: str
 
 # 零基编号
 
-与其他一些编程语言（如`Matlab`）相比，`Python`使用零基编号方案。例如，`tuple`对象的第一个元素的索引值为0。
+与其他一些编程语言（如`Matlab`）相比，`Python`使用零基编号方案。例如，`tuple`对象的第一个元素的索引值为 0。
 
 这种对象类型提供的特殊方法仅有两个：`count`和`index`。第一个方法统计某个对象的出现次数，第二个方法给出其第一次出现的索引值：
 
@@ -792,62 +792,62 @@ Out[104]: list
 除了`tuple`对象的特性外，``list``对象还可以通过不同的方法进行扩展和缩减。换句话说，虽然`string`和`tuple`对象是*不可变*序列对象（具有索引），一旦创建就无法更改，但`list`对象是*可变*的，并且可以通过不同的操作进行更改。你可以将`list`对象附加到现有的`list`对象上，等等：
 
 ```py
-In [105]: l.append([4, 3])  ![1](images/1.png)
+In [105]: l.append([4, 3])  ![1](img/1.png)
           l
 Out[105]: [1, 2.5, 'data', [4, 3]]
 
-In [106]: l.extend([1.0, 1.5, 2.0])  ![2](images/2.png)
+In [106]: l.extend([1.0, 1.5, 2.0])  ![2](img/2.png)
           l
 Out[106]: [1, 2.5, 'data', [4, 3], 1.0, 1.5, 2.0]
 
-In [107]: l.insert(1, 'insert')  ![3](images/3.png)
+In [107]: l.insert(1, 'insert')  ![3](img/3.png)
           l
 Out[107]: [1, 'insert', 2.5, 'data', [4, 3], 1.0, 1.5, 2.0]
 
-In [108]: l.remove('data')  ![4](images/4.png)
+In [108]: l.remove('data')  ![4](img/4.png)
           l
 Out[108]: [1, 'insert', 2.5, [4, 3], 1.0, 1.5, 2.0]
 
-In [109]: p = l.pop(3)  ![5](images/5.png)
+In [109]: p = l.pop(3)  ![5](img/5.png)
           print(l, p)
 
           [1, 'insert', 2.5, 1.0, 1.5, 2.0] [4, 3]
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO6-1)
+![1](img/#co_mastering_the_basics_CO6-1)
 
 在末尾附加`list`对象。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO6-2)
+![2](img/#co_mastering_the_basics_CO6-2)
 
 添加`list`对象的元素。
 
-[![3](images/3.png)](#co_mastering_the_basics_CO6-3)
+![3](img/#co_mastering_the_basics_CO6-3)
 
 在索引位置之前插入对象。
 
-[![4](images/4.png)](#co_mastering_the_basics_CO6-4)
+![4](img/#co_mastering_the_basics_CO6-4)
 
 删除对象的第一次出现。
 
-[![5](images/5.png)](#co_mastering_the_basics_CO6-5)
+![5](img/#co_mastering_the_basics_CO6-5)
 
 删除并返回索引位置的对象。
 
 切片也很容易实现。在这里，*切片*指的是将数据集分解为较小部分（感兴趣的部分）的操作：
 
 ```py
-In [110]: l[2:5]  ![1](images/1.png)
+In [110]: l[2:5]  ![1](img/1.png)
 Out[110]: [2.5, 1.0, 1.5]
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO7-1)
+![1](img/#co_mastering_the_basics_CO7-1)
 
 第三到第五个元素。
 
-[Table 3-2](#list_methods)提供了`list`对象的选定操作和方法的摘要。
+Table 3-2 提供了`list`对象的选定操作和方法的摘要。
 
-表3-2\. `list`对象的选定操作和方法
+表 3-2\. `list`对象的选定操作和方法
 
 | 方法 | 参数 | 返回/结果 |
 | --- | --- | --- |
@@ -866,7 +866,7 @@ Out[110]: [2.5, 1.0, 1.5]
 
 ## 专题：控制结构
 
-虽然控制结构本身是一个专题，像`for`循环这样的*控制结构*可能最好是基于`Python`中的`list`对象介绍的。这是因为一般情况下循环是在`list`对象上进行的，这与其他语言中通常的标准相当不同。看下面的例子。`for`循环遍历`list`对象`l`的元素，索引值为2到4，并打印出相应元素的平方。注意第二行缩进（空格）的重要性：
+虽然控制结构本身是一个专题，像`for`循环这样的*控制结构*可能最好是基于`Python`中的`list`对象介绍的。这是因为一般情况下循环是在`list`对象上进行的，这与其他语言中通常的标准相当不同。看下面的例子。`for`循环遍历`list`对象`l`的元素，索引值为 2 到 4，并打印出相应元素的平方。注意第二行缩进（空格）的重要性：
 
 ```py
 In [111]: for element in l[2:5]:
@@ -880,7 +880,7 @@ In [111]: for element in l[2:5]:
 这相比于典型的基于计数器的循环提供了非常高的灵活性。基于（标准的）`list`对象`range`也可以使用计数器进行循环：
 
 ```py
-In [112]: r = range(0, 8, 1)  ![1](images/1.png)
+In [112]: r = range(0, 8, 1)  ![1](img/1.png)
           r
 Out[112]: range(0, 8)
 
@@ -888,7 +888,7 @@ In [113]: type(r)
 Out[113]: range
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO8-1)
+![1](img/#co_mastering_the_basics_CO8-1)
 
 参数是`start`、`end`、`step size`。
 
@@ -911,7 +911,7 @@ In [114]: for i in range(2, 5):
 
 ```py
 In [115]: for i in range(1, 10):
-              if i % 2 == 0:  ![1](images/1.png)
+              if i % 2 == 0:  ![1](img/1.png)
                   print("%d is even" % i)
               elif i % 3 == 0:
                   print("%d is multiple of 3" % i)
@@ -929,7 +929,7 @@ In [115]: for i in range(1, 10):
           9 is multiple of 3
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO9-1)
+![1](img/#co_mastering_the_basics_CO9-1)
 
 `%`代表取模。
 
@@ -1058,7 +1058,7 @@ In [130]: for value in d.values():
           <class 'int'>
 ```
 
-[表 3-3](#dict_methods) 提供了 `dict` 对象的选定操作和方法的摘要。
+表 3-3 提供了 `dict` 对象的选定操作和方法的摘要。
 
 表 3-3\. `dict` 对象的选定操作和方法
 
@@ -1091,39 +1091,39 @@ In [132]: t = set(['d', 'dd', 'uu', 'u'])
 使用 `set` 对象，您可以像在数学集合论中一样实现操作。例如，您可以生成并集、交集和差异：
 
 ```py
-In [133]: s.union(t)  ![1](images/1.png)
+In [133]: s.union(t)  ![1](img/1.png)
 Out[133]: {'d', 'dd', 'du', 'u', 'ud', 'uu'}
 
-In [134]: s.intersection(t)  ![2](images/2.png)
+In [134]: s.intersection(t)  ![2](img/2.png)
 Out[134]: {'d', 'u'}
 
-In [135]: s.difference(t)  ![3](images/3.png)
+In [135]: s.difference(t)  ![3](img/3.png)
 Out[135]: {'du', 'ud'}
 
-In [136]: t.difference(s)  ![4](images/4.png)
+In [136]: t.difference(s)  ![4](img/4.png)
 Out[136]: {'dd', 'uu'}
 
-In [137]: s.symmetric_difference(t)  ![5](images/5.png)
+In [137]: s.symmetric_difference(t)  ![5](img/5.png)
 Out[137]: {'dd', 'du', 'ud', 'uu'}
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO10-1)
+![1](img/#co_mastering_the_basics_CO10-1)
 
 `s` 和 `t` 的全部。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO10-2)
+![2](img/#co_mastering_the_basics_CO10-2)
 
 在 `s` 和 `t` 中都有。
 
-[![3](images/3.png)](#co_mastering_the_basics_CO10-3)
+![3](img/#co_mastering_the_basics_CO10-3)
 
 在 `s` 中但不在 `t` 中。
 
-[![4](images/4.png)](#co_mastering_the_basics_CO10-4)
+![4](img/#co_mastering_the_basics_CO10-4)
 
 在 `t` 中但不在 `s` 中。
 
-[![5](images/5.png)](#co_mastering_the_basics_CO10-5)
+![5](img/#co_mastering_the_basics_CO10-5)
 
 在其中一个但不是两者都。
 
@@ -1131,8 +1131,8 @@ Out[137]: {'dd', 'du', 'ud', 'uu'}
 
 ```py
 In [138]: from random import randint
-          l = [randint(0, 10) for i in range(1000)]  ![1](images/1.png)
-          len(l)  ![2](images/2.png)
+          l = [randint(0, 10) for i in range(1000)]  ![1](img/1.png)
+          len(l)  ![2](img/2.png)
 Out[138]: 1000
 
 In [139]: l[:20]
@@ -1143,11 +1143,11 @@ In [140]: s = set(l)
 Out[140]: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 ```
 
-[![1](images/1.png)](#co_mastering_the_basics_CO11-1)
+![1](img/#co_mastering_the_basics_CO11-1)
 
-1,000个0到10之间的随机整数。
+1,000 个 0 到 10 之间的随机整数。
 
-[![2](images/2.png)](#co_mastering_the_basics_CO11-2)
+![2](img/#co_mastering_the_basics_CO11-2)
 
 `l` 中的元素数量。
 
@@ -1171,14 +1171,14 @@ Out[140]: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
 +   Goodrich, Michael 等（2013）：*Python 数据结构与算法.* John Wiley & Sons, Hoboken, NJ.
 
-+   Harrison, Matt (2017): *Python 3图解指南*. Treading on Python Series.
++   Harrison, Matt (2017): *Python 3 图解指南*. Treading on Python Series.
 
-+   Ramalho, Luciano (2016): *流畅的Python*. O’Reilly, Beijing et al.
++   Ramalho, Luciano (2016): *流畅的 Python*. O’Reilly, Beijing et al.
 
-^([1](ch03.html#idm140277701762352-marker)) [`Cython`库](http://www.cython.org)将静态类型和编译功能引入`Python`，与`C`中的相似。实际上，`Cython`是`Python`和`C`的混合语言。
+^(1) [`Cython`库](http://www.cython.org)将静态类型和编译功能引入`Python`，与`C`中的相似。实际上，`Cython`是`Python`和`C`的混合语言。
 
-^([2](ch03.html#idm140277701533120-marker)) 在这里和后续讨论中，诸如*float*、*float 对象*等术语可互换使用，承认每个*float*也是一个*对象*。对于其他对象类型也是如此。
+^(2) 在这里和后续讨论中，诸如*float*、*float 对象*等术语可互换使用，承认每个*float*也是一个*对象*。对于其他对象类型也是如此。
 
-^([3](ch03.html#idm140277701447424-marker)) 参考[*http://en.wikipedia.org/wiki/Double-precision_floating-point_format*](http://en.wikipedia.org/wiki/Double-precision_floating-point_format)。
+^(3) 参考[*http://en.wikipedia.org/wiki/Double-precision_floating-point_format*](http://en.wikipedia.org/wiki/Double-precision_floating-point_format)。
 
-^([4](ch03.html#idm140277697069680-marker)) 在这里不可能详细介绍，但互联网上有大量关于正则表达式的信息，特别是针对`Python`。关于这个主题的介绍，请参阅Fitzgerald, Michael (2012): *正则表达式入门*. O’Reilly, Sebastopol, CA.
+^(4) 在这里不可能详细介绍，但互联网上有大量关于正则表达式的信息，特别是针对`Python`。关于这个主题的介绍，请参阅 Fitzgerald, Michael (2012): *正则表达式入门*. O’Reilly, Sebastopol, CA.

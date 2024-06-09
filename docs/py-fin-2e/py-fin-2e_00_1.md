@@ -76,7 +76,7 @@ In [1]: import this
 
 ## Python 的简要历史
 
-尽管对于一些人来说，Python 可能仍然具有一些*新鲜感*，但它已经存在了相当长的时间。事实上，Python 的开发工作始于 1980 年代，由来自荷兰的Guido van Rossum负责。他仍然活跃于 Python 的开发，并且被 Python 社区授予了*终身仁慈独裁者*的称号（参见[*http://en.wikipedia.org/wiki/History_of_Python*](http://en.wikipedia.org/wiki/History_of_Python)）。以下可以被视为 Python 发展的里程碑：
+尽管对于一些人来说，Python 可能仍然具有一些*新鲜感*，但它已经存在了相当长的时间。事实上，Python 的开发工作始于 1980 年代，由来自荷兰的 Guido van Rossum 负责。他仍然活跃于 Python 的开发，并且被 Python 社区授予了*终身仁慈独裁者*的称号（参见[*http://en.wikipedia.org/wiki/History_of_Python*](http://en.wikipedia.org/wiki/History_of_Python)）。以下可以被视为 Python 发展的里程碑：
 
 +   **Python 0.9.0** 发布于 1991 年（第一个版本）
 
@@ -129,9 +129,9 @@ In [5]: math.log(1)
 Out[5]: 0.0
 ```
 
-虽然 `math` 是一个标准的 Python 库，可以在任何安装中使用，但还有许多其他可选安装的库，可以像标准库一样使用。这些库可从不同的（网络）来源获取。然而，通常建议使用一个Python软件包管理器，以确保所有库都与彼此一致（有关此主题的更多信息，请参见[第2章](ch02.html#infrastructure)）。
+虽然 `math` 是一个标准的 Python 库，可以在任何安装中使用，但还有许多其他可选安装的库，可以像标准库一样使用。这些库可从不同的（网络）来源获取。然而，通常建议使用一个 Python 软件包管理器，以确保所有库都与彼此一致（有关此主题的更多信息，请参见第二章）。
 
-到目前为止所提供的代码示例都使用了`IPython`（请参见[*http://www.ipython.org*](http://www.ipython.org)），这是Python最受欢迎的交互式开发环境（IDE）之一。尽管它最初只是一个增强的 shell，但今天它具有许多通常在IDE中找到的特性（例如，支持分析和调试）。那些缺失的功能通常由高级文本/代码编辑器提供，如Sublime Text（请参见[*http://www.sublimetext.com*](http://www.sublimetext.com)）。因此，将`IPython`与个人选择的文本/代码编辑器结合起来形成Python开发过程的基本工具集并不罕见。
+到目前为止所提供的代码示例都使用了`IPython`（请参见[*http://www.ipython.org*](http://www.ipython.org)），这是 Python 最受欢迎的交互式开发环境（IDE）之一。尽管它最初只是一个增强的 shell，但今天它具有许多通常在 IDE 中找到的特性（例如，支持分析和调试）。那些缺失的功能通常由高级文本/代码编辑器提供，如 Sublime Text（请参见[*http://www.sublimetext.com*](http://www.sublimetext.com)）。因此，将`IPython`与个人选择的文本/代码编辑器结合起来形成 Python 开发过程的基本工具集并不罕见。
 
 ``IPython`` 在许多方面增强了标准的交互式 shell。例如，它提供了改进的命令行历史功能，并允许轻松地检查对象。例如，只需在函数名称前后添加`?`（添加`??`将提供更多信息），就可以打印函数的帮助文本（`docstring`）。
 
@@ -141,13 +141,13 @@ Out[5]: 0.0
 
 Python 不仅吸引专业软件开发人员；它也对业余开发人员以及领域专家和科学开发人员有用。
 
-*专业软件开发人员*可以找到他们构建大型应用程序所需的一切。几乎支持所有编程范式；有强大的开发工具可用；并且原则上任何任务都可以通过Python来解决。这些类型的用户通常构建自己的框架和类，也在基本的Python和科学堆栈上工作，并努力充分利用生态系统。
+*专业软件开发人员*可以找到他们构建大型应用程序所需的一切。几乎支持所有编程范式；有强大的开发工具可用；并且原则上任何任务都可以通过 Python 来解决。这些类型的用户通常构建自己的框架和类，也在基本的 Python 和科学堆栈上工作，并努力充分利用生态系统。
 
 *科学开发人员*或*领域专家*通常是某些库和框架的重度用户，已经构建了自己的应用程序，并随着时间的推移对其进行了增强和优化，并根据自己的特定需求定制了生态系统。这些用户群通常参与更长时间的交互式会话，快速原型化新代码，并探索和可视化他们的研究和/或领域数据集。
 
 *业余程序员* 喜欢使用 Python 通常是因为他们知道 Python 在特定问题上有优势。例如，访问 `matplotlib` 的画廊页面，复制那里提供的某个可视化代码片段，并根据他们的特定需求调整代码，可能是这个群体的成员的有益用例。
 
-还有另一重要的 Python 用户群体：*初学者程序员*，即那些刚开始学习编程的人。如今，Python 已经成为大学、学院甚至学校介绍编程给学生的非常流行的语言之一。^([1](ch01.html#idm140277704171024)) 这主要是因为它的基本语法易于学习和理解，即使对于非开发者也是如此。此外，有帮助的是 Python 几乎支持所有的编程风格。^([2](ch01.html#idm140277704168880))
+还有另一重要的 Python 用户群体：*初学者程序员*，即那些刚开始学习编程的人。如今，Python 已经成为大学、学院甚至学校介绍编程给学生的非常流行的语言之一。^(1) 这主要是因为它的基本语法易于学习和理解，即使对于非开发者也是如此。此外，有帮助的是 Python 几乎支持所有的编程风格。^(2)
 
 ## 科学堆栈
 
@@ -177,7 +177,7 @@ Python 不仅吸引专业软件开发人员；它也对业余开发人员以及�
 
 `Scikit-Learn` 是一个流行的机器学习（ML）包，为许多不同的 ML 算法提供了统一的 API，例如，用于估计、分类或聚类的算法。
 
-根据特定的领域或问题，这个堆栈会通过额外的库进行扩展，这些库往往有一个共同点，即它们建立在一个或多个基本库的基础之上。然而，在一般情况下，最常见的最小公分母或基本构建块是 `NumPy` 的 `ndarray` 类（参见 [第四章](ch04.html#numpy)），或者现在是 `pandas` 的 `DataFrame` 类（参见 [第五章](ch05.html#pandas)）。
+根据特定的领域或问题，这个堆栈会通过额外的库进行扩展，这些库往往有一个共同点，即它们建立在一个或多个基本库的基础之上。然而，在一般情况下，最常见的最小公分母或基本构建块是 `NumPy` 的 `ndarray` 类（参见 第四章），或者现在是 `pandas` 的 `DataFrame` 类（参见 第五章）。
 
 单纯将 Python 视为一种编程语言，还有许多其他语言可供选择，可能与其语法和优雅程度相媲美。例如，`Ruby` 是一种相当流行的语言，经常与 Python 进行比较。在该语言的网站 [*http://www.ruby-lang.org*](http://www.ruby-lang.org) 上，您会找到以下描述：
 
@@ -193,15 +193,15 @@ Python 不仅吸引专业软件开发人员；它也对业余开发人员以及�
 
 ## 技术支出
 
-银行和金融机构共同构成了年度技术支出最多的行业。因此，以下声明不仅显示了技术对金融业的重要性，而且金融业对技术行业也非常重要（[http://www.idc.com](https://www.idc.com/getdoc.jsp?containerId=prUS41216616)）：
+银行和金融机构共同构成了年度技术支出最多的行业。因此，以下声明不仅显示了技术对金融业的重要性，而且金融业对技术行业也非常重要（[`www.idc.com`](https://www.idc.com/getdoc.jsp?containerId=prUS41216616)）：
 
 > …，截至 2016 年，全球金融服务 IT 支出将达到近 4800 亿美元，年复合增长率（CAGR）为 4.2%。
 > 
 > IDC
 
-特别是，银行和其他金融机构正在竞相将业务和运营模式转移到数字化基础上 ([http://www.statista.com](https://www.statista.com/statistics/379517/forecast-of-bank-spending-on-new-tech-by-region/))：
+特别是，银行和其他金融机构正在竞相将业务和运营模式转移到数字化基础上 ([`www.statista.com`](https://www.statista.com/statistics/379517/forecast-of-bank-spending-on-new-tech-by-region/))：
 
-> 预计2017年北美银行对新技术的支出将达到199亿美元。
+> 预计 2017 年北美银行对新技术的支出将达到 199 亿美元。
 > 
 > 银行开发当前系统并致力于新技术解决方案，以增强其在全球市场上的竞争力并吸引对新在线和移动技术感兴趣的客户。这对于为银行业提供新想法和软件解决方案的全球金融科技公司来说是一个巨大的机遇。
 > 
@@ -213,47 +213,47 @@ Python 不仅吸引专业软件开发人员；它也对业余开发人员以及�
 
 技术发展也促进了金融领域的创新和效率提升：
 
-> 金融服务行业在过去几年里经历了技术引领的剧变。许多高管指望他们的IT部门提高效率并促进游戏改变式的创新，同时以某种方式降低成本并继续支持遗留系统。与此同时，金融科技初创企业正在侵入已建立的市场，以客户友好的解决方案为首，这些解决方案从零开始开发，并且不受遗留系统的束缚。
+> 金融服务行业在过去几年里经历了技术引领的剧变。许多高管指望他们的 IT 部门提高效率并促进游戏改变式的创新，同时以某种方式降低成本并继续支持遗留系统。与此同时，金融科技初创企业正在侵入已建立的市场，以客户友好的解决方案为首，这些解决方案从零开始开发，并且不受遗留系统的束缚。
 > 
-> 《普华永道第19届全球CEO调查报告》（2016年）
+> 《普华永道第 19 届全球 CEO 调查报告》（2016 年）
 
-随着效率日益提高，寻找竞争优势往往要求在越来越复杂的产品或交易中寻找。这反过来会增加风险，并使风险管理以及监督和监管变得越来越困难。2007年和2008年的金融危机讲述了由此类发展带来的潜在危险。同样，“算法和计算机失控”也代表了对金融市场的潜在风险；这在2010年5月的所谓*闪电崩盘*中得到了戏剧性的体现，那时自动卖出导致某些股票和股票指数在一天内大幅下跌（参见[*http://en.wikipedia.org/wiki/2010_Flash_Crash*](http://en.wikipedia.org/wiki/2010_Flash_Crash)）。
+随着效率日益提高，寻找竞争优势往往要求在越来越复杂的产品或交易中寻找。这反过来会增加风险，并使风险管理以及监督和监管变得越来越困难。2007 年和 2008 年的金融危机讲述了由此类发展带来的潜在危险。同样，“算法和计算机失控”也代表了对金融市场的潜在风险；这在 2010 年 5 月的所谓*闪电崩盘*中得到了戏剧性的体现，那时自动卖出导致某些股票和股票指数在一天内大幅下跌（参见[*http://en.wikipedia.org/wiki/2010_Flash_Crash*](http://en.wikipedia.org/wiki/2010_Flash_Crash)）。
 
 ## 技术和人才作为进入壁垒
 
 一方面，技术的进步会随着时间的推移降低成本，*其他条件不变*。另一方面，金融机构继续大力投资于技术，以获得市场份额并捍卫其当前地位。要在今天的某些金融领域活跃起来，通常需要进行大规模的技术和人才投资。例如，考虑一下衍生品分析领域：
 
-> 在总体软件生命周期中，采用内部策略进行场外[衍生品]定价的公司，仅建立、维护和增强完整的衍生品库就需要投资额在$25百万到$36百万之间。
+> 在总体软件生命周期中，采用内部策略进行场外[衍生品]定价的公司，仅建立、维护和增强完整的衍生品库就需要投资额在$25 百万到$36 百万之间。
 > 
 > Ding 2010
 
 建立完整的衍生品分析库不仅成本高昂且耗时，你还需要*足够的专家*来完成这项工作。而且这些专家必须有适当的工具和技术来完成他们的任务。
 
-另一则关于长期资本管理（LTCM）早期的报价支持了关于技术和人才的这一见解：LTCM曾是最受尊敬的量化对冲基金之一，然而在1990年代末破产。
+另一则关于长期资本管理（LTCM）早期的报价支持了关于技术和人才的这一见解：LTCM 曾是最受尊敬的量化对冲基金之一，然而在 1990 年代末破产。
 
-> Meriwether花费了$20百万在格林威治，康涅狄格州建立了一套最先进的计算机系统，并雇佣了一支精英金融工程团队来运作LTCM，这是工业级风险管理。
+> Meriwether 花费了$20 百万在格林威治，康涅狄格州建立了一套最先进的计算机系统，并雇佣了一支精英金融工程团队来运作 LTCM，这是工业级风险管理。
 > 
 > Patterson 2010
 
-Meriwether为数百万美元购买的同样计算能力，如今可能只需数千美元就能获得。另一方面，对于更大的金融机构来说，交易、定价和风险管理已变得如此复杂，以至于今天它们需要部署拥有数万计算核心的IT基础设施。
+Meriwether 为数百万美元购买的同样计算能力，如今可能只需数千美元就能获得。另一方面，对于更大的金融机构来说，交易、定价和风险管理已变得如此复杂，以至于今天它们需要部署拥有数万计算核心的 IT 基础设施。
 
 ## 日益增加的速度、频率和数据量
 
-金融行业的一个维度受到技术进步影响最大：金融交易的决策和执行*速度*和*频率*。Lewis（2014年）的新书详细描述了所谓的*闪电交易*—即以最高速度进行交易。
+金融行业的一个维度受到技术进步影响最大：金融交易的决策和执行*速度*和*频率*。Lewis（2014 年）的新书详细描述了所谓的*闪电交易*—即以最高速度进行交易。
 
 一方面，不断增加的数据可用性在越来越小的尺度上使得实时反应变得必要。另一方面，交易速度和频率的增加使得数据量进一步增加。这导致了一些过程相互强化，并将金融交易的平均时间尺度系统性地推向下降：
 
-> Renaissance的Medallion基金在2008年惊人地增长了80%，利用其闪电般快速的计算机资本化市场极端波动。吉姆·西蒙斯成为当年对冲基金界的最高收入者，赚得了25亿美元。
+> Renaissance 的 Medallion 基金在 2008 年惊人地增长了 80%，利用其闪电般快速的计算机资本化市场极端波动。吉姆·西蒙斯成为当年对冲基金界的最高收入者，赚得了 25 亿美元。
 > 
 > Patterson 2010
 
-单支股票的三十年日度股价数据大约包括7,500个报价。今天大部分金融理论基于这种数据。例如，现代投资组合理论（MPT）、资本资产定价模型（CAPM）和风险价值（VaR）理论都基于日度股价数据。
+单支股票的三十年日度股价数据大约包括 7,500 个报价。今天大部分金融理论基于这种数据。例如，现代投资组合理论（MPT）、资本资产定价模型（CAPM）和风险价值（VaR）理论都基于日度股价数据。
 
-相比之下，在典型的交易日，苹果公司（AAPL）的股价约被报价15,000次—比过去30年末日报价看到的报价多两倍。这带来了一系列挑战：
+相比之下，在典型的交易日，苹果公司（AAPL）的股价约被报价 15,000 次—比过去 30 年末日报价看到的报价多两倍。这带来了一系列挑战：
 
 数据处理
 
-仅仅考虑和处理股票或其他金融工具的日终行情是不够的；对于某些工具来说，每天24小时，每周7天都会发生“太多”的事情。
+仅仅考虑和处理股票或其他金融工具的日终行情是不够的；对于某些工具来说，每天 24 小时，每周 7 天都会发生“太多”的事情。
 
 分析速度
 
@@ -283,7 +283,7 @@ Meriwether为数百万美元购买的同样计算能力，如今可能只需数�
 
 再次，人们可以观察到技术进步与金融/商业实践之间的相互作用。一方面，需要不断应用现代技术来提高分析方法的速度和能力。另一方面，技术的进步使得几年甚至几个月前被认为不可能（或由于预算限制而不可行）的新分析方法成为可能。
 
-分析领域的一个主要趋势是在 CPU（中央处理单元）端利用并行架构和在 GPGPU（通用图形处理单元）端利用大规模并行架构。当前的 GPGPU 通常拥有 1,000 多个计算核心，这使得有时需要彻底重新思考并行对不同算法可能意味着什么。在这方面仍然存在的障碍是用户通常必须学习新的范例和技术来利用这种硬件的性能。^（[3](ch01.html#idm140277704069440)）
+分析领域的一个主要趋势是在 CPU（中央处理单元）端利用并行架构和在 GPGPU（通用图形处理单元）端利用大规模并行架构。当前的 GPGPU 通常拥有 1,000 多个计算核心，这使得有时需要彻底重新思考并行对不同算法可能意味着什么。在这方面仍然存在的障碍是用户通常必须学习新的范例和技术来利用这种硬件的性能。^（3）
 
 # 金融中的 Python
 
@@ -319,7 +319,7 @@ Meriwether为数百万美元购买的同样计算能力，如今可能只需数�
 
 +   常量波动率 <math><mrow><mi>σ</mi> <mo>=</mo> <mn>0</mn> <mo>.</mo> <mn>2</mn></mrow></math>。
 
-在 BSM 模型中，到期时的指数水平是一个随机变量，由 [方程 1-1](#bsm_rv) 给出，其中 *z* 是一个标准正态分布的随机变量。
+在 BSM 模型中，到期时的指数水平是一个随机变量，由 方程 1-1 给出，其中 *z* 是一个标准正态分布的随机变量。
 
 ##### 方程 1-1\. 到期时的 Black-Scholes-Merton (1973) 指数水平。
 
@@ -329,11 +329,11 @@ Meriwether为数百万美元购买的同样计算能力，如今可能只需数�
 
 1.  从标准正态分布中绘制（伪）随机数 <math><mi>I</mi></math>（i） ， 其中 <math alttext="z left-parenthesis i right-parenthesis comma i i n left-brace 1 comma 2 comma period period period comma upper I right-brace"><mrow><mi>z</mi> <mo>(</mo> <mi>i</mi> <mo>)</mo> <mo>,</mo> <mi>i</mi> <mi>i</mi> <mi>n</mi> <mo>{</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <mi>I</mi> <mo>}</mo></mrow></math>。
 
-1.  计算给定 <math alttext="z left-parenthesis i right-parenthesis"><mrow><mi>z</mi> <mo>(</mo> <mi>i</mi> <mo>)</mo></mrow></math> 和 [方程 1-1](#bsm_rv) 的所有到期时指数水平 <math alttext="upper S Subscript upper T Baseline left-parenthesis i right-parenthesis"><mrow><msub><mi>S</mi> <mi>T</mi></msub> <mrow><mo>(</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></math>。
+1.  计算给定 <math alttext="z left-parenthesis i right-parenthesis"><mrow><mi>z</mi> <mo>(</mo> <mi>i</mi> <mo>)</mo></mrow></math> 和 方程 1-1 的所有到期时指数水平 <math alttext="upper S Subscript upper T Baseline left-parenthesis i right-parenthesis"><mrow><msub><mi>S</mi> <mi>T</mi></msub> <mrow><mo>(</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></math>。
 
 1.  计算到期时期权的所有内部值为 <math alttext="h Subscript upper T Baseline left-parenthesis i right-parenthesis equals max left-parenthesis upper S Subscript upper T Baseline left-parenthesis i right-parenthesis minus upper K comma 0 right-parenthesis"><mrow><msub><mi>h</mi> <mi>T</mi></msub> <mrow><mo>(</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo> <mo movablelimits="true" form="prefix">max</mo> <mrow><mo>(</mo> <msub><mi>S</mi> <mi>T</mi></msub> <mrow><mo>(</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>-</mo> <mi>K</mi> <mo>,</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></math>。
 
-1.  根据 [方程 1-2](#bsm_mcs_est) 中给出的蒙特卡罗估计量估算期权现值。
+1.  根据 方程 1-2 中给出的蒙特卡罗估计量估算期权现值。
 
 ##### 方程 1-2\. 欧式期权的蒙特卡罗估计量。
 
@@ -342,57 +342,57 @@ Meriwether为数百万美元购买的同样计算能力，如今可能只需数�
 现在我们将把这个问题和算法翻译成 Python 代码。读者可以通过使用 `IPython` 等工具来跟踪单个步骤，但在这个阶段并不是非常必要。
 
 ```py
-In [6]: S0 = 100.  ![1](images/1.png)
-        K = 105.  ![1](images/1.png)
-        T = 1.0  ![1](images/1.png)
-        r = 0.05  ![1](images/1.png)
-        sigma = 0.2  ![1](images/1.png)
+In [6]: S0 = 100.  ![1](img/1.png)
+        K = 105.  ![1](img/1.png)
+        T = 1.0  ![1](img/1.png)
+        r = 0.05  ![1](img/1.png)
+        sigma = 0.2  ![1](img/1.png)
 
 In [7]: import math
-        import numpy as np  ![2](images/2.png)
+        import numpy as np  ![2](img/2.png)
 
         I = 100000
 
-        np.random.seed(1000)  ![3](images/3.png)
-        z = np.random.standard_normal(I)  ![4](images/4.png)
-        ST = S0 * np.exp((r - sigma ** 2 / 2) * T + sigma * math.sqrt(T) * z)  ![5](images/5.png)
-        hT = np.maximum(ST - K, 0)  ![6](images/6.png)
-        C0 = math.exp(-r * T) * np.mean(hT)  ![7](images/7.png)
+        np.random.seed(1000)  ![3](img/3.png)
+        z = np.random.standard_normal(I)  ![4](img/4.png)
+        ST = S0 * np.exp((r - sigma ** 2 / 2) * T + sigma * math.sqrt(T) * z)  ![5](img/5.png)
+        hT = np.maximum(ST - K, 0)  ![6](img/6.png)
+        C0 = math.exp(-r * T) * np.mean(hT)  ![7](img/7.png)
 
-In [8]: print('Value of the European Call Option %5.3f:' % C0)  ![8](images/8.png)
+In [8]: print('Value of the European Call Option %5.3f:' % C0)  ![8](img/8.png)
 
         Value of the European Call Option 8.019:
 ```
 
-[![1](images/1.png)](#co_python_and_finance_CO1-1)
+![1](img/#co_python_and_finance_CO1-1)
 
 模型参数值已定义。
 
-[![2](images/2.png)](#co_python_and_finance_CO1-6)
+![2](img/#co_python_and_finance_CO1-6)
 
 `NumPy` 在这里作为主要包被使用。
 
-[![3](images/3.png)](#co_python_and_finance_CO1-7)
+![3](img/#co_python_and_finance_CO1-7)
 
 随机数生成器的种子值是固定的。
 
-[![4](images/4.png)](#co_python_and_finance_CO1-8)
+![4](img/#co_python_and_finance_CO1-8)
 
 这绘制了标准正态分布的随机数。
 
-[![5](images/5.png)](#co_python_and_finance_CO1-9)
+![5](img/#co_python_and_finance_CO1-9)
 
 这模拟了期末值。
 
-[![6](images/6.png)](#co_python_and_finance_CO1-10)
+![6](img/#co_python_and_finance_CO1-10)
 
 到期时的期权回报是通过计算得出的。
 
-[![7](images/7.png)](#co_python_and_finance_CO1-11)
+![7](img/#co_python_and_finance_CO1-11)
 
 蒙特卡洛估算器被评估。
 
-[![8](images/8.png)](#co_python_and_finance_CO1-12)
+![8](img/#co_python_and_finance_CO1-12)
 
 这将打印出结果值的估计。
 
@@ -400,19 +400,19 @@ In [8]: print('Value of the European Call Option %5.3f:' % C0)  ![8](images/8.pn
 
 语法
 
-Python语法确实与数学语法非常接近，例如，在参数值赋值时。
+Python 语法确实与数学语法非常接近，例如，在参数值赋值时。
 
 翻译
 
-每个数学和/或算法声明通常可以被翻译成一行*单独的*Python代码。
+每个数学和/或算法声明通常可以被翻译成一行*单独的*Python 代码。
 
 向量化
 
-`NumPy`的一个优点是其紧凑、向量化的语法，例如，允许在一行代码中进行10万次计算。
+`NumPy`的一个优点是其紧凑、向量化的语法，例如，允许在一行代码中进行 10 万次计算。
 
-这段代码可以在像`IPython`这样的交互环境中使用。然而，通常被定期重复使用的代码会被组织成所谓的*模块*（或*脚本*），它们是具有后缀`.py`的单个Python（技术上的“文本”）文件。在这种情况下，这样的一个模块可能看起来像[Example 1-1](#bsm_mcs_euro)，并且可以保存为名为`bsm_mcs_euro.py`的文件。
+这段代码可以在像`IPython`这样的交互环境中使用。然而，通常被定期重复使用的代码会被组织成所谓的*模块*（或*脚本*），它们是具有后缀`.py`的单个 Python（技术上的“文本”）文件。在这种情况下，这样的一个模块可能看起来像 Example 1-1，并且可以保存为名为`bsm_mcs_euro.py`的文件。
 
-##### 示例1-1\. 欧式看涨期权的蒙特卡洛估值
+##### 示例 1-1\. 欧式看涨期权的蒙特卡洛估值
 
 ```py
 #
@@ -446,7 +446,7 @@ C0 = math.exp(-r * T) * np.mean(hT)  # Monte Carlo estimator
 print('Value of the European Call Option %5.3f' % C0)
 ```
 
-本小节中相当简单的算法示例说明了Python，以其非常直观的语法，非常适合补充经典的科学语言英语和数学。似乎将`Python`加入到科学语言集合中使其更加完整。我们有
+本小节中相当简单的算法示例说明了 Python，以其非常直观的语法，非常适合补充经典的科学语言英语和数学。似乎将`Python`加入到科学语言集合中使其更加完整。我们有
 
 +   **英语**用于*书写、讨论*科学和金融问题等。
 
@@ -454,39 +454,39 @@ print('Value of the European Call Option %5.3f' % C0)
 
 +   **Python**用于*技术上建模和实现*抽象方面、算法、复杂量等。
 
-# 数学和Python语法
+# 数学和 Python 语法
 
-几乎没有任何编程语言能像Python一样接近数学语法。因此，数值算法从数学表示转换为`Python`实现非常简单。这使得在这些领域中使用Python进行原型设计、开发和代码维护非常高效。
+几乎没有任何编程语言能像 Python 一样接近数学语法。因此，数值算法从数学表示转换为`Python`实现非常简单。这使得在这些领域中使用 Python 进行原型设计、开发和代码维护非常高效。
 
 在一些领域，使用*伪代码*并以此引入第四个语言家族成员是常见做法。伪代码的作用是更技术化地表示金融算法，这既与数学表示接近，又与技术实现接近。除了算法本身，伪代码还考虑了计算机原理。
 
 这种做法通常源于大多数编程语言的技术实现与其正式数学表示相距甚远。大多数编程语言需要包含许多仅在技术上需要的元素，以至于很难看出数学和代码之间的等价性。
 
-如今，Python通常以*伪代码方式*使用，因为其语法几乎与数学相似，并且由于技术“开销”保持最小。这是通过语言中体现的一些高级概念实现的，这些概念不仅具有优势，而且一般都伴随着风险和/或其他成本。但是，可以肯定的是，使用Python可以在需要时遵循其他语言可能从一开始就需要的严格实现和编码实践。在这个意义上，Python可以提供最好的两种世界：*高级抽象*和*严格实现*。
+如今，Python 通常以*伪代码方式*使用，因为其语法几乎与数学相似，并且由于技术“开销”保持最小。这是通过语言中体现的一些高级概念实现的，这些概念不仅具有优势，而且一般都伴随着风险和/或其他成本。但是，可以肯定的是，使用 Python 可以在需要时遵循其他语言可能从一开始就需要的严格实现和编码实践。在这个意义上，Python 可以提供最好的两种世界：*高级抽象*和*严格实现*。
 
-## 通过Python提高效率和生产力
+## 通过 Python 提高效率和生产力
 
-在高层次上，使用Python的好处可以从三个方面衡量：
+在高层次上，使用 Python 的好处可以从三个方面衡量：
 
 效率
 
-Python如何帮助更快地获得结果，节省成本和节省时间？
+Python 如何帮助更快地获得结果，节省成本和节省时间？
 
 生产力
 
-Python如何帮助提高使用相同资源（人力、资产等）的效率？
+Python 如何帮助提高使用相同资源（人力、资产等）的效率？
 
 质量
 
-Python允许我们做什么，而其他技术做不到呢？
+Python 允许我们做什么，而其他技术做不到呢？
 
 对这些方面的讨论自然不可能穷尽。但是，它可以突出一些论据作为起点。
 
 ### 更短的结果时间
 
-Python的效率显而易见的领域之一是交互式数据分析。这是一个极大受益于诸如`IPython`和像`pandas`这样的强大工具的领域。
+Python 的效率显而易见的领域之一是交互式数据分析。这是一个极大受益于诸如`IPython`和像`pandas`这样的强大工具的领域。
 
-考虑一个金融学生，她正在写她的硕士论文，对S&P 500指数值感兴趣。她想要分析历史指数水平，比如说，几年来指数波动率是如何随时间波动的。她想要找到证据表明，与一些典型的模型假设相反，波动率随时间波动，并且远非恒定。结果还应该进行可视化。她主要需要做以下几件事：
+考虑一个金融学生，她正在写她的硕士论文，对 S&P 500 指数值感兴趣。她想要分析历史指数水平，比如说，几年来指数波动率是如何随时间波动的。她想要找到证据表明，与一些典型的模型假设相反，波动率随时间波动，并且远非恒定。结果还应该进行可视化。她主要需要做以下几件事：
 
 +   从网络检索指数水平数据。
 
@@ -497,13 +497,13 @@ Python的效率显而易见的领域之一是交互式数据分析。这是一�
 这些任务足够复杂，以至于不久之前人们会认为这是专业金融分析师的事情。如今，即使是金融学生也能轻松应对这些问题。让我们看看这究竟是如何运作的——在这个阶段不必担心语法细节（一切都将在后续章节中详细解释）。
 
 ```py
-In [10]: import numpy as np  ![1](images/1.png)
-         import pandas as pd  ![1](images/1.png)
+In [10]: import numpy as np  ![1](img/1.png)
+         import pandas as pd  ![1](img/1.png)
 
 In [11]: data = pd.read_csv('http://hilpisch.com/tr_eikon_eod_data.csv',
-                           index_col=0, parse_dates=True)  ![2](images/2.png)
-         data = pd.DataFrame(data['.SPX'])  ![3](images/3.png)
-         data.info()  ![4](images/4.png)
+                           index_col=0, parse_dates=True)  ![2](img/2.png)
+         data = pd.DataFrame(data['.SPX'])  ![3](img/3.png)
+         data.info()  ![4](img/4.png)
 
          <class 'pandas.core.frame.DataFrame'>
          DatetimeIndex: 1972 entries, 2010-01-04 to 2017-10-31
@@ -512,44 +512,44 @@ In [11]: data = pd.read_csv('http://hilpisch.com/tr_eikon_eod_data.csv',
          dtypes: float64(1)
          memory usage: 30.8 KB
 
-In [12]: data['rets'] = np.log(data / data.shift(1))  ![5](images/5.png)
-         data['vola'] = data['rets'].rolling(252).std() * np.sqrt(252)  ![6](images/6.png)
+In [12]: data['rets'] = np.log(data / data.shift(1))  ![5](img/5.png)
+         data['vola'] = data['rets'].rolling(252).std() * np.sqrt(252)  ![6](img/6.png)
 
-In [13]: data[['.SPX', 'vola']].plot(subplots=True, figsize=(10, 6));  ![7](images/7.png)
+In [13]: data[['.SPX', 'vola']].plot(subplots=True, figsize=(10, 6));  ![7](img/7.png)
          plt.savefig('../images/01_chapter/spx_volatility.png')
 ```
 
-[![1](images/1.png)](#co_python_and_finance_CO2-1)
+![1](img/#co_python_and_finance_CO2-1)
 
 这导入了`NumPy`和`pandas`。
 
-[![2](images/2.png)](#co_python_and_finance_CO2-3)
+![2](img/#co_python_and_finance_CO2-3)
 
 `read_csv`允许检索远程存储的数据集。
 
-[![3](images/3.png)](#co_python_and_finance_CO2-4)
+![3](img/#co_python_and_finance_CO2-4)
 
 选择数据的一个子集。
 
-[![4](images/4.png)](#co_python_and_finance_CO2-5)
+![4](img/#co_python_and_finance_CO2-5)
 
 这显示了数据集的一些元信息。
 
-[![5](images/5.png)](#co_python_and_finance_CO2-6)
+![5](img/#co_python_and_finance_CO2-6)
 
 对数收益以矢量化方式计算（“无循环”）。
 
-[![6](images/6.png)](#co_python_and_finance_CO2-7)
+![6](img/#co_python_and_finance_CO2-7)
 
 滚动、年化波动率是由此得出的。
 
-[![7](images/7.png)](#co_python_and_finance_CO2-8)
+![7](img/#co_python_and_finance_CO2-8)
 
 最后一行将这两个时间序列绘制出来。
 
-[图 1-1](#spx_vola) 展示了这个简短交互会话的图形结果。几行代码就足以实现在金融分析中经常遇到的三个相当复杂的任务：数据收集、复杂和重复的数学计算，以及结果的可视化。这个例子说明了`pandas`使得处理整个时间序列几乎与对浮点数执行数学运算一样简单。
+图 1-1 展示了这个简短交互会话的图形结果。几行代码就足以实现在金融分析中经常遇到的三个相当复杂的任务：数据收集、复杂和重复的数学计算，以及结果的可视化。这个例子说明了`pandas`使得处理整个时间序列几乎与对浮点数执行数学运算一样简单。
 
-![spx 波动率](images/spx_volatility.png)
+![spx 波动率](img/spx_volatility.png)
 
 ###### 图 1-1\. S&P 500 收盘价和年化波动率
 
@@ -634,7 +634,7 @@ In [17]: ne.set_num_threads(4)
 
 当涉及到金融开发流程时，全球金融机构的实践通常以分离的、两步的过程为特征。一方面，有*量化分析师*（“量化分析师”）负责模型开发和技术原型设计。他们喜欢使用像`Matlab`和`R`这样的工具和环境，这些工具和环境允许进行快速、交互式的应用程序开发。在开发工作的这个阶段，性能、稳定性、异常管理、数据访问和分析的分离等问题并不那么重要。主要是在寻找概念验证和/或展示算法或整个应用程序主要期望功能的原型。
 
-一旦原型完成，IT部门与其*开发人员*接管并负责将现有的*原型代码*转换为可靠、可维护和高性能的*生产代码*。通常，在这个阶段会发生范式转变，使用像`C`++或`Java`这样的语言来满足生产的要求。此外，还会应用正式的开发流程，包括专业工具、版本控制等。
+一旦原型完成，IT 部门与其*开发人员*接管并负责将现有的*原型代码*转换为可靠、可维护和高性能的*生产代码*。通常，在这个阶段会发生范式转变，使用像`C`++或`Java`这样的语言来满足生产的要求。此外，还会应用正式的开发流程，包括专业工具、版本控制等。
 
 这种两步法的做法通常会产生一些通常意义上不期而遇的后果：
 
@@ -650,7 +650,7 @@ In [17]: ne.set_num_threads(4)
 
 代码可用且必须用不同的语言进行维护，通常使用不同的实现风格（例如，从架构的角度来看）。
 
-另一方面，使用Python可以实现从最初的交互式原型设计步骤到高度可靠且高效可维护的生产代码的*简化*端到端流程。不同部门之间的沟通变得更容易。员工培训也更加简化，因为只有一种主要语言涵盖了金融应用构建的所有领域。它还避免了在开发过程的不同步骤中使用不同技术时固有的低效和冗余。总而言之，Python几乎可以为金融应用开发和算法实现的几乎所有任务提供*一致的技术框架*。
+另一方面，使用 Python 可以实现从最初的交互式原型设计步骤到高度可靠且高效可维护的生产代码的*简化*端到端流程。不同部门之间的沟通变得更容易。员工培训也更加简化，因为只有一种主要语言涵盖了金融应用构建的所有领域。它还避免了在开发过程的不同步骤中使用不同技术时固有的低效和冗余。总而言之，Python 几乎可以为金融应用开发和算法实现的几乎所有任务提供*一致的技术框架*。
 
 # 人工智能优先金融
 
@@ -662,28 +662,28 @@ In [17]: ne.set_num_threads(4)
 
 # 结论
 
-Python作为一种语言——但更多作为一个生态系统——是金融行业的理想技术框架。它具有许多优点，如优雅的语法、高效的开发方法以及适用于原型设计*和*生产等方面的可用性。凭借其大量可用的库和工具，Python似乎对金融行业的最新发展所提出的大多数问题都有答案，例如分析、数据量和频率、合规性和监管，以及技术本身。它有潜力提供一个*单一、强大、一致的框架*，可以使端到端的开发和生产工作流程变得更加顺畅，即使是在较大的金融机构之间也是如此。
+Python 作为一种语言——但更多作为一个生态系统——是金融行业的理想技术框架。它具有许多优点，如优雅的语法、高效的开发方法以及适用于原型设计*和*生产等方面的可用性。凭借其大量可用的库和工具，Python 似乎对金融行业的最新发展所提出的大多数问题都有答案，例如分析、数据量和频率、合规性和监管，以及技术本身。它有潜力提供一个*单一、强大、一致的框架*，可以使端到端的开发和生产工作流程变得更加顺畅，即使是在较大的金融机构之间也是如此。
 
 # 进一步阅读
 
 以下书籍由同一作者撰写，详细介绍了本章中只是简要提及的许多方面（例如衍生品分析）：
 
-+   Hilpisch, Yves (2015): *Python衍生品分析.* Wiley Finance, Chichester, England. [*http://derivatives-analytics-with-python.com*](http://derivatives-analytics-with-python.com)。
++   Hilpisch, Yves (2015): *Python 衍生品分析.* Wiley Finance, Chichester, England. [*http://derivatives-analytics-with-python.com*](http://derivatives-analytics-with-python.com)。
 
 本章引用的语录来自以下资源：
 
-+   Crosman, Penny (2013): “银行将如何使用其2014年IT预算的8种方式。” *银行技术新闻*。
++   Crosman, Penny (2013): “银行将如何使用其 2014 年 IT 预算的 8 种方式。” *银行技术新闻*。
 
 +   Deutsche Börse Group (2008): “全球衍生品市场——简介。” 白皮书。
 
-+   Ding, Cubillas (2010): “优化场外交易定价和估值基础设施。” *Celent研究*。
++   Ding, Cubillas (2010): “优化场外交易定价和估值基础设施。” *Celent 研究*。
 
 +   Lewis, Michael (2014): *闪电少年.* W. W. Norton & Company, New York.
 
 +   Patterson, Scott (2010): *量化分析师.* Crown Business, New York.
 
-^([1](ch01.html#idm140277704171024-marker)) 例如，Python是纽约市立大学巴鲁克学院金融工程硕士课程中使用的主要语言（请参阅[*http://mfe.baruch.cuny.edu*](http://mfe.baruch.cuny.edu)）。
+^(1) 例如，Python 是纽约市立大学巴鲁克学院金融工程硕士课程中使用的主要语言（请参阅[*http://mfe.baruch.cuny.edu*](http://mfe.baruch.cuny.edu)）。
 
-^([2](ch01.html#idm140277704168880-marker)) 请参阅[*http://wiki.python.org/moin/BeginnersGuide*](http://wiki.python.org/moin/BeginnersGuide)，在那里您将找到许多对于初学者和非开发人员来说开始使用Python非常有价值的资源链接。
+^(2) 请参阅[*http://wiki.python.org/moin/BeginnersGuide*](http://wiki.python.org/moin/BeginnersGuide)，在那里您将找到许多对于初学者和非开发人员来说开始使用 Python 非常有价值的资源链接。
 
-^([3](ch01.html#idm140277704069440-marker)) [*Link to Come*]提供了在随机数生成的背景下使用现代GPGPU的好处的示例。
+^(3) [*Link to Come*]提供了在随机数生成的背景下使用现代 GPGPU 的好处的示例。

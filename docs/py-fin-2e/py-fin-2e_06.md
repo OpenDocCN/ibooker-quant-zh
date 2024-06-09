@@ -1,4 +1,4 @@
-# 第六章：第6章。面向对象编程
+# 第六章：面向对象编程
 
 > 软件工程的目的是控制复杂性，而不是创建它。
 > 
@@ -6,9 +6,9 @@
 
 # 介绍
 
-面向对象编程（OOP）是当今最流行的编程范式之一。正确使用时，它与过程式编程相比提供了许多优势。在许多情况下，OOP似乎特别适用于金融建模和实施金融算法。然而，也有许多对OOP持批评态度的人，对OOP的单个方面甚至整个范式表示怀疑。本章对此持中立态度，认为OOP是一个重要的工具，可能不是每个问题的最佳解决方案，但应该是程序员和从事金融工作的量化人员的手头工具之一。
+面向对象编程（OOP）是当今最流行的编程范式之一。正确使用时，它与过程式编程相比提供了许多优势。在许多情况下，OOP 似乎特别适用于金融建模和实施金融算法。然而，也有许多对 OOP 持批评态度的人，对 OOP 的单个方面甚至整个范式表示怀疑。本章对此持中立态度，认为 OOP 是一个重要的工具，可能不是每个问题的最佳解决方案，但应该是程序员和从事金融工作的量化人员的手头工具之一。
 
-随着OOP的出现，一些新的术语也随之而来。本书和本章的最重要术语是（更多细节如下）：
+随着 OOP 的出现，一些新的术语也随之而来。本书和本章的最重要术语是（更多细节如下）：
 
 类
 
@@ -28,86 +28,86 @@
 
 对象
 
-类的一个实例。例如，有蓝眼睛的Sandra。
+类的一个实例。例如，有蓝眼睛的 Sandra。
 
 实例化
 
 创建基于抽象类的特定对象的过程。
 
-转换为Python代码，实现人类示例的简单类可能如下所示。
+转换为 Python 代码，实现人类示例的简单类可能如下所示。
 
 ```py
-In [1]: class HumanBeing(object):  ![1](images/1.png)
-            def __init__(self, first_name, eye_color):  ![2](images/2.png)
-                self.first_name = first_name  ![3](images/3.png)
-                self.eye_color = eye_color  ![4](images/4.png)
-                self.position = 0  ![5](images/5.png)
-            def walk_steps(self, steps):  ![6](images/6.png)
-                self.position += steps  ![7](images/7.png)
+In [1]: class HumanBeing(object):  ![1](img/1.png)
+            def __init__(self, first_name, eye_color):  ![2](img/2.png)
+                self.first_name = first_name  ![3](img/3.png)
+                self.eye_color = eye_color  ![4](img/4.png)
+                self.position = 0  ![5](img/5.png)
+            def walk_steps(self, steps):  ![6](img/6.png)
+                self.position += steps  ![7](img/7.png)
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO1-1)
+![1](img/#co_object_orientated_programming_CO1-1)
 
 类定义语句。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO1-2)
+![2](img/#co_object_orientated_programming_CO1-2)
 
 在实例化时调用的特殊方法。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO1-3)
+![3](img/#co_object_orientated_programming_CO1-3)
 
 名字属性初始化为参数值。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO1-4)
+![4](img/#co_object_orientated_programming_CO1-4)
 
 眼睛颜色属性初始化为参数值。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO1-5)
+![5](img/#co_object_orientated_programming_CO1-5)
 
-位置属性初始化为0。
+位置属性初始化为 0。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO1-6)
+![6](img/#co_object_orientated_programming_CO1-6)
 
 使用`steps`作为参数的步行方法定义。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO1-7)
+![7](img/#co_object_orientated_programming_CO1-7)
 
 给定`steps`值后改变位置的代码。
 
-根据类定义，可以实例化并使用一个新的Python对象。
+根据类定义，可以实例化并使用一个新的 Python 对象。
 
 ```py
-In [2]: Sandra = HumanBeing('Sandra', 'blue')  ![1](images/1.png)
+In [2]: Sandra = HumanBeing('Sandra', 'blue')  ![1](img/1.png)
 
-In [3]: Sandra.first_name  ![2](images/2.png)
+In [3]: Sandra.first_name  ![2](img/2.png)
 Out[3]: 'Sandra'
 
-In [4]: Sandra.position  ![2](images/2.png)
+In [4]: Sandra.position  ![2](img/2.png)
 Out[4]: 0
 
-In [5]: Sandra.walk_steps(5)  ![3](images/3.png)
+In [5]: Sandra.walk_steps(5)  ![3](img/3.png)
 
-In [6]: Sandra.position  ![4](images/4.png)
+In [6]: Sandra.position  ![4](img/4.png)
 Out[6]: 5
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO2-1)
+![1](img/#co_object_orientated_programming_CO2-1)
 
 实例化。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO2-2)
+![2](img/#co_object_orientated_programming_CO2-2)
 
 访问属性值。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO2-4)
+![3](img/#co_object_orientated_programming_CO2-4)
 
 调用方法。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO2-5)
+![4](img/#co_object_orientated_programming_CO2-5)
 
 访问更新后的`position`值。
 
-有几个*人类方面*可能支持使用OOP：
+有几个*人类方面*可能支持使用 OOP：
 
 自然的思考方式
 
@@ -121,9 +121,9 @@ Out[6]: 5
 
 在许多情况下，面向对象编程可以实现更美观的用户界面和更紧凑的代码。例如，当查看`NumPy`的`ndarray`类或`pandas`的`DataFrame`类时，这一点变得显而易见。
 
-Python建模的方式
+Python 建模的方式
 
-独立于面向对象编程的优缺点，它只是Python中的主导范式。这也是“在Python中一切皆为对象。”这句话的由来。面向对象编程还允许程序员构建自定义类，其实例的行为与标准Python类的任何其他实例相同。
+独立于面向对象编程的优缺点，它只是 Python 中的主导范式。这也是“在 Python 中一切皆为对象。”这句话的由来。面向对象编程还允许程序员构建自定义类，其实例的行为与标准 Python 类的任何其他实例相同。
 
 也有一些*技术方面*可能支持面向对象编程：
 
@@ -167,15 +167,15 @@ Python建模的方式
 
 本章按如下方式组织：
 
-[“Python 对象概览”](#py_objects)
+“Python 对象概览”
 
 下一节将通过面向对象编程的视角简要介绍一些 Python 对象。
 
-[“Python 类基础”](#oop_basics)
+“Python 类基础”
 
 本节介绍了 Python 中面向对象编程的核心要素，并以金融工具和投资组合头寸为主要示例。
 
-[“Python 数据模型”](#data_model)
+“Python 数据模型”
 
 本节讨论了 Python 数据模型的重要元素以及某些特殊方法所起的作用。
 
@@ -188,112 +188,112 @@ Python建模的方式
 为了简单起见，考虑一个整数对象。即使对于这样一个简单的 Python 对象，主要的面向对象编程（OOP）特征也是存在的。
 
 ```py
-In [7]: n = 5  ![1](images/1.png)
+In [7]: n = 5  ![1](img/1.png)
 
-In [8]: type(n)  ![2](images/2.png)
+In [8]: type(n)  ![2](img/2.png)
 Out[8]: int
 
-In [9]: n.numerator  ![3](images/3.png)
+In [9]: n.numerator  ![3](img/3.png)
 Out[9]: 5
 
-In [10]: n.bit_length()  ![4](images/4.png)
+In [10]: n.bit_length()  ![4](img/4.png)
 Out[10]: 3
 
-In [11]: n + n  ![5](images/5.png)
+In [11]: n + n  ![5](img/5.png)
 Out[11]: 10
 
-In [12]: 2 * n  ![6](images/6.png)
+In [12]: 2 * n  ![6](img/6.png)
 Out[12]: 10
 
-In [13]: n.__sizeof__()  ![7](images/7.png)
+In [13]: n.__sizeof__()  ![7](img/7.png)
 Out[13]: 28
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO3-1)
+![1](img/#co_object_orientated_programming_CO3-1)
 
 新实例 `n`。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO3-2)
+![2](img/#co_object_orientated_programming_CO3-2)
 
 对象的类型。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO3-3)
+![3](img/#co_object_orientated_programming_CO3-3)
 
 一个属性。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO3-4)
+![4](img/#co_object_orientated_programming_CO3-4)
 
 一个方法。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO3-5)
+![5](img/#co_object_orientated_programming_CO3-5)
 
 应用 + 运算符（加法）。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO3-6)
+![6](img/#co_object_orientated_programming_CO3-6)
 
 应用 * 运算符（乘法）。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO3-7)
+![7](img/#co_object_orientated_programming_CO3-7)
 
-调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。^([1](ch06.html#idm140277674288640))
+调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。^(1)
 
 ## 列表
 
 `list`对象有一些额外的方法，但基本上表现方式相同。
 
 ```py
-In [14]: l = [1, 2, 3, 4]  ![1](images/1.png)
+In [14]: l = [1, 2, 3, 4]  ![1](img/1.png)
 
-In [15]: type(l)  ![2](images/2.png)
+In [15]: type(l)  ![2](img/2.png)
 Out[15]: list
 
-In [16]: l[0]  ![3](images/3.png)
+In [16]: l[0]  ![3](img/3.png)
 Out[16]: 1
 
-In [17]: l.append(10)  ![4](images/4.png)
+In [17]: l.append(10)  ![4](img/4.png)
 
-In [18]: l + l  ![5](images/5.png)
+In [18]: l + l  ![5](img/5.png)
 Out[18]: [1, 2, 3, 4, 10, 1, 2, 3, 4, 10]
 
-In [19]: 2 * l  ![6](images/6.png)
+In [19]: 2 * l  ![6](img/6.png)
 Out[19]: [1, 2, 3, 4, 10, 1, 2, 3, 4, 10]
 
-In [20]: sum(l)  ![7](images/7.png)
+In [20]: sum(l)  ![7](img/7.png)
 Out[20]: 20
 
-In [21]: l.__sizeof__()  ![8](images/8.png)
+In [21]: l.__sizeof__()  ![8](img/8.png)
 Out[21]: 104
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO4-1)
+![1](img/#co_object_orientated_programming_CO4-1)
 
 新实例`l`。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO4-2)
+![2](img/#co_object_orientated_programming_CO4-2)
 
 对象的类型。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO4-3)
+![3](img/#co_object_orientated_programming_CO4-3)
 
 通过索引选择元素。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO4-4)
+![4](img/#co_object_orientated_programming_CO4-4)
 
 一个方法。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO4-5)
+![5](img/#co_object_orientated_programming_CO4-5)
 
 应用+运算符（连接）。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO4-6)
+![6](img/#co_object_orientated_programming_CO4-6)
 
 应用*运算符（连接）。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO4-7)
+![7](img/#co_object_orientated_programming_CO4-7)
 
 应用标准 Python 函数`sum()`。
 
-[![8](images/8.png)](#co_object_orientated_programming_CO4-8)
+![8](img/#co_object_orientated_programming_CO4-8)
 
 调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。
 
@@ -302,98 +302,98 @@ Out[21]: 104
 `int`和`list`对象是标准的 Python 对象。`NumPy`的`ndarray`对象是一个来自开源包的“自定义”对象。
 
 ```py
-In [22]: import numpy as np  ![1](images/1.png)
+In [22]: import numpy as np  ![1](img/1.png)
 
-In [23]: a = np.arange(16).reshape((4, 4))  ![2](images/2.png)
+In [23]: a = np.arange(16).reshape((4, 4))  ![2](img/2.png)
 
-In [24]: a  ![2](images/2.png)
+In [24]: a  ![2](img/2.png)
 Out[24]: array([[ 0,  1,  2,  3],
                 [ 4,  5,  6,  7],
                 [ 8,  9, 10, 11],
                 [12, 13, 14, 15]])
 
-In [25]: type(a)  ![3](images/3.png)
+In [25]: type(a)  ![3](img/3.png)
 Out[25]: numpy.ndarray
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO5-1)
+![1](img/#co_object_orientated_programming_CO5-1)
 
 导入`numpy`。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO5-2)
+![2](img/#co_object_orientated_programming_CO5-2)
 
 新实例`a`。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO5-4)
+![3](img/#co_object_orientated_programming_CO5-4)
 
 对象的类型。
 
-尽管`ndarray`对象不是标准对象，但在许多情况下表现得就像是一个标准对象——这要归功于下文中解释的Python数据模型。
+尽管`ndarray`对象不是标准对象，但在许多情况下表现得就像是一个标准对象——这要归功于下文中解释的 Python 数据模型。
 
 ```py
-In [26]: a.nbytes  ![1](images/1.png)
+In [26]: a.nbytes  ![1](img/1.png)
 Out[26]: 128
 
-In [27]: a.sum()  ![2](images/2.png)
+In [27]: a.sum()  ![2](img/2.png)
 Out[27]: 120
 
-In [28]: a.cumsum(axis=0)  ![3](images/3.png)
+In [28]: a.cumsum(axis=0)  ![3](img/3.png)
 Out[28]: array([[ 0,  1,  2,  3],
                 [ 4,  6,  8, 10],
                 [12, 15, 18, 21],
                 [24, 28, 32, 36]])
 
-In [29]: a + a  ![4](images/4.png)
+In [29]: a + a  ![4](img/4.png)
 Out[29]: array([[ 0,  2,  4,  6],
                 [ 8, 10, 12, 14],
                 [16, 18, 20, 22],
                 [24, 26, 28, 30]])
 
-In [30]: 2 * a  ![5](images/5.png)
+In [30]: 2 * a  ![5](img/5.png)
 Out[30]: array([[ 0,  2,  4,  6],
                 [ 8, 10, 12, 14],
                 [16, 18, 20, 22],
                 [24, 26, 28, 30]])
 
-In [31]: sum(a)  ![6](images/6.png)
+In [31]: sum(a)  ![6](img/6.png)
 Out[31]: array([24, 28, 32, 36])
 
-In [32]: np.sum(a)  ![7](images/7.png)
+In [32]: np.sum(a)  ![7](img/7.png)
 Out[32]: 120
 
-In [33]: a.__sizeof__()  ![8](images/8.png)
+In [33]: a.__sizeof__()  ![8](img/8.png)
 Out[33]: 112
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO6-1)
+![1](img/#co_object_orientated_programming_CO6-1)
 
 一个属性。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO6-2)
+![2](img/#co_object_orientated_programming_CO6-2)
 
 一个方法（聚合）。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO6-3)
+![3](img/#co_object_orientated_programming_CO6-3)
 
 一个方法（没有聚合）。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO6-4)
+![4](img/#co_object_orientated_programming_CO6-4)
 
 应用+运算符（加法）。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO6-5)
+![5](img/#co_object_orientated_programming_CO6-5)
 
 应用*运算符（乘法）。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO6-6)
+![6](img/#co_object_orientated_programming_CO6-6)
 
 应用标准 Python 函数`sum()`。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO6-7)
+![7](img/#co_object_orientated_programming_CO6-7)
 
 应用`NumPy`通用函数`np.sum()`。
 
-[![8](images/8.png)](#co_object_orientated_programming_CO6-8)
+![8](img/#co_object_orientated_programming_CO6-8)
 
 调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。
 
@@ -402,252 +402,252 @@ Out[33]: 112
 最后，快速查看`pandas`的`DataFrame`对象，因为其行为大多与`ndarray`对象相同。首先，基于`ndarray`对象实例化`DataFrame`对象。
 
 ```py
-In [34]: import pandas as pd  ![1](images/1.png)
+In [34]: import pandas as pd  ![1](img/1.png)
 
-In [35]: df = pd.DataFrame(a, columns=list('abcd'))  ![2](images/2.png)
+In [35]: df = pd.DataFrame(a, columns=list('abcd'))  ![2](img/2.png)
 
-In [36]: type(df)  ![3](images/3.png)
+In [36]: type(df)  ![3](img/3.png)
 Out[36]: pandas.core.frame.DataFrame
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO7-1)
+![1](img/#co_object_orientated_programming_CO7-1)
 
 导入`pandas`。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO7-2)
+![2](img/#co_object_orientated_programming_CO7-2)
 
 新实例`df`。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO7-3)
+![3](img/#co_object_orientated_programming_CO7-3)
 
 对象的类型。
 
 其次，查看属性、方法和操作。
 
 ```py
-In [37]: df.columns  ![1](images/1.png)
+In [37]: df.columns  ![1](img/1.png)
 Out[37]: Index(['a', 'b', 'c', 'd'], dtype='object')
 
-In [38]: df.sum()  ![2](images/2.png)
+In [38]: df.sum()  ![2](img/2.png)
 Out[38]: a    24
          b    28
          c    32
          d    36
          dtype: int64
 
-In [39]: df.cumsum()  ![3](images/3.png)
+In [39]: df.cumsum()  ![3](img/3.png)
 Out[39]:     a   b   c   d
          0   0   1   2   3
          1   4   6   8  10
          2  12  15  18  21
          3  24  28  32  36
 
-In [40]: df + df  ![4](images/4.png)
+In [40]: df + df  ![4](img/4.png)
 Out[40]:     a   b   c   d
          0   0   2   4   6
          1   8  10  12  14
          2  16  18  20  22
          3  24  26  28  30
 
-In [41]: 2 * df  ![5](images/5.png)
+In [41]: 2 * df  ![5](img/5.png)
 Out[41]:     a   b   c   d
          0   0   2   4   6
          1   8  10  12  14
          2  16  18  20  22
          3  24  26  28  30
 
-In [42]: np.sum(df)  ![6](images/6.png)
+In [42]: np.sum(df)  ![6](img/6.png)
 Out[42]: a    24
          b    28
          c    32
          d    36
          dtype: int64
 
-In [43]: df.__sizeof__()  ![7](images/7.png)
+In [43]: df.__sizeof__()  ![7](img/7.png)
 Out[43]: 208
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO8-1)
+![1](img/#co_object_orientated_programming_CO8-1)
 
 一个属性。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO8-2)
+![2](img/#co_object_orientated_programming_CO8-2)
 
 一个方法（聚合）。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO8-3)
+![3](img/#co_object_orientated_programming_CO8-3)
 
 一个方法（无聚合）。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO8-4)
+![4](img/#co_object_orientated_programming_CO8-4)
 
 应用+运算符（加法）。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO8-5)
+![5](img/#co_object_orientated_programming_CO8-5)
 
 应用*运算符（乘法）。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO8-6)
+![6](img/#co_object_orientated_programming_CO8-6)
 
 应用`NumPy`通用函数`np.sum()`。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO8-7)
+![7](img/#co_object_orientated_programming_CO8-7)
 
 调用特殊方法`__sizeof__()`以获取以字节为单位的内存使用情况。
 
-# Python类的基础知识
+# Python 类的基础知识
 
-本节涉及主要概念和具体语法，以利用Python中的OOP。当前的背景是构建自定义类来模拟无法轻松、高效或适当地由现有Python对象类型建模的对象类型。在*金融工具*的示例中，只需两行代码即可创建一个新的Python类。
+本节涉及主要概念和具体语法，以利用 Python 中的 OOP。当前的背景是构建自定义类来模拟无法轻松、高效或适当地由现有 Python 对象类型建模的对象类型。在*金融工具*的示例中，只需两行代码即可创建一个新的 Python 类。
 
 ```py
-In [44]: class FinancialInstrument(object):  ![1](images/1.png)
-             pass  ![2](images/2.png)
+In [44]: class FinancialInstrument(object):  ![1](img/1.png)
+             pass  ![2](img/2.png)
 
-In [45]: fi = FinancialInstrument()  ![3](images/3.png)
+In [45]: fi = FinancialInstrument()  ![3](img/3.png)
 
-In [46]: type(fi)  ![4](images/4.png)
+In [46]: type(fi)  ![4](img/4.png)
 Out[46]: __main__.FinancialInstrument
 
-In [47]: fi  ![4](images/4.png)
+In [47]: fi  ![4](img/4.png)
 Out[47]: <__main__.FinancialInstrument at 0x10a21c828>
 
-In [48]: fi.__str__()  ![5](images/5.png)
+In [48]: fi.__str__()  ![5](img/5.png)
 Out[48]: '<__main__.FinancialInstrument object at 0x10a21c828>'
 
-In [49]: fi.price = 100  ![6](images/6.png)
+In [49]: fi.price = 100  ![6](img/6.png)
 
-In [50]: fi.price  ![6](images/6.png)
+In [50]: fi.price  ![6](img/6.png)
 Out[50]: 100
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO9-1)
+![1](img/#co_object_orientated_programming_CO9-1)
 
-类定义语句。^([2](ch06.html#idm140277672765360))
+类定义语句。^(2)
 
-[![2](images/2.png)](#co_object_orientated_programming_CO9-2)
+![2](img/#co_object_orientated_programming_CO9-2)
 
 一些代码；这里只是`pass`关键字。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO9-3)
+![3](img/#co_object_orientated_programming_CO9-3)
 
 一个名为`fi`的类的新实例。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO9-4)
+![4](img/#co_object_orientated_programming_CO9-4)
 
-每个Python对象都带有某些特殊属性和方法（来自`object`）；这里调用了用于检索字符串表示的特殊方法。
+每个 Python 对象都带有某些特殊属性和方法（来自`object`）；这里调用了用于检索字符串表示的特殊方法。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO9-6)
+![5](img/#co_object_orientated_programming_CO9-6)
 
 所谓的数据属性 —— 与常规属性相对 —— 可以为每个对象即时定义。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO9-7)
+![6](img/#co_object_orientated_programming_CO9-7)
 
 一个重要的特殊方法是`__init__`，它在每次实例化对象时被调用。它以对象自身（按照惯例为`self`）和可能的多个其他参数作为参数。除了实例属性之外
 
 ```py
 In [51]: class FinancialInstrument(object):
-             author = 'Yves Hilpisch'  ![1](images/1.png)
-             def __init__(self, symbol, price):  ![2](images/2.png)
-                 self.symbol = symbol  ![3](images/3.png)
-                 self.price = price  ![3](images/3.png)
+             author = 'Yves Hilpisch'  ![1](img/1.png)
+             def __init__(self, symbol, price):  ![2](img/2.png)
+                 self.symbol = symbol  ![3](img/3.png)
+                 self.price = price  ![3](img/3.png)
 
-In [52]: FinancialInstrument.author  ![1](images/1.png)
+In [52]: FinancialInstrument.author  ![1](img/1.png)
 Out[52]: 'Yves Hilpisch'
 
-In [53]: aapl = FinancialInstrument('AAPL', 100)  ![4](images/4.png)
+In [53]: aapl = FinancialInstrument('AAPL', 100)  ![4](img/4.png)
 
-In [54]: aapl.symbol  ![5](images/5.png)
+In [54]: aapl.symbol  ![5](img/5.png)
 Out[54]: 'AAPL'
 
-In [55]: aapl.author  ![6](images/6.png)
+In [55]: aapl.author  ![6](img/6.png)
 Out[55]: 'Yves Hilpisch'
 
-In [56]: aapl.price = 105  ![7](images/7.png)
+In [56]: aapl.price = 105  ![7](img/7.png)
 
-In [57]: aapl.price  ![7](images/7.png)
+In [57]: aapl.price  ![7](img/7.png)
 Out[57]: 105
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO10-1)
+![1](img/#co_object_orientated_programming_CO10-1)
 
 类属性的定义（=每个实例都继承的）。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO10-2)
+![2](img/#co_object_orientated_programming_CO10-2)
 
 在初始化期间调用特殊方法`__init__`。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO10-3)
+![3](img/#co_object_orientated_programming_CO10-3)
 
 实例属性的定义（=每个实例都是个别的）。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO10-6)
+![4](img/#co_object_orientated_programming_CO10-6)
 
 一个名为`fi`的类的新实例。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO10-7)
+![5](img/#co_object_orientated_programming_CO10-7)
 
 访问实例属性。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO10-8)
+![6](img/#co_object_orientated_programming_CO10-8)
 
 访问类属性。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO10-9)
+![7](img/#co_object_orientated_programming_CO10-9)
 
 更改实例属性的值。
 
 金融工具的价格经常变动，金融工具的符号可能不会变动。为了向类定义引入封装，可以定义两个方法`get_price()`和`set_price()`。接下来的代码还额外继承了之前的类定义（不再继承自`object`）。
 
 ```py
-In [58]: class FinancialInstrument(FinancialInstrument):  ![1](images/1.png)
-             def get_price(self):  ![2](images/2.png)
-                 return self.price  ![2](images/2.png)
-             def set_price(self, price):  ![3](images/3.png)
-                 self.price = price  ![4](images/4.png)
+In [58]: class FinancialInstrument(FinancialInstrument):  ![1](img/1.png)
+             def get_price(self):  ![2](img/2.png)
+                 return self.price  ![2](img/2.png)
+             def set_price(self, price):  ![3](img/3.png)
+                 self.price = price  ![4](img/4.png)
 
-In [59]: fi = FinancialInstrument('AAPL', 100)  ![5](images/5.png)
+In [59]: fi = FinancialInstrument('AAPL', 100)  ![5](img/5.png)
 
-In [60]: fi.get_price()  ![6](images/6.png)
+In [60]: fi.get_price()  ![6](img/6.png)
 Out[60]: 100
 
-In [61]: fi.set_price(105)  ![7](images/7.png)
+In [61]: fi.set_price(105)  ![7](img/7.png)
 
-In [62]: fi.get_price()  ![6](images/6.png)
+In [62]: fi.get_price()  ![6](img/6.png)
 Out[62]: 105
 
-In [63]: fi.price  ![8](images/8.png)
+In [63]: fi.price  ![8](img/8.png)
 Out[63]: 105
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO11-1)
+![1](img/#co_object_orientated_programming_CO11-1)
 
 通过从上一个版本继承的方式进行类定义。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO11-2)
+![2](img/#co_object_orientated_programming_CO11-2)
 
 定义`get_price`方法。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO11-4)
+![3](img/#co_object_orientated_programming_CO11-4)
 
 定义`set_price`方法……
 
-[![4](images/4.png)](#co_object_orientated_programming_CO11-5)
+![4](img/#co_object_orientated_programming_CO11-5)
 
 ……并根据参数值更新实例属性值。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO11-6)
+![5](img/#co_object_orientated_programming_CO11-6)
 
 基于新的类定义创建一个名为`fi`的新实例。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO11-7)
+![6](img/#co_object_orientated_programming_CO11-7)
 
 调用`get_price()`方法来读取实例属性值。
 
-[![7](images/7.png)](#co_object_orientated_programming_CO11-8)
+![7](img/#co_object_orientated_programming_CO11-8)
 
 通过`set_price()`更新实例属性值。
 
-[![8](images/8.png)](#co_object_orientated_programming_CO11-10)
+![8](img/#co_object_orientated_programming_CO11-10)
 
 直接访问实例属性。
 
@@ -657,7 +657,7 @@ Out[63]: 105
 In [64]: class FinancialInstrument(object):
              def __init__(self, symbol, price):
                  self.symbol = symbol
-                 self.__price = price  ![1](images/1.png)
+                 self.__price = price  ![1](img/1.png)
              def get_price(self):
                  return self.__price
              def set_price(self, price):
@@ -665,43 +665,43 @@ In [64]: class FinancialInstrument(object):
 
 In [65]: fi = FinancialInstrument('AAPL', 100)
 
-In [66]: fi.get_price()  ![2](images/2.png)
+In [66]: fi.get_price()  ![2](img/2.png)
 Out[66]: 100
 
-In [67]: fi.__price  ![3](images/3.png)
+In [67]: fi.__price  ![3](img/3.png)
 
          ----------------------------------------
          AttributeErrorTraceback (most recent call last)
          <ipython-input-67-74c0dc05c9ae> in <module>()
-----> 1 fi.__price  ![3](images/3.png)
+----> 1 fi.__price  ![3](img/3.png)
 
          AttributeError: 'FinancialInstrument' object has no attribute '__price'
 
-In [68]: fi._FinancialInstrument__price  ![4](images/4.png)
+In [68]: fi._FinancialInstrument__price  ![4](img/4.png)
 Out[68]: 100
 
-In [69]: fi._FinancialInstrument__price = 105  ![4](images/4.png)
+In [69]: fi._FinancialInstrument__price = 105  ![4](img/4.png)
 
-In [70]: fi.set_price(100)  ![5](images/5.png)
+In [70]: fi.set_price(100)  ![5](img/5.png)
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO12-1)
+![1](img/#co_object_orientated_programming_CO12-1)
 
 价格被定义为私有实例属性。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO12-2)
+![2](img/#co_object_orientated_programming_CO12-2)
 
 方法`get_price()`返回其值。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO12-3)
+![3](img/#co_object_orientated_programming_CO12-3)
 
 尝试直接访问属性会引发错误。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO12-5)
+![4](img/#co_object_orientated_programming_CO12-5)
 
 通过在类名前添加单个下划线，仍然可以直接访问和操作。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO12-7)
+![5](img/#co_object_orientated_programming_CO12-7)
 
 将价格恢复到其原始值。
 
@@ -714,60 +714,60 @@ In [70]: fi.set_price(100)  ![5](images/5.png)
 ```py
 In [71]: class PortfolioPosition(object):
              def __init__(self, financial_instrument, position_size):
-                 self.position = financial_instrument  ![1](images/1.png)
-                 self.__position_size = position_size  ![2](images/2.png)
+                 self.position = financial_instrument  ![1](img/1.png)
+                 self.__position_size = position_size  ![2](img/2.png)
              def get_position_size(self):
                  return self.__position_size
              def update_position_size(self, position_size):
                  self.__position_size = position_size
              def get_position_value(self):
                  return self.__position_size * \
-                        self.position.get_price()  ![3](images/3.png)
+                        self.position.get_price()  ![3](img/3.png)
 
 In [72]: pp = PortfolioPosition(fi, 10)
 
 In [73]: pp.get_position_size()
 Out[73]: 10
 
-In [74]: pp.get_position_value()  ![3](images/3.png)
+In [74]: pp.get_position_value()  ![3](img/3.png)
 Out[74]: 1000
 
-In [75]: pp.position.get_price()  ![4](images/4.png)
+In [75]: pp.position.get_price()  ![4](img/4.png)
 Out[75]: 100
 
-In [76]: pp.position.set_price(105)  ![5](images/5.png)
+In [76]: pp.position.set_price(105)  ![5](img/5.png)
 
-In [77]: pp.get_position_value()  ![6](images/6.png)
+In [77]: pp.get_position_value()  ![6](img/6.png)
 Out[77]: 1050
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO13-1)
+![1](img/#co_object_orientated_programming_CO13-1)
 
 基于`FinancialInstrument`类的实例的实例属性。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO13-2)
+![2](img/#co_object_orientated_programming_CO13-2)
 
 `PortfolioPosition`类的私有实例属性。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO13-3)
+![3](img/#co_object_orientated_programming_CO13-3)
 
 根据属性计算位置值。
 
-[![4](images/4.png)](#co_object_orientated_programming_CO13-5)
+![4](img/#co_object_orientated_programming_CO13-5)
 
 附加到实例属性对象的方法可以直接访问（也可能被隐藏）。
 
-[![5](images/5.png)](#co_object_orientated_programming_CO13-6)
+![5](img/#co_object_orientated_programming_CO13-6)
 
 更新金融工具的价格。
 
-[![6](images/6.png)](#co_object_orientated_programming_CO13-7)
+![6](img/#co_object_orientated_programming_CO13-7)
 
 根据更新后的价格计算新位置值。
 
-# Python数据模型
+# Python 数据模型
 
-前一节的示例已经突出了所谓的Python数据或对象模型的一些方面（参见[*https://docs.python.org/3/reference/datamodel.html*](https://docs.python.org/3/reference/datamodel.html)）。Python数据模型允许设计与Python基本语言构造一致交互的类。除其他外，它支持（参见Ramalho（2015），第4页）以下任务和结构：
+前一节的示例已经突出了所谓的 Python 数据或对象模型的一些方面（参见[*https://docs.python.org/3/reference/datamodel.html*](https://docs.python.org/3/reference/datamodel.html)）。Python 数据模型允许设计与 Python 基本语言构造一致交互的类。除其他外，它支持（参见 Ramalho（2015），第 4 页）以下任务和结构：
 
 +   迭代
 
@@ -785,30 +785,30 @@ Out[77]: 1050
 
 +   受管理的上下文（即`with`块）。
 
-由于Python数据模型非常重要，本节专门介绍了一个示例，探讨了其中的几个方面。示例可在Ramalho（2015）的书中找到，并进行了微调。它实现了一个一维，三元素向量的类（想象一下欧几里德空间中的向量）。首先，特殊方法`__init__`：
+由于 Python 数据模型非常重要，本节专门介绍了一个示例，探讨了其中的几个方面。示例可在 Ramalho（2015）的书中找到，并进行了微调。它实现了一个一维，三元素向量的类（想象一下欧几里德空间中的向量）。首先，特殊方法`__init__`：
 
 ```py
 In [78]: class Vector(object):
-             def __init__(self, x=0, y=0, z=0):  ![1](images/1.png)
-                 self.x = x  ![1](images/1.png)
-                 self.y = y  ![1](images/1.png)
-                 self.z = z  ![1](images/1.png)
+             def __init__(self, x=0, y=0, z=0):  ![1](img/1.png)
+                 self.x = x  ![1](img/1.png)
+                 self.y = y  ![1](img/1.png)
+                 self.z = z  ![1](img/1.png)
 
-In [79]: v = Vector(1, 2, 3)  ![2](images/2.png)
+In [79]: v = Vector(1, 2, 3)  ![2](img/2.png)
 
-In [80]: v  ![3](images/3.png)
+In [80]: v  ![3](img/3.png)
 Out[80]: <__main__.Vector at 0x10a245d68>
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO14-1)
+![1](img/#co_object_orientated_programming_CO14-1)
 
 三个预初始化的实例属性（想象成三维空间）。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO14-5)
+![2](img/#co_object_orientated_programming_CO14-5)
 
 名为`v`的类的新实例。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO14-6)
+![3](img/#co_object_orientated_programming_CO14-6)
 
 默认字符串表示。
 
@@ -821,30 +821,30 @@ In [81]: class Vector(Vector):
 
 In [82]: v = Vector(1, 2, 3)
 
-In [83]: v  ![1](images/1.png)
+In [83]: v  ![1](img/1.png)
 Out[83]: Vector(1, 2, 3)
 
-In [84]: print(v)  ![1](images/1.png)
+In [84]: print(v)  ![1](img/1.png)
 
          Vector(1, 2, 3)
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO15-1)
+![1](img/#co_object_orientated_programming_CO15-1)
 
 新的字符串表示。
 
-`abs()`和`bool()`是两个标准的Python函数，它们在`Vector`类上的行为可以通过特殊方法`__abs__`和`__bool__`来定义。
+`abs()`和`bool()`是两个标准的 Python 函数，它们在`Vector`类上的行为可以通过特殊方法`__abs__`和`__bool__`来定义。
 
 ```py
 In [85]: class Vector(Vector):
              def __abs__(self):
                  return (self.x ** 2 +  self.y ** 2 +
-                         self.z ** 2) ** 0.5  ![1](images/1.png)
+                         self.z ** 2) ** 0.5  ![1](img/1.png)
 
              def __bool__(self):
                  return bool(abs(self))
 
-In [86]: v = Vector(1, 2, -1)  ![2](images/2.png)
+In [86]: v = Vector(1, 2, -1)  ![2](img/2.png)
 
 In [87]: abs(v)
 Out[87]: 2.449489742783178
@@ -852,9 +852,9 @@ Out[87]: 2.449489742783178
 In [88]: bool(v)
 Out[88]: True
 
-In [89]: v = Vector()  ![3](images/3.png)
+In [89]: v = Vector()  ![3](img/3.png)
 
-In [90]: v  ![3](images/3.png)
+In [90]: v  ![3](img/3.png)
 Out[90]: Vector(0, 0, 0)
 
 In [91]: abs(v)
@@ -864,19 +864,19 @@ In [92]: bool(v)
 Out[92]: False
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO16-1)
+![1](img/#co_object_orientated_programming_CO16-1)
 
 返回给定三个属性值的欧几里德范数。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO16-2)
+![2](img/#co_object_orientated_programming_CO16-2)
 
 具有非零属性值的新`Vector`对象。
 
-[![3](images/3.png)](#co_object_orientated_programming_CO16-3)
+![3](img/#co_object_orientated_programming_CO16-3)
 
 仅具有零属性值的新`Vector`对象。
 
-如多次显示的那样，`+`和`*`运算符几乎可以应用于任何Python对象。其行为是通过特殊方法`__add__`和`__mul__`定义的。
+如多次显示的那样，`+`和`*`运算符几乎可以应用于任何 Python 对象。其行为是通过特殊方法`__add__`和`__mul__`定义的。
 
 ```py
 In [93]: class Vector(Vector):
@@ -884,12 +884,12 @@ In [93]: class Vector(Vector):
                  x = self.x + other.x
                  y = self.y + other.y
                  z = self.z + other.z
-                 return Vector(x, y, z)  ![1](images/1.png)
+                 return Vector(x, y, z)  ![1](img/1.png)
 
              def __mul__(self, scalar):
                  return Vector(self.x * scalar,
                                self.y * scalar,
-                               self.z * scalar)  ![1](images/1.png)
+                               self.z * scalar)  ![1](img/1.png)
 
 In [94]: v = Vector(1, 2, 3)
 
@@ -900,7 +900,7 @@ In [96]: v * 2
 Out[96]: Vector(2, 4, 6)
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO17-1)
+![1](img/#co_object_orientated_programming_CO17-1)
 
 在这种情况下，两个特殊方法都返回自己的类型对象。
 
@@ -909,7 +909,7 @@ Out[96]: Vector(2, 4, 6)
 ```py
 In [97]: class Vector(Vector):
              def __len__(self):
-                 return 3  ![1](images/1.png)
+                 return 3  ![1](img/1.png)
 
              def __getitem__(self, i):
                  if i in [0, -3]: return self.x
@@ -943,7 +943,7 @@ In [102]: v[3]
           IndexError: Index out of range.
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO18-1)
+![1](img/#co_object_orientated_programming_CO18-1)
 
 `Vector` 类的所有实例都有长度为三。
 
@@ -957,26 +957,26 @@ In [103]: class Vector(Vector):
 
 In [104]: v = Vector(1, 2, 3)
 
-In [105]: for i in range(3):  ![1](images/1.png)
-              print(v[i])  ![1](images/1.png)
+In [105]: for i in range(3):  ![1](img/1.png)
+              print(v[i])  ![1](img/1.png)
 
           1
           2
           3
 
-In [106]: for coordinate in v:  ![2](images/2.png)
-              print(coordinate)  ![2](images/2.png)
+In [106]: for coordinate in v:  ![2](img/2.png)
+              print(coordinate)  ![2](img/2.png)
 
           1
           2
           3
 ```
 
-[![1](images/1.png)](#co_object_orientated_programming_CO19-1)
+![1](img/#co_object_orientated_programming_CO19-1)
 
 使用索引值进行间接迭代（通过`__getitem__`）。
 
-[![2](images/2.png)](#co_object_orientated_programming_CO19-3)
+![2](img/#co_object_orientated_programming_CO19-3)
 
 对类实例进行直接迭代（使用`__iter__`）。
 
@@ -984,7 +984,7 @@ In [106]: for coordinate in v:  ![2](images/2.png)
 
 Python 数据模型允许定义与标准 Python 操作符、函数等无缝交互的 Python 类。这使得 Python 成为一种相当灵活的编程语言，可以轻松地通过新类和对象类型进行增强。
 
-总之，子节 [“向量类”](#vector_class) 在单个代码块中提供了 `Vector` 类的定义。
+总之，子节 “向量类” 在单个代码块中提供了 `Vector` 类的定义。
 
 # 结论
 
@@ -1047,6 +1047,6 @@ In [107]: class Vector(object):
                       yield self[i]
 ```
 
-^([1](ch06.html#idm140277674288640-marker)) Python 中的特殊属性和方法以双下划线开头和结尾，例如 `__XYZ__`。
+^(1) Python 中的特殊属性和方法以双下划线开头和结尾，例如 `__XYZ__`。
 
-^([2](ch06.html#idm140277672765360-marker)) 类名采用驼峰命名法是推荐的方式。然而，如果没有歧义，也可以采用小写命名，比如`financial_instrument`。
+^(2) 类名采用驼峰命名法是推荐的方式。然而，如果没有歧义，也可以采用小写命名，比如`financial_instrument`。

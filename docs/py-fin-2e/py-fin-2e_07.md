@@ -1271,4 +1271,4 @@ In [61]: plyo.iplot(
 
 +   `Cufflinks` 的 Github 页面：[*https://github.com/santosjorge/cufflinks*](https://github.com/santosjorge/cufflinks)
 
-^(1) 想了解可用的绘图类型概述，请访问[`matplotlib` gallery](http://matplotlib.org/gallery.html)。
+¹ 想了解可用的绘图类型概述，请访问[`matplotlib` gallery](http://matplotlib.org/gallery.html)。

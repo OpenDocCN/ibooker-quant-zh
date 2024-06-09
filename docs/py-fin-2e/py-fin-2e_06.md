@@ -235,7 +235,7 @@ Out[13]: 28
 
 ![7](img/#co_object_orientated_programming_CO3-7)
 
-调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。^(1)
+调用特殊方法`__sizeof__()`以获取内存使用情况（以字节为单位）。¹
 
 ## 列表
 
@@ -522,7 +522,7 @@ Out[50]: 100
 
 ![1](img/#co_object_orientated_programming_CO9-1)
 
-类定义语句。^(2)
+类定义语句。²
 
 ![2](img/#co_object_orientated_programming_CO9-2)
 
@@ -1047,6 +1047,6 @@ In [107]: class Vector(object):
                       yield self[i]
 ```
 
-^(1) Python 中的特殊属性和方法以双下划线开头和结尾，例如 `__XYZ__`。
+¹ Python 中的特殊属性和方法以双下划线开头和结尾，例如 `__XYZ__`。
 
-^(2) 类名采用驼峰命名法是推荐的方式。然而，如果没有歧义，也可以采用小写命名，比如`financial_instrument`。
+² 类名采用驼峰命名法是推荐的方式。然而，如果没有歧义，也可以采用小写命名，比如`financial_instrument`。

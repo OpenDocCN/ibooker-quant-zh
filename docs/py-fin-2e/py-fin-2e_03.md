@@ -35,7 +35,7 @@
 
 # 基本数据类型
 
-`Python` 是一种*动态类型*语言，这意味着`Python`解释器在运行时推断对象的类型。相比之下，像`C`这样的编译语言通常是*静态类型*的。在这些情况下，对象的类型必须在编译时与对象关联。^(1)
+`Python` 是一种*动态类型*语言，这意味着`Python`解释器在运行时推断对象的类型。相比之下，像`C`这样的编译语言通常是*静态类型*的。在这些情况下，对象的类型必须在编译时与对象关联。¹
 
 ## 整数
 
@@ -666,7 +666,7 @@ In [90]: series = """
  """
 ```
 
-以下正则表达式描述了提供在`string`对象中的日期时间信息的格式：^(4)
+以下正则表达式描述了提供在`string`对象中的日期时间信息的格式：⁴
 
 ```py
 In [91]: dt = re.compile("'[0-9/:\s]+'")  # datetime
@@ -1175,10 +1175,10 @@ Out[140]: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
 +   Ramalho, Luciano (2016): *流畅的 Python*. O’Reilly, Beijing et al.
 
-^(1) [`Cython`库](http://www.cython.org)将静态类型和编译功能引入`Python`，与`C`中的相似。实际上，`Cython`是`Python`和`C`的混合语言。
+¹ [`Cython`库](http://www.cython.org)将静态类型和编译功能引入`Python`，与`C`中的相似。实际上，`Cython`是`Python`和`C`的混合语言。
 
-^(2) 在这里和后续讨论中，诸如*float*、*float 对象*等术语可互换使用，承认每个*float*也是一个*对象*。对于其他对象类型也是如此。
+² 在这里和后续讨论中，诸如*float*、*float 对象*等术语可互换使用，承认每个*float*也是一个*对象*。对于其他对象类型也是如此。
 
-^(3) 参考[*http://en.wikipedia.org/wiki/Double-precision_floating-point_format*](http://en.wikipedia.org/wiki/Double-precision_floating-point_format)。
+³ 参考[*http://en.wikipedia.org/wiki/Double-precision_floating-point_format*](http://en.wikipedia.org/wiki/Double-precision_floating-point_format)。
 
-^(4) 在这里不可能详细介绍，但互联网上有大量关于正则表达式的信息，特别是针对`Python`。关于这个主题的介绍，请参阅 Fitzgerald, Michael (2012): *正则表达式入门*. O’Reilly, Sebastopol, CA.
+⁴ 在这里不可能详细介绍，但互联网上有大量关于正则表达式的信息，特别是针对`Python`。关于这个主题的介绍，请参阅 Fitzgerald, Michael (2012): *正则表达式入门*. O’Reilly, Sebastopol, CA.

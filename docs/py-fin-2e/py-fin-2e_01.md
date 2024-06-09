@@ -435,7 +435,7 @@ Solving package specifications: .
 root@py4fi:/#
 ```
 
-注意，在激活环境后提示符如何变为 `(py27)`。^(2)
+注意，在激活环境后提示符如何变为 `(py27)`。²
 
 ```py
 root@py4fi:/# source activate py27
@@ -565,7 +565,7 @@ Docker 容器已经风靡了 IT 世界。尽管技术仍然很年轻，但它已
 
 对于我们的目的，将 Docker 容器视为一个分离的（“容器化的”）文件系统足以包含操作系统（例如服务器上的 Ubuntu 16.04），一个（Python）运行时，额外的系统和开发工具以及根据需要的其他（Python）库和软件包。这样的 Docker 容器可以在具有 Windows 10 的本地机器上运行，也可以在具有 Linux 操作系统的云实例上运行，例如。
 
-本节不允许深入探讨 Docker 容器的有趣细节。它更多地是对 Docker 技术在 Python 部署上的简要说明。^(4)
+本节不允许深入探讨 Docker 容器的有趣细节。它更多地是对 Docker 技术在 Python 部署上的简要说明。⁴
 
 ## Docker 镜像和容器
 
@@ -583,7 +583,7 @@ Docker 容器已经风靡了 IT 世界。尽管技术仍然很年轻，但它已
 
 ## 构建一个 Ubuntu 和 Python Docker 镜像
 
-本小节说明了基于最新版本的 Ubuntu 构建 Docker 镜像的过程，该镜像包含 Miniconda 以及一些重要的 Python 包。此外，它还通过更新 Linux 软件包索引，必要时升级软件包，并安装某些额外的系统工具来进行一些 Linux 的维护工作。为此，需要两个脚本。一个是在 Linux 级别执行所有工作的`bash`脚本。^(5)另一个是所谓的`Dockerfile`，它控制镜像本身的构建过程。
+本小节说明了基于最新版本的 Ubuntu 构建 Docker 镜像的过程，该镜像包含 Miniconda 以及一些重要的 Python 包。此外，它还通过更新 Linux 软件包索引，必要时升级软件包，并安装某些额外的系统工具来进行一些 Linux 的维护工作。为此，需要两个脚本。一个是在 Linux 级别执行所有工作的`bash`脚本。⁵另一个是所谓的`Dockerfile`，它控制镜像本身的构建过程。
 
 示例 2-1 中的 `bash` 脚本负责安装，由三个主要部分组成。第一部分处理 Linux 的基本事务。第二部分安装 Miniconda，而第三部分安装可选的 Python 包。内联还有更详细的注释。
 
@@ -1050,16 +1050,16 @@ Robbins (2016)提供了对`bash` *脚本语言*的简明介绍和概述。
 
 要在 DigitalOcean 上注册一个新帐户并获得 10 美元的起始信用，请访问此[注册页面](https://m.do.co/c/fbe512dd3dac)。这可以支付最小水滴两个月的使用费。
 
-^(1)在撰写本文时，Python 3.7beta 刚刚发布。
+¹在撰写本文时，Python 3.7beta 刚刚发布。
 
-^(2)在 Windows 上，激活新环境的命令仅为`activate py27` — 省略了`source`。
+²在 Windows 上，激活新环境的命令仅为`activate py27` — 省略了`source`。
 
-^(3)在官方文档中，您会找到以下解释：“`Python '虚拟环境'允许将 Python 包安装在特定应用程序的隔离位置，而不是全局安装。`"参见[创建虚拟环境页面](https://packaging.python.org/installing/#creating-virtual-environments)。
+³在官方文档中，您会找到以下解释：“`Python '虚拟环境'允许将 Python 包安装在特定应用程序的隔离位置，而不是全局安装。`"参见[创建虚拟环境页面](https://packaging.python.org/installing/#creating-virtual-environments)。
 
-^(4) 有关 Docker 技术的全面介绍，请参阅 Matthias 和 Kane (2015) 的书籍。
+⁴ 有关 Docker 技术的全面介绍，请参阅 Matthias 和 Kane (2015) 的书籍。
 
-^(5) 要了解 `bash` 脚本的简明介绍和快速概述，请参考 Robbins (2016) 的书籍。
+⁵ 要了解 `bash` 脚本的简明介绍和快速概述，请参考 Robbins (2016) 的书籍。
 
-^(6) 使用这样一个自行生成的证书时，可能需要在浏览器提示时添加安全异常。
+⁶ 使用这样一个自行生成的证书时，可能需要在浏览器提示时添加安全异常。
 
-^(7) 如果需要帮助，请访问[如何在 DigitalOcean Droplets 上使用 SSH 密钥](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-digitalocean-droplets)或[如何在 DigitalOcean Droplets 上使用 PuTTY（Windows 用户）](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-putty-on-digitalocean-droplets-windows-users)。
+⁷ 如果需要帮助，请访问[如何在 DigitalOcean Droplets 上使用 SSH 密钥](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-digitalocean-droplets)或[如何在 DigitalOcean Droplets 上使用 PuTTY（Windows 用户）](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-putty-on-digitalocean-droplets-windows-users)。

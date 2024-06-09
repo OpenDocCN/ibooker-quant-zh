@@ -8,7 +8,7 @@
 
 与此同时，存储数据的容量增长速度远远快于即使是最大型机器中可用的典型随机访问内存（RAM）。这使得不仅需要将数据存储到磁盘上以进行永久存储，而且需要通过将数据从 RAM 交换到磁盘，然后再交换回来来弥补 RAM 不足的情况。
 
-因此，在金融应用程序和数据密集型应用程序中，输入/输出（I/O）操作通常是重要的任务。通常，它们代表了性能关键计算的瓶颈，因为 I/O 操作通常无法将数据快速地从 RAM 移动到 RAM^(1)，然后再从 RAM 移动到磁盘。从某种意义上说，CPU 经常由于 I/O 操作慢而“`饥饿`”。
+因此，在金融应用程序和数据密集型应用程序中，输入/输出（I/O）操作通常是重要的任务。通常，它们代表了性能关键计算的瓶颈，因为 I/O 操作通常无法将数据快速地从 RAM 移动到 RAM¹，然后再从 RAM 移动到磁盘。从某种意义上说，CPU 经常由于 I/O 操作慢而“`饥饿`”。
 
 尽管如今的大部分金融和企业分析工作都面临着大数据（例如，PB 级别），但单个分析任务通常使用的数据子集属于中等数据类别。微软研究的一项研究得出了结论：
 
@@ -419,7 +419,7 @@ In [49]: !rm -f $path*
 
 ## SQL 数据库
 
-Python 可以与任何类型的`SQL`数据库一起工作，并且通常也可以与任何类型的`NoSQL`数据库一起工作。在这种情况下，`SQL`代表*结构化查询语言*。Python 默认提供的一个`SQL`或*关系*数据库是[`SQLite3`](http://www.sqlite.org)。借助它，可以轻松地说明 Python 对`SQL`数据库的基本方法:^(2)
+Python 可以与任何类型的`SQL`数据库一起工作，并且通常也可以与任何类型的`NoSQL`数据库一起工作。在这种情况下，`SQL`代表*结构化查询语言*。Python 默认提供的一个`SQL`或*关系*数据库是[`SQLite3`](http://www.sqlite.org)。借助它，可以轻松地说明 Python 对`SQL`数据库的基本方法:²
 
 ```py
 In [50]: import sqlite3 as sq3
@@ -449,7 +449,7 @@ Out[56]: [('table',
 
 ![2](img/#co_input_output_operations_CO9-2)
 
-这是一个创建包含三列的表的`SQL`查询。^(3)
+这是一个创建包含三列的表的`SQL`查询。³
 
 ![3](img/#co_input_output_operations_CO9-3)
 
@@ -591,7 +591,7 @@ In [70]: !rm -f $path*  ![4](img/4.png)
 
 `NumPy`本身有函数可以以方便和高效的方式写入和读取`ndarray`对象。在某些情况下，这节省了很多工作，比如当你必须将`NumPy`的`dtype`对象转换为特定的数据库类型时（例如对于`SQLite3`）。为了说明`NumPy`有时可以有效替代基于`SQL`的方法，以下代码复制了之前使用`NumPy`的示例。
 
-代码使用`NumPy`的`np.arange()`函数生成一个存储了`datetime`对象的`ndarray`对象，而不是使用`pandas`：^(4)
+代码使用`NumPy`的`np.arange()`函数生成一个存储了`datetime`对象的`ndarray`对象，而不是使用`pandas`：⁴
 
 ```py
 In [71]: dtimes = np.arange('2019-01-01 10:00:00', '2025-12-31 22:00:00',
@@ -1097,7 +1097,7 @@ In [123]: import tables as tb  ![1](img/1.png)
 
 ## 与表格一起工作
 
-`PyTables`提供了一种基于文件的数据库格式，类似于`SQLite3`。^(5)。以下是打开数据库文件并创建表格的示例：
+`PyTables`提供了一种基于文件的数据库格式，类似于`SQLite3`。⁵。以下是打开数据库文件并创建表格的示例：
 
 ```py
 In [124]: filename = path + 'pytab.h5'
@@ -2161,12 +2161,12 @@ In [234]: !rm $path/tstab.h5
 
 +   `TsTables` 的 Github 页面位于[*https://github.com/afiedler/tstables*](https://github.com/afiedler/tstables)。
 
-^(1) 这里，我们不区分不同级别的 RAM 和处理器缓存。当前内存架构的最佳使用是一个独立的主题。
+¹ 这里，我们不区分不同级别的 RAM 和处理器缓存。当前内存架构的最佳使用是一个独立的主题。
 
-^(2) 要了解 Python 可用的数据库连接器的概述，请访问[*https://wiki.python.org/moin/DatabaseInterfaces*](https://wiki.python.org/moin/DatabaseInterfaces)。与直接使用关系型数据库不同，对象关系映射器，例如[SQLAlchemy](https://www.sqlalchemy.org/)，通常非常有用。它们引入了一个抽象层，允许更加 Pythonic、面向对象的代码。它们还允许更容易地在后端将一个关系型数据库更换为另一个。
+² 要了解 Python 可用的数据库连接器的概述，请访问[*https://wiki.python.org/moin/DatabaseInterfaces*](https://wiki.python.org/moin/DatabaseInterfaces)。与直接使用关系型数据库不同，对象关系映射器，例如[SQLAlchemy](https://www.sqlalchemy.org/)，通常非常有用。它们引入了一个抽象层，允许更加 Pythonic、面向对象的代码。它们还允许更容易地在后端将一个关系型数据库更换为另一个。
 
-^(3) 请参阅[*https://www.sqlite.org/lang.html*](https://www.sqlite.org/lang.html)以了解 `SQLite3` 语言方言的概述。
+³ 请参阅[*https://www.sqlite.org/lang.html*](https://www.sqlite.org/lang.html)以了解 `SQLite3` 语言方言的概述。
 
-^(4) 请参阅[*http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html*](http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html)。
+⁴ 请参阅[*http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html*](http://docs.scipy.org/doc/numpy/reference/arrays.datetime.html)。
 
-^(5) 许多其他数据库需要服务器-客户端架构。对于交互式数据和金融分析，基于文件的数据库在一般情况下会更加方便，也足够满足大多数目的。
+⁵ 许多其他数据库需要服务器-客户端架构。对于交互式数据和金融分析，基于文件的数据库在一般情况下会更加方便，也足够满足大多数目的。

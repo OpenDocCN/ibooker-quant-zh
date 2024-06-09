@@ -147,7 +147,7 @@ Python 不仅吸引专业软件开发人员；它也对业余开发人员以及�
 
 *业余程序员* 喜欢使用 Python 通常是因为他们知道 Python 在特定问题上有优势。例如，访问 `matplotlib` 的画廊页面，复制那里提供的某个可视化代码片段，并根据他们的特定需求调整代码，可能是这个群体的成员的有益用例。
 
-还有另一重要的 Python 用户群体：*初学者程序员*，即那些刚开始学习编程的人。如今，Python 已经成为大学、学院甚至学校介绍编程给学生的非常流行的语言之一。^(1) 这主要是因为它的基本语法易于学习和理解，即使对于非开发者也是如此。此外，有帮助的是 Python 几乎支持所有的编程风格。^(2)
+还有另一重要的 Python 用户群体：*初学者程序员*，即那些刚开始学习编程的人。如今，Python 已经成为大学、学院甚至学校介绍编程给学生的非常流行的语言之一。¹ 这主要是因为它的基本语法易于学习和理解，即使对于非开发者也是如此。此外，有帮助的是 Python 几乎支持所有的编程风格。²
 
 ## 科学堆栈
 
@@ -682,8 +682,8 @@ Python 作为一种语言——但更多作为一个生态系统——是金融�
 
 +   Patterson, Scott (2010): *量化分析师.* Crown Business, New York.
 
-^(1) 例如，Python 是纽约市立大学巴鲁克学院金融工程硕士课程中使用的主要语言（请参阅[*http://mfe.baruch.cuny.edu*](http://mfe.baruch.cuny.edu)）。
+¹ 例如，Python 是纽约市立大学巴鲁克学院金融工程硕士课程中使用的主要语言（请参阅[*http://mfe.baruch.cuny.edu*](http://mfe.baruch.cuny.edu)）。
 
-^(2) 请参阅[*http://wiki.python.org/moin/BeginnersGuide*](http://wiki.python.org/moin/BeginnersGuide)，在那里您将找到许多对于初学者和非开发人员来说开始使用 Python 非常有价值的资源链接。
+² 请参阅[*http://wiki.python.org/moin/BeginnersGuide*](http://wiki.python.org/moin/BeginnersGuide)，在那里您将找到许多对于初学者和非开发人员来说开始使用 Python 非常有价值的资源链接。
 
-^(3) [*Link to Come*]提供了在随机数生成的背景下使用现代 GPGPU 的好处的示例。
+³ [*Link to Come*]提供了在随机数生成的背景下使用现代 GPGPU 的好处的示例。

@@ -229,10 +229,10 @@ In [19]: f = open('array.apy', 'wb')  ①
          a.tofile(f)  ②
          f.close()  ③
 
-In [20]: with open('array.apy', 'wb') as f:  ![4](images/4.png)
-             a.tofile(f)  ![4](images/4.png)
+In [20]: with open('array.apy', 'wb') as f:  ④
+             a.tofile(f)  ④
 
-In [21]: !ls -n arr*  ![5](images/5.png)
+In [21]: !ls -n arr*  ⑤
 
          -rw-r--r--@ 1 503  20  32 29 Dez 17:08 array.apy
 ```
@@ -249,11 +249,11 @@ In [21]: !ls -n arr*  ![5](images/5.png)
 
 关闭文件。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO7-4)
+[④](#co_numerical_computing_with_numpy_CO7-4)
 
 或者，可以使用`with`上下文执行相同的操作。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO7-6)
+[⑤](#co_numerical_computing_with_numpy_CO7-6)
 
 这显示了磁盘上写入的文件。
 
@@ -265,15 +265,15 @@ In [22]: b = array.array('f')  ①
 In [23]: with open('array.apy', 'rb') as f:  ②
              b.fromfile(f, 5)  ③
 
-In [24]: b  ![4](images/4.png)
+In [24]: b  ④
 Out[24]: array('f', [0.5, 0.75, 1.0, 1.5, 2.0])
 
-In [25]: b = array.array('d')  ![5](images/5.png)
+In [25]: b = array.array('d')  ⑤
 
 In [26]: with open('array.apy', 'rb') as f:
-             b.fromfile(f, 2)  ![6](images/6.png)
+             b.fromfile(f, 2)  ⑥
 
-In [27]: b  ![7](images/7.png)
+In [27]: b  ⑦
 Out[27]: array('d', [0.0004882813645963324, 0.12500002956949174])
 ```
 
@@ -289,19 +289,19 @@ Out[27]: array('d', [0.0004882813645963324, 0.12500002956949174])
 
 ...并在`b`对象中读取五个元素。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO8-4)
+[④](#co_numerical_computing_with_numpy_CO8-4)
 
 使用类型代码`double`创建一个新的`array`对象。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO8-5)
+[⑤](#co_numerical_computing_with_numpy_CO8-5)
 
 从文件中读取两个元素。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO8-6)
+[⑥](#co_numerical_computing_with_numpy_CO8-6)
 
 类型代码的差异导致“错误”的数字。
 
-[![7](images/7.png)](#co_numerical_computing_with_numpy_CO8-7)
+[⑦](#co_numerical_computing_with_numpy_CO8-7)
 
 # 常规NumPy数组
 
@@ -326,18 +326,18 @@ In [31]: a = np.array(['a', 'b', 'c'])  ③
 Out[31]: array(['a', 'b', 'c'],
                dtype='<U1')
 
-In [32]: a = np.arange(2, 20, 2)  ![4](images/4.png)
+In [32]: a = np.arange(2, 20, 2)  ④
          a
 Out[32]: array([ 2,  4,  6,  8, 10, 12, 14, 16, 18])
 
-In [33]: a = np.arange(8, dtype=np.float)  ![5](images/5.png)
+In [33]: a = np.arange(8, dtype=np.float)  ⑤
          a
 Out[33]: array([ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.])
 
-In [34]: a[5:]  ![6](images/6.png)
+In [34]: a[5:]  ⑥
 Out[34]: array([ 5.,  6.,  7.])
 
-In [35]: a[:2]  ![6](images/6.png)
+In [35]: a[:2]  ⑥
 Out[35]: array([ 0.,  1.])
 ```
 
@@ -353,15 +353,15 @@ Out[35]: array([ 0.,  1.])
 
 通过`list`对象中的字符串创建一个`ndarray`对象。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO9-5)
+[④](#co_numerical_computing_with_numpy_CO9-5)
 
 `np.arange`的工作方式类似于`range`。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO9-6)
+[⑤](#co_numerical_computing_with_numpy_CO9-6)
 
 然而，它接受附加输入`dtype`参数。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO9-7)
+[⑥](#co_numerical_computing_with_numpy_CO9-7)
 
 对于一维的`ndarray`对象，索引的工作方式与平常一样。
 
@@ -406,10 +406,10 @@ Out[41]: array([  0.,   2.,   4.,   6.,   8.,  10.,  12.,  14.])
 In [42]: a ** 2  ③
 Out[42]: array([  0.,   1.,   4.,   9.,  16.,  25.,  36.,  49.])
 
-In [43]: 2 ** a  ![4](images/4.png)
+In [43]: 2 ** a  ④
 Out[43]: array([   1.,    2.,    4.,    8.,   16.,   32.,   64.,  128.])
 
-In [44]: a ** a  ![5](images/5.png)
+In [44]: a ** a  ⑤
 Out[44]: array([  1.00000000e+00,   1.00000000e+00,   4.00000000e+00,
                   2.70000000e+01,   2.56000000e+02,   3.12500000e+03,
                   4.66560000e+04,   8.23543000e+05])
@@ -427,11 +427,11 @@ Out[44]: array([  1.00000000e+00,   1.00000000e+00,   4.00000000e+00,
 
 这个计算每个元素的平方值。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO11-4)
+[④](#co_numerical_computing_with_numpy_CO11-4)
 
 这解释了`ndarray`的元素作为幂。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO11-5)
+[⑤](#co_numerical_computing_with_numpy_CO11-5)
 
 这个计算每个元素的自身的幂。
 
@@ -450,18 +450,18 @@ Out[46]: array([ 0.        ,  1.        ,  1.41421356,  1.73205081,  2.        ,
 In [47]: np.sqrt(2.5)  ③
 Out[47]: 1.5811388300841898
 
-In [48]: import math  ![4](images/4.png)
+In [48]: import math  ④
 
-In [49]: math.sqrt(2.5)  ![4](images/4.png)
+In [49]: math.sqrt(2.5)  ④
 Out[49]: 1.5811388300841898
 
-In [50]: # math.sqrt(a) ![5](images/5.png)
+In [50]: # math.sqrt(a) ⑤
 
-In [51]: %timeit np.sqrt(2.5)  ![6](images/6.png)
+In [51]: %timeit np.sqrt(2.5)  ⑥
 
          703 ns ± 17.9 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
 
-In [52]: %timeit math.sqrt(2.5)  ![7](images/7.png)
+In [52]: %timeit math.sqrt(2.5)  ⑦
 
          107 ns ± 1.48 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
 ```
@@ -478,19 +478,19 @@ In [52]: %timeit math.sqrt(2.5)  ![7](images/7.png)
 
 计算Python `float`对象的平方根。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO12-4)
+[④](#co_numerical_computing_with_numpy_CO12-4)
 
 相同的计算，这次使用`math`模块。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO12-6)
+[⑤](#co_numerical_computing_with_numpy_CO12-6)
 
 `math.sqrt`不能直接应用于`ndarray`对象。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO12-7)
+[⑥](#co_numerical_computing_with_numpy_CO12-7)
 
 将通用函数`np.sqrt`应用于Python `float`对象……
 
-[![7](images/7.png)](#co_numerical_computing_with_numpy_CO12-8)
+[⑦](#co_numerical_computing_with_numpy_CO12-8)
 
 ……比使用`math.sqrt`函数的相同操作慢得多。
 
@@ -510,16 +510,16 @@ Out[54]: array([ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.])
 In [55]: b[0, 2]  ③
 Out[55]: 2.0
 
-In [56]: b[:, 1]  ![4](images/4.png)
+In [56]: b[:, 1]  ④
 Out[56]: array([ 1.,  2.])
 
-In [57]: b.sum()  ![5](images/5.png)
+In [57]: b.sum()  ⑤
 Out[57]: 84.0
 
-In [58]: b.sum(axis=0)  ![6](images/6.png)
+In [58]: b.sum(axis=0)  ⑥
 Out[58]: array([  0.,   3.,   6.,   9.,  12.,  15.,  18.,  21.])
 
-In [59]: b.sum(axis=1)  ![7](images/7.png)
+In [59]: b.sum(axis=1)  ⑦
 Out[59]: array([ 28.,  56.])
 ```
 
@@ -535,19 +535,19 @@ Out[59]: array([ 28.,  56.])
 
 选择第一行的第三个元素；在括号内，索引由逗号分隔。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO13-4)
+[④](#co_numerical_computing_with_numpy_CO13-4)
 
 选择第二列。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO13-5)
+[⑤](#co_numerical_computing_with_numpy_CO13-5)
 
 计算*所有*值的总和。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO13-6)
+[⑥](#co_numerical_computing_with_numpy_CO13-6)
 
 沿第一个轴计算总和，即按列计算。
 
-[![7](images/7.png)](#co_numerical_computing_with_numpy_CO13-7)
+[⑦](#co_numerical_computing_with_numpy_CO13-7)
 
 沿第二轴计算总和，即按行计算。
 
@@ -589,7 +589,7 @@ Out[63]: array([[[ 1.0,  1.0,  1.0,  1.0],
                  [ 1.0,  1.0,  1.0,  1.0],
                  [ 1.0,  1.0,  1.0,  1.0]]], dtype=float128)
 
-In [64]: e = np.empty((2, 3, 2))  ![4](images/4.png)
+In [64]: e = np.empty((2, 3, 2))  ④
          e
 Out[64]: array([[[  0.00000000e+000,  -4.34540174e-311],
                  [  2.96439388e-323,   0.00000000e+000],
@@ -599,7 +599,7 @@ Out[64]: array([[[  0.00000000e+000,  -4.34540174e-311],
                  [  9.80058441e+252,   1.23971686e+224],
                  [  4.00695466e+252,   8.34404939e-309]]])
 
-In [65]: f = np.empty_like(c)  ![4](images/4.png)
+In [65]: f = np.empty_like(c)  ④
          f
 Out[65]: array([[[0, 0, 0, 0],
                  [9, 0, 0, 0],
@@ -609,14 +609,14 @@ Out[65]: array([[[0, 0, 0, 0],
                  [0, 0, 0, 0],
                  [0, 0, 0, 0]]], dtype=int32)
 
-In [66]: np.eye(5)  ![5](images/5.png)
+In [66]: np.eye(5)  ⑤
 Out[66]: array([[ 1.,  0.,  0.,  0.,  0.],
                 [ 0.,  1.,  0.,  0.,  0.],
                 [ 0.,  0.,  1.,  0.,  0.],
                 [ 0.,  0.,  0.,  1.,  0.],
                 [ 0.,  0.,  0.,  0.,  1.]])
 
-In [67]: g = np.linspace(5, 15, 15) ![6](images/6.png)
+In [67]: g = np.linspace(5, 15, 15) ⑥
          g
 Out[67]: array([  5.        ,   5.71428571,   6.42857143,   7.14285714,
                   7.85714286,   8.57142857,   9.28571429,  10.        ,
@@ -636,15 +636,15 @@ Out[67]: array([  5.        ,   5.71428571,   6.42857143,   7.14285714,
 
 相同，但采用另一个`ndarray`对象来推断形状。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO14-5)
+[④](#co_numerical_computing_with_numpy_CO14-5)
 
 `ndarray`对象不预先填充任何内容（数字取决于内存中存在的位）。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO14-7)
+[⑤](#co_numerical_computing_with_numpy_CO14-7)
 
 创建一个由1填充对角线的方阵作为`ndarray`对象。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO14-8)
+[⑥](#co_numerical_computing_with_numpy_CO14-8)
 
 创建一个一维`ndarray`对象，其中数字之间的间隔均匀分布；所使用的参数是`start`、`end`、`num`（元素数量）。
 
@@ -703,13 +703,13 @@ Out[69]: 8
 In [70]: g.ndim  ③
 Out[70]: 1
 
-In [71]: g.shape  ![4](images/4.png)
+In [71]: g.shape  ④
 Out[71]: (15,)
 
-In [72]: g.dtype  ![5](images/5.png)
+In [72]: g.dtype  ⑤
 Out[72]: dtype('float64')
 
-In [73]: g.nbytes  ![6](images/6.png)
+In [73]: g.nbytes  ⑥
 Out[73]: 120
 ```
 
@@ -725,15 +725,15 @@ Out[73]: 120
 
 维度的数量。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO15-4)
+[④](#co_numerical_computing_with_numpy_CO15-4)
 
 `ndarray`对象的形状。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO15-5)
+[⑤](#co_numerical_computing_with_numpy_CO15-5)
 
 元素的`dtype`。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO15-6)
+[⑥](#co_numerical_computing_with_numpy_CO15-6)
 
 内存中使用的总字节数。
 
@@ -766,12 +766,12 @@ Out[79]: array([[ 0,  1,  2],
                 [ 9, 10, 11],
                 [12, 13, 14]])
 
-In [80]: h.T  ![4](images/4.png)
+In [80]: h.T  ④
 Out[80]: array([[ 0,  3,  6,  9, 12],
                 [ 1,  4,  7, 10, 13],
                 [ 2,  5,  8, 11, 14]])
 
-In [81]: h.transpose()  ![4](images/4.png)
+In [81]: h.transpose()  ④
 Out[81]: array([[ 0,  3,  6,  9, 12],
                 [ 1,  4,  7, 10, 13],
                 [ 2,  5,  8, 11, 14]])
@@ -789,7 +789,7 @@ Out[81]: array([[ 0,  3,  6,  9, 12],
 
 创建新对象。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO16-5)
+[④](#co_numerical_computing_with_numpy_CO16-5)
 
 新`ndarray`对象的转置。
 
@@ -890,12 +890,12 @@ In [94]: for i in h.flat:  ③
 
          0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
 
-In [95]: for i in h.ravel(order='C'):  ![4](images/4.png)
+In [95]: for i in h.ravel(order='C'):  ④
              print(i, end=',')
 
          0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
 
-In [96]: for i in h.ravel(order='F'):  ![4](images/4.png)
+In [96]: for i in h.ravel(order='F'):  ④
              print(i, end=',')
 
          0,3,6,9,12,1,4,7,10,13,2,5,8,11,14,
@@ -913,7 +913,7 @@ In [96]: for i in h.ravel(order='F'):  ![4](images/4.png)
 
 `flat`属性提供了一个平坦的迭代器（`C`顺序）。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO19-5)
+[④](#co_numerical_computing_with_numpy_CO19-5)
 
 `ravel()`方法是`flatten()`的另一种选择。
 
@@ -950,14 +950,14 @@ Out[152]: array([[False, False, False],
                  [False, False, False],
                  [False, False, False]], dtype=bool)
 
-In [158]: (h == 5).astype(int)  ![4](images/4.png)
+In [158]: (h == 5).astype(int)  ④
 Out[158]: array([[0, 0, 0],
                  [0, 0, 1],
                  [0, 0, 0],
                  [0, 0, 0],
                  [0, 0, 0]])
 
-In [165]: (h > 4) & (h <= 12)  ![5](images/5.png)
+In [165]: (h > 4) & (h <= 12)  ⑤
 Out[165]: array([[False, False, False],
                  [False, False,  True],
                  [ True,  True,  True],
@@ -977,11 +977,11 @@ Out[165]: array([[False, False, False],
 
 值是否等于...？
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO20-4)
+[④](#co_numerical_computing_with_numpy_CO20-4)
 
 以整数值0和1表示`True`和`False`。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO20-5)
+[⑤](#co_numerical_computing_with_numpy_CO20-5)
 
 值是否大于...且小于或等于...？
 
@@ -1081,7 +1081,7 @@ In [100]: %time sum([sum(l) for l in mat])  ③
 Out[100]: 681.9120404070142
 
 In [101]: import sys
-          sum([sys.getsizeof(l) for l in mat])  ![4](images/4.png)
+          sum([sys.getsizeof(l) for l in mat])  ④
 Out[101]: 215200000
 ```
 
@@ -1097,7 +1097,7 @@ Out[101]: 215200000
 
 首先在列表推导中计算单个`list`对象的总和；然后计算总和的总和。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO23-4)
+[④](#co_numerical_computing_with_numpy_CO23-4)
 
 添加所有`list`对象的内存使用量。
 
@@ -1173,7 +1173,7 @@ In [111]: s  ③
 Out[111]: array([('Smith', 45,  1.83, (0, 1)), ('Jones', 53,  1.72, (2, 2))],
                 dtype=[('Name', 'O'), ('Age', '<i8'), ('Height', '<f8'), ('Children/Pets', [('f0', '<i8'), ('f1', '<i8')])])
 
-In [112]: type(s)  ![4](images/4.png)
+In [112]: type(s)  ④
 Out[112]: numpy.ndarray
 ```
 
@@ -1189,7 +1189,7 @@ Out[112]: numpy.ndarray
 
 结构化`ndarray`以两条记录实例化。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO25-7)
+[④](#co_numerical_computing_with_numpy_CO25-7)
 
 对象类型仍然是`numpy.ndarray`。
 
@@ -1205,7 +1205,7 @@ Out[114]: 1.7749999999999999
 In [115]: s[0]  ③
 Out[115]: ('Smith', 45,  1.83, (0, 1))
 
-In [116]: s[1]['Age']  ![4](images/4.png)
+In [116]: s[1]['Age']  ④
 Out[116]: 53
 ```
 
@@ -1221,7 +1221,7 @@ Out[116]: 53
 
 选择一条记录。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO26-4)
+[④](#co_numerical_computing_with_numpy_CO26-4)
 
 选择记录中的一个字段。
 
@@ -1335,24 +1335,24 @@ In [128]: s = np.arange(0, 12, 3)  ③
           s  ③
 Out[128]: array([0, 3, 6, 9])
 
-In [129]: # r + s ![4](images/4.png)
+In [129]: # r + s ④
 
-In [130]: r.transpose() + s  ![5](images/5.png)
+In [130]: r.transpose() + s  ⑤
 Out[130]: array([[ 0,  6, 12, 18],
                  [ 1,  7, 13, 19],
                  [ 2,  8, 14, 20]])
 
-In [131]: sr = s.reshape(-1, 1)  ![6](images/6.png)
+In [131]: sr = s.reshape(-1, 1)  ⑥
           sr
 Out[131]: array([[0],
                  [3],
                  [6],
                  [9]])
 
-In [132]: sr.shape  ![6](images/6.png)
+In [132]: sr.shape  ⑥
 Out[132]: (4, 1)
 
-In [133]: r + s.reshape(-1, 1)  ![6](images/6.png)
+In [133]: r + s.reshape(-1, 1)  ⑥
 Out[133]: array([[ 0,  1,  2],
                  [ 6,  7,  8],
                  [12, 13, 14],
@@ -1371,15 +1371,15 @@ Out[133]: array([[ 0,  1,  2],
 
 另一个长度为4的一维`ndarray`对象。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO29-6)
+[④](#co_numerical_computing_with_numpy_CO29-6)
 
 新`s`（向量）对象的长度现在与`r`对象的第二维长度不同。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO29-7)
+[⑤](#co_numerical_computing_with_numpy_CO29-7)
 
 再次转置`r`对象允许进行矢量化加法。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO29-8)
+[⑥](#co_numerical_computing_with_numpy_CO29-8)
 
 或者，`s`的形状可以更改为`(4, 1)`以使加法起作用（但结果不同）。
 
@@ -1426,11 +1426,11 @@ In [138]: y = 2 * x + 3  ②
 
 In [139]: C = np.array((x, y), order='C')  ③
 
-In [140]: F = np.array((x, y), order='F')  ![4](images/4.png)
+In [140]: F = np.array((x, y), order='F')  ④
 
-In [141]: x = 0.0; y = 0.0  ![5](images/5.png)
+In [141]: x = 0.0; y = 0.0  ⑤
 
-In [142]: C[:2].round(2)  ![6](images/6.png)
+In [142]: C[:2].round(2)  ⑥
 Out[142]: array([[[-1.75,  0.34,  1.15, -0.25,  0.98],
                   [ 0.51,  0.22, -1.07, -0.19,  0.26],
                   [-0.46,  0.44, -0.58,  0.82,  0.67],
@@ -1460,15 +1460,15 @@ Out[142]: array([[[-1.75,  0.34,  1.15, -0.25,  0.98],
 
 这将创建一个二维`ndarray`对象，其顺序为`C`（行优先）。
 
-[![4](images/4.png)](#co_numerical_computing_with_numpy_CO31-4)
+[④](#co_numerical_computing_with_numpy_CO31-4)
 
 这将创建一个二维`ndarray`对象，其顺序为`F`（列优先）。
 
-[![5](images/5.png)](#co_numerical_computing_with_numpy_CO31-5)
+[⑤](#co_numerical_computing_with_numpy_CO31-5)
 
 内存被释放（取决于垃圾收集）。
 
-[![6](images/6.png)](#co_numerical_computing_with_numpy_CO31-6)
+[⑥](#co_numerical_computing_with_numpy_CO31-6)
 
 从`C`对象中获取一些数字。
 

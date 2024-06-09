@@ -1,4 +1,4 @@
-# 关于作者
+# 第十章：关于作者
 
 Dr. Yves J. Hilpisch 是 The Python Quants ([http://tpq.io](http://tpq.io)) 的创始人兼管理合伙人，该团体专注于使用开源技术进行金融数据科学、人工智能、算法交易和计算金融。他是以下书籍的作者 ([http://books.tpq.io](http://books.tpq.io)):
 

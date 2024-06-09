@@ -1,1293 +1,2007 @@
 - en: Chapter 5\. Data Analysis with pandas
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第5章 数据分析与pandas
 - en: Data! Data! Data! I can’t make bricks without clay!
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 数据！数据！数据！没有数据，我无法制造砖头！
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Sherlock Holmes
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 夏洛克·福尔摩斯
 - en: Introduction
+  id: totrans-4
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 简介
 - en: This chapter is about `pandas` a library for data analysis with a focus on tabular
     data. `pandas` has become a powerful tool over the recent years which not only
     brings powerful classes and functionalities, but does also a great job in wrapping
     existing functionality from other packages. The result is a user interface that
     makes data analysis, and in particular financial analytics, a convenient and efficient
     task.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章讨论的是`pandas`，这是一个专注于表格数据的数据分析库。`pandas`在最近几年已经成为一个强大的工具，不仅提供了强大的类和功能，还很好地封装了来自其他软件包的现有功能。结果是一个用户界面，使得数据分析，特别是金融分析，成为一项便捷和高效的任务。
 - en: At the core of `pandas` and this chapter is the `DataFrame`, a class to efficiently
     handle data in tabular form, i.e. data characterized by an organization along
     columns. To this end, the `DataFrame` class provides, for instance, column labeling
     as well as flexible indexing capabilities for the rows (records) of the data set — similar
     to a table in a relational database or an Excel spreadsheet.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`pandas`的核心和本章中的是`DataFrame`，一个有效处理表格形式数据的类，即以列为组织的数据。为此，`DataFrame`类提供了列标签以及对数据集的行（记录）进行灵活索引的能力，类似于关系数据库中的表或Excel电子表格。
 - en: 'The chapter covers the following fundamental data structures:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖了以下基本数据结构：
 - en: '| object type | meaning | usage/model for |'
+  id: totrans-8
   prefs: []
   type: TYPE_TB
+  zh: '| 对象类型 | 意义 | 用途/模型为 |'
 - en: '| --- | --- | --- |'
+  id: totrans-9
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `DataFrame` | 2-dimensional data object with index | tabular data organized
     in columns |'
+  id: totrans-10
   prefs: []
   type: TYPE_TB
+  zh: '| `DataFrame` | 带有索引的二维数据对象 | 表格数据以列组织 |'
 - en: '| `Series` | 1-dimensional data object with index | single (time) series of
     data |'
+  id: totrans-11
   prefs: []
   type: TYPE_TB
+  zh: '| `Series` | 带有索引的一维数据对象 | 单一（时间）数据系列 |'
 - en: 'The chapter is organized as follows:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章组织如下：
 - en: '[“DataFrame Class”](#data_frame)'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“DataFrame类”](#data_frame)'
 - en: The chapter starts by exploring the basic characteristics and capabilities of
     the `DataFrame` class of `pandas` by using simple and small data sets; it then
     proceeds by using a `NumPy` `ndarray` object and transforming this to a `DataFrame`
     object.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章从使用简单且小的数据集探索`pandas`的`DataFrame`类的基本特征和能力开始；然后通过使用`NumPy`的`ndarray`对象并将其转换为`DataFrame`对象来进行处理。
 - en: '[“Basic Analytics”](#basic_analytics) and [“Basic Visualization”](#basic_viz)'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“基本分析”](#basic_analytics) 和 [“基本可视化”](#basic_viz)'
 - en: Basic analytics and visualization capabilities are also illustrated in this
     chapter, although later chapters go deeper in this regard.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章还展示了基本的分析和可视化能力，尽管后面的章节在这方面更深入。
 - en: '[“Series Class”](#series_class)'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“Series类”](#series_class)'
 - en: A rather brief section covers the `Series` class of `pandas`, which, in a sense,
     represents a special case of the `DataFrame` class with a single column of data
     only.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节简要介绍了`pandas`的`Series`类，它在某种程度上代表了`DataFrame`类的一个特殊情况，只包含单列数据。
 - en: '[“GroupBy Operations”](#groupby_ops)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“GroupBy操作”](#groupby_ops)'
 - en: One of the strengths of the `DataFrame` class lies in grouping data according
     to a single or multiple columns.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame`类的一大优势在于根据单个或多个列对数据进行分组。'
 - en: '[“Complex Selection”](#complex_selection)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“复杂选择”](#complex_selection)'
 - en: The usage of (complex) conditions allows for the easy selection of data from
     a `DataFrame` object.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用（复杂）条件允许从`DataFrame`对象中轻松选择数据。
 - en: '[“Concatenation, Joining and Merging”](#joining)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“串联、连接和合并”](#joining)'
 - en: The concatenation, joining and merging of different data sets into one is an
     important operation in data analysis. `pandas` provides different options to accomplish
     such a task.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 将不同数据集合并为一个是数据分析中的重要操作。`pandas`提供了多种选项来完成这样的任务。
 - en: '[“Performance Aspects”](#pandas_perf)'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“性能方面”](#pandas_perf)'
 - en: As with Python in general, `pandas` provides multiple options in general to
     accomplish the same goal. This section takes a brief look at potential performance
     differences.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 与Python一般一样，`pandas`在一般情况下提供了多种选项来完成相同的目标。本节简要讨论潜在的性能差异。
 - en: DataFrame Class
+  id: totrans-27
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: DataFrame类
 - en: This section covers some fundamental aspects of the `DataFrame` class. The class
     is that complex and powerful that only fraction of the capabilities can be presented
     here. Subsequent chapters provide more examples and shed light on different aspects.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节涵盖了`DataFrame`类的一些基本方面。这个类非常复杂和强大，这里只能展示其中一小部分功能。后续章节提供更多例子并揭示不同的方面。
 - en: First Steps with DataFrame Class
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用DataFrame类的第一步
 - en: 'On a rather fundamental level, the `DataFrame` class is designed to manage
     indexed and labeled data, not too different from a `SQL` database table or a worksheet
     in a spreadsheet application. Consider the following creation of a `DataFrame`
     object:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 从相当基本的角度来看，`DataFrame`类被设计用来管理带索引和标签的数据，与`SQL`数据库表或电子表格应用程序中的工作表并没有太大的不同。考虑以下创建`DataFrame`对象的示例：
 - en: '[PRE0]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO1-1)'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO1-1)'
 - en: Imports `pandas`.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`pandas`。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO1-2)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO1-2)'
 - en: Defines the data as a `list` object.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据定义为`list`对象。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO1-3)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO1-3)'
 - en: Specifies the column label.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定列标签。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO1-4)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO1-4)'
 - en: Specifies the index values/labels.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定索引值/标签。
 - en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO1-5)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO1-5)'
 - en: Shows the data as well as column and index labels of `DataFrame` object.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示`DataFrame`对象的数据以及列和索引标签。
 - en: 'This simple example already shows some major features of the `DataFrame` class
     when it comes to storing data:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个简单的例子已经展示了当涉及到存储数据时`DataFrame`类的一些主要特性：
 - en: Data
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据
 - en: Data itself can be provided in different shapes and types (`list`, `tuple`,
     `ndarray`, and `dict` objects are candidates).
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据本身可以以不同的形状和类型提供（`list`、`tuple`、`ndarray`和`dict`对象都是候选对象）。
 - en: Labels
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 标签
 - en: Data is organized in columns, which can have custom names.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据以列的形式组织，可以具有自定义名称。
 - en: Index
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 索引
 - en: There is an index that can take on different formats (e.g., numbers, strings,
     time information).
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 存在可以采用不同格式（例如，数字、字符串、时间信息）的索引。
 - en: 'Working with such a `DataFrame` object is in general pretty convenient and
     efficient, e.g., compared to regular `ndarray` objects, which are more specialized
     and more restricted when you want to do something like enlarging an existing object.
     The following are simple examples showing how typical operations on a `DataFrame`
     object work:'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 与此类`DataFrame`对象一起工作通常非常方便和高效，例如，与常规的`ndarray`对象相比，当您想要像扩大现有对象一样时，后者更为专业和受限。以下是展示在`DataFrame`对象上进行典型操作的简单示例：
 - en: '[PRE1]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO2-1)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO2-1)'
 - en: The `index` attribute and `Index` object.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '`index`属性和`Index`对象。'
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO2-2)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO2-2)'
 - en: The `columns` attribute and `Index` object.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '`columns`属性和`Index`对象。'
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO2-3)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO2-3)'
 - en: Selects the value corresponding to index `c`.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择与索引`c`对应的值。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO2-4)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO2-4)'
 - en: Selects the two values corresponding to indices `a` and `d`.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择与索引`a`和`d`对应的两个值。
 - en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO2-5)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO2-5)'
 - en: Selects the second and third rows via the index positions.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过索引位置选择第二行和第三行。
 - en: '[![6](images/6.png)](#co_data_analysis_with_pandas_CO2-6)'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_data_analysis_with_pandas_CO2-6)'
 - en: Calculates the sum over the single column.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算单列的总和。
 - en: '[![7](images/7.png)](#co_data_analysis_with_pandas_CO2-7)'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_data_analysis_with_pandas_CO2-7)'
 - en: Uses the `apply()` method to calculate squares in vectorized fashion.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`apply()`方法以向量化方式计算平方。
 - en: '[![8](images/8.png)](#co_data_analysis_with_pandas_CO2-8)'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](images/8.png)](#co_data_analysis_with_pandas_CO2-8)'
 - en: Applies vectorization directly as with `ndarray` objects.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 直接应用向量化，就像使用`ndarray`对象一样。
 - en: 'Contrary to `NumPy` `ndarray` objects, enlarging the `DataFrame` object in
     both dimensions is possible:'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 与`NumPy`的`ndarray`对象相反，可以在两个维度上扩大`DataFrame`对象：
 - en: '[PRE2]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO3-1)'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO3-1)'
 - en: Adds a new columns with `float` objects provided as a `tuple` object.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用提供的`float`对象作为`tuple`对象添加新列。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO3-2)'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO3-2)'
 - en: Selects this column and shows its data and index labels.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择此列并显示其数据和索引标签。
 - en: 'A whole `DataFrame` object can also be taken to define a new column. In such
     a case, indices are aligned automatically:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 整个`DataFrame`对象也可以用来定义新列。在这种情况下，索引会自动对齐：
 - en: '[PRE3]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO4-1)'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO4-1)'
 - en: Another new column is created based on a `DataFrame` object.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于`DataFrame`对象创建另一个新列。
 - en: 'Appending data works similarly. However, in the following example we see a
     side effect that is usually to be avoided—the index gets replaced by a simple
     range index:'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据附加工作方式类似。但是，在以下示例中，我们看到通常应避免的副作用——索引被简单的范围索引替换：
 - en: '[PRE4]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO5-1)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO5-1)'
 - en: Appends a new row via a `dict` object; this is a temporary operation during
     which index information gets lost.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`dict`对象添加新行；这是一个临时操作，在此期间索引信息会丢失。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO5-2)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO5-2)'
 - en: This appends the row based on a `DataFrame` object with index information; the
     original index information is preserved.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这基于具有索引信息的`DataFrame`对象附加行；原始索引信息被保留。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO5-3)'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO5-3)'
 - en: This appends an incomplete data row to the `DataFrame` objects, resulting in
     `NaN` values.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将不完整的数据行附加到`DataFrame`对象中，导致`NaN`值。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO5-4)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO5-4)'
 - en: The different `dtypes` of the single columns; this is similar to record arrays
     with `NumPy`.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 单列的不同`dtypes`；这类似于带有`NumPy`的记录数组。
 - en: 'Although there are now missing values, the majority of method calls will still
     work. For example:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管现在存在缺失值，但大多数方法调用仍将起作用。例如：
 - en: '[PRE5]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO6-1)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO6-1)'
 - en: The mean over the two columns specified (ignoring rows with `NaN` values).
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 对指定的两列求平均值（忽略具有`NaN`值的行）。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO6-2)'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO6-2)'
 - en: The standard deviation over the two columns specified (ignoring rows with `NaN`
     values).
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 对指定的两列计算标准差（忽略具有`NaN`值的行）。
 - en: Second Steps with DataFrame Class
+  id: totrans-93
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: DataFrame 类的第二步
 - en: The example in this sub-section is based on a `ndarray` object with standard
     normally distributed random numbers. It explores further features such as a `DatetimeIndex`
     to manage time series data.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 本小节中的示例基于具有标准正态分布随机数的`ndarray`对象。它探索了进一步的功能，如使用`DatetimeIndex`来管理时间序列数据。
 - en: '[PRE6]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'Although you can construct `DataFrame` objects more directly (as we have seen
     before), using an `ndarray` object is generally a good choice since `pandas` will
     retain the basic structure and will “only” add meta-information (e.g., index values).
     It also represents a typical use case for financial applications and scientific
     research in general. For example:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管可以更直接地构造`DataFrame`对象（如前所示），但通常使用`ndarray`对象是一个很好的选择，因为`pandas`将保留基本结构，并且“只”会添加元信息（例如，索引值）。它还代表了金融应用和一般科学研究的典型用例。例如：
 - en: '[PRE7]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO7-1)'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO7-1)'
 - en: Creates a `DataFrame` object from the `ndarray` object.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`ndarray`对象创建`DataFrame`对象。
 - en: '[Table 5-1](#DataFrame_params) lists the parameters that the `DataFrame` function
     takes. In the table, “array-like” means a data structure similar to an `ndarray`
     object—a `list`, for example. `Index` is an instance of the `pandas` `Index` class.'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 5-1](#DataFrame_params) 列出了`DataFrame`函数接受的参数。在表中，“array-like”意味着类似于`ndarray`对象的数据结构，例如`list`。`Index`是`pandas`
+    `Index`类的一个实例。'
 - en: Table 5-1\. Parameters of DataFrame function
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 5-1\. DataFrame 函数的参数
 - en: '| Parameter | Format | Description |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 格式 | 描述 |'
 - en: '| --- | --- | --- |'
+  id: totrans-103
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| ``data`` | ``ndarray``/``dict``/``DataFrame`` | Data for `DataFrame`; `dict`
     can contain `Series`, +`ndarray`+s, +`list`+s |'
+  id: totrans-104
   prefs: []
   type: TYPE_TB
+  zh: '| ``data`` | ``ndarray``/``dict``/``DataFrame`` | `DataFrame`的数据；`dict`可以包含`Series`，`ndarray`，`list`等
+    |'
 - en: '| `index` | ``Index``/array-like | Index to use; defaults to `range(n)` |'
+  id: totrans-105
   prefs: []
   type: TYPE_TB
+  zh: '| `index` | ``Index``/array-like | 要使用的索引；默认为`range(n)` |'
 - en: '| `columns` | ``Index``/array-like | Column headers to use; defaults to `range(n)`
     |'
+  id: totrans-106
   prefs: []
   type: TYPE_TB
+  zh: '| `columns` | ``Index``/array-like | 要使用的列标题；默认为`range(n)` |'
 - en: '| `dtype` | ``dtype``, default `None` | Data type to use/force; otherwise,
     it is inferred |'
+  id: totrans-107
   prefs: []
   type: TYPE_TB
+  zh: '| `dtype` | ``dtype``，默认为`None` | 要使用/强制的数据类型；否则，它会被推断 |'
 - en: '| `copy` | ``bool``, default `None` | Copy data from inputs |'
+  id: totrans-108
   prefs: []
   type: TYPE_TB
+  zh: '| `copy` | ``bool``，默认为`None` | 从输入复制数据 |'
 - en: 'As with structured arrays, and as we have already seen, `DataFrame` objects
     have column names that can be defined directly by assigning a `list` with the
     right number of elements. This illustrates that you can define/change the attributes
     of the `DataFrame` object as you go:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 与结构化数组一样，正如我们已经看到的那样，`DataFrame`对象具有可以直接通过分配具有正确数量元素的`list`来定义的列名。这说明您可以在需要时定义/更改`DataFrame`对象的属性：
 - en: '[PRE8]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO8-1)'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO8-1)'
 - en: Specifies the column labels via a `list` object.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`list`对象指定列标签。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO8-2)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO8-2)'
 - en: Picking a column is now made easy.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在选择列变得很容易。
 - en: 'To work with financial time series data efficiently, you must be able to handle
     time indices well. This can also be considered a major strength of `pandas`. For
     example, assume that our nine data entries in the four columns correspond to month-end
     data, beginning in January 2019\. A `DatetimeIndex` object is then generated with
     the `date_range()` function as follows:'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 要高效处理金融时间序列数据，必须能够处理时间索引。这也可以被视为`pandas`的一项重要优势。例如，假设我们的四个列中的九个数据条目对应于从2019年1月开始的每月末数据。然后，可以使用`date_range()`函数生成`DatetimeIndex`对象，如下所示：
 - en: '[PRE9]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO9-1)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO9-1)'
 - en: Creates a `DatetimeIndex` object.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个`DatetimeIndex`对象。
 - en: '[Table 5-2](#date_range_params) lists the parameters that the `date_range`
     function takes.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 5-2](#date_range_params)列出了`date_range`函数的参数。'
 - en: Table 5-2\. Parameters of date_range function
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 表5-2。`date_range`函数的参数
 - en: '| Parameter | Format | Description |'
+  id: totrans-121
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 格式 | 描述 |'
 - en: '| --- | --- | --- |'
+  id: totrans-122
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `start` | ``string``/``datetime`` | left bound for generating dates |'
+  id: totrans-123
   prefs: []
   type: TYPE_TB
+  zh: '| `start` | ``string``/``datetime`` | 生成日期的左边界 |'
 - en: '| `end` | ``string``/``datetime`` | right bound for generating dates |'
+  id: totrans-124
   prefs: []
   type: TYPE_TB
+  zh: '| `end` | ``string``/``datetime`` | 生成日期的右边界 |'
 - en: '| `periods` | ``integer``/``None`` | number of periods (if `start` or `end`
     is `None`) |'
+  id: totrans-125
   prefs: []
   type: TYPE_TB
+  zh: '| `periods` | ``integer``/``None`` | 期数（如果`start`或`end`为`None`） |'
 - en: '| `freq` | ``string``/``DateOffset`` | frequency string, e.g., `5D` for 5 days
     |'
+  id: totrans-126
   prefs: []
   type: TYPE_TB
+  zh: '| `freq` | ``string``/``DateOffset`` | 频率字符串，例如，`5D`代表5天 |'
 - en: '| `tz` | ``string``/``None`` | time zone name for localized index |'
+  id: totrans-127
   prefs: []
   type: TYPE_TB
+  zh: '| `tz` | ``string``/``None`` | 本地化索引的时区名称 |'
 - en: '| `normalize` | `bool`, default `None` | normalize `start` and `end` to midnight
     |'
+  id: totrans-128
   prefs: []
   type: TYPE_TB
+  zh: '| `normalize` | `bool`，默认为`None` | 规范化`start`和`end`为午夜 |'
 - en: '| `name` | `string`, default `None` | name of resulting index |'
+  id: totrans-129
   prefs: []
   type: TYPE_TB
+  zh: '| `name` | `string`，默认为`None` | 结果索引的名称 |'
 - en: 'The following code defines the just created `DatetimeIndex` object as the relevant
     index object, making a time series of the original data set:'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码将刚刚创建的`DatetimeIndex`对象定义为相关的索引对象，从而使原始数据集生成时间序列：
 - en: '[PRE10]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: When it comes to the generation of `DatetimeIndex` objects with the help of
     the `date_range` function, there are a number of choices for the frequency parameter
     `freq`. [Table 5-3](#freq_params) lists all the options.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用`date_range`函数生成`DatetimeIndex`对象时，频率参数`freq`有多种选择。[表 5-3](#freq_params)列出了所有选项。
 - en: Table 5-3\. Frequency parameter values for date_range function
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 表5-3。`date_range`函数的频率参数值
 - en: '| Alias | Description |'
+  id: totrans-134
   prefs: []
   type: TYPE_TB
+  zh: '| 别名 | 描述 |'
 - en: '| --- | --- |'
+  id: totrans-135
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `B` | Business day frequency |'
+  id: totrans-136
   prefs: []
   type: TYPE_TB
+  zh: '| `B` | 工作日频率 |'
 - en: '| `C` | Custom business day frequency (experimental) |'
+  id: totrans-137
   prefs: []
   type: TYPE_TB
+  zh: '| `C` | 自定义工作日频率（实验性的） |'
 - en: '| `D` | Calendar day frequency |'
+  id: totrans-138
   prefs: []
   type: TYPE_TB
+  zh: '| `D` | 日历日频率 |'
 - en: '| `W` | Weekly frequency |'
+  id: totrans-139
   prefs: []
   type: TYPE_TB
+  zh: '| `W` | 周频率 |'
 - en: '| `M` | Month end frequency |'
+  id: totrans-140
   prefs: []
   type: TYPE_TB
+  zh: '| `M` | 月度末频率 |'
 - en: '| `BM` | Business month end frequency |'
+  id: totrans-141
   prefs: []
   type: TYPE_TB
+  zh: '| `BM` | 工作月末频率 |'
 - en: '| `MS` | Month start frequency |'
+  id: totrans-142
   prefs: []
   type: TYPE_TB
+  zh: '| `MS` | 月初频率 |'
 - en: '| `BMS` | Business month start frequency |'
+  id: totrans-143
   prefs: []
   type: TYPE_TB
+  zh: '| `BMS` | 工作月初频率 |'
 - en: '| `Q` | Quarter end frequency |'
+  id: totrans-144
   prefs: []
   type: TYPE_TB
+  zh: '| `Q` | 季度末频率 |'
 - en: '| `BQ` | Business quarter end frequency |'
+  id: totrans-145
   prefs: []
   type: TYPE_TB
+  zh: '| `BQ` | 工作季度末频率 |'
 - en: '| `QS` | Quarter start frequency |'
+  id: totrans-146
   prefs: []
   type: TYPE_TB
+  zh: '| `QS` | 季度初频率 |'
 - en: '| `BQS` | Business quarter start frequency |'
+  id: totrans-147
   prefs: []
   type: TYPE_TB
+  zh: '| `BQS` | 工作季度初频率 |'
 - en: '| `A` | Year end frequency |'
+  id: totrans-148
   prefs: []
   type: TYPE_TB
+  zh: '| `A` | 年度末频率 |'
 - en: '| `BA` | Business year end frequency |'
+  id: totrans-149
   prefs: []
   type: TYPE_TB
+  zh: '| `BA` | 工作年度末频率 |'
 - en: '| `AS` | Year start frequency |'
+  id: totrans-150
   prefs: []
   type: TYPE_TB
+  zh: '| `AS` | 年度初频率 |'
 - en: '| `BAS` | Business year start frequency |'
+  id: totrans-151
   prefs: []
   type: TYPE_TB
+  zh: '| `BAS` | 工作年度初频率 |'
 - en: '| `H` | Hourly frequency |'
+  id: totrans-152
   prefs: []
   type: TYPE_TB
+  zh: '| `H` | 每小时频率 |'
 - en: '| `T` | Minutely frequency |'
+  id: totrans-153
   prefs: []
   type: TYPE_TB
+  zh: '| `T` | 分钟频率 |'
 - en: '| `S` | Secondly frequency |'
+  id: totrans-154
   prefs: []
   type: TYPE_TB
+  zh: '| `S` | 每秒频率 |'
 - en: '| `L` | Milliseconds |'
+  id: totrans-155
   prefs: []
   type: TYPE_TB
+  zh: '| `L` | 毫秒 |'
 - en: '| `U` | Microseconds |'
+  id: totrans-156
   prefs: []
   type: TYPE_TB
+  zh: '| `U` | 微秒 |'
 - en: In some circumstances, it pays off to have access to the original data set in
     the form of the `ndarray` object. The `values` attribute, for instance, provides
     direct access to it.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 在某些情况下，以`ndarray`对象的形式访问原始数据集是值得的。例如，`values`属性直接提供了对它的访问。
 - en: '[PRE11]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Arrays and DataFrames
+  id: totrans-159
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 数组和数据框
 - en: You can generate a `DataFrame` object in general from an `ndarray` object. But
     you can also easily generate an `ndarray` object out of a `DataFrame` by using
     the `values` attribute of the `DataFrame` class or the function `np.array()` of
     `NumPy`.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，您可以从`ndarray`对象中生成`DataFrame`对象。但是，您也可以通过使用`DataFrame`类的`values`属性或`NumPy`的`np.array()`函数轻松地从`DataFrame`生成`ndarray`对象。
 - en: Basic Analytics
+  id: totrans-161
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基本分析
 - en: Like `NumPy` `ndarray` objects, the `pandas` `DataFrame` class has built in
     a multitude of convenience methods. As a starter, consider the methods `info()`
     and +describe().
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 像`NumPy`的`ndarray`对象一样，`pandas`的`DataFrame`类内置了许多便利方法。作为入门，考虑`info()`方法和+describe()。
 - en: '[PRE12]'
+  id: totrans-163
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO10-1)'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO10-1)'
 - en: Provides meta information regarding the data, columns and the index.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 提供有关数据、列和索引的元信息。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO10-2)'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO10-2)'
 - en: Provides helpful summary statistics per column (for numerical data).
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 为每列提供有用的摘要统计信息（针对数值数据）。
 - en: 'In addition, you can easily get the column-wise or row-wise sums, means, and
     cumulative sums as follows:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，您可以轻松地按列或按行获取和累积和，平均值，如下所示：
 - en: '[PRE13]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO11-1)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO11-1)'
 - en: Column-wise sum.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐列求和。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO11-2)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO11-2)'
 - en: Column-wise mean.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐列平均值。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO11-4)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO11-4)'
 - en: Row-wise mean.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐行平均值。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO11-5)'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO11-5)'
 - en: Column-wise cumulative sum (starting at first index position).
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐列累积和（从第一个索引位置开始）。
 - en: '`DataFrame` objects also understand `NumPy` universal functions as expected:'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame`对象也按预期理解`NumPy`通用函数：'
 - en: '[PRE14]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO12-1)'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO12-1)'
 - en: Column-wise mean.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐列平均值。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO12-2)'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO12-2)'
 - en: Element-wise natural logarithm; a warning is raised but the calculations runs
     through, resulting in multiple `NaN` values.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐元素自然对数；会发出警告，但计算会继续进行，导致多个`NaN`值。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO12-3)'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO12-3)'
 - en: Element-wise square root for the absolute values …
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 绝对值的逐元素平方根 …
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO12-4)'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO12-4)'
 - en: … and the column-wise mean values for the results.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: … 以及结果的逐列平均值。
 - en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO12-5)'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO12-5)'
 - en: A linear transform of the numerical data.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 数值数据的线性变换。
 - en: NumPy Universal Functions
+  id: totrans-190
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: NumPy通用函数
 - en: In general, you can apply `NumPy` universal functions to `pandas` `DataFrame`
     objects whenever they could be applied to an `ndarray` object containing the same
     type of data.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，您可以将`NumPy`通用函数应用于`pandas`的`DataFrame`对象，只要它们可以应用于包含相同类型数据的`ndarray`对象。
 - en: '`pandas` is quite error tolerant, in the sense that it captures errors and
     just puts a `NaN` value where the respective mathematical operation fails. Not
     only this, but as briefly shown before, you can also work with such incomplete
     data sets as if they were complete in a number of cases. This comes in handy,
     since reality is characterized by incomplete data sets more often than one wishes
     for.'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`相当容错，以捕获错误并在相应的数学运算失败时仅放置`NaN`值。不仅如此，正如之前简要展示的那样，您还可以在许多情况下像处理完整数据集一样处理这些不完整数据集。这非常方便，因为现实往往被不完整的数据集所表征，这比人们希望的更常见。'
 - en: Basic Visualization
+  id: totrans-193
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基本可视化
 - en: 'Plotting of data is only one line of code away in general, once the data is
     stored in a `DataFrame` object (cf. [Figure 5-1](#dataframe_plot_01)):'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，一旦数据存储在`DataFrame`对象中，数据的绘制就只需一行代码即可（参见[图5-1](#dataframe_plot_01)）：
 - en: '[PRE15]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO13-1)'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO13-1)'
 - en: Customizing the plotting style.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 自定义绘图样式。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO13-4)'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO13-4)'
 - en: Plotting the cumulative sums of the four columns as line plot.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 将四列的累积和绘制成折线图。
 - en: '![pd plot 01](images/pd_plot_01.png)'
+  id: totrans-200
   prefs: []
   type: TYPE_IMG
+  zh: '![pd plot 01](images/pd_plot_01.png)'
 - en: Figure 5-1\. Line plot of a DataFrame object
+  id: totrans-201
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图5-1。`DataFrame`对象的折线图
 - en: Basically, `pandas` provides a wrapper around `matplotplib` (cf. [Chapter 7](ch07.html#visualization)),
     specifically designed for `DataFrame` objects. [Table 5-4](#plot_params) lists
     the parameters that the `plot` method takes.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 基本上，`pandas` 提供了一个围绕 `matplotplib`（参见[第7章](ch07.html#visualization)）的包装器，专门设计用于
+    `DataFrame` 对象。[表5-4](#plot_params) 列出了 `plot` 方法接受的参数。
 - en: Table 5-4\. Parameters of plot method
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 表5-4。plot 方法的参数
 - en: '| Parameter | Format | Description |'
+  id: totrans-204
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 格式 | 描述 |'
 - en: '| --- | --- | --- |'
+  id: totrans-205
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `x` | Label/position, default `None` | Only used when column values are x-ticks
     |'
+  id: totrans-206
   prefs: []
   type: TYPE_TB
+  zh: '| `x` | 标签/位置，默认为 `None` | 仅当列值为 x 刻度时使用 |'
 - en: '| `y` | Label/position, default `None` | Only used when column values are y-ticks
     |'
+  id: totrans-207
   prefs: []
   type: TYPE_TB
+  zh: '| `y` | 标签/位置，默认为 `None` | 仅当列值为 y 刻度时使用 |'
 - en: '| `subplots` | Boolean, default `False` | Plot columns in subplots |'
+  id: totrans-208
   prefs: []
   type: TYPE_TB
+  zh: '| `subplots` | 布尔值，默认为 `False` | 在子图中绘制列 |'
 - en: '| `sharex` | Boolean, default `True` | Sharing of the x-axis |'
+  id: totrans-209
   prefs: []
   type: TYPE_TB
+  zh: '| `sharex` | 布尔值，默认为 `True` | x 轴共享 |'
 - en: '| `sharey` | Boolean, default `False` | Sharing of the y-axis |'
+  id: totrans-210
   prefs: []
   type: TYPE_TB
+  zh: '| `sharey` | 布尔值，默认为 `False` | y 轴共享 |'
 - en: '| `use_index` | Boolean, default `True` | Use of `DataFrame.index` as x-ticks
     |'
+  id: totrans-211
   prefs: []
   type: TYPE_TB
+  zh: '| `use_index` | 布尔值，默认为 `True` | 使用 `DataFrame.index` 作为 x 刻度 |'
 - en: '| `stacked` | Boolean, default `False` | Stack (only for bar plots) |'
+  id: totrans-212
   prefs: []
   type: TYPE_TB
+  zh: '| `stacked` | 布尔值，默认为 `False` | 堆叠（仅用于柱状图） |'
 - en: '| `sort_columns` | Boolean, default `False` | Sort columns alphabetically before
     plotting |'
+  id: totrans-213
   prefs: []
   type: TYPE_TB
+  zh: '| `sort_columns` | 布尔值，默认为 `False` | 绘图前按字母顺序排序列 |'
 - en: '| `title` | String, default `None` | Title for the plot |'
+  id: totrans-214
   prefs: []
   type: TYPE_TB
+  zh: '| `title` | 字符串，默认为 `None` | 绘图标题 |'
 - en: '| `grid` | Boolean, default `False` | Horizontal and vertical grid lines |'
+  id: totrans-215
   prefs: []
   type: TYPE_TB
+  zh: '| `grid` | 布尔值，默认为 `False` | 水平和垂直网格线 |'
 - en: '| `legend` | Boolean, default `True` | Legend of labels |'
+  id: totrans-216
   prefs: []
   type: TYPE_TB
+  zh: '| `legend` | 布尔值，默认为 `True` | 标签的图例 |'
 - en: '| `ax` | `matplotlib` axis object | `matplotlib` axis object to use for plotting
     |'
+  id: totrans-217
   prefs: []
   type: TYPE_TB
+  zh: '| `ax` | `matplotlib` axis 对象 | 用于绘图的 `matplotlib` axis 对象 |'
 - en: '| `style` | String or list/dictionary | line plotting style (for each column)
     |'
+  id: totrans-218
   prefs: []
   type: TYPE_TB
+  zh: '| `style` | 字符串或列表/字典 | 线绘图风格（对每列） |'
 - en: '| `kind` | "`line`“/”`bar`“/”`barh`“/”`kde`“/”`density`" | type of plot |'
+  id: totrans-219
   prefs: []
   type: TYPE_TB
+  zh: '| `kind` | "`line`"/"`bar`"/"`barh`"/"`kde`"/"`density`" | 绘图类型 |'
 - en: '| `logx` | Boolean, default `False` | Logarithmic scaling of x-axis |'
+  id: totrans-220
   prefs: []
   type: TYPE_TB
+  zh: '| `logx` | 布尔值，默认为 `False` | x 轴的对数缩放 |'
 - en: '| `logy` | Boolean, default `False` | Logarithmic scaling of y-axis |'
+  id: totrans-221
   prefs: []
   type: TYPE_TB
+  zh: '| `logy` | 布尔值，默认为 `False` | y 轴的对数缩放 |'
 - en: '| `xticks` | Sequence, default `Index` | x-ticks for the plot |'
+  id: totrans-222
   prefs: []
   type: TYPE_TB
+  zh: '| `xticks` | 序列，默认为 `Index` | 绘图的 x 刻度 |'
 - en: '| `yticks` | Sequence, default `Values` | y-ticks for the plot |'
+  id: totrans-223
   prefs: []
   type: TYPE_TB
+  zh: '| `yticks` | 序列，默认为 `Values` | 绘图的 y 刻度 |'
 - en: '| `xlim` | 2-tuple, list | Boundaries for x-axis |'
+  id: totrans-224
   prefs: []
   type: TYPE_TB
+  zh: '| `xlim` | 2-元组，列表 | x 轴的边界 |'
 - en: '| `ylim` | 2-tuple, list | Boundaries for y-axis |'
+  id: totrans-225
   prefs: []
   type: TYPE_TB
+  zh: '| `ylim` | 2-元组，列表 | y 轴的边界 |'
 - en: '| `rot` | Integer, default `None` | Rotation of x-ticks |'
+  id: totrans-226
   prefs: []
   type: TYPE_TB
+  zh: '| `rot` | 整数，默认为 `None` | x 刻度的旋转 |'
 - en: '| `secondary_y` | Boolean/sequence, default `False` | Secondary y-axis |'
+  id: totrans-227
   prefs: []
   type: TYPE_TB
+  zh: '| `secondary_y` | 布尔值/序列，默认为 `False` | 次要 y 轴 |'
 - en: '| `mark_right` | Boolean, default `True` | Automatic labeling of secondary
     axis |'
+  id: totrans-228
   prefs: []
   type: TYPE_TB
+  zh: '| `mark_right` | 布尔值，默认为 `True` | 次要轴的自动标记 |'
 - en: '| `colormap` | String/colormap object, default `None` | Colormap to use for
     plotting |'
+  id: totrans-229
   prefs: []
   type: TYPE_TB
+  zh: '| `colormap` | 字符串/colormap 对象，默认为 `None` | 用于绘图的色图 |'
 - en: '| `kwds` | Keywords | Options to pass to `matplotlib` |'
+  id: totrans-230
   prefs: []
   type: TYPE_TB
+  zh: '| `kwds` | 关键字 | 传递给 `matplotlib` 的选项 |'
 - en: As another example consider a bar plot of the same data (see [Figure 5-1](#dataframe_plot_01)).
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为另一个示例，考虑绘制相同数据的柱状图（参见[图5-1](#dataframe_plot_01)）。
 - en: '[PRE16]'
+  id: totrans-232
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO14-1)'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO14-1)'
 - en: Uses the `kind` parameter to change the plot type.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `kind` 参数来改变绘图类型。
 - en: '![pd plot 02](images/pd_plot_02.png)'
+  id: totrans-235
   prefs: []
   type: TYPE_IMG
+  zh: '![pd plot 02](images/pd_plot_02.png)'
 - en: Figure 5-2\. Bar plot of a DataFrame object
+  id: totrans-236
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图5-2。DataFrame 对象的柱状图
 - en: Series Class
+  id: totrans-237
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Series 类
 - en: 'So far, we have worked mainly with the `pandas` `DataFrame` class. The `Series`
     class is another important class that comes with `pandas`. It is characterized
     by the fact that it has only a single column of data. In that sense, it is a specialization
     of the `DataFrame` class that shares many but not all characteristics and capabilities.
     Regularly, a `Series` object is obtained when a single column is selected from
     the multi-column `DataFrame` object:'
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们主要使用 `pandas` 的 `DataFrame` 类。`Series` 类是另一个与 `pandas` 一起提供的重要类。它的特点是只有一列数据。从这个意义上说，它是
+    `DataFrame` 类的一个特化，共享许多但不是所有的特征和功能。通常，当从多列 `DataFrame` 对象中选择单列时，会得到一个 `Series`
+    对象：
 - en: '[PRE17]'
+  id: totrans-239
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 'The main `DataFrame` methods are available for `Series` objects as well. For
     illustration, consider the `mean()` and `plot()` methods (see [Figure 5-3](#series_plot)):'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 主要的`DataFrame`方法也适用于`Series`对象。举例来说，考虑`mean()`和`plot()`方法（见[图5-3](#series_plot)）：
 - en: '[PRE18]'
+  id: totrans-241
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '![pd plot 03](images/pd_plot_03.png)'
+  id: totrans-242
   prefs: []
   type: TYPE_IMG
+  zh: '![pd plot 03](images/pd_plot_03.png)'
 - en: Figure 5-3\. Line plot of a Series object
+  id: totrans-243
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图5-3。一个Series对象的线性图
 - en: GroupBy Operations
+  id: totrans-244
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 分组操作
 - en: '`pandas` has powerful and flexible grouping capabilities. They work similarly
     to grouping in `SQL` as well as pivot tables in Microsoft `Excel`. To have something
     to group by, we add a column indicating the quarter the respective data of the
     index belongs to:'
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`具有强大且灵活的分组功能。它们与`SQL`中的分组以及Microsoft`Excel`中的数据透视表类似。为了有东西可以分组，我们添加了一列，指示相应数据所属的季度：'
 - en: '[PRE19]'
+  id: totrans-246
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 'Now, we can group by the `Quarter` column and can output statistics for the
     single groups:'
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们可以按`Quarter`列进行分组，并且可以输出单个组的统计信息：
 - en: '[PRE20]'
+  id: totrans-248
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO15-1)'
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO15-1)'
 - en: Groups according to the `Quarter` column.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据`Quarter`列进行分组。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO15-2)'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO15-2)'
 - en: Gives the number of rows in the group.
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出组中的行数。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO15-3)'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO15-3)'
 - en: Gives the mean per column.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出每列的均值。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO15-4)'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO15-4)'
 - en: Gives the maximum value per column.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出每列的最大值。
 - en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO15-5)'
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO15-5)'
 - en: Gives both the minimum and maximum values per column.
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出每列的最小值和最大值。
 - en: 'Grouping can also be done with multiple columns. To this end, another column,
     indicating whether the month of the index date is odd or even, is introduced:'
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 也可以通过多个列进行分组。为此，引入另一列，指示索引日期的月份是奇数还是偶数：
 - en: '[PRE21]'
+  id: totrans-260
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: This concludes the introduction into `pandas` and the use of `DataFrame` objects.
     Subsequent sections apply this tool set to real-world financial data.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是对`pandas`和`DataFrame`对象的介绍。后续部分将使用这个工具集来处理真实世界的金融数据。
 - en: Complex Selection
+  id: totrans-262
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 复杂选择
 - en: Often, data selection is accomplished by formulation conditions on column values,
     and potentially combining multiple such conditions logically. Consider the following
     data set.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据选择通常通过在列值上制定条件来完成，并可能逻辑地组合多个这样的条件。考虑以下数据集。
 - en: '[PRE22]'
+  id: totrans-264
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO16-1)'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO16-1)'
 - en: '`ndarray` object with standard normally distributed random numbers.'
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有标准正态分布随机数的`ndarray`对象。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO16-2)'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO16-2)'
 - en: '`DataFrame` object with the same random numbers.'
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有相同随机数的`DataFrame`对象。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO16-4)'
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO16-4)'
 - en: The first five rows via the `head()` method.
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`head()`方法获得前五行。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO16-5)'
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO16-5)'
 - en: The final five rows via the `tail()` method.
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`tail()`方法获得最后五行。
 - en: The following code illustrates the application of Python’s comparison operators
     and logical operators on values in the two columns.
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码说明了Python的比较运算符和逻辑运算符在两列值上的应用。
 - en: '[PRE23]'
+  id: totrans-274
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO17-1)'
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO17-1)'
 - en: Check whether value in column `x` is greater than 0.5.
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查`x`列中的值是否大于0.5。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO17-2)'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO17-2)'
 - en: Check whether value in column `x` is positive *and* value in column `y` is negative.
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查`x`列中的值是否为正*且*`y`列中的值是否为负。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO17-3)'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO17-3)'
 - en: Check whether value in column `x` is positive *or* value in column `y` is negative.
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查`x`列中的值是否为正*或*`y`列中的值是否为负。
 - en: Using the resulting Boolean `Series` objects, complex data (row) selection is
     straightforward.
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用结果布尔`Series`对象，复杂数据（行）的选择很简单。
 - en: '[PRE24]'
+  id: totrans-282
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO18-1)'
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO18-1)'
 - en: All rows for which the value in column `x` is greater than 0.5.
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有`x`列的值大于0.5的行。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO18-2)'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO18-2)'
 - en: All rows for which the value in column `x` is positive *and* the value in column
     `y` is negative.
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有`x`列的值为正*且*`y`列的值为负的行。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO18-3)'
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
 - en: All rows for which the value in column `x` is positive *or* the value in column
     `y` is negative (columns are accessed here via the respective attributes).
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
 - en: Comparison operators can also be applied to complete `DataFrame` objects at
     once.
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE25]'
+  id: totrans-290
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO19-1)'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
 - en: Which values in the `DataFrame` object are positive?
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO19-2)'
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
 - en: Select all such values and put a `NaN` in all other places.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
 - en: Concatenation, Joining and Merging
+  id: totrans-295
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 'This section walks through different approaches to combine two simple data
     sets in the form of `DataFrame` objects. The two simple data sets are:'
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE26]'
+  id: totrans-297
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Concatenation
+  id: totrans-298
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Concatenation or appending basically mean that rows are added from one `DataFrame`
     objects to another one. This can be accomplished via the `append()` method or
     via the `pd.concat()` function. A major question is how the index values are handled.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE27]'
+  id: totrans-300
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO20-1)'
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
 - en: Appends data from `df2` as new rows to `df1`.
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO20-2)'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
 - en: Does the same but ignores the indices.
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO20-3)'
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
 - en: Has the same effect as the first and …
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO20-4)'
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
 - en: second append operation, respectively.
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
 - en: Joining
+  id: totrans-309
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: When joining the two data sets, the sequence of the `DataFrame` objects also
     matters but in a different way. Only the index values from the first `DataFrame`
     object are used. This default behavior is called a *left join*.
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE28]'
+  id: totrans-311
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO21-1)'
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
 - en: Index values of `df1` relevant.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO21-2)'
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
 - en: Index values of `df2` relevant.
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
 - en: There is a total of four different join methods available, each leading to a
     different behavior with regard to how index values and the corresponding data
     rows are handled.
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE29]'
+  id: totrans-317
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO22-1)'
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
 - en: Left join is the default operation.
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO22-2)'
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
 - en: Right join is the same as reversing the sequence of the `DataFrame` objects.
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO22-3)'
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
 - en: Inner join only preserves those index values found in both indices.
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO22-4)'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
 - en: Outer join preserves all index values from both indices.
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
 - en: A join can also happen based on an empty `DataFrame` object. In this case, the
     columns are created *sequentially* leading to a behavior similar to a left join.
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE30]'
+  id: totrans-327
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO23-1)'
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
 - en: '`df1` as first column `A`.'
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO23-2)'
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
 - en: '`df2` as second column `B`.'
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
 - en: Making use of a dictionary to combine the data sets yields a result similar
     to an outer join since the columns are created *simultaneously*.
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE31]'
+  id: totrans-333
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO24-1)'
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
 - en: The columns of the `DataFrame` objects are used as values in the `dict` object.
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame` 对象的列被用作 `dict` 对象中的值。'
 - en: Merging
+  id: totrans-336
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 合并
 - en: 'While a join operation takes place based on the indices of the `DataFrame`
     objects to be joined, a merge operation typically takes place on a column shared
     between the two data sets. To this end, a new column `C` is added to both original
     `DataFrame` objects:'
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然连接操作是基于要连接的 `DataFrame` 对象的索引进行的，但合并操作通常是在两个数据集之间共享的列上进行的。为此，将新列 `C` 添加到原始的两个
+    `DataFrame` 对象中：
 - en: '[PRE32]'
+  id: totrans-338
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: By default, the merge operation in this case takes place based on the single
     shared column `C`. Other options are available, however.
+  id: totrans-339
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，此情况下的合并操作基于单个共享列 `C` 进行。然而，还有其他选项可用。
 - en: '[PRE33]'
+  id: totrans-340
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO25-1)'
+  id: totrans-341
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO25-1)'
 - en: The default merge on column `C`.
+  id: totrans-342
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认在列 `C` 上合并。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO25-3)'
+  id: totrans-343
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO25-3)'
 - en: An outer merge is also possible, preserving all data rows.
+  id: totrans-344
   prefs: []
   type: TYPE_NORMAL
+  zh: 外部合并也是可能的，保留所有数据行。
 - en: 'Many more types of merge operations are available, a few of which are illustrated
     in the following code:'
+  id: totrans-345
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有许多其他类型的合并操作可用，以下代码示例了其中的一些：
 - en: '[PRE34]'
+  id: totrans-346
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: Performance Aspects
+  id: totrans-347
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 性能方面
 - en: Many examples in this chapter illustrate that there are often multiple options
     to achieve the same goal with `pandas`. This section compares such options for
     adding up element-wise two columns. First, the data set, generated with `NumPy`.
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章中的许多示例说明了使用 `pandas` 可以实现相同目标的多个选项。本节比较了用于逐元素添加两列的此类选项。首先，使用 `NumPy` 生成的数据集。
 - en: '[PRE35]'
+  id: totrans-349
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO26-1)'
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO26-1)'
 - en: The `ndarray` object with random numbers.
+  id: totrans-351
   prefs: []
   type: TYPE_NORMAL
+  zh: 带有随机数字的 `ndarray` 对象。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO26-3)'
+  id: totrans-352
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO26-3)'
 - en: The `DataFrame` object with the random numbers.
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: 带有随机数字的 `DataFrame` 对象。
 - en: Second, some options to accomplish the task at hand with performance values.
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，一些完成任务的性能值的选项。
 - en: '[PRE36]'
+  id: totrans-355
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO27-1)'
+  id: totrans-356
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO27-1)'
 - en: Working with the columns (`Series` objects) directly is the fastest approach.
+  id: totrans-357
   prefs: []
   type: TYPE_NORMAL
+  zh: 直接操作列（`Series`对象）是最快的方法。
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO27-2)'
+  id: totrans-358
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO27-2)'
 - en: This calculates the sums by calling the `sum()` method on the `DataFrame` object.
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过在 `DataFrame` 对象上调用 `sum()` 方法来计算总和。
 - en: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO27-3)'
+  id: totrans-360
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_data_analysis_with_pandas_CO27-3)'
 - en: This calculates the sums by calling the `sum()` method on the `ndarray` object.
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过在 `ndarray` 对象上调用 `sum()` 方法来计算总和。
 - en: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO27-4)'
+  id: totrans-362
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_data_analysis_with_pandas_CO27-4)'
 - en: This calculates the sums by using the universal function `np.sum()` method on
     the `DataFrame` object.
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过在 `DataFrame` 对象上调用 `np.sum()` 方法来计算总和。
 - en: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO27-5)'
+  id: totrans-364
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_data_analysis_with_pandas_CO27-5)'
 - en: This calculates the sums by using the universal function `np.sum()` method on
     the `ndarray` object.
+  id: totrans-365
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过在 `ndarray` 对象上使用通用函数 `np.sum()` 方法来计算总和。
 - en: Finally, to more options which are based on the methods `eval()` and `apply()`,
     respectively.
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，更多基于 `eval()` 和 `apply()` 方法的选项。
 - en: '[PRE37]'
+  id: totrans-367
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO28-1)'
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_data_analysis_with_pandas_CO28-1)'
 - en: '`eval()` is a method dedicated to evaluation (complex) numerical expressions;
     columns can be directly addressed.'
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: '`eval()` 是专门用于评估（复杂）数值表达式的方法；可以直接访问列。'
 - en: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO28-2)'
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_data_analysis_with_pandas_CO28-2)'
 - en: The slowest option is to use the `apply()` method row-by-row; this is like looping
     on the Python level over all rows.
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 最慢的选项是逐行使用 `apply()` 方法；这就像在 Python 级别上循环遍历所有行。
 - en: Caution
+  id: totrans-372
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: '`pandas` provides multiple options in general to accomplish the same goal.
     If unsure, one should compare some options to make sure that the best possible
     performance is achieved when time is critical. In the simple example, execution
     times differ by orders or magnitude.'
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 通常提供多种选项来实现相同的目标。如果不确定，应该比较一些选项，以确保在时间紧迫时获得最佳性能。在简单示例中，执行时间相差数个数量级。'
 - en: Conclusions
+  id: totrans-374
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: '`pandas` is a powerful tool for data analysis and has become the central package
     in the so-called PyData stack. Its `DataFrame` class is particularly suited to
     work with tabular data of any kind. Most operations on such objects are vectorized,
@@ -1296,35 +2010,53 @@
     data sets convenient, something not that convenient with `NumPy`, for instance.
     `pandas` and the `DataFrame` class will be central in many later chapters of the
     book where additional features will also be used and illustrated when necessary.'
+  id: totrans-375
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 是数据分析的强大工具，并已成为所谓 PyData 栈的核心包。它的 `DataFrame` 类特别适用于处理任何类型的表格数据。对这种对象的大多数操作都是矢量化的，这不仅使代码简洁，而且通常性能很高，与
+    `NumPy` 的情况一样。此外，`pandas` 还使得处理不完整的数据集变得方便，例如，使用 `NumPy` 并不那么方便。在本书的许多后续章节中，`pandas`
+    和 `DataFrame` 类将是核心，当需要时还将使用和说明其他功能。'
 - en: Further Reading
+  id: totrans-376
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步阅读
 - en: '`pandas` is a well documented open source project with both an online documentation
     as well as a PDF version available for download.^([1](ch05.html#idm140277674718672)).
     The following page provides all resources:'
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 是一个文档齐全的开源项目，既有在线文档，也有可供下载的 PDF 版本。^([1](ch05.html#idm140277674718672))。以下页面提供了所有资源：'
 - en: '[*http://pandas.pydata.org/*](http://pandas.pydata.org/)'
+  id: totrans-378
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[*http://pandas.pydata.org/*](http://pandas.pydata.org/)'
 - en: 'As for `NumPy`, recommended references for `pandas` in book form are:'
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: 至于 `NumPy`，在书籍形式上推荐的参考资料是：
 - en: 'McKinney, Wes (2017): *Python for Data Analysis*. 2nd ed., O’Reilly, Beijing
     et al.'
+  id: totrans-380
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'McKinney, Wes (2017): *Python 数据分析*. 第二版, O’Reilly, 北京等地。'
 - en: 'VanderPlas, Jake (2016): *Python Data Science Handbook*. O’Reilly, Beijing
     et al.'
+  id: totrans-381
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'VanderPlas, Jake (2016): *Python 数据科学手册*. O’Reilly, 北京等地。'
 - en: ^([1](ch05.html#idm140277674718672-marker)) At the time of this writing the
     PDF version has 2,207 pages (version 0.21.1).
+  id: totrans-382
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch05.html#idm140277674718672-marker)) 在撰写本文时，PDF 版本共有 2,207 页（版本 0.21.1）。

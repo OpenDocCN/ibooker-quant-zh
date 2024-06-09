@@ -1,30 +1,41 @@
 - en: Chapter 7\. Data Visualization
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 7 章 数据可视化
 - en: Use a picture. It’s worth a thousand words.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 使用图片。一图胜千言。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Arthur Brisbane (1911)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 阿瑟·布里斯班（1911年）
 - en: This chapter is about basic visualization capabilities of the [`matplotlib`](http://www.matplotlib.org)
     and [`plotly`](http://plot.ly) libraries.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了[`matplotlib`](http://www.matplotlib.org)和[`plotly`](http://plot.ly)库的基本可视化能力。
 - en: Although there are many other visualization libraries available, `matplotlib`
     has established itself as the benchmark and, in many situations, a robust and
     reliable visualization tool. It is both easy to use for standard plots and flexible
     when it comes to more complex plots and customizations. In addition, it is tightly
     integrated with `NumPy` and `pandas` and the data structures they provide.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管有许多其他可用的可视化库，但`matplotlib`已经确立了自己作为基准，并且在许多情况下是一个强大而可靠的可视化工具。在标准绘图方面易于使用，在更复杂的绘图和定制方面灵活。此外，它与`NumPy`和`pandas`及它们提供的数据结构紧密集成。
 - en: '`matplotlib` only allows for the generation of plots in the form of bitmaps
     (for example, in PNG or JPG format). On the other hand, modern web technologies
     allow — based, for example, on the [Data-Driven Documents (D3.js)](https://d3js.org/)
@@ -34,185 +45,285 @@
     is `plotly`. A small additional library, called `Cufflinks`, tightly integrates
     `plotly` with `pandas` `DataFrame` objects and allows for the creation of the
     most popular financial plots (such as candlestick bars)'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '`matplotlib`仅允许以位图形式（例如PNG或JPG格式）生成图。另一方面，现代网络技术允许基于[数据驱动文档（D3.js）](https://d3js.org/)标准创建漂亮的交互式图表，例如，可以缩放以更详细地检查某些区域。一个非常方便的库，可以使用
+    Python 创建这样的 D3.js 图表，是`plotly`。一个小的附加库，称为`Cufflinks`，将`plotly`与`pandas`的`DataFrame`对象紧密集成，可以创建最受欢迎的金融图表（如蜡烛图）'
 - en: 'This chapter mainly covers the following topics:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章主要涵盖以下主题：
 - en: '[“Static 2D Plotting”](#viz_2d_plotting)'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“静态 2D 绘图”](#viz_2d_plotting)'
 - en: This section introduces to `matplotlib` and presents a selection of typical
     2D plots, from the most simple to some more advanced ones with two scales or different
     subplots.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了`matplotlib`，并呈现了一些典型的 2D 绘图，从最简单的到具有两个比例尺或不同子图的更高级的绘图。
 - en: '[“Static 3D Plotting”](#viz_3d_plotting)'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“静态 3D 绘图”](#viz_3d_plotting)'
 - en: Based on `matplotlib`, a selection of 3D plots useful for certain financial
     applications are presented.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于`matplotlib`，介绍了一些在特定金融应用中有用的 3D 绘图。
 - en: '[“Interactive 2D Plotting”](#viz_int_2d_plotting)'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“交互式 2D 绘图”](#viz_int_2d_plotting)'
 - en: This section introduces to `plotly` and `Cufflinks` to create interactive 2D
     plots. Making use of the `QuantFigure` feature of `Cufflinks`, this section is
     also about typical financial plots, used, for example, in technical stock analysis.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了`plotly`和`Cufflinks`，用于创建交互式 2D 绘图。利用`Cufflinks`的`QuantFigure`功能，本节还涉及典型的金融绘图，例如在技术股票分析中使用的绘图。
 - en: This chapter cannot be comprehensive with regard to data visualization with
     `Python`, `matplotlib` or `plotly`, but it provides a number of examples for the
     basic and important capabilities of these packages for finance. Other examples
     are also found in later chapters. For instance, [Chapter 8](ch08.html#fin_time_series)
     shows more in-depth how to visualize financial time series data with the `pandas`
     library.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章无法全面涵盖使用`Python`、`matplotlib`或`plotly`进行数据可视化的所有方面，但它提供了这些包在金融领域的基本和重要功能的一些示例。其他示例也可以在后面的章节中找到。例如，[第
+    8 章](ch08.html#fin_time_series)更深入地介绍了如何使用`pandas`库可视化金融时间序列数据。
 - en: Static 2D Plotting
+  id: totrans-15
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 静态 2D 绘图
 - en: 'Before creating the sample data and starting to plot, some imports and customizations
     first:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 在创建样本数据并开始绘图之前，首先进行一些导入和自定义：
 - en: '[PRE0]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO1-1)'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO1-1)'
 - en: Imports `matplotlib` with the usual abbreviation `mpl`.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用常见缩写`mpl`导入了`matplotlib`。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO1-2)'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO1-2)'
 - en: The version of `matplotlib` used.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的`matplotlib`版本。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO1-5)'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO1-5)'
 - en: Sets the font to be `serif` in all plots.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 将所有图的字体设置为`serif`。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO1-3)'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO1-3)'
 - en: Imports the main plotting (sub-)package with the usual abbreviation `plt`.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用常见缩写`plt`导入了主要的绘图（子）包。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO1-4)'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO1-4)'
 - en: Sets the plotting style to `seaborn` (see, for instance, this [overview](https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html)).
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 将绘图样式设置为`seaborn`（请参阅，例如，[此处](https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html)的概述）。
 - en: One-Dimensional Data Set
+  id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 一维数据集
 - en: 'In all that follows, we will plot data stored in either `NumPy` `ndarray` objects
     or `pandas` `DataFrame` objects. However, `matplotlib` is of course able to plot
     data stored in different `Python` formats, like `list` objects, as well. The most
     fundamental, but nevertheless quite powerful, plotting function is `plt.plot()`.
     In principle, it needs two sets of numbers:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的所有内容中，我们将绘制存储在`NumPy`的`ndarray`对象或`pandas`的`DataFrame`对象中的数据。然而，`matplotlib`当然也能够绘制存储在不同`Python`格式中的数据，比如`list`对象。最基本但相当强大的绘图函数是`plt.plot()`。原则上，它需要两组数字：
 - en: '**``x`` values**: a list or an array containing the ``x`` coordinates (values
     of the abscissa)'
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**``x`` 值**：包含``x``坐标（横坐标值）的列表或数组'
 - en: '**``y`` values**: a list or an array containing the ``y`` coordinates (values
     of the ordinate)'
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**``y`` 值**：包含``y``坐标（纵坐标值）的列表或数组'
 - en: The number of ``x`` and ``y`` values provided must match, of course. Consider
     the following code, whose output is presented in [Figure 7-1](#matplotlib_0).
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 提供的``x``和``y``值的数量必须相匹配，当然了。考虑下面的代码，其输出如[图 7-1](#matplotlib_0)所示。
 - en: '[PRE1]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO2-1)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO2-1)'
 - en: Fixes the seed for the random number generator for reproducibility.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了可重复性，设置随机数生成器的种子。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO2-2)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO2-2)'
 - en: Draws the random numbers (y values).
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制随机数（y值）。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO2-3)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO2-3)'
 - en: Fixes the integers (x values).
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 固定整数（x值）。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO2-4)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO2-4)'
 - en: Calls the `plt.plot()` function with the `x` and `y` objects.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`x`和`y`对象调用`plt.plot()`函数。
 - en: '![mpl 01](images/mpl_01.png)'
+  id: totrans-42
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 01](images/mpl_01.png)'
 - en: Figure 7-1\. Plot given x and y values
+  id: totrans-43
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-1\. 绘制给定的x和y值
 - en: '`plt.plot()` notices when you pass a `ndarray` object. In this case, there
     is no need to provide the “extra” information of the ``x`` values. If you only
     provide the ``y`` values, `plot` takes the index values as the respective ``x``
     values. Therefore, the following single line of code generates exactly the same
     output (cf. [Figure 7-2](#matplotlib_1)):'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '`plt.plot()`注意到当您传递一个`ndarray`对象时。在这种情况下，无需提供``x``值的“额外”信息。如果您只提供``y``值，则`plot`将索引值视为相应的``x``值。因此，以下单行代码生成完全相同的输出（参见[图
+    7-2](#matplotlib_1)）：'
 - en: '[PRE2]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '![mpl 02](images/mpl_02.png)'
+  id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 02](images/mpl_02.png)'
 - en: Figure 7-2\. Plot given data as `ndarray` object
+  id: totrans-47
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-2\. 绘制给定的`ndarray`对象的数据
 - en: NumPy Arrays and matplotlib
+  id: totrans-48
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: NumPy数组和matplotlib
 - en: You can simply pass `NumPy` `ndarray` objects to `matplotlib` functions. `matplotlib`
     is able to interpret the data structure for simplified plotting. However, be careful
     to not pass a too large and/or complex array.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以简单地将`NumPy`的`ndarray`对象传递给`matplotlib`函数。`matplotlib`能够解释数据结构以简化绘图。但是，请注意不要传递过大和/或复杂的数组。
 - en: 'Since the majority of the `ndarray` methods return again a `ndarray` object,
     you can also pass your object with a method (or even multiple methods, in some
     cases) attached. By calling the `cumsum()` method on the `ndarray` object with
     the sample data, we get the cumulative sum of this data and, as to be expected,
     a different output (cf. [Figure 7-3](#matplotlib_2)):'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于大多数`ndarray`方法再次返回一个`ndarray`对象，因此您还可以通过附加方法（甚至在某些情况下可以是多个方法）来传递您的对象。通过在样本数据上调用`cumsum()`方法，我们得到了这些数据的累积和，正如预期的那样，得到了不同的输出（参见[图
+    7-3](#matplotlib_2)）：
 - en: '[PRE3]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '![mpl 03](images/mpl_03.png)'
+  id: totrans-52
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 03](images/mpl_03.png)'
 - en: Figure 7-3\. Plot given a `ndarray` object with method attached
+  id: totrans-53
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-3\. 绘制给定一个带有附加方法的`ndarray`对象
 - en: 'In general, the default plotting style does not satisfy typical requirements
     for reports, publications, etc. For example, you might want to customize the font
     used (e.g., for compatibility with `LaTeX` fonts), to have labels at the axes,
@@ -221,73 +332,115 @@
     to customize the plotting style. Some are easily accessible; for others one has
     to dig a bit deeper. Easily accessible, for example, are those functions that
     manipulate the axes and those that relate to grids and labels (cf. [Figure 7-4](#matplotlib_3_a)):'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，默认的绘图样式不能满足报告、出版物等的典型要求。例如，您可能希望自定义使用的字体（例如，与`LaTeX`字体兼容），在轴上标记标签，或者绘制网格以提高可读性。这就是绘图样式发挥作用的地方（见上文）。此外，`matplotlib`提供了大量函数来自定义绘图样式。有些函数很容易访问；对于其他一些函数，需要深入挖掘。例如，很容易访问的是那些操作轴的函数以及与网格和标签相关的函数（参见[图 7-4](#matplotlib_3_a)）：
 - en: '[PRE4]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO3-1)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO3-1)'
 - en: Turns off the grid.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭网格。
 - en: '![mpl 04](images/mpl_04.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 04](images/mpl_04.png)'
 - en: Figure 7-4\. Plot without grid
+  id: totrans-59
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-4。没有网格的图
 - en: Other options for `plt.axis()` are given in [Table 7-1](#axis_opts), the majority
     of which have to be passed as a `string` object.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '`plt.axis()`的其他选项在表 7-1中给出，其中大多数必须作为`string`对象传递。'
 - en: Table 7-1\. Options for plt.axis()
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 7-1。plt.axis()的选项
 - en: '| Parameter | Description |'
+  id: totrans-62
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 描述 |'
 - en: '| --- | --- |'
+  id: totrans-63
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| Empty | Returns current axis limits |'
+  id: totrans-64
   prefs: []
   type: TYPE_TB
+  zh: '| 空 | 返回当前轴限制 |'
 - en: '| `off` | Turns axis lines and labels off |'
+  id: totrans-65
   prefs: []
   type: TYPE_TB
+  zh: '| `off` | 关闭轴线和标签 |'
 - en: '| `equal` | Leads to equal scaling |'
+  id: totrans-66
   prefs: []
   type: TYPE_TB
+  zh: '| `equal` | 导致等比例缩放 |'
 - en: '| `scaled` | Equal scaling via dimension changes |'
+  id: totrans-67
   prefs: []
   type: TYPE_TB
+  zh: '| `scaled` | 通过尺寸变化实现等比例缩放 |'
 - en: '| `tight` | Makes all data visible (tightens limits) |'
+  id: totrans-68
   prefs: []
   type: TYPE_TB
+  zh: '| `tight` | 使所有数据可见（紧缩限制） |'
 - en: '| `image` | Makes all data visible (with data limits) |'
+  id: totrans-69
   prefs: []
   type: TYPE_TB
+  zh: '| `image` | 使所有数据可见（带有数据限制） |'
 - en: '| `[xmin, xmax, ymin, ymax]` | Sets limits to given (`list` of) values |'
+  id: totrans-70
   prefs: []
   type: TYPE_TB
+  zh: '| `[xmin, xmax, ymin, ymax]` | 设置给定（列表的）值的限制 |'
 - en: 'In addition, you can directly set the minimum and maximum values of each axis
     by using `plt.xlim()` and `plt.ylim()`. The following code provides an example
     whose output is shown in [Figure 7-5](#matplotlib_3_b):'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，您可以直接使用`plt.xlim()`和`plt.ylim()`设置每个轴的最小和最大值。以下代码提供了一个示例，其输出显示在[图 7-5](#matplotlib_3_b)中：
 - en: '[PRE5]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '![mpl 05](images/mpl_05.png)'
+  id: totrans-73
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 05](images/mpl_05.png)'
 - en: Figure 7-5\. Plot with custom axis limits
+  id: totrans-74
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-5。带有自定义轴限制的图
 - en: 'For the sake of better readability, a plot usually contains a number of labels—e.g.,
     a title and labels describing the nature of ``x`` and ``y`` values. These are
     added by the functions `plt.title`, `plt.xlabel`, and `plt.ylabel`, respectively.
@@ -295,190 +448,310 @@
     The plotting of discrete points is accomplished by choosing a different style
     option. [Figure 7-6](#matplotlib_4) overlays (red) points and a (blue) line with
     line width of 1.5 points:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了更好地可读性，图表通常包含许多标签，例如标题和描述``x``和``y``值性质的标签。这些分别通过函数`plt.title`、`plt.xlabel`和`plt.ylabel`添加。默认情况下，`plot`绘制连续线条，即使提供了离散数据点。通过选择不同的样式选项来绘制离散点。[图 7-6](#matplotlib_4)叠加了（红色）点和（蓝色）线，线宽为1.5点：
 - en: '[PRE6]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO4-1)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO4-1)'
 - en: Increases the size of the figure.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 增加图的大小。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO4-2)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO4-2)'
 - en: Plots the data as a line in blue with line width of 1.5 points.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据绘制为蓝色线条，线宽为1.5点。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO4-3)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO4-3)'
 - en: Plots the data as red (thick) dots.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据绘制为红色（粗）点。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO4-4)'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO4-4)'
 - en: Places a label on the x-axis.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 在x轴上放置一个标签。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO4-5)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO4-5)'
 - en: Places a label on the y-axis.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 在y轴上放置一个标签。
 - en: '[![6](images/6.png)](#co_financial_data_science_CO4-6)'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_data_science_CO4-6)'
 - en: Places a title.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 放置一个标题。
 - en: '![mpl 06](images/mpl_06.png)'
+  id: totrans-89
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 06](images/mpl_06.png)'
 - en: Figure 7-6\. Plot with typical labels
+  id: totrans-90
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-6。具有典型标签的图
 - en: By default, `plt.plot()` supports the color abbreviations in [Table 7-2](#color_tab).
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，`plt.plot()`支持[表 7-2](#color_tab)中的颜色缩写。
 - en: Table 7-2\. Standard color abbreviations
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 7-2。标准颜色缩写
 - en: '| Character | Color |'
+  id: totrans-93
   prefs: []
   type: TYPE_TB
+  zh: '| 字符 | 颜色 |'
 - en: '| --- | --- |'
+  id: totrans-94
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `b` | Blue |'
+  id: totrans-95
   prefs: []
   type: TYPE_TB
+  zh: '| `b` | 蓝色 |'
 - en: '| `g` | Green |'
+  id: totrans-96
   prefs: []
   type: TYPE_TB
+  zh: '| `g` | 绿色 |'
 - en: '| `r` | Red |'
+  id: totrans-97
   prefs: []
   type: TYPE_TB
+  zh: '| `r` | 红色 |'
 - en: '| `c` | Cyan |'
+  id: totrans-98
   prefs: []
   type: TYPE_TB
+  zh: '| `c` | 青色 |'
 - en: '| `m` | Magenta |'
+  id: totrans-99
   prefs: []
   type: TYPE_TB
+  zh: '| `m` | 紫红色 |'
 - en: '| `y` | Yellow |'
+  id: totrans-100
   prefs: []
   type: TYPE_TB
+  zh: '| `y` | 黄色 |'
 - en: '| `k` | Black |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
+  zh: '| `k` | 黑色 |'
 - en: '| `w` | White |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| `w` | 白色 |'
 - en: In terms of line and/or point styles, `plt.plot()` supports the characters listed
     in [Table 7-3](#style_tab).
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 在线和/或点样式方面，`plt.plot()`支持[表 7-3](#style_tab)中列出的字符。
 - en: Table 7-3\. Standard style characters
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 表7-3. 标准样式字符
 - en: '| Character | Symbol |'
+  id: totrans-105
   prefs: []
   type: TYPE_TB
+  zh: '| 字符 | 符号 |'
 - en: '| --- | --- |'
+  id: totrans-106
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `-` | Solid line style |'
+  id: totrans-107
   prefs: []
   type: TYPE_TB
+  zh: '| `-` | 实线型 |'
 - en: '| `--` | Dashed line style |'
+  id: totrans-108
   prefs: []
   type: TYPE_TB
+  zh: '| `--` | 虚线型 |'
 - en: '| `-.` | Dash-dot line style |'
+  id: totrans-109
   prefs: []
   type: TYPE_TB
+  zh: '| `-.` | 短划线-点线型 |'
 - en: '| `:` | Dotted line style |'
+  id: totrans-110
   prefs: []
   type: TYPE_TB
+  zh: '| `:` | 点线型 |'
 - en: '| `.` | Point marker |'
+  id: totrans-111
   prefs: []
   type: TYPE_TB
+  zh: '| `.` | 点标记 |'
 - en: '| `,` | Pixel marker |'
+  id: totrans-112
   prefs: []
   type: TYPE_TB
+  zh: '| `,` | 像素标记 |'
 - en: '| `o` | Circle marker |'
+  id: totrans-113
   prefs: []
   type: TYPE_TB
+  zh: '| `o` | 圆形标记 |'
 - en: '| `v` | Triangle_down marker |'
+  id: totrans-114
   prefs: []
   type: TYPE_TB
+  zh: '| `v` | 向下三角形标记 |'
 - en: "| `\x960\x97` | Triangle_up marker |"
+  id: totrans-115
   prefs: []
   type: TYPE_TB
+  zh: "| `\x960\x97` | 向上三角形标记 |"
 - en: '| `<` | Triangle_left marker |'
+  id: totrans-116
   prefs: []
   type: TYPE_TB
+  zh: '| `<` | 向左三角形标记 |'
 - en: '| `>` | Triangle_right marker |'
+  id: totrans-117
   prefs: []
   type: TYPE_TB
+  zh: '| `>` | 向右三角形标记 |'
 - en: '| `1` | Tri_down marker |'
+  id: totrans-118
   prefs: []
   type: TYPE_TB
+  zh: '| `1` | 向下三角形标记 |'
 - en: '| `2` | Tri_up marker |'
+  id: totrans-119
   prefs: []
   type: TYPE_TB
+  zh: '| `2` | 向上三角形标记 |'
 - en: '| `3` | Tri_left marker |'
+  id: totrans-120
   prefs: []
   type: TYPE_TB
+  zh: '| `3` | 向左三角形标记 |'
 - en: '| `4` | Tri_right marker |'
+  id: totrans-121
   prefs: []
   type: TYPE_TB
+  zh: '| `4` | 向右三角形标记 |'
 - en: '| `s` | Square marker |'
+  id: totrans-122
   prefs: []
   type: TYPE_TB
+  zh: '| `s` | 正方形标记 |'
 - en: '| `p` | Pentagon marker |'
+  id: totrans-123
   prefs: []
   type: TYPE_TB
+  zh: '| `p` | 五边形标记 |'
 - en: "| `\x960\x97` | Star marker |"
+  id: totrans-124
   prefs: []
   type: TYPE_TB
+  zh: "| `\x960\x97` | 星形标记 |"
 - en: '| `h` | Hexagon1 marker |'
+  id: totrans-125
   prefs: []
   type: TYPE_TB
+  zh: '| `h` | 六边形1 标记 |'
 - en: '| `H` | Hexagon2 marker |'
+  id: totrans-126
   prefs: []
   type: TYPE_TB
+  zh: '| `H` | 六边形2 标记 |'
 - en: "| `\x960\x97` | Plus marker |"
+  id: totrans-127
   prefs: []
   type: TYPE_TB
+  zh: "| `\x960\x97` | 加号标记 |"
 - en: '| `x` | X marker |'
+  id: totrans-128
   prefs: []
   type: TYPE_TB
+  zh: '| `x` | X 标记 |'
 - en: '| `D` | Diamond marker |'
+  id: totrans-129
   prefs: []
   type: TYPE_TB
+  zh: '| `D` | 菱形标记 |'
 - en: '| `d` | Thin diamond marker |'
+  id: totrans-130
   prefs: []
   type: TYPE_TB
+  zh: '| `d` | 窄菱形标记 |'
 - en: '| `pass:[ | ]` |'
+  id: totrans-131
   prefs: []
   type: TYPE_TB
+  zh: '| `pass:[ | ]` |'
 - en: "| Vline marker | `\x960\x97` |"
+  id: totrans-132
   prefs: []
   type: TYPE_TB
+  zh: "| 垂直线标记 | `\x960\x97` |"
 - en: Any color abbreviation can be combined with any style character. In this way,
     you can make sure that different data sets are easily distinguished. As we will
     see, the plotting style will also be reflected in the legend.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何颜色缩写都可以与任何样式字符组合。通过这种方式，您可以确保不同的数据集易于区分。正如我们将看到的，绘图样式也将反映在图例中。
 - en: Two-Dimensional Data Set
+  id: totrans-134
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 二维数据集
 - en: Plotting one-dimensional data can be considered a special case. In general,
     data sets will consist of multiple separate subsets of data. The handling of such
     data sets follows the same rules with `matplotlib` as with one-dimensional data.
@@ -487,32 +760,46 @@
     using the same y- and/or x-axis scaling. Another issue might be that you may want
     to visualize two different data sets in different ways, e.g., one by a line plot
     and the other by a bar plot.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制一维数据可以被视为一种特殊情况。一般来说，数据集将由多个单独的数据子集组成。与 `matplotlib` 一维数据一样，处理这样的数据集遵循相同的规则。但是，在这种情况下可能会出现一些额外的问题。例如，两个数据集的缩放可能有如此之大的不同，以至于不能使用相同的y轴和/或x轴缩放绘制它们。另一个问题可能是您可能希望以不同的方式可视化两个不同的数据集，例如，通过线图绘制一个数据集，通过条形图绘制另一个数据集。
 - en: 'The following code generates a two-dimensional sample data set as a `NumPy`
     `ndarray` object of shape 20 × 2 with standard normally distributed (pseudo-)random
     numbers. On this array, the method `cumsum()` is called to calculate the cumulative
     sum of the sample data along axis 0 (i.e., the first dimension):'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码生成一个具有20×2形状的标准正态分布（伪随机）数字的`NumPy` `ndarray`对象的二维样本数据集。对这个数组，调用`cumsum()`方法来计算样本数据沿轴0（即第一个维度）的累积和：
 - en: '[PRE7]'
+  id: totrans-137
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'In general, you can also pass such two-dimensional arrays to `plt.plot`. It
     will then automatically interpret the contained data as separate data sets (along
     axis 1, i.e., the second dimension). A respective plot is shown in [Figure 7-7](#matplotlib_5):'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 一般来说，您也可以将这样的二维数组传递给 `plt.plot`。然后，它将自动解释包含的数据为单独的数据集（沿着轴1，即第二个维度）。相应的图示显示在[图 7-7](#matplotlib_5)中：
 - en: '[PRE8]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '![mpl 07](images/mpl_07.png)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 07](images/mpl_07.png)'
 - en: Figure 7-7\. Plot with two data sets
+  id: totrans-141
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-7. 带有两个数据集的图
 - en: 'In such a case, further annotations might be helpful to better read the plot.
     You can add individual labels to each data set and have them listed in the legend.
     `plt.legend()` accepts different locality parameters. `0` stands for *best location*,
@@ -521,183 +808,291 @@
     code, we now do not pass the `ndarray` object as a whole but rather access the
     two data subsets separately (`y[:, 0]` and `y[:, 0]`), which allows to attach
     individual labels to them:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，进一步的注释可能有助于更好地阅读图表。您可以为每个数据集添加单独的标签，并在图例中列出它们。 `plt.legend()` 接受不同的位置参数。`0`
+    代表*最佳位置*，意味着图例尽可能少地遮挡数据。[图 7-8](#matplotlib_6) 展示了两个数据集的图表，这次有了图例。在生成的代码中，我们现在不再将
+    `ndarray` 对象作为一个整体传递，而是分别访问两个数据子集（`y[:, 0]` 和 `y[:, 0]`），这样可以为它们附加单独的标签：
 - en: '[PRE9]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO5-1)'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO5-1)'
 - en: Defines labels for the data sub-sets.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 为数据子集定义标签。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO5-3)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO5-3)'
 - en: Places a legend in the *best* location.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 将图例放在*最佳*位置。
 - en: Further location options for `plt.legend()` include those presented in [Table 7-4](#legend_opts).
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 进一步的 `plt.legend()` 位置选项包括 [表 7-4](#legend_opts) 中介绍的选项。
 - en: Table 7-4\. Options for plt.legend()
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 7-4\. `plt.legend()` 的选项
 - en: '| Loc | Description |'
+  id: totrans-150
   prefs: []
   type: TYPE_TB
+  zh: '| 位置 | 描述 |'
 - en: '| --- | --- |'
+  id: totrans-151
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| Empty | Automatic |'
+  id: totrans-152
   prefs: []
   type: TYPE_TB
+  zh: '| 空 | 自动 |'
 - en: '| `0` | Best possible |'
+  id: totrans-153
   prefs: []
   type: TYPE_TB
+  zh: '| `0` | 最佳位置 |'
 - en: '| `1` | Upper right |'
+  id: totrans-154
   prefs: []
   type: TYPE_TB
+  zh: '| `1` | 右上角 |'
 - en: '| `2` | Upper left |'
+  id: totrans-155
   prefs: []
   type: TYPE_TB
+  zh: '| `2` | 左上角 |'
 - en: '| `3` | Lower left |'
+  id: totrans-156
   prefs: []
   type: TYPE_TB
+  zh: '| `3` | 左下角 |'
 - en: '| `4` | Lower right |'
+  id: totrans-157
   prefs: []
   type: TYPE_TB
+  zh: '| `4` | 右下角 |'
 - en: '| `5` | Right |'
+  id: totrans-158
   prefs: []
   type: TYPE_TB
+  zh: '| `5` | 右 |'
 - en: '| `6` | Center left |'
+  id: totrans-159
   prefs: []
   type: TYPE_TB
+  zh: '| `6` | 左中 |'
 - en: '| `7` | Center right |'
+  id: totrans-160
   prefs: []
   type: TYPE_TB
+  zh: '| `7` | 右中 |'
 - en: '| `8` | Lower center |'
+  id: totrans-161
   prefs: []
   type: TYPE_TB
+  zh: '| `8` | 底部中心 |'
 - en: '| `9` | Upper center |'
+  id: totrans-162
   prefs: []
   type: TYPE_TB
+  zh: '| `9` | 上部中心 |'
 - en: '| `10` | Center |'
+  id: totrans-163
   prefs: []
   type: TYPE_TB
+  zh: '| `10` | 中心 |'
 - en: '![mpl 08](images/mpl_08.png)'
+  id: totrans-164
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 08](images/mpl_08.png)'
 - en: Figure 7-8\. Plot with labeled data sets
+  id: totrans-165
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-8\. 带标记数据集的图表
 - en: 'Multiple data sets with a similar scaling, like simulated paths for the same
     financial risk factor, can be plotted using a single y-axis. However, often data
     sets show rather different scalings and the plotting of such data with a single
     y scale generally leads to a significant loss of visual information. To illustrate
     the effect, we scale the first of the two data subsets by a factor of 100 and
     plot the data again (cf. [Figure 7-9](#matplotlib_7)):'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有相似缩放的多个数据集，例如相同财务风险因素的模拟路径，可以使用单个 y 轴绘制。然而，通常数据集显示的缩放相差较大，并且使用单个 y 轴绘制此类数据通常会导致视觉信息的严重丢失。为了说明效果，我们将两个数据子集中的第一个缩放因子放大了
+    100 倍，并再次绘制数据（参见 [图 7-9](#matplotlib_7)）：
 - en: '[PRE10]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO6-1)'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO6-1)'
 - en: Re-scales the first data sub-set.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新调整第一个数据子集的比例。
 - en: '![mpl 09](images/mpl_09.png)'
+  id: totrans-170
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 09](images/mpl_09.png)'
 - en: Figure 7-9\. Plot with two differently scaled data sets
+  id: totrans-171
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-9\. 具有两个不同缩放数据集的图表
 - en: 'Inspection of [Figure 7-9](#matplotlib_7) reveals that the first data set is
     still “visually readable,” while the second data set now looks like a straight
     line with the new scaling of the y-axis. In a sense, information about the second
     data set now gets “visually lost.” There are two basic approaches to resolve this
     problem:'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查 [图 7-9](#matplotlib_7) 发现，第一个数据集仍然“视觉可读”，而第二个数据集现在看起来像是直线，因为 y 轴的新缩放。在某种意义上，第二个数据集的信息现在“视觉上丢失了”。解决这个问题有两种基本方法：
 - en: Use of two y-axes (left/right)
+  id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用两个 y 轴（左/右）
 - en: Use of two subplots (upper/lower, left/right)
+  id: totrans-174
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用两个子图（上/下，左/右）
 - en: 'Let us first introduce a second y-axis into the plot. [Figure 7-10](#matplotlib_8)
     now has two different y-axes. The left y-axis is for the first data set while
     the right y-axis is for the second. Consequently, there are also two legends:'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们先将第二个 y 轴引入图表中。[图 7-10](#matplotlib_8) 现在有了两个不同的 y 轴。左侧的 y 轴用于第一个数据集，而右侧的
+    y 轴用于第二个数据集。因此，也有了两个图例：
 - en: '[PRE11]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO7-1)'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO7-1)'
 - en: Defines the `figure` and `axis` objects.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义 `figure` 和 `axis` 对象。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO7-2)'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO7-2)'
 - en: Creates a second `axis` object that shares the x-axis.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建共享 x 轴的第二个 `axis` 对象。
 - en: '![mpl 10](images/mpl_10.png)'
+  id: totrans-181
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 10](images/mpl_10.png)'
 - en: Figure 7-10\. Plot with two data sets and two y-axes
+  id: totrans-182
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-10\. 具有两个数据集和两个 y 轴的图表
 - en: 'The key lines of code are those that help manage the axes. These are the ones
     that follow:'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键代码行是帮助管理坐标轴的代码行。这些是接下来的代码行：
 - en: '[PRE12]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: By using the `plt.subplots()` function, we get direct access to the underlying
     plotting objects (the figure, subplots, etc.). It allows, for example, to generate
     a second subplot that shares the x-axis with the first subplot. In [Figure 7-10](#matplotlib_8)
     we have, then, actually two subplots that *overlay* each other.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过使用 `plt.subplots()` 函数，我们直接访问基础绘图对象（图形、子图等）。例如，它允许生成一个共享 x 轴的第二个子图。在[图 7-10](#matplotlib_8)中，我们实际上有两个子图*叠加*在一起。
 - en: 'Next, consider the case of two *separate* subplots. This option gives even
     more freedom to handle the two data sets, as [Figure 7-11](#matplotlib_9) illustrates:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，考虑两个*分离*子图的情况。这个选项给予了更多处理两个数据集的自由，就像[图 7-11](#matplotlib_9)所示：
 - en: '[PRE13]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO8-1)'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO8-1)'
 - en: Defines the upper subplot 1.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义了上方子图 1。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO8-2)'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO8-2)'
 - en: Defines the lower subplot 2.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义了下方子图 2。
 - en: '![mpl 11](images/mpl_11.png)'
+  id: totrans-192
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 11](images/mpl_11.png)'
 - en: Figure 7-11\. Plot with two subplots
+  id: totrans-193
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-11\. 具有两个子图的绘图
 - en: 'The placing of subplots in a `matplotlib` `figure` object is accomplished by
     the use of a special coordinate system. `plt.subplot()` takes as arguments three
     integers for `numrows`, `numcols`, and `fignum` (either separated by commas or
@@ -706,93 +1101,144 @@
     * numcols`. For example, a figure with nine equally sized subplots would have
     `numrows=3`, `numcols=3`, and `fignum=1,2,...,9`. The lower-right subplot would
     have the following “coordinates”: `plt.subplot(3, 3, 9)`.'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: '`matplotlib` `figure` 对象中子图的放置是通过使用特殊的坐标系统来完成的。`plt.subplot()` 接受三个整数作为参数，分别为
+    `numrows`、`numcols` 和 `fignum`（用逗号分隔或不分隔）。`numrows` 指定*行*的数量，`numcols` 指定*列*的数量，而
+    `fignum` 指定*子图*的数量，从 1 开始，以 `numrows * numcols` 结束。例如，具有九个等大小子图的图形将具有 `numrows=3`，`numcols=3`
+    和 `fignum=1,2,...,9`。右下方的子图将具有以下“坐标”：`plt.subplot(3, 3, 9)`。'
 - en: 'Sometimes, it might be necessary or desired to choose two different plot types
     to visualize such data. With the subplot approach you have the freedom to combine
     arbitrary kinds of plots that `matplotlib` offers.^([1](ch07.html#idm140277668085472))
     [Figure 7-12](#matplotlib_10) combines a line/point plot with a bar chart:'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时，选择两种不同的图表类型来可视化这样的数据可能是必要的或者是期望的。通过子图的方法，您可以自由组合 `matplotlib` 提供的任意类型的图表。[1](ch07.html#idm140277668085472)
+    [图 7-12](#matplotlib_10) 结合了线条/点图和柱状图：
 - en: '[PRE14]'
+  id: totrans-196
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO9-1)'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO9-1)'
 - en: Creates a `bar` subplot.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个 `bar` 子图。
 - en: '![mpl 12](images/mpl_12.png)'
+  id: totrans-199
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 12](images/mpl_12.png)'
 - en: Figure 7-12\. Plot combining line/point subplot with bar subplot
+  id: totrans-200
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-12\. 将线条/点子图与柱状子图组合的绘图
 - en: Other Plot Styles
+  id: totrans-201
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 其他绘图样式
 - en: When it comes to two-dimensional plotting, line and point plots are probably
     the most important ones in finance; this is because many data sets embody time
     series data, which generally is visualized by such plots. [Chapter 8](ch08.html#fin_time_series)
     addresses financial times series data in detail. However, for the moment this
     section sticks with a two-dimensional data set of random numbers and illustrates
     some alternative, and for financial applications useful, visualization approaches.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 在二维绘图方面，线条和点图可能是金融中最重要的图表之一；这是因为许多数据集包含时间序列数据，通常通过这些图表进行可视化。[第 8 章](ch08.html#fin_time_series)详细讨论了金融时间序列数据。然而，目前这一节还是采用了一个随机数的二维数据集，并且展示了一些备用的、对于金融应用有用的可视化方法。
 - en: 'The first is the *scatter plot*, where the values of one data set serve as
     the ``x`` values for the other data set. [Figure 7-13](#matplotlib_11_a) shows
     such a plot. Such a plot type is used, for example, for plotting the returns of
     one financial time series against those of another one. For this example we will
     use a new two-dimensional data set with some more data:'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一种是*散点图*，其中一个数据集的值作为另一个数据集的``x``值。[图 7-13](#matplotlib_11_a) 展示了这样一个图。例如，此类图用于绘制一个金融时间序列的回报与另一个金融时间序列的回报。对于此示例，我们将使用一个新的二维数据集以及一些更多的数据：
 - en: '[PRE15]'
+  id: totrans-204
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO10-1)'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO10-1)'
 - en: Creates a larger data set with random numbers.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个包含随机数的较大数据集。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO10-2)'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO10-2)'
 - en: Scatter plot via the `plt.plot()` function.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过 `plt.plot()` 函数绘制散点图。
 - en: '![mpl 13](images/mpl_13.png)'
+  id: totrans-209
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 13](images/mpl_13.png)'
 - en: Figure 7-13\. Scatter plot via plot function
+  id: totrans-210
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-13\. 通过 plot 函数绘制散点图
 - en: '`matplotlib` also provides a specific function to generate scatter plots. It
     basically works in the same way, but provides some additional features. [Figure 7-14](#matplotlib_11_b)
     shows the corresponding scatter plot to [Figure 7-13](#matplotlib_11_a), this
     time generated using the `plt.scatter()` function:'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: '`matplotlib` 还提供了一个特定的函数来生成散点图。它基本上工作方式相同，但提供了一些额外的功能。[图 7-14](#matplotlib_11_b)
+    展示了使用 `plt.scatter()` 函数生成的相应散点图，这次与 [图 7-13](#matplotlib_11_a) 对应，:'
 - en: '[PRE16]'
+  id: totrans-212
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO11-1)'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO11-1)'
 - en: Scatter plot via `plt.scatter()` function.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过 `plt.scatter()` 函数绘制的散点图。
 - en: '![mpl 14](images/mpl_14.png)'
+  id: totrans-215
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 14](images/mpl_14.png)'
 - en: Figure 7-14\. Scatter plot via scatter function
+  id: totrans-216
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-14\. 通过散点函数生成的散点图
 - en: 'The `plt.scatter()` plotting function, for example, allows the addition of
     a third dimension, which can be visualized through different colors and be described
     by the use of a color bar. [Figure 7-15](#matplotlib_11_c) shows a scatter plot
@@ -800,181 +1246,289 @@
     dots and with a color bar as a legend for the colors. To this end, the following
     code generates a third data set with random data, this time with integers between
     0 and 10:'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，`plt.scatter()` 绘图函数允许添加第三个维度，可以通过不同的颜色来可视化，并且可以通过使用颜色条来描述。[图 7-15](#matplotlib_11_c)
+    展示了一个散点图，其中第三个维度通过单个点的不同颜色来说明，并且有一个颜色条作为颜色的图例。为此，以下代码生成了一个具有随机数据的第三个数据集，这次是介于
+    0 到 10 之间的整数：
 - en: '[PRE17]'
+  id: totrans-218
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO12-1)'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO12-1)'
 - en: The third data sets is included.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 包含了第三个数据集。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO12-2)'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO12-2)'
 - en: The color map is chosen.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择了颜色映射。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO12-3)'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO12-3)'
 - en: The marker is defined to be a thick dot.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 将标记定义为粗点。
 - en: '![mpl 15](images/mpl_15.png)'
+  id: totrans-225
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 15](images/mpl_15.png)'
 - en: Figure 7-15\. Scatter plot with third dimension
+  id: totrans-226
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-15\. 具有第三维的散点图
 - en: 'Another type of plot, the *histogram*, is also often used in the context of
     financial returns. [Figure 7-16](#matplotlib_12_a) puts the frequency values of
     the two data sets next to each other in the same plot:'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种类型的图表，*直方图*，在金融收益的背景下也经常被使用。[图 7-16](#matplotlib_12_a) 将两个数据集的频率值放在同一个图表中相邻位置：
 - en: '[PRE18]'
+  id: totrans-228
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO13-1)'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO13-1)'
 - en: The histogram plot via the `plt.hist()` function.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过 `plt.hist()` 函数绘制直方图。
 - en: '![mpl 16](images/mpl_16.png)'
+  id: totrans-231
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 16](images/mpl_16.png)'
 - en: Figure 7-16\. Histogram for two data sets
+  id: totrans-232
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-16\. 两个数据集的直方图
 - en: 'Since the histogram is such an important plot type for financial applications,
     let us take a closer look at the use of `plt.hist`. The following example illustrates
     the parameters that are supported:'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于直方图在金融应用中是如此重要的图表类型，让我们更近距离地看一下 `plt.hist` 的使用。以下示例说明了支持的参数：
 - en: '[PRE19]'
+  id: totrans-234
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[Table 7-5](#hist_params) provides a description of the main parameters of
     the `plt.hist` function.'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 7-5](#hist_params) 提供了 `plt.hist` 函数的主要参数的描述。'
 - en: Table 7-5\. Parameters for plt.hist()
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 7-5\. `plt.hist()` 的参数
 - en: '| Parameter | Description |'
+  id: totrans-237
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 描述 |'
 - en: '| --- | --- |'
+  id: totrans-238
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `x` | `list` object(s), `ndarray` object |'
+  id: totrans-239
   prefs: []
   type: TYPE_TB
+  zh: '| `x` | `list` 对象(s)，`ndarray` 对象 |'
 - en: '| `bins` | Number of bins |'
+  id: totrans-240
   prefs: []
   type: TYPE_TB
+  zh: '| `bins` | 柱子数量 |'
 - en: '| `range` | Lower and upper range of bins |'
+  id: totrans-241
   prefs: []
   type: TYPE_TB
+  zh: '| `range` | 柱的下限和上限 |'
 - en: '| `normed` | Norming such that integral value is 1 |'
+  id: totrans-242
   prefs: []
   type: TYPE_TB
+  zh: '| `normed` | 规范化，使积分值为 1 |'
 - en: '| `weights` | Weights for every value in `x` |'
+  id: totrans-243
   prefs: []
   type: TYPE_TB
+  zh: '| `weights` | `x` 中每个值的权重 |'
 - en: '| `cumulative` | Every bin contains the counts of the lower bins |'
+  id: totrans-244
   prefs: []
   type: TYPE_TB
+  zh: '| `cumulative` | 每个柱包含低位柱的计数 |'
 - en: '| `histtype` | Options (strings): `bar`, `barstacked`, `step`, `stepfilled`
     |'
+  id: totrans-245
   prefs: []
   type: TYPE_TB
+  zh: '| `histtype` | 选项（字符串）：`bar`，`barstacked`，`step`，`stepfilled` |'
 - en: '| `align` | Options (strings): `left`, `mid`, `right` |'
+  id: totrans-246
   prefs: []
   type: TYPE_TB
+  zh: '| `align` | 选项（字符串）：`left`，`mid`，`right` |'
 - en: '| `orientation` | Options (strings): `horizontal`, `vertical` |'
+  id: totrans-247
   prefs: []
   type: TYPE_TB
+  zh: '| `orientation` | 选项（字符串）：`horizontal`，`vertical` |'
 - en: '| `rwidth` | Relative width of the bars |'
+  id: totrans-248
   prefs: []
   type: TYPE_TB
+  zh: '| `rwidth` | 条柱的相对宽度 |'
 - en: '| `log` | Log scale |'
+  id: totrans-249
   prefs: []
   type: TYPE_TB
+  zh: '| `log` | 对数刻度 |'
 - en: '| `color` | Color per data set (array-like) |'
+  id: totrans-250
   prefs: []
   type: TYPE_TB
+  zh: '| `color` | 每个数据集的颜色（类似数组） |'
 - en: '| `label` | String or sequence of strings for labels |'
+  id: totrans-251
   prefs: []
   type: TYPE_TB
+  zh: '| `label` | 用于标签的字符串或字符串序列 |'
 - en: '| `stacked` | Stacks multiple data sets |'
+  id: totrans-252
   prefs: []
   type: TYPE_TB
+  zh: '| `stacked` | 堆叠多个数据集 |'
 - en: '[Figure 7-17](#matplotlib_12_b) shows a similar plot; this time, the data of
     the two data sets is stacked in the histogram:'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-17](#matplotlib_12_b) 展示了类似的图表；这次，两个数据集的数据在直方图中堆叠：'
 - en: '[PRE20]'
+  id: totrans-254
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '![mpl 17](images/mpl_17.png)'
+  id: totrans-255
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 17](images/mpl_17.png)'
 - en: Figure 7-17\. Stacked histogram for two data sets
+  id: totrans-256
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-17\. 两个数据集的堆叠直方图
 - en: 'Another useful plot type is the *boxplot*. Similar to the histogram, the boxplot
     allows both a concise overview of the characteristics of a data set and easy comparison
     of multiple data sets. [Figure 7-18](#matplotlib_13) shows such a plot for our
     data set:'
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种有用的绘图类型是*箱线图*。类似于直方图，箱线图既可以简明地概述数据集的特征，又可以轻松比较多个数据集。[图7-18](#matplotlib_13)展示了我们数据集的这样一个图：
 - en: '[PRE21]'
+  id: totrans-258
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO14-1)'
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO14-1)'
 - en: Boxplot via the `plt.boxplot()` function.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`plt.boxplot()`函数绘制箱线图。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO14-2)'
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO14-2)'
 - en: Sets individual x labels.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置各个x标签。
 - en: 'This last example uses the function `plt.setp()`, which sets properties for
     a (set of) plotting instance(s). For example, considering a line plot generated
     by:'
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一个示例使用了函数`plt.setp()`，它为一个（组）绘图实例设置属性。例如，考虑由以下代码生成的线图：
 - en: '[PRE22]'
+  id: totrans-264
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 'the following code:'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码：
 - en: '[PRE23]'
+  id: totrans-266
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: changes the style of the line to “dashed.” This way, you can easily change parameters
     after the plotting instance (“artist object”) has been generated.
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 将线条样式更改为“虚线”。这样，您可以在生成绘图实例（“艺术家对象”）之后轻松更改参数。
 - en: '![mpl 18](images/mpl_18.png)'
+  id: totrans-268
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 18](images/mpl_18.png)'
 - en: Figure 7-18\. Boxplot for two data sets
+  id: totrans-269
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-18\. 两个数据集的箱线图
 - en: As a final illustration in this section, consider a mathematically inspired
     plot that can also be found as [an example in the gallery for `matplotlib`](http://www.matplotlib.org/gallery.html).
     It plots a function and highlights graphically the area below the function from
@@ -993,760 +1547,1224 @@
     `matplotlib` seamlessly handles `LaTeX` type setting for the inclusion of mathematical
     formulae into plots. First, the function definition, integral limits as variables
     and data sets for the x and y values.
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为本节的最后一个示例，请考虑一个在[matplotlib画廊](http://www.matplotlib.org/gallery.html)中也可以找到的受数学启发的绘图。它绘制了一个函数并在图形上突出显示了函数下方的区域，从下限到上限
+    — 换句话说，函数在下限和上限之间的积分值突出显示为一个区域。要说明的积分值是<math alttext="integral Subscript a Superscript
+    b Baseline f left-parenthesis x right-parenthesis d x"><mrow><msubsup><mo>∫</mo>
+    <mrow><mi>a</mi></mrow> <mi>b</mi></msubsup> <mi>f</mi> <mrow><mo>(</mo> <mi>x</mi>
+    <mo>)</mo></mrow> <mi>d</mi> <mi>x</mi></mrow></math>，其中<math alttext="f left-parenthesis
+    x right-parenthesis equals one-half dot e Superscript x Baseline plus 1"><mrow><mi>f</mi>
+    <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac>
+    <mo>·</mo> <msup><mi>e</mi> <mi>x</mi></msup> <mo>+</mo> <mn>1</mn></mrow></math>，<math
+    alttext="a equals one-half"><mrow><mi>a</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>，<math><mrow><mi>b</mi>
+    <mo>=</mo> <mfrac><mn>3</mn> <mn>2</mn></mfrac></mrow></math>。[图7-19](#matplotlib_math)显示了结果图，并演示了`matplotlib`如何无缝处理数学公式的`LaTeX`类型设置以将其包含到绘图中。首先，函数定义，积分限制作为变量以及x和y值的数据集。
 - en: '[PRE24]'
+  id: totrans-271
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO15-1)'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO15-1)'
 - en: The function definition.
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数定义。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO15-2)'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO15-2)'
 - en: The integral limits.
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 积分限制。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO15-3)'
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO15-3)'
 - en: The x values to plot the function.
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于绘制函数的x值。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO15-4)'
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO15-4)'
 - en: The y values to plot the function.
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于绘制函数的y值。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO15-5)'
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO15-5)'
 - en: The x values within the integral limits.
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: 积分限制内的x值。
 - en: '[![6](images/6.png)](#co_financial_data_science_CO15-6)'
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_data_science_CO15-6)'
 - en: The y values within the integral limits.
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 积分限制内的y值。
 - en: '[![7](images/7.png)](#co_financial_data_science_CO15-7)'
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_financial_data_science_CO15-7)'
 - en: The `list` object with multiple `tuple` objects representing coordinates for
     the polygon to be plotted.
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 包含多个表示要绘制的多边形的坐标的`list`对象。
 - en: Second, the plotting itself which is a bit involved due to the many single objects
     to be placed explicitly.
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，由于需要明确放置许多单个对象，绘图本身有点复杂。
 - en: '[PRE25]'
+  id: totrans-287
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO16-1)'
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO16-1)'
 - en: Plots the function values as a blue line.
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: 将函数值绘制为蓝线。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO16-2)'
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO16-2)'
 - en: Defines the minimum y value for the ordinate axis.
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义纵坐标轴的最小 y 值。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO16-3)'
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO16-3)'
 - en: Plots the polygon (integral area) in gray.
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: 以灰色绘制多边形（积分区域）。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO16-5)'
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO16-5)'
 - en: Places the integral formula in the plot.
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: 将积分公式放置在图中。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO16-6)'
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO16-6)'
 - en: Places axes labels.
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: 放置轴标签。
 - en: '[![6](images/6.png)](#co_financial_data_science_CO16-8)'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_data_science_CO16-8)'
 - en: Places the x labels.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 放置 x 标签。
 - en: '[![7](images/7.png)](#co_financial_data_science_CO16-10)'
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_financial_data_science_CO16-10)'
 - en: Places the y labels.
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: 放置 y 标签。
 - en: '![mpl 19](images/mpl_19.png)'
+  id: totrans-302
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 19](images/mpl_19.png)'
 - en: Figure 7-19\. Exponential function, integral area, and LaTeX labels
+  id: totrans-303
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-19。指数函数、积分区域和 LaTeX 标签
 - en: Static 3D Plotting
+  id: totrans-304
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 静态 3D 绘图
 - en: 'There are not too many fields in finance that really benefit from visualization
     in three dimensions. However, one application area is volatility surfaces showing
     implied volatilities simultaneously for a number of times-to-maturity and strikes.
     In what follows, the code artificially generates a plot that resembles a volatility
     surface. To this end, consider:'
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融领域，确实没有太多领域真正受益于三维可视化。然而，一个应用领域是同时显示一系列到期时间和行权价的隐含波动率的波动率曲面。接下来，代码人工生成类似于波动率曲面的图形。为此，请考虑：
 - en: '*Strike values* between 50 and 150'
+  id: totrans-306
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*50到150之间的行权价值*'
 - en: '*Times-to-maturity* between 0.5 and 2.5 years'
+  id: totrans-307
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*0.5到2.5年的到期时间*'
 - en: 'This provides a two-dimensional coordinate system. `NumPy`’s `np.meshgrid()`
     function can generate such a system out of two one-dimensional `ndarray` objects:'
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 这提供了一个二维坐标系。`NumPy`的`np.meshgrid()`函数可以从两个一维`ndarray`对象生成这样的系统：
 - en: '[PRE26]'
+  id: totrans-309
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO17-1)'
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO17-1)'
 - en: The `ndarray` object with the strike values.
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: '`ndarray`对象中的行权价值。'
 - en: '[![2](images/2.png)](#co_financial_data_science_CO17-2)'
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO17-2)'
 - en: The `ndarray` object with the times-to-maturity values.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: '`ndarray` 对象中的时间至到期值。'
 - en: '[![3](images/3.png)](#co_financial_data_science_CO17-3)'
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO17-3)'
 - en: The two two-dimensional `ndarray` objects (grids) created.
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建的两个二维`ndarray`对象（网格）。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO17-5)'
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO17-5)'
 - en: The dummy implied volatility values.
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: 虚拟的隐含波动率值。
 - en: 'The plot resulting from the following code is shown in [Figure 7-20](#matplotlib_17):'
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 由以下代码生成的图形显示在[图 7-20](#matplotlib_17)中：
 - en: '[PRE27]'
+  id: totrans-319
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO18-1)'
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO18-1)'
 - en: Imports the relevant 3D plotting features.
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入相关的 3D 绘图特性。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO18-2)'
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO18-2)'
 - en: Sets up a canvas for 3D plotting.
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
+  zh: 为 3D 绘图设置画布。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO18-3)'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO18-3)'
 - en: Creates the 3D plot.
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建 3D 图。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO18-4)'
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO18-4)'
 - en: Sets the x label.
+  id: totrans-327
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置 x 标签。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO18-5)'
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO18-5)'
 - en: Sets the y label.
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置 y 标签。
 - en: '[![6](images/6.png)](#co_financial_data_science_CO18-6)'
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_data_science_CO18-6)'
 - en: Sets the z label.
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置 z 标签。
 - en: '[![7](images/7.png)](#co_financial_data_science_CO18-7)'
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_financial_data_science_CO18-7)'
 - en: This creates a color bar.
+  id: totrans-333
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将创建一个色标。
 - en: '![mpl 20](images/mpl_20.png)'
+  id: totrans-334
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 20](images/mpl_20.png)'
 - en: Figure 7-20\. 3D surface plot for (dummy) implied volatilities
+  id: totrans-335
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-20。 (虚拟) 隐含波动率的三维曲面图
 - en: '[Table 7-6](#plot_surface_params) provides a description of the different parameters
     the `plt.plot_surface()` function can take.'
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 7-6](#plot_surface_params)提供了`plt.plot_surface()`函数可以接受的不同参数的描述。'
 - en: Table 7-6\. Parameters for plot_surface
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 7-6。`plot_surface`的参数
 - en: '| Parameter | Description |'
+  id: totrans-338
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 描述 |'
 - en: '| --- | --- |'
+  id: totrans-339
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `X, Y, Z` | Data values as 2D arrays |'
+  id: totrans-340
   prefs: []
   type: TYPE_TB
+  zh: '| `X, Y, Z` | 数据值为 2D 数组 |'
 - en: '| `rstride` | Array row stride (step size) |'
+  id: totrans-341
   prefs: []
   type: TYPE_TB
+  zh: '| `rstride` | 数组行跨度（步长） |'
 - en: '| `cstride` | Array column stride (step size) |'
+  id: totrans-342
   prefs: []
   type: TYPE_TB
+  zh: '| `cstride` | 数组列跨度（步长） |'
 - en: '| `color` | Color of the surface patches |'
+  id: totrans-343
   prefs: []
   type: TYPE_TB
+  zh: '| `color` | 表面补丁的颜色 |'
 - en: '| `cmap` | A colormap for the surface patches |'
+  id: totrans-344
   prefs: []
   type: TYPE_TB
+  zh: '| `cmap` | 表面补丁的颜色映射 |'
 - en: '| `facecolors` | Face colors for the individual patches |'
+  id: totrans-345
   prefs: []
   type: TYPE_TB
+  zh: '| `facecolors` | 各个补丁的面颜色 |'
 - en: '| `norm` | An instance of `Normalize` to map values to colors |'
+  id: totrans-346
   prefs: []
   type: TYPE_TB
+  zh: '| `norm` | 用于将值映射到颜色的 `Normalize` 的实例 |'
 - en: '| `vmin` | Minimum value to map |'
+  id: totrans-347
   prefs: []
   type: TYPE_TB
+  zh: '| `vmin` | 要映射的最小值 |'
 - en: '| `vmax` | Maximum value to map |'
+  id: totrans-348
   prefs: []
   type: TYPE_TB
+  zh: '| `vmax` | 要映射的最大值 |'
 - en: '| `shade` | Whether to shade the face colors |'
+  id: totrans-349
   prefs: []
   type: TYPE_TB
+  zh: '| `shade` | 是否着色面颜色 |'
 - en: 'As with two-dimensional plots, the line style can be replaced by single points
     or, as in what follows, single triangles. [Figure 7-21](#matplotlib_18) plots
     the same data as a 3D scatter plot, but now also with a different viewing angle,
     using the `view_init()` method to set it:'
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: 与二维图相似，线型可以由单个点或如下所示的单个三角形替代。[图 7-21](#matplotlib_18) 将相同的数据绘制为 3D 散点图，但现在还使用
+    `view_init()` 方法设置了不同的视角：
 - en: '[PRE28]'
+  id: totrans-351
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO19-1)'
+  id: totrans-352
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO19-1)'
 - en: Sets the viewing angle.
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置视角。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO19-2)'
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO19-2)'
 - en: Creates a 3D scatter plot.
+  id: totrans-355
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建 3D 散点图。
 - en: '![mpl 21](images/mpl_21.png)'
+  id: totrans-356
   prefs: []
   type: TYPE_IMG
+  zh: '![mpl 21](images/mpl_21.png)'
 - en: Figure 7-21\. 3D scatter plot for (dummy) implied volatilities
+  id: totrans-357
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-21\. (虚拟的) 隐含波动率的 3D 散点图
 - en: Interactive 2D Plotting
+  id: totrans-358
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 交互式 2D 绘图
 - en: '`matplotlib` allows to create plots that are statics bitmap objects or of PDF
     format. Nowadays, there are many libraries available to create interactive plots
     based on the `D3.js` standard. Such plots make, among others, zooming in and out
     or hover effects for data inspection possible. They can in general also be easily
     embedded in web pages.'
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: '`matplotlib` 允许创建静态位图对象或 PDF 格式的绘图。如今，有许多可用于基于 `D3.js` 标准创建交互式绘图的库。这些绘图可以实现缩放和悬停效果以进行数据检查，还可以轻松嵌入到网页中。'
 - en: A popular platform and plotting library is [`Plotly`](http://plot.ly). It is
     dedicated to visualization for data science and is in wide spread use around the
     world. Major benefits of Plotly are its tight integration with the Python ecosystem
     and the ease of use — in particular when combined with `pandas` `DataFrame` objects
     and the wrapper package [`Cufflinks`](http://github.com/santosjorge/cufflinks).
+  id: totrans-360
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个流行的平台和绘图库是[`Plotly`](http://plot.ly)。它专门用于数据科学的可视化，并在全球范围内广泛使用。Plotly 的主要优点是其与
+    Python 生态系统的紧密集成以及易于使用 — 特别是与 `pandas` 的 `DataFrame` 对象和包装器包 [`Cufflinks`](http://github.com/santosjorge/cufflinks)
+    结合使用时。
 - en: For some functionality, a free account with Plotly is required for which users
     can register on the platform itself under [*http://plot.ly*](http://plot.ly).
     Once the credentials are granted they should be stored locally for permanent use
     afterwards. All details in the regard are found under [Getting Started with Plotly
     for Python](https://plot.ly/python/getting-started/).
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于某些功能，需要使用 Plotly 的免费帐户，用户可以在平台本身 [*http://plot.ly*](http://plot.ly) 下注册。一旦授予凭据，它们应该被本地存储以供以后永久使用。所有相关详细信息都在[使用
+    Plotly for Python 入门](https://plot.ly/python/getting-started/) 中找到。
 - en: This section focuses on selected aspects only in that `Cufflinks` is used exclusively
     to create interactive plots from data stored in `DataFrame` objects.
+  id: totrans-362
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节仅关注选定的方面，因为 `Cufflinks` 专门用于从存储在 `DataFrame` 对象中的数据创建交互式绘图。
 - en: Basic Plots
+  id: totrans-363
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 基本绘图
 - en: To get started from within a Jupyter Notebook context, some imports are required
     and the *notebook mode* should be turned on.
+  id: totrans-364
   prefs: []
   type: TYPE_NORMAL
+  zh: 要从 Jupyter Notebook 上下文开始，需要一些导入，并且应该打开 *notebook 模式*。
 - en: '[PRE29]'
+  id: totrans-365
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO20-1)'
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO20-1)'
 - en: Imports `Cufflinks`.
+  id: totrans-367
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入 `Cufflinks`。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO20-2)'
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO20-2)'
 - en: Imports the offline plotting capabilities of `Plotly`.
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入 `Plotly` 的离线绘图功能。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO20-3)'
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO20-3)'
 - en: Turns on the notebook plotting mode.
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开笔记本绘图模式。
 - en: Tip
+  id: totrans-372
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 提示
 - en: With `Plotly`, there is also the option to get the plots rendered on the `Plotly`
     servers. However, the notebook mode is generally much faster, in particular when
     dealing with larger data sets. However, some functionality, like the streaming
     plot service of `Plotly`, is only available via communication with the server.
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`Plotly`，还可以选择在`Plotly`服务器上呈现绘图。然而，笔记本模式通常更快，特别是处理较大数据集时。但是，像`Plotly`的流图服务之类的一些功能仅通过与服务器通信才可用。
 - en: The examples to follow rely again on random numbers, this time stored in a `DataFrame`
     object with `DatetimeIndex`, i.e. as a time series data.
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: 后续示例再次依赖随机数，这次存储在具有`DatetimeIndex`的`DataFrame`对象中，即作为时间序列数据。
 - en: '[PRE30]'
+  id: totrans-375
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO21-1)'
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO21-1)'
 - en: The standard normally distributed (pseudo-)random numbers.
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准正态分布的（伪）随机数。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO21-2)'
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO21-2)'
 - en: Start date for the `DatetimeIndex` object.
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DatetimeIndex`对象的开始日期。'
 - en: '[![3](images/3.png)](#co_financial_data_science_CO21-3)'
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO21-3)'
 - en: The frequency (”`business daily`“).
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 频率（“`business daily`“）。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO21-4)'
+  id: totrans-382
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO21-4)'
 - en: The number of periods needed.
+  id: totrans-383
   prefs: []
   type: TYPE_NORMAL
+  zh: 所需周期数。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO21-5)'
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO21-5)'
 - en: The raw data is linearly transformed.
+  id: totrans-385
   prefs: []
   type: TYPE_NORMAL
+  zh: 原始数据进行线性转换。
 - en: '[![6](images/6.png)](#co_financial_data_science_CO21-6)'
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_data_science_CO21-6)'
 - en: The column headers as single characters.
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: 将列标题作为单个字符。
 - en: '[![7](images/7.png)](#co_financial_data_science_CO21-7)'
+  id: totrans-388
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_financial_data_science_CO21-7)'
 - en: The `DatetimeIndex` object.
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DatetimeIndex`对象。'
 - en: '[![8](images/8.png)](#co_financial_data_science_CO21-8)'
+  id: totrans-390
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](images/8.png)](#co_financial_data_science_CO21-8)'
 - en: The first five rows of data.
+  id: totrans-391
   prefs: []
   type: TYPE_NORMAL
+  zh: 前五行的数据。
 - en: '`Cufflinks` adds a new method to the `DataFrame` class: `df.iplot()`. This
     method uses `Plotly` in the backend to create interactive plots. The code examples
     in this section all make use of the option to download the interactive plot as
     a static bitmap, which in turn embedded in the text. In the Jupyter Notebook environment,
     the created plots are all interactive. The result of the following code is shown
     as <<>>.'
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Cufflinks`为`DataFrame`类添加了一个新方法：`df.iplot()`。此方法在后台使用`Plotly`创建交互式图。本节中的代码示例都利用了将交互式图下载为静态位图的选项，然后将其嵌入到文本中。在Jupyter
+    Notebook环境中，创建的绘图都是交互式的。下面代码的结果显示为<<>>。'
 - en: '[PRE31]'
+  id: totrans-393
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO22-1)'
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO22-1)'
 - en: This makes use of the offline (notebook mode) capabilities of `Plotly`.
+  id: totrans-395
   prefs: []
   type: TYPE_NORMAL
+  zh: 这利用了`Plotly`的离线（笔记本模式）功能。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO22-2)'
+  id: totrans-396
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO22-2)'
 - en: The `df.iplot()` method is called with parameter `asFigure=True` to allow for
     local plotting and embedding.
+  id: totrans-397
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用参数`asFigure=True`调用`df.iplot()`方法以允许本地绘图和嵌入。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO22-3)'
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO22-3)'
 - en: The `image` option provides in addition a static bitmap version of the plot.
+  id: totrans-399
   prefs: []
   type: TYPE_NORMAL
+  zh: '`image`选项还提供了绘图的静态位图版本。'
 - en: '[![4](images/4.png)](#co_financial_data_science_CO22-4)'
+  id: totrans-400
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO22-4)'
 - en: The filename for the bitmap to be saved is specified (file type extension is
     added automatically).
+  id: totrans-401
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定要保存的位图的文件名（文件类型扩展名会自动添加）。
 - en: '![ply 01](images/ply_01.png)'
+  id: totrans-402
   prefs: []
   type: TYPE_IMG
+  zh: '![ply 01](images/ply_01.png)'
 - en: Figure 7-22\. Line plot for time series data with `Plotly`, `pandas` and `Cufflinks`
+  id: totrans-403
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-22\. 使用`Plotly`、`pandas`和`Cufflinks`绘制时间序列数据的线图
 - en: 'As with `matplotlib` in general or also with the `pandas` plotting functionality,
     there are multiple parameters available to customize such plots (see [Figure 7-23](#plotly_02)):'
+  id: totrans-404
   prefs: []
   type: TYPE_NORMAL
+  zh: 与`matplotlib`一般或`pandas`绘图功能一样，可用于自定义此类绘图的多个参数（参见[图 7-23](#plotly_02)）：
 - en: '[PRE32]'
+  id: totrans-405
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO23-1)'
+  id: totrans-406
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO23-1)'
 - en: Selects a theme (plotting style) for the plot.
+  id: totrans-407
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择绘图的主题（绘图样式）。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO23-2)'
+  id: totrans-408
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO23-2)'
 - en: Adds a title.
+  id: totrans-409
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加标题。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO23-3)'
+  id: totrans-410
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO23-3)'
 - en: Adds a x label.
+  id: totrans-411
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加 x 标签。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO23-4)'
+  id: totrans-412
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO23-4)'
 - en: Adds a y label.
+  id: totrans-413
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加 y 标签。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO23-5)'
+  id: totrans-414
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO23-5)'
 - en: Defines the plotting *mode* (line, marker, etc.) by column.
+  id: totrans-415
   prefs: []
   type: TYPE_NORMAL
+  zh: 按列定义绘图*模式*（线条、标记等）。
 - en: '[![6](images/6.png)](#co_financial_data_science_CO23-6)'
+  id: totrans-416
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](images/6.png)](#co_financial_data_science_CO23-6)'
 - en: Defines the symbols to be used as markers by column.
+  id: totrans-417
   prefs: []
   type: TYPE_NORMAL
+  zh: 按列定义要用作标记的符号。
 - en: '[![7](images/7.png)](#co_financial_data_science_CO23-7)'
+  id: totrans-418
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](images/7.png)](#co_financial_data_science_CO23-7)'
 - en: Fixes the size for all markers.
+  id: totrans-419
   prefs: []
   type: TYPE_NORMAL
+  zh: 为所有标记固定大小。
 - en: '[![8](images/8.png)](#co_financial_data_science_CO23-8)'
+  id: totrans-420
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](images/8.png)](#co_financial_data_science_CO23-8)'
 - en: Specifies the plotting color by column
+  id: totrans-421
   prefs: []
   type: TYPE_NORMAL
+  zh: 按列指定绘图颜色
 - en: '![ply 02](images/ply_02.png)'
+  id: totrans-422
   prefs: []
   type: TYPE_IMG
+  zh: '![ply 02](images/ply_02.png)'
 - en: Figure 7-23\. Line plot for two columns of the `DataFrame` object with customizations
+  id: totrans-423
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-23\. `DataFrame` 对象的两列线图及自定义
 - en: 'Similar to `matplotlib`, `Plotly` allows for a number of different plotting
     types. Plotting available via `Cufflinks` are: `chart, scatter, bar, box, spread,
     ratio, heatmap, surface, histogram, bubble, bubble3d, scatter3d, scattergeo, ohlc,
     candle, pie` and `choroplet`. As an example for a plotting type different from
     a line plot consider the histogram (see [Link to Come]):'
+  id: totrans-424
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 `matplotlib` 类似，`Plotly` 允许使用多种不同的绘图类型。通过 `Cufflinks` 可用的绘图有：`chart, scatter,
+    bar, box, spread, ratio, heatmap, surface, histogram, bubble, bubble3d, scatter3d,
+    scattergeo, ohlc, candle, pie` 和 `choroplet`。作为与线图不同的绘图类型的示例，请考虑直方图（参见[链接即将到来]）：
 - en: '[PRE33]'
+  id: totrans-425
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO24-1)'
+  id: totrans-426
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO24-1)'
 - en: Specifies the plotting type.
+  id: totrans-427
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定绘图类型。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO24-2)'
+  id: totrans-428
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO24-2)'
 - en: Requires separate subplots for every column.
+  id: totrans-429
   prefs: []
   type: TYPE_NORMAL
+  zh: 每列需要单独的子图。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO24-3)'
+  id: totrans-430
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO24-3)'
 - en: Sets the `bins` parameters (buckets to be used = bars to be plotted).
+  id: totrans-431
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置 `bins` 参数（要使用的桶=要绘制的条形图）。
 - en: '![ply 03](images/ply_03.png)'
+  id: totrans-432
   prefs: []
   type: TYPE_IMG
+  zh: '![ply 03](images/ply_03.png)'
 - en: Figure 7-24\. Histograms per column of the `DataFrame` object
+  id: totrans-433
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-24\. `DataFrame` 对象的每列直方图
 - en: Financial Plots
+  id: totrans-434
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 金融图表
 - en: The combination of `Ploty`, `Cufflinks` and `pandas` proves particularly powerful
     when working with financial time series data. `Cufflinks` provides specialized
     functionality to create typical financial plots and to add typical financial charting
     elements, such as the Relative-Strength Indicator (RSI), to name but one example.
     To this end, a persistent `QuantFig` object is created that can be plotted the
     same way as a `DataFrame` object with `Cufflinks`.
+  id: totrans-435
   prefs: []
   type: TYPE_NORMAL
+  zh: 当处理金融时间序列数据时，`Ploty`、`Cufflinks` 和 `pandas` 的组合特别强大。`Cufflinks` 提供了专门的功能，用于创建典型的金融图，并添加典型的金融图表元素，例如相对强度指标（RSI），这只是一个例子。为此，创建了一个持久的
+    `QuantFig` 对象，可以像使用 `Cufflinks` 的 `DataFrame` 对象一样绘制。
 - en: 'This sub-section uses a real financial data sets: time series data for the
     EUR/USD exchange rate (source: FXCM Forex Capital Markets Ltd.).'
+  id: totrans-436
   prefs: []
   type: TYPE_NORMAL
+  zh: 此子部分使用真实的金融数据集：欧元/美元汇率的时间序列数据（来源：FXCM Forex Capital Markets Ltd.）。
 - en: '[PRE34]'
+  id: totrans-437
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO25-1)'
+  id: totrans-438
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO25-1)'
 - en: Reads the financial data from a Comma Separated Value (CSV) file.
+  id: totrans-439
   prefs: []
   type: TYPE_NORMAL
+  zh: 从逗号分隔值（CSV）文件中读取财务数据。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO25-2)'
+  id: totrans-440
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO25-2)'
 - en: The resulting `DataFrame` objects consists of multiple columns and more than
     2,800 data rows.
+  id: totrans-441
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果 `DataFrame` 对象包含多列和超过 2,800 行数据。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO25-3)'
+  id: totrans-442
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO25-3)'
 - en: This selects four columns from the `DataFrame` object (Open-High-Low-Close of
     OHLC).
+  id: totrans-443
   prefs: []
   type: TYPE_NORMAL
+  zh: 从 `DataFrame` 对象中选择四列（开-高-低-收）。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO25-4)'
+  id: totrans-444
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO25-4)'
 - en: Only a few data rows are used for the visualization.
+  id: totrans-445
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅用于可视化的少量数据行。
 - en: '[![5](images/5.png)](#co_financial_data_science_CO25-5)'
+  id: totrans-446
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](images/5.png)](#co_financial_data_science_CO25-5)'
 - en: The final five rows of the resulting data set `quotes`.
+  id: totrans-447
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果数据集 `quotes` 的最后五行。
 - en: During instantiation, the `QuantFig` object takes the `DataFrame` object as
     input and allows for some basic customization. Plotting the data stored in the
     `QuantFig` object `qf` then happens with the `qf.iplot()` method (see [Figure 7-25](#qf_01)).
+  id: totrans-448
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实例化期间，`QuantFig` 对象将 `DataFrame` 对象作为输入，并允许进行一些基本的自定义。然后使用 `qf.iplot()` 方法绘制存储在
+    `QuantFig` 对象 `qf` 中的数据（参见[图 7-25](#qf_01)）。
 - en: '[PRE35]'
+  id: totrans-449
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO26-1)'
+  id: totrans-450
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO26-1)'
 - en: The `DataFrame` object is passed to the `QuantFig` constructor.
+  id: totrans-451
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame` 对象传递给 `QuantFig` 构造函数。'
 - en: '[![2](images/2.png)](#co_financial_data_science_CO26-2)'
+  id: totrans-452
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO26-2)'
 - en: This adds a figure title.
+  id: totrans-453
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加图标题。
 - en: '[![3](images/3.png)](#co_financial_data_science_CO26-3)'
+  id: totrans-454
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](images/3.png)](#co_financial_data_science_CO26-3)'
 - en: The legend is placed at the top of the plot.
+  id: totrans-455
   prefs: []
   type: TYPE_NORMAL
+  zh: 图例放置在图的顶部。
 - en: '[![4](images/4.png)](#co_financial_data_science_CO26-4)'
+  id: totrans-456
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](images/4.png)](#co_financial_data_science_CO26-4)'
 - en: This gives the data set a name.
+  id: totrans-457
   prefs: []
   type: TYPE_NORMAL
+  zh: 这给数据集起了个名字。
 - en: '![qf 01](images/qf_01.png)'
+  id: totrans-458
   prefs: []
   type: TYPE_IMG
+  zh: '![qf 01](images/qf_01.png)'
 - en: Figure 7-25\. OHLC plot of EUR/USD data
+  id: totrans-459
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-25\. EUR/USD 数据的 OHLC 图
 - en: Adding typical financial charting elements, such as Bollinger bands, happens
     via different methods available for the `QuantFig` object (see [Figure 7-26](#qf_02)).
+  id: totrans-460
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加典型的金融图表元素，如 Bollinger 带，通过 `QuantFig` 对象的不同可用方法进行 (见[图 7-26](#qf_02))。
 - en: '[PRE36]'
+  id: totrans-461
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO27-1)'
+  id: totrans-462
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO27-1)'
 - en: The number of periods for the Bollinger band.
+  id: totrans-463
   prefs: []
   type: TYPE_NORMAL
+  zh: Bollinger 带的周期数。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO27-2)'
+  id: totrans-464
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO27-2)'
 - en: The number of standard deviations to be used for the band width.
+  id: totrans-465
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于带宽的标准偏差数。
 - en: '![qf 02](images/qf_02.png)'
+  id: totrans-466
   prefs: []
   type: TYPE_IMG
+  zh: '![qf 02](images/qf_02.png)'
 - en: Figure 7-26\. OHLC plot of EUR/USD data with Bollinger band
+  id: totrans-467
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-26\. EUR/USD 数据的 OHLC 图，带有 Bollinger 带
 - en: Certain financial indicators, such as RSI, are added as a subplot (see [Figure 7-27](#qf_03)).
+  id: totrans-468
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加了某些金融指标，如 RSI，作为一个子图 (见[图 7-27](#qf_03))。
 - en: '[PRE37]'
+  id: totrans-469
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '[![1](images/1.png)](#co_financial_data_science_CO28-1)'
+  id: totrans-470
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](images/1.png)](#co_financial_data_science_CO28-1)'
 - en: Fixes the RSI period.
+  id: totrans-471
   prefs: []
   type: TYPE_NORMAL
+  zh: 修复了 RSI 周期。
 - en: '[![2](images/2.png)](#co_financial_data_science_CO28-2)'
+  id: totrans-472
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](images/2.png)](#co_financial_data_science_CO28-2)'
 - en: Does not show an upper or lower band.
+  id: totrans-473
   prefs: []
   type: TYPE_NORMAL
+  zh: 不显示上限或下限带。
 - en: '![qf 03](images/qf_03.png)'
+  id: totrans-474
   prefs: []
   type: TYPE_IMG
+  zh: '![qf 03](images/qf_03.png)'
 - en: Figure 7-27\. OHLC plot of EUR/USD data with Bollinger band and RSI
+  id: totrans-475
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-27\. EUR/USD 数据的 OHLC 图，带有 Bollinger 带和 RSI
 - en: Conclusions
+  id: totrans-476
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: '`matplotlib` can be considered both the benchmark and the workhorse when it
     comes to data visualization in `Python`. It is tightly integrated with `NumPy`
     and `pandas`. The basic functionality is easily and conveniently accessed. However,
     on the other hand, `matplotlib` is a rather mighty library with a somewhat complex
     API. This makes it impossible to give a broader overview of all the capabilities
     of `matplotlib` in this chapter.'
+  id: totrans-477
   prefs: []
   type: TYPE_NORMAL
+  zh: 当涉及到 Python 中的数据可视化时，`matplotlib` 可以被认为是基准和工作马。它与 `NumPy` 和 `pandas` 紧密集成。基本功能易于方便地访问。然而，另一方面，`matplotlib`
+    是一个相当强大的库，具有一种相对复杂的 API。这使得在本章中无法对 `matplotlib` 的所有功能进行更广泛的概述。
 - en: This chapter introduces the basic functions of `matplotlib` for 2D and 3D plotting
     useful in many financial contexts. Other chapters provide further examples of
     how to use this fundamental library for visualization.
+  id: totrans-478
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了在许多金融背景下有用的 `matplotlib` 的 2D 和 3D 绘图的基本功能。其他章节提供了如何在可视化中使用这个基本库的更多示例。
 - en: In addition to `matplotlib`, this chapter covers `Plotly` in combination with
     `Cufflinks`. This combination makes the creation of interactive `D3.js` plots
     a convenient affair since only a single method call on a `DataFrame` object is
     necessary in general. All technicalities are taken care of in the backend. Furthermore,
     `Cufflinks` provides with the `QuantFig` object an easy way to create typical
     financial plots with popular financial indicators.
+  id: totrans-479
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了 `matplotlib`，本章还涵盖了 `Plotly` 与 `Cufflinks` 的组合。这种组合使得创建交互式 `D3.js` 图表成为一件方便的事情，因为通常只需在
+    `DataFrame` 对象上进行一次方法调用。所有的技术细节都在后端处理。此外，`Cufflinks` 通过 `QuantFig` 对象提供了一种创建带有流行金融指标的典型金融图表的简单方法。
 - en: Further Reading
+  id: totrans-480
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步阅读
 - en: 'The major resources for `matplotlib` can be found on the Web:'
+  id: totrans-481
   prefs: []
   type: TYPE_NORMAL
+  zh: '`matplotlib` 的主要资源可以在网络上找到：'
 - en: 'The home page of `matplotlib` is, of course, the best starting point: [*http://matplotlib.org*](http://matplotlib.org).'
+  id: totrans-482
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`matplotlib` 的主页，当然，是最好的起点：[*http://matplotlib.org*](http://matplotlib.org)。'
 - en: 'There’s a gallery with many useful examples: [*http://matplotlib.org/gallery.html*](http://matplotlib.org/gallery.html).'
+  id: totrans-483
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 有许多有用示例的画廊：[*http://matplotlib.org/gallery.html*](http://matplotlib.org/gallery.html)。
 - en: 'A tutorial for 2D plotting is found here: [*http://matplotlib.org/users/pyplot_tutorial.html*](http://matplotlib.org/users/pyplot_tutorial.html).'
+  id: totrans-484
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个用于 2D 绘图的教程在这里：[*http://matplotlib.org/users/pyplot_tutorial.html*](http://matplotlib.org/users/pyplot_tutorial.html)。
 - en: 'Another one for 3D plotting is here: [*http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html*](http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html).'
+  id: totrans-485
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 另一个用于 3D 绘图的是：[*http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html*](http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html)。
 - en: It has become kind of a standard routine to consult the gallery, to look there
     for an appropriate visualization example, and to start with the corresponding
     example code.
+  id: totrans-486
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在已经成为一种标准的例程去参考画廊，寻找合适的可视化示例，并从相应的示例代码开始。
 - en: 'The major resources for `Plotly` and `Cufflinks` are also online:'
+  id: totrans-487
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Plotly` 和 `Cufflinks` 的主要资源也可以在线找到：'
 - en: 'The major page: [*http://plot.ly*](http://plot.ly)'
+  id: totrans-488
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`matplotlib` 的主页：[*http://matplotlib.org*](http://matplotlib.org)'
 - en: 'A tutorial to get started with Python: [*https://plot.ly/python/getting-started/*](https://plot.ly/python/getting-started/)'
+  id: totrans-489
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个 Python 入门教程：[*https://plot.ly/python/getting-started/*](https://plot.ly/python/getting-started/)
 - en: 'The `Cufflinks` Github page: [*https://github.com/santosjorge/cufflinks*](https://github.com/santosjorge/cufflinks)'
+  id: totrans-490
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Cufflinks` 的 Github 页面：[*https://github.com/santosjorge/cufflinks*](https://github.com/santosjorge/cufflinks)'
 - en: ^([1](ch07.html#idm140277668085472-marker)) For an overview of which plot types
     are available, visit the [`matplotlib` gallery](http://matplotlib.org/gallery.html).
+  id: totrans-491
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch07.html#idm140277668085472-marker)) 想了解可用的绘图类型概述，请访问[`matplotlib` gallery](http://matplotlib.org/gallery.html)。

@@ -151,13 +151,13 @@ Out[17]: Decimal('0.09090909090909090909090909091')
 您可以通过改变`Context`对象的相应属性值来改变表示的精度：
 
 ```py
-In [18]: decimal.getcontext().prec = 4  ![1](img/1.png)
+In [18]: decimal.getcontext().prec = 4  # ①
 
 In [19]: e = Decimal(1) / Decimal (11)
          e
 Out[19]: Decimal('0.09091')
 
-In [20]: decimal.getcontext().prec = 50  ![2](img/2.png)
+In [20]: decimal.getcontext().prec = 50  # ②
 
 In [21]: f = Decimal(1) / Decimal (11)
          f
@@ -230,7 +230,7 @@ Out[24]: ['False',
 `True`和`False`是`bool`数据类型，代表布尔值。以下代码展示了 Python 对相同操作数应用*比较*操作符后生成的`bool`对象。
 
 ```py
-In [25]: 4 > 3  ![1](img/1.png)
+In [25]: 4 > 3  # ①
 Out[25]: True
 
 In [26]: type(4 > 3)
@@ -239,19 +239,19 @@ Out[26]: bool
 In [27]: type(False)
 Out[27]: bool
 
-In [28]: 4 >= 3  ![2](img/2.png)
+In [28]: 4 >= 3  # ②
 Out[28]: True
 
-In [29]: 4 < 3  ![3](img/3.png)
+In [29]: 4 < 3  # ③
 Out[29]: False
 
-In [30]: 4 <= 3  ![4](img/4.png)
+In [30]: 4 <= 3  # ④
 Out[30]: False
 
-In [31]: 4 == 3  ![5](img/5.png)
+In [31]: 4 == 3  # ⑤
 Out[31]: False
 
-In [32]: 4 != 3  ![6](img/6.png)
+In [32]: 4 != 3  # ⑥
 Out[32]: True
 ```
 
@@ -326,15 +326,15 @@ Out[44]: False
 其一主要应用是通过其他 Python 关键字（例如`if`或`while`）来控制代码流程（本章后面将有更多示例）。
 
 ```py
-In [45]: if 4 > 3:  ![1](img/1.png)
-             print('condition true')  ![2](img/2.png)
+In [45]: if 4 > 3:  # ①
+             print('condition true')  # ②
 
          condition true
 
-In [46]: i = 0  ![3](img/3.png)
-         while i < 4:  ![4](img/4.png)
-             print('condition true, i = ', i)  ![5](img/5.png)
-             i += 1  ![6](img/6.png)
+In [46]: i = 0  # ③
+         while i < 4:  # ④
+             print('condition true, i = ', i)  # ⑤
+             i += 1  # ⑥
 
          condition true, i =  0
          condition true, i =  1
@@ -474,17 +474,17 @@ Out[62]: 'www.python.org'
 打印`str`对象或其他 Python 对象的字符串表示通常是通过`print()`函数完成的（在 Python 2.7 中是一个语句）。
 
 ```py
-In [63]: print('Python for Finance')  ![1](img/1.png)
+In [63]: print('Python for Finance')  # ①
 
          Python for Finance
 
-In [64]: print(t)  ![2](img/2.png)
+In [64]: print(t)  # ②
 
          this is a string object
 
 In [65]: i = 0
          while i < 4:
-             print(i)  ![3](img/3.png)
+             print(i)  # ③
              i += 1
 
          0
@@ -494,7 +494,7 @@ In [65]: i = 0
 
 In [66]: i = 0
          while i < 4:
-             print(i, end='|')  ![4](img/4.png)
+             print(i, end='|')  # ④
              i += 1
 
          0|1|2|3|
@@ -519,34 +519,34 @@ In [66]: i = 0
 Python 提供了强大的字符串替换操作。有通过`%`字符进行的旧方法和通过花括号`{}`和`format()`进行的新方法。两者在实践中仍然适用。本节不能提供所有选项的详尽说明，但以下代码片段显示了一些重要的内容。首先，*旧*的方法。
 
 ```py
-In [67]: 'this is an integer %d' % 15  ![1](img/1.png)
+In [67]: 'this is an integer %d' % 15  # ①
 Out[67]: 'this is an integer 15'
 
-In [68]: 'this is an integer %4d' % 15  ![2](img/2.png)
+In [68]: 'this is an integer %4d' % 15  # ②
 Out[68]: 'this is an integer   15'
 
-In [69]: 'this is an integer %04d' % 15  ![3](img/3.png)
+In [69]: 'this is an integer %04d' % 15  # ③
 Out[69]: 'this is an integer 0015'
 
-In [70]: 'this is a float %f' % 15.3456  ![4](img/4.png)
+In [70]: 'this is a float %f' % 15.3456  # ④
 Out[70]: 'this is a float 15.345600'
 
-In [71]: 'this is a float %.2f' % 15.3456  ![5](img/5.png)
+In [71]: 'this is a float %.2f' % 15.3456  # ⑤
 Out[71]: 'this is a float 15.35'
 
-In [72]: 'this is a float %8f' % 15.3456  ![6](img/6.png)
+In [72]: 'this is a float %8f' % 15.3456  # ⑥
 Out[72]: 'this is a float 15.345600'
 
-In [73]: 'this is a float %8.2f' % 15.3456  ![7](img/7.png)
+In [73]: 'this is a float %8.2f' % 15.3456  # ⑦
 Out[73]: 'this is a float    15.35'
 
-In [74]: 'this is a float %08.2f' % 15.3456  ![8](img/8.png)
+In [74]: 'this is a float %08.2f' % 15.3456  # ⑧
 Out[74]: 'this is a float 00015.35'
 
-In [75]: 'this is a string %s' % 'Python'  ![9](img/9.png)
+In [75]: 'this is a string %s' % 'Python'  # ⑨
 Out[75]: 'this is a string Python'
 
-In [76]: 'this is a string %10s' % 'Python'  ![10](img/10.png)
+In [76]: 'this is a string %10s' % 'Python'  # ⑩
 Out[76]: 'this is a string     Python'
 ```
 
@@ -792,23 +792,23 @@ Out[104]: list
 除了`tuple`对象的特性外，``list``对象还可以通过不同的方法进行扩展和缩减。换句话说，虽然`string`和`tuple`对象是*不可变*序列对象（具有索引），一旦创建就无法更改，但`list`对象是*可变*的，并且可以通过不同的操作进行更改。你可以将`list`对象附加到现有的`list`对象上，等等：
 
 ```py
-In [105]: l.append([4, 3])  ![1](img/1.png)
+In [105]: l.append([4, 3])  # ①
           l
 Out[105]: [1, 2.5, 'data', [4, 3]]
 
-In [106]: l.extend([1.0, 1.5, 2.0])  ![2](img/2.png)
+In [106]: l.extend([1.0, 1.5, 2.0])  # ②
           l
 Out[106]: [1, 2.5, 'data', [4, 3], 1.0, 1.5, 2.0]
 
-In [107]: l.insert(1, 'insert')  ![3](img/3.png)
+In [107]: l.insert(1, 'insert')  # ③
           l
 Out[107]: [1, 'insert', 2.5, 'data', [4, 3], 1.0, 1.5, 2.0]
 
-In [108]: l.remove('data')  ![4](img/4.png)
+In [108]: l.remove('data')  # ④
           l
 Out[108]: [1, 'insert', 2.5, [4, 3], 1.0, 1.5, 2.0]
 
-In [109]: p = l.pop(3)  ![5](img/5.png)
+In [109]: p = l.pop(3)  # ⑤
           print(l, p)
 
           [1, 'insert', 2.5, 1.0, 1.5, 2.0] [4, 3]
@@ -837,7 +837,7 @@ In [109]: p = l.pop(3)  ![5](img/5.png)
 切片也很容易实现。在这里，*切片*指的是将数据集分解为较小部分（感兴趣的部分）的操作：
 
 ```py
-In [110]: l[2:5]  ![1](img/1.png)
+In [110]: l[2:5]  # ①
 Out[110]: [2.5, 1.0, 1.5]
 ```
 
@@ -880,7 +880,7 @@ In [111]: for element in l[2:5]:
 这相比于典型的基于计数器的循环提供了非常高的灵活性。基于（标准的）`list`对象`range`也可以使用计数器进行循环：
 
 ```py
-In [112]: r = range(0, 8, 1)  ![1](img/1.png)
+In [112]: r = range(0, 8, 1)  # ①
           r
 Out[112]: range(0, 8)
 
@@ -911,7 +911,7 @@ In [114]: for i in range(2, 5):
 
 ```py
 In [115]: for i in range(1, 10):
-              if i % 2 == 0:  ![1](img/1.png)
+              if i % 2 == 0:  # ①
                   print("%d is even" % i)
               elif i % 3 == 0:
                   print("%d is multiple of 3" % i)
@@ -1091,19 +1091,19 @@ In [132]: t = set(['d', 'dd', 'uu', 'u'])
 使用 `set` 对象，您可以像在数学集合论中一样实现操作。例如，您可以生成并集、交集和差异：
 
 ```py
-In [133]: s.union(t)  ![1](img/1.png)
+In [133]: s.union(t)  # ①
 Out[133]: {'d', 'dd', 'du', 'u', 'ud', 'uu'}
 
-In [134]: s.intersection(t)  ![2](img/2.png)
+In [134]: s.intersection(t)  # ②
 Out[134]: {'d', 'u'}
 
-In [135]: s.difference(t)  ![3](img/3.png)
+In [135]: s.difference(t)  # ③
 Out[135]: {'du', 'ud'}
 
-In [136]: t.difference(s)  ![4](img/4.png)
+In [136]: t.difference(s)  # ④
 Out[136]: {'dd', 'uu'}
 
-In [137]: s.symmetric_difference(t)  ![5](img/5.png)
+In [137]: s.symmetric_difference(t)  # ⑤
 Out[137]: {'dd', 'du', 'ud', 'uu'}
 ```
 
@@ -1131,8 +1131,8 @@ Out[137]: {'dd', 'du', 'ud', 'uu'}
 
 ```py
 In [138]: from random import randint
-          l = [randint(0, 10) for i in range(1000)]  ![1](img/1.png)
-          len(l)  ![2](img/2.png)
+          l = [randint(0, 10) for i in range(1000)]  # ①
+          len(l)  # ②
 Out[138]: 1000
 
 In [139]: l[:20]

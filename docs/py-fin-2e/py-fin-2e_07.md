@@ -31,16 +31,16 @@
 在创建样本数据并开始绘图之前，首先进行一些导入和自定义：
 
 ```py
-In [1]: import matplotlib as mpl  ![1](img/1.png)
+In [1]: import matplotlib as mpl  # ①
 
-In [2]: mpl.__version__  ![2](img/2.png)
+In [2]: mpl.__version__  # ②
 Out[2]: '2.0.2'
 
-In [3]: import matplotlib.pyplot as plt  ![4](img/4.png)
+In [3]: import matplotlib.pyplot as plt  # ④
 
-In [4]: plt.style.use('seaborn')  ![5](img/5.png)
+In [4]: plt.style.use('seaborn')  # ⑤
 
-In [5]: mpl.rcParams['font.family'] = 'serif'  ![3](img/3.png)
+In [5]: mpl.rcParams['font.family'] = 'serif'  # ③
 
 In [6]: %matplotlib inline
 ```
@@ -78,12 +78,12 @@ In [6]: %matplotlib inline
 ```py
 In [7]: import numpy as np
 
-In [8]: np.random.seed(1000)  ![1](img/1.png)
+In [8]: np.random.seed(1000)  # ①
 
-In [9]: y = np.random.standard_normal(20)  ![2](img/2.png)
+In [9]: y = np.random.standard_normal(20)  # ②
 
-In [10]: x = np.arange(len(y))  ![3](img/3.png)
-         plt.plot(x, y);  ![4](img/4.png)
+In [10]: x = np.arange(len(y))  # ③
+         plt.plot(x, y);  # ④
          # plt.savefig('../../images/ch07/mpl_01')
 ```
 
@@ -137,7 +137,7 @@ In [12]: plt.plot(y.cumsum());
 
 ```py
 In [13]: plt.plot(y.cumsum())
-         plt.grid(False);  ![1](img/1.png)
+         plt.grid(False);  # ①
          # plt.savefig('../../images/ch07/mpl_04')
 ```
 
@@ -180,12 +180,12 @@ In [14]: plt.plot(y.cumsum())
 为了更好地可读性，图表通常包含许多标签，例如标题和描述``x``和``y``值性质的标签。这些分别通过函数`plt.title`、`plt.xlabel`和`plt.ylabel`添加。默认情况下，`plot`绘制连续线条，即使提供了离散数据点。通过选择不同的样式选项来绘制离散点。图 7-6 叠加了（红色）点和（蓝色）线，线宽为 1.5 点：
 
 ```py
-In [15]: plt.figure(figsize=(10, 6))  ![1](img/1.png)
-         plt.plot(y.cumsum(), 'b', lw=1.5)  ![2](img/2.png)
-         plt.plot(y.cumsum(), 'ro')  ![3](img/3.png)
-         plt.xlabel('index')  ![4](img/4.png)
-         plt.ylabel('value')  ![5](img/5.png)
-         plt.title('A Simple Plot');  ![6](img/6.png)
+In [15]: plt.figure(figsize=(10, 6))  # ①
+         plt.plot(y.cumsum(), 'b', lw=1.5)  # ②
+         plt.plot(y.cumsum(), 'ro')  # ③
+         plt.xlabel('index')  # ④
+         plt.ylabel('value')  # ⑤
+         plt.title('A Simple Plot');  # ⑥
          # plt.savefig('../../images/ch07/mpl_06')
 ```
 
@@ -297,10 +297,10 @@ In [17]: plt.figure(figsize=(10, 6))
 
 ```py
 In [18]: plt.figure(figsize=(10, 6))
-         plt.plot(y[:, 0], lw=1.5, label='1st')  ![1](img/1.png)
-         plt.plot(y[:, 1], lw=1.5, label='2nd')  ![1](img/1.png)
+         plt.plot(y[:, 0], lw=1.5, label='1st')  # ①
+         plt.plot(y[:, 1], lw=1.5, label='2nd')  # ①
          plt.plot(y, 'ro')
-         plt.legend(loc=0)  ![2](img/2.png)
+         plt.legend(loc=0)  # ②
          plt.xlabel('index')
          plt.ylabel('value')
          plt.title('A Simple Plot');
@@ -341,7 +341,7 @@ In [18]: plt.figure(figsize=(10, 6))
 具有相似缩放的多个数据集，例如相同财务风险因素的模拟路径，可以使用单个 y 轴绘制。然而，通常数据集显示的缩放相差较大，并且使用单个 y 轴绘制此类数据通常会导致视觉信息的严重丢失。为了说明效果，我们将两个数据子集中的第一个缩放因子放大了 100 倍，并再次绘制数据（参见 图 7-9）：
 
 ```py
-In [19]: y[:, 0] = y[:, 0] * 100  ![1](img/1.png)
+In [19]: y[:, 0] = y[:, 0] * 100  # ①
 
 In [20]: plt.figure(figsize=(10, 6))
          plt.plot(y[:, 0], lw=1.5, label='1st')
@@ -371,14 +371,14 @@ In [20]: plt.figure(figsize=(10, 6))
 让我们先将第二个 y 轴引入图表中。图 7-10 现在有了两个不同的 y 轴。左侧的 y 轴用于第一个数据集，而右侧的 y 轴用于第二个数据集。因此，也有了两个图例：
 
 ```py
-In [21]: fig, ax1 = plt.subplots()  ![1](img/1.png)
+In [21]: fig, ax1 = plt.subplots()  # ①
          plt.plot(y[:, 0], 'b', lw=1.5, label='1st')
          plt.plot(y[:, 0], 'ro')
          plt.legend(loc=8)
          plt.xlabel('index')
          plt.ylabel('value 1st')
          plt.title('A Simple Plot')
-         ax2 = ax1.twinx()  ![2](img/2.png)
+         ax2 = ax1.twinx()  # ②
          plt.plot(y[:, 1], 'g', lw=1.5, label='2nd')
          plt.plot(y[:, 1], 'ro')
          plt.legend(loc=0)
@@ -411,13 +411,13 @@ ax2 = ax1.twinx()
 
 ```py
 In [22]: plt.figure(figsize=(10, 6))
-         plt.subplot(211)  ![1](img/1.png)
+         plt.subplot(211)  # ①
          plt.plot(y[:, 0], lw=1.5, label='1st')
          plt.plot(y[:, 0], 'ro')
          plt.legend(loc=0)
          plt.ylabel('value')
          plt.title('A Simple Plot')
-         plt.subplot(212)  ![2](img/2.png)
+         plt.subplot(212)  # ②
          plt.plot(y[:, 1], 'g', lw=1.5, label='2nd')
          plt.plot(y[:, 1], 'ro')
          plt.legend(loc=0)
@@ -453,7 +453,7 @@ In [23]: plt.figure(figsize=(10, 6))
          plt.title('1st Data Set')
          plt.subplot(122)
          plt.bar(np.arange(len(y)), y[:, 1], width=0.5,
-                 color='g', label='2nd')  ![1](img/1.png)
+                 color='g', label='2nd')  # ①
          plt.legend(loc=0)
          plt.xlabel('index')
          plt.title('2nd Data Set');
@@ -475,10 +475,10 @@ In [23]: plt.figure(figsize=(10, 6))
 第一种是*散点图*，其中一个数据集的值作为另一个数据集的``x``值。图 7-13 展示了这样一个图。例如，此类图用于绘制一个金融时间序列的回报与另一个金融时间序列的回报。对于此示例，我们将使用一个新的二维数据集以及一些更多的数据：
 
 ```py
-In [24]: y = np.random.standard_normal((1000, 2))  ![1](img/1.png)
+In [24]: y = np.random.standard_normal((1000, 2))  # ①
 
 In [25]: plt.figure(figsize=(10, 6))
-         plt.plot(y[:, 0], y[:, 1], 'ro')  ![2](img/2.png)
+         plt.plot(y[:, 0], y[:, 1], 'ro')  # ②
          plt.xlabel('1st')
          plt.ylabel('2nd')
          plt.title('Scatter Plot');
@@ -501,7 +501,7 @@ In [25]: plt.figure(figsize=(10, 6))
 
 ```py
 In [26]: plt.figure(figsize=(10, 6))
-         plt.scatter(y[:, 0], y[:, 1], marker='o')  ![1](img/1.png)
+         plt.scatter(y[:, 0], y[:, 1], marker='o')  # ①
          plt.xlabel('1st')
          plt.ylabel('2nd')
          plt.title('Scatter Plot');
@@ -523,9 +523,9 @@ In [27]: c = np.random.randint(0, 10, len(y))
 
 In [28]: plt.figure(figsize=(10, 6))
          plt.scatter(y[:, 0], y[:, 1],
-                     c=c,  ![1](img/1.png)
-                     cmap='coolwarm',  ![2](img/2.png)
-                     marker='o')  ![3](img/3.png)
+                     c=c,  # ①
+                     cmap='coolwarm',  # ②
+                     marker='o')  # ③
          plt.colorbar()
          plt.xlabel('1st')
          plt.ylabel('2nd')
@@ -553,7 +553,7 @@ In [28]: plt.figure(figsize=(10, 6))
 
 ```py
 In [29]: plt.figure(figsize=(10, 6))
-         plt.hist(y, label=['1st', '2nd'], bins=25)  ![1](img/1.png)
+         plt.hist(y, label=['1st', '2nd'], bins=25)  # ①
          plt.legend(loc=0)
          plt.xlabel('value')
          plt.ylabel('frequency')
@@ -617,8 +617,8 @@ In [30]: plt.figure(figsize=(10, 6))
 
 ```py
 In [31]: fig, ax = plt.subplots(figsize=(10, 6))
-         plt.boxplot(y)  ![1](img/1.png)
-         plt.setp(ax, xticklabels=['1st', '2nd'])  ![2](img/2.png)
+         plt.boxplot(y)  # ①
+         plt.setp(ax, xticklabels=['1st', '2nd'])  # ②
          plt.xlabel('data set')
          plt.ylabel('value')
          plt.title('Boxplot');
@@ -655,13 +655,13 @@ plt.setp(line, linestyle='--')
 
 ```py
 In [32]: def func(x):
-             return 0.5 * np.exp(x) + 1  ![1](img/1.png)
-         a, b = 0.5, 1.5  ![2](img/2.png)
-         x = np.linspace(0, 2)  ![3](img/3.png)
-         y = func(x)  ![4](img/4.png)
-         Ix = np.linspace(a, b)  ![5](img/5.png)
-         Iy = func(Ix) ![6](img/6.png)
-         verts = [(a, 0)] + list(zip(Ix, Iy)) + [(b, 0)]  ![7](img/7.png)
+             return 0.5 * np.exp(x) + 1  # ①
+         a, b = 0.5, 1.5  # ②
+         x = np.linspace(0, 2)  # ③
+         y = func(x)  # ④
+         Ix = np.linspace(a, b)  # ⑤
+         Iy = func(Ix) # ⑥
+         verts = [(a, 0)] + list(zip(Ix, Iy)) + [(b, 0)]  # ⑦
 ```
 
 ①
@@ -697,18 +697,18 @@ In [32]: def func(x):
 ```py
 In [33]: from matplotlib.patches import Polygon
          fig, ax = plt.subplots(figsize=(10, 6))
-         plt.plot(x, y, 'b', linewidth=2)  ![1](img/1.png)
-         plt.ylim(ymin=0)  ![2](img/2.png)
-         poly = Polygon(verts, facecolor='0.7', edgecolor='0.5')  ![3](img/3.png)
-         ax.add_patch(poly)  ![3](img/3.png)
+         plt.plot(x, y, 'b', linewidth=2)  # ①
+         plt.ylim(ymin=0)  # ②
+         poly = Polygon(verts, facecolor='0.7', edgecolor='0.5')  # ③
+         ax.add_patch(poly)  # ③
          plt.text(0.5 * (a + b), 1, r'$\int_a^b f(x)\mathrm{d}x$',
-                  horizontalalignment='center', fontsize=20)  ![4](img/4.png)
-         plt.figtext(0.9, 0.075, '$x$')  ![5](img/5.png)
-         plt.figtext(0.075, 0.9, '$f(x)$')  ![5](img/5.png)
-         ax.set_xticks((a, b))  ![6](img/6.png)
-         ax.set_xticklabels(('$a$', '$b$'))  ![6](img/6.png)
-         ax.set_yticks([func(a), func(b)])  ![7](img/7.png)
-         ax.set_yticklabels(('$f(a)$', '$f(b)$'))  ![7](img/7.png)
+                  horizontalalignment='center', fontsize=20)  # ④
+         plt.figtext(0.9, 0.075, '$x$')  # ⑤
+         plt.figtext(0.075, 0.9, '$f(x)$')  # ⑤
+         ax.set_xticks((a, b))  # ⑥
+         ax.set_xticklabels(('$a$', '$b$'))  # ⑥
+         ax.set_yticks([func(a), func(b)])  # ⑦
+         ax.set_yticklabels(('$f(a)$', '$f(b)$'))  # ⑦
          # plt.savefig('../../images/ch07/mpl_19')
 Out[33]: [<matplotlib.text.Text at 0x1066af438>, <matplotlib.text.Text at 0x10669ba20>]
 ```
@@ -756,13 +756,13 @@ Out[33]: [<matplotlib.text.Text at 0x1066af438>, <matplotlib.text.Text at 0x1066
 这提供了一个二维坐标系。`NumPy`的`np.meshgrid()`函数可以从两个一维`ndarray`对象生成这样的系统：
 
 ```py
-In [34]: strike = np.linspace(50, 150, 24)  ![1](img/1.png)
+In [34]: strike = np.linspace(50, 150, 24)  # ①
 
-In [35]: ttm = np.linspace(0.5, 2.5, 24)  ![2](img/2.png)
+In [35]: ttm = np.linspace(0.5, 2.5, 24)  # ②
 
-In [36]: strike, ttm = np.meshgrid(strike, ttm)  ![3](img/3.png)
+In [36]: strike, ttm = np.meshgrid(strike, ttm)  # ③
 
-In [37]: strike[:2].round(1)  ![3](img/3.png)
+In [37]: strike[:2].round(1)  # ③
 Out[37]: array([[ 50. ,  54.3,  58.7,  63. ,  67.4,  71.7,  76.1,  80.4,  84.8,
                   89.1,  93.5,  97.8, 102.2, 106.5, 110.9, 115.2, 119.6, 123.9,
                  128.3, 132.6, 137. , 141.3, 145.7, 150. ],
@@ -770,9 +770,9 @@ Out[37]: array([[ 50. ,  54.3,  58.7,  63. ,  67.4,  71.7,  76.1,  80.4,  84.8,
                   89.1,  93.5,  97.8, 102.2, 106.5, 110.9, 115.2, 119.6, 123.9,
                  128.3, 132.6, 137. , 141.3, 145.7, 150. ]])
 
-In [38]: iv = (strike - 100) ** 2 / (100 * strike) / ttm  ![4](img/4.png)
+In [38]: iv = (strike - 100) ** 2 / (100 * strike) / ttm  # ④
 
-In [39]: iv[:5, :3]  ![4](img/4.png)
+In [39]: iv[:5, :3]  # ④
 Out[39]: array([[1.        , 0.76695652, 0.58132045],
                 [0.85185185, 0.65333333, 0.4951989 ],
                 [0.74193548, 0.56903226, 0.43130227],
@@ -799,16 +799,16 @@ Out[39]: array([[1.        , 0.76695652, 0.58132045],
 由以下代码生成的图形显示在图 7-20 中：
 
 ```py
-In [40]: from mpl_toolkits.mplot3d import Axes3D  ![1](img/1.png)
+In [40]: from mpl_toolkits.mplot3d import Axes3D  # ①
          fig = plt.figure(figsize=(10, 6))
-         ax = fig.gca(projection='3d')  ![2](img/2.png)
+         ax = fig.gca(projection='3d')  # ②
          surf = ax.plot_surface(strike, ttm, iv, rstride=2, cstride=2,
                                 cmap=plt.cm.coolwarm, linewidth=0.5,
-                                antialiased=True)  ![3](img/3.png)
-         ax.set_xlabel('strike')  ![4](img/4.png)
-         ax.set_ylabel('time-to-maturity')  ![5](img/5.png)
-         ax.set_zlabel('implied volatility')  ![6](img/6.png)
-         fig.colorbar(surf, shrink=0.5, aspect=5);  ![7](img/7.png)
+                                antialiased=True)  # ③
+         ax.set_xlabel('strike')  # ④
+         ax.set_ylabel('time-to-maturity')  # ⑤
+         ax.set_zlabel('implied volatility')  # ⑥
+         fig.colorbar(surf, shrink=0.5, aspect=5);  # ⑦
          # plt.savefig('../../images/ch07/mpl_20')
 ```
 
@@ -866,9 +866,9 @@ In [40]: from mpl_toolkits.mplot3d import Axes3D  ![1](img/1.png)
 ```py
 In [41]: fig = plt.figure(figsize=(10, 6))
          ax = fig.add_subplot(111, projection='3d')
-         ax.view_init(30, 60)  ![1](img/1.png)
+         ax.view_init(30, 60)  # ①
          ax.scatter(strike, ttm, iv, zdir='z', s=25,
-                    c='b', marker='^')  ![2](img/2.png)
+                    c='b', marker='^')  # ②
          ax.set_xlabel('strike')
          ax.set_ylabel('time-to-maturity')
          ax.set_zlabel('implied volatility');
@@ -904,11 +904,11 @@ In [41]: fig = plt.figure(figsize=(10, 6))
 ```py
 In [42]: import pandas as pd
 
-In [43]: import cufflinks as cf  ![1](img/1.png)
+In [43]: import cufflinks as cf  # ①
 
-In [44]: import plotly.offline as plyo  ![2](img/2.png)
+In [44]: import plotly.offline as plyo  # ②
 
-In [45]: plyo.init_notebook_mode(connected=True)  ![3](img/3.png)
+In [45]: plyo.init_notebook_mode(connected=True)  # ③
 ```
 
 ①
@@ -930,17 +930,17 @@ In [45]: plyo.init_notebook_mode(connected=True)  ![3](img/3.png)
 后续示例再次依赖随机数，这次存储在具有`DatetimeIndex`的`DataFrame`对象中，即作为时间序列数据。
 
 ```py
-In [46]: a = np.random.standard_normal((250, 5)).cumsum(axis=0)  ![1](img/1.png)
+In [46]: a = np.random.standard_normal((250, 5)).cumsum(axis=0)  # ①
 
-In [47]: index = pd.date_range('2019-1-1',  ![2](img/2.png)
-                               freq='B',  ![3](img/3.png)
-                               periods=len(a)) ![4](img/4.png)
+In [47]: index = pd.date_range('2019-1-1',  # ②
+                               freq='B',  # ③
+                               periods=len(a)) # ④
 
-In [48]: df = pd.DataFrame(100 + 5 * a,  ![5](img/5.png)
-                           columns=list('abcde'),  ![6](img/6.png)
-                           index=index)  ![7](img/7.png)
+In [48]: df = pd.DataFrame(100 + 5 * a,  # ⑤
+                           columns=list('abcde'),  # ⑥
+                           index=index)  # ⑦
 
-In [49]: df.head()  ![8](img/8.png)
+In [49]: df.head()  # ⑧
 Out[49]:                      a           b           c          d           e
          2019-01-01  109.037535   98.693865  104.474094  96.878857  100.621936
          2019-01-02  107.598242   97.005738  106.789189  97.966552  100.175313
@@ -984,10 +984,10 @@ Out[49]:                      a           b           c          d           e
 `Cufflinks`为`DataFrame`类添加了一个新方法：`df.iplot()`。此方法在后台使用`Plotly`创建交互式图。本节中的代码示例都利用了将交互式图下载为静态位图的选项，然后将其嵌入到文本中。在 Jupyter Notebook 环境中，创建的绘图都是交互式的。下面代码的结果显示为<<>>。
 
 ```py
-In [50]: plyo.iplot(  ![1](img/1.png)
-             df.iplot(asFigure=True),  ![2](img/2.png)
-             # image ='png', ![3](img/3.png)
-             filename='ply_01'  ![4](img/4.png)
+In [50]: plyo.iplot(  # ①
+             df.iplot(asFigure=True),  # ②
+             # image ='png', # ③
+             filename='ply_01'  # ④
          )
 ```
 
@@ -1016,14 +1016,14 @@ In [50]: plyo.iplot(  ![1](img/1.png)
 ```py
 In [51]: plyo.iplot(
              df[['a', 'b']].iplot(asFigure=True,
-                      theme='polar',  ![1](img/1.png)
-                      title='A Time Series Plot',  ![2](img/2.png)
-                      xTitle='date',  ![3](img/3.png)
-                      yTitle='value',  ![4](img/4.png)
-                      mode={'a': 'markers', 'b': 'lines+markers'},  ![5](img/5.png)
-                      symbol={'a': 'dot', 'b': 'diamond'},  ![6](img/6.png)
-                      size=3.5,  ![7](img/7.png)
-                      colors={'a': 'blue', 'b': 'magenta'},  ![8](img/8.png)
+                      theme='polar',  # ①
+                      title='A Time Series Plot',  # ②
+                      xTitle='date',  # ③
+                      yTitle='value',  # ④
+                      mode={'a': 'markers', 'b': 'lines+markers'},  # ⑤
+                      symbol={'a': 'dot', 'b': 'diamond'},  # ⑥
+                      size=3.5,  # ⑦
+                      colors={'a': 'blue', 'b': 'magenta'},  # ⑧
                                  ),
              # image ='png',
              filename='ply_02'
@@ -1070,9 +1070,9 @@ In [51]: plyo.iplot(
 
 ```py
 In [52]: plyo.iplot(
-             df.iplot(kind='hist',  ![1](img/1.png)
-                      subplots=True,  ![2](img/2.png)
-                      bins=15,  ![3](img/3.png)
+             df.iplot(kind='hist',  # ①
+                      subplots=True,  # ②
+                      bins=15,  # ③
                       asFigure=True),
              # image ='png',
              filename='ply_03'
@@ -1104,9 +1104,9 @@ In [52]: plyo.iplot(
 ```py
 In [53]: # data from FXCM Forex Capital Markets Ltd.
          raw = pd.read_csv('../../source/fxcm_eur_usd_eod_data.csv',
-                          index_col=0, parse_dates=True)  ![1](img/1.png)
+                          index_col=0, parse_dates=True)  # ①
 
-In [54]: raw.info()  ![2](img/2.png)
+In [54]: raw.info()  # ②
 
          <class 'pandas.core.frame.DataFrame'>
          DatetimeIndex: 2820 entries, 2007-06-03 to 2017-05-31
@@ -1124,9 +1124,9 @@ In [54]: raw.info()  ![2](img/2.png)
          dtypes: float64(8), int64(1), object(1)
          memory usage: 242.3+ KB
 
-In [55]: quotes = raw[['OpenAsk', 'HighAsk', 'LowAsk', 'CloseAsk']]  ![3](img/3.png)
-         quotes = quotes.iloc[-60:]  ![4](img/4.png)
-         quotes.tail()  ![5](img/5.png)
+In [55]: quotes = raw[['OpenAsk', 'HighAsk', 'LowAsk', 'CloseAsk']]  # ③
+         quotes = quotes.iloc[-60:]  # ④
+         quotes.tail()  # ⑤
 Out[55]:             OpenAsk  HighAsk   LowAsk  CloseAsk
          Date
          2017-05-27  1.11808  1.11808  1.11743   1.11788
@@ -1160,10 +1160,10 @@ Out[55]:             OpenAsk  HighAsk   LowAsk  CloseAsk
 
 ```py
 In [56]: qf = cf.QuantFig(
-                  quotes,  ![1](img/1.png)
-                  title='EUR/USD Exchange Rate',  ![2](img/2.png)
-                  legend='top',  ![3](img/3.png)
-                  name='EUR/USD'  ![4](img/4.png)
+                  quotes,  # ①
+                  title='EUR/USD Exchange Rate',  # ②
+                  legend='top',  # ③
+                  name='EUR/USD'  # ④
          )
 
 In [57]: plyo.iplot(
@@ -1196,8 +1196,8 @@ In [57]: plyo.iplot(
 添加典型的金融图表元素，如 Bollinger 带，通过 `QuantFig` 对象的不同可用方法进行 (见图 7-26)。
 
 ```py
-In [58]: qf.add_bollinger_bands(periods=15,  ![1](img/1.png)
-                                boll_std=2)  ![2](img/2.png)
+In [58]: qf.add_bollinger_bands(periods=15,  # ①
+                                boll_std=2)  # ②
 
 In [59]: plyo.iplot(qf.iplot(asFigure=True),
               # image='png',
@@ -1219,8 +1219,8 @@ Bollinger 带的周期数。
 添加了某些金融指标，如 RSI，作为一个子图 (见图 7-27)。
 
 ```py
-In [60]: qf.add_rsi(periods=14,  ![1](img/1.png)
-                   showbands=False)  ![2](img/2.png)
+In [60]: qf.add_rsi(periods=14,  # ①
+                   showbands=False)  # ②
 
 In [61]: plyo.iplot(
               qf.iplot(asFigure=True),

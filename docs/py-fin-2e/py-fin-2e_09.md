@@ -56,15 +56,15 @@ In [1]: from pylab import plt, mpl
 接下来的示例使用（伪）随机数据，这次存储在 `list` 对象中：
 
 ```py
-In [2]: import pickle  ![1](img/1.png)
+In [2]: import pickle  # ①
         import numpy as np
-        from random import gauss  ![2](img/2.png)
+        from random import gauss  # ②
 
-In [3]: a = [gauss(1.5, 2) for i in range(1000000)]  ![3](img/3.png)
+In [3]: a = [gauss(1.5, 2) for i in range(1000000)]  # ③
 
-In [4]: path = '/Users/yves/Documents/Temp/data/'  ![4](img/4.png)
+In [4]: path = '/Users/yves/Documents/Temp/data/'  # ④
 
-In [5]: pkl_file = open(path + 'data.pkl', 'wb')  ![5](img/5.png)
+In [5]: pkl_file = open(path + 'data.pkl', 'wb')  # ⑤
 ```
 
 ![1](img/#co_input_output_operations_CO1-1)
@@ -90,21 +90,21 @@ In [5]: pkl_file = open(path + 'data.pkl', 'wb')  ![5](img/5.png)
 用于序列化和反序列化 Python 对象的两个主要函数是 `pickle.dump()`（用于写入对象）和 `pickle.load()`（用于将对象加载到内存中）：
 
 ```py
-In [6]: %time pickle.dump(a, pkl_file)  ![1](img/1.png)
+In [6]: %time pickle.dump(a, pkl_file)  # ①
 
         CPU times: user 23.4 ms, sys: 10.1 ms, total: 33.5 ms
         Wall time: 31.9 ms
 
-In [7]: pkl_file.close()  ![2](img/2.png)
+In [7]: pkl_file.close()  # ②
 
-In [8]: ll $path*  ![3](img/3.png)
+In [8]: ll $path*  # ③
 
         -rw-r--r--  1 yves  staff    9002006 Jan 18 10:05 /Users/yves/Documents/Temp/data/data.pkl
         -rw-r--r--  1 yves  staff  163328824 Jan 18 10:05 /Users/yves/Documents/Temp/data/tstb.h5
 
-In [9]: pkl_file = open(path + 'data.pkl', 'rb')  ![4](img/4.png)
+In [9]: pkl_file = open(path + 'data.pkl', 'rb')  # ④
 
-In [10]: %time b = pickle.load(pkl_file)  ![5](img/5.png)
+In [10]: %time b = pickle.load(pkl_file)  # ⑤
 
          CPU times: user 28.7 ms, sys: 15.2 ms, total: 43.9 ms
          Wall time: 41.9 ms
@@ -115,7 +115,7 @@ Out[11]: [3.0804166128701134, -0.6586387748854099, 3.3266248354210206]
 In [12]: b[:3]
 Out[12]: [3.0804166128701134, -0.6586387748854099, 3.3266248354210206]
 
-In [13]: np.allclose(np.array(a), np.array(b))  ![6](img/6.png)
+In [13]: np.allclose(np.array(a), np.array(b))  # ⑥
 Out[13]: True
 ```
 
@@ -148,19 +148,19 @@ Out[13]: True
 ```py
 In [14]: pkl_file = open(path + 'data.pkl', 'wb')
 
-In [15]: %time pickle.dump(np.array(a), pkl_file)  ![1](img/1.png)
+In [15]: %time pickle.dump(np.array(a), pkl_file)  # ①
 
          CPU times: user 26.6 ms, sys: 11.5 ms, total: 38.1 ms
          Wall time: 36.3 ms
 
-In [16]: %time pickle.dump(np.array(a) ** 2, pkl_file)  ![2](img/2.png)
+In [16]: %time pickle.dump(np.array(a) ** 2, pkl_file)  # ②
 
          CPU times: user 35.3 ms, sys: 12.7 ms, total: 48 ms
          Wall time: 46.8 ms
 
 In [17]: pkl_file.close()
 
-In [18]: ll $path*  ![3](img/3.png)
+In [18]: ll $path*  # ③
 
          -rw-r--r--  1 yves  staff   16000322 Jan 18 10:05 /Users/yves/Documents/Temp/data/data.pkl
          -rw-r--r--  1 yves  staff  163328824 Jan 18 10:05 /Users/yves/Documents/Temp/data/tstb.h5
@@ -183,11 +183,11 @@ In [18]: ll $path*  ![3](img/3.png)
 ```py
 In [19]: pkl_file = open(path + 'data.pkl', 'rb')
 
-In [20]: x = pickle.load(pkl_file)  ![1](img/1.png)
+In [20]: x = pickle.load(pkl_file)  # ①
          x[:4]
 Out[20]: array([ 3.08041661, -0.65863877,  3.32662484,  0.77225328])
 
-In [21]: y = pickle.load(pkl_file)  ![2](img/2.png)
+In [21]: y = pickle.load(pkl_file)  # ②
          y[:4]
 Out[21]: array([  9.48896651,   0.43380504,  11.0664328 ,   0.59637513])
 
@@ -208,11 +208,11 @@ In [22]: pkl_file.close()
 
 ```py
 In [23]: pkl_file = open(path + 'data.pkl', 'wb')
-         pickle.dump({'x': x, 'y': y}, pkl_file)  ![1](img/1.png)
+         pickle.dump({'x': x, 'y': y}, pkl_file)  # ①
          pkl_file.close()
 
 In [24]: pkl_file = open(path + 'data.pkl', 'rb')
-         data = pickle.load(pkl_file)  ![2](img/2.png)
+         data = pickle.load(pkl_file)  # ②
          pkl_file.close()
          for key in data.keys():
              print(key, data[key][:4])
@@ -242,10 +242,10 @@ In [25]: !rm -f $path*
 ```py
 In [26]: import pandas as pd
 
-In [27]: rows = 5000  ![1](img/1.png)
-         a = np.random.standard_normal((rows, 5)).round(4)  ![2](img/2.png)
+In [27]: rows = 5000  # ①
+         a = np.random.standard_normal((rows, 5)).round(4)  # ②
 
-In [28]: a  ![2](img/2.png)
+In [28]: a  # ②
 Out[28]: array([[-0.9627,  0.1326, -2.012 , -0.299 , -1.4554],
                 [ 0.8918,  0.8904, -0.3396, -2.3485,  2.0913],
                 [-0.1899, -0.9574,  1.0258,  0.6206, -2.4693],
@@ -254,9 +254,9 @@ Out[28]: array([[-0.9627,  0.1326, -2.012 , -0.299 , -1.4554],
                 [ 1.1162,  0.152 , -0.9363, -0.7869, -0.1147],
                 [-0.699 ,  0.3206,  0.3659, -1.0282, -0.4151]])
 
-In [29]: t = pd.date_range(start='2019/1/1', periods=rows, freq='H')  ![3](img/3.png)
+In [29]: t = pd.date_range(start='2019/1/1', periods=rows, freq='H')  # ③
 
-In [30]: t  ![3](img/3.png)
+In [30]: t  # ③
 Out[30]: DatetimeIndex(['2019-01-01 00:00:00', '2019-01-01 01:00:00',
                         '2019-01-01 02:00:00', '2019-01-01 03:00:00',
                         '2019-01-01 04:00:00', '2019-01-01 05:00:00',
@@ -270,16 +270,16 @@ Out[30]: DatetimeIndex(['2019-01-01 00:00:00', '2019-01-01 01:00:00',
                         '2019-07-28 06:00:00', '2019-07-28 07:00:00'],
                        dtype='datetime64[ns]', length=5000, freq='H')
 
-In [31]: csv_file = open(path + 'data.csv', 'w')  ![4](img/4.png)
+In [31]: csv_file = open(path + 'data.csv', 'w')  # ④
 
-In [32]: header = 'date,no1,no2,no3,no4,no5\n'  ![5](img/5.png)
+In [32]: header = 'date,no1,no2,no3,no4,no5\n'  # ⑤
 
-In [33]: csv_file.write(header)  ![5](img/5.png)
+In [33]: csv_file.write(header)  # ⑤
 Out[33]: 25
 
-In [34]: for t_, (no1, no2, no3, no4, no5) in zip(t, a):  ![6](img/6.png)
-             s = '{},{},{},{},{},{}\n'.format(t_, no1, no2, no3, no4, no5)  ![7](img/7.png)
-             csv_file.write(s)  ![8](img/8.png)
+In [34]: for t_, (no1, no2, no3, no4, no5) in zip(t, a):  # ⑥
+             s = '{},{},{},{},{},{}\n'.format(t_, no1, no2, no3, no4, no5)  # ⑦
+             csv_file.write(s)  # ⑧
 
 In [35]: csv_file.close()
 
@@ -323,10 +323,10 @@ In [36]: ll $path*
 另一种方法也类似。首先，打开现有的`CSV`文件。其次，使用`file`对象的`.readline()`或`.readlines()`方法逐行读取其内容：
 
 ```py
-In [37]: csv_file = open(path + 'data.csv', 'r')  ![1](img/1.png)
+In [37]: csv_file = open(path + 'data.csv', 'r')  # ①
 
 In [38]: for i in range(5):
-             print(csv_file.readline(), end='')  ![2](img/2.png)
+             print(csv_file.readline(), end='')  # ②
 
          date,no1,no2,no3,no4,no5
          2019-01-01 00:00:00,-0.9627,0.1326,-2.012,-0.299,-1.4554
@@ -336,11 +336,11 @@ In [38]: for i in range(5):
 
 In [39]: csv_file.close()
 
-In [40]: csv_file = open(path + 'data.csv', 'r')  ![1](img/1.png)
+In [40]: csv_file = open(path + 'data.csv', 'r')  # ①
 
-In [41]: content = csv_file.readlines()  ![3](img/3.png)
+In [41]: content = csv_file.readlines()  # ③
 
-In [42]: content[:5]  ![4](img/4.png)
+In [42]: content[:5]  # ④
 Out[42]: ['date,no1,no2,no3,no4,no5\n',
           '2019-01-01 00:00:00,-0.9627,0.1326,-2.012,-0.299,-1.4554\n',
           '2019-01-01 01:00:00,0.8918,0.8904,-0.3396,-2.3485,2.0913\n',
@@ -372,10 +372,10 @@ In [43]: csv_file.close()
 In [44]: import csv
 
 In [45]: with open(path + 'data.csv', 'r') as f:
-             csv_reader = csv.reader(f)  ![1](img/1.png)
+             csv_reader = csv.reader(f)  # ①
              lines = [line for line in csv_reader]
 
-In [46]: lines[:5]  ![1](img/1.png)
+In [46]: lines[:5]  # ①
 Out[46]: [['date', 'no1', 'no2', 'no3', 'no4', 'no5'],
           ['2019-01-01 00:00:00', '-0.9627', '0.1326', '-2.012', '-0.299', '-1.4554'],
           ['2019-01-01 01:00:00', '0.8918', '0.8904', '-0.3396', '-2.3485', '2.0913'],
@@ -383,10 +383,10 @@ Out[46]: [['date', 'no1', 'no2', 'no3', 'no4', 'no5'],
           ['2019-01-01 03:00:00', '-0.0217', '-0.7168', '1.7875', '1.6226', '-0.4857']]
 
 In [47]: with open(path + 'data.csv', 'r') as f:
-             csv_reader = csv.DictReader(f)  ![2](img/2.png)
+             csv_reader = csv.DictReader(f)  # ②
              lines = [line for line in csv_reader]
 
-In [48]: lines[:3]  ![2](img/2.png)
+In [48]: lines[:3]  # ②
 Out[48]: [OrderedDict([('date', '2019-01-01 00:00:00'),
                        ('no1', '-0.9627'),
                        ('no2', '0.1326'),
@@ -424,18 +424,18 @@ Python 可以与任何类型的`SQL`数据库一起工作，并且通常也可�
 ```py
 In [50]: import sqlite3 as sq3
 
-In [51]: con = sq3.connect(path + 'numbs.db')  ![1](img/1.png)
+In [51]: con = sq3.connect(path + 'numbs.db')  # ①
 
-In [52]: query = 'CREATE TABLE numbs (Date date, No1 real, No2 real)'  ![2](img/2.png)
+In [52]: query = 'CREATE TABLE numbs (Date date, No1 real, No2 real)'  # ②
 
-In [53]: con.execute(query)  ![3](img/3.png)
+In [53]: con.execute(query)  # ③
 Out[53]: <sqlite3.Cursor at 0x1054efb20>
 
-In [54]: con.commit()  ![4](img/4.png)
+In [54]: con.commit()  # ④
 
-In [55]: q = con.execute  ![5](img/5.png)
+In [55]: q = con.execute  # ⑤
 
-In [56]: q('SELECT * FROM sqlite_master').fetchall()  ![6](img/6.png)
+In [56]: q('SELECT * FROM sqlite_master').fetchall()  # ⑥
 Out[56]: [('table',
            'numbs',
            'numbs',
@@ -473,15 +473,15 @@ Out[56]: [('table',
 In [57]: import datetime
 
 In [58]: now = datetime.datetime.now()
-         q('INSERT INTO numbs VALUES(?, ?, ?)', (now, 0.12, 7.3))  ![1](img/1.png)
+         q('INSERT INTO numbs VALUES(?, ?, ?)', (now, 0.12, 7.3))  # ①
 Out[58]: <sqlite3.Cursor at 0x1054efc70>
 
 In [59]: np.random.seed(100)
 
-In [60]: data = np.random.standard_normal((10000, 2)).round(4)  ![2](img/2.png)
+In [60]: data = np.random.standard_normal((10000, 2)).round(4)  # ②
 
 In [61]: %%time
-         for row in data:  ![3](img/3.png)
+         for row in data:  # ③
              now = datetime.datetime.now()
              q('INSERT INTO numbs VALUES(?, ?, ?)', (now, row[0], row[1]))
          con.commit()
@@ -489,28 +489,28 @@ In [61]: %%time
          CPU times: user 111 ms, sys: 3.22 ms, total: 115 ms
          Wall time: 116 ms
 
-In [62]: q('SELECT * FROM numbs').fetchmany(4)  ![4](img/4.png)
+In [62]: q('SELECT * FROM numbs').fetchmany(4)  # ④
 Out[62]: [('2018-01-18 10:05:24.043286', 0.12, 7.3),
           ('2018-01-18 10:05:24.071921', -1.7498, 0.3427),
           ('2018-01-18 10:05:24.072110', 1.153, -0.2524),
           ('2018-01-18 10:05:24.072160', 0.9813, 0.5142)]
 
-In [63]: q('SELECT * FROM numbs WHERE no1 > 0.5').fetchmany(4)  ![5](img/5.png)
+In [63]: q('SELECT * FROM numbs WHERE no1 > 0.5').fetchmany(4)  # ⑤
 Out[63]: [('2018-01-18 10:05:24.072110', 1.153, -0.2524),
           ('2018-01-18 10:05:24.072160', 0.9813, 0.5142),
           ('2018-01-18 10:05:24.072257', 0.6727, -0.1044),
           ('2018-01-18 10:05:24.072319', 1.619, 1.5416)]
 
-In [64]: pointer = q('SELECT * FROM numbs')  ![6](img/6.png)
+In [64]: pointer = q('SELECT * FROM numbs')  # ⑥
 
 In [65]: for i in range(3):
-             print(pointer.fetchone())  ![7](img/7.png)
+             print(pointer.fetchone())  # ⑦
 
          ('2018-01-18 10:05:24.043286', 0.12, 7.3)
          ('2018-01-18 10:05:24.071921', -1.7498, 0.3427)
          ('2018-01-18 10:05:24.072110', 1.153, -0.2524)
 
-In [66]: rows = pointer.fetchall()  ![8](img/8.png)
+In [66]: rows = pointer.fetchall()  # ⑧
          rows[:3]
 Out[66]: [('2018-01-18 10:05:24.072160', 0.9813, 0.5142),
           ('2018-01-18 10:05:24.072184', 0.2212, -1.07),
@@ -552,15 +552,15 @@ Out[66]: [('2018-01-18 10:05:24.072160', 0.9813, 0.5142),
 最后，如果不再需要，可能会想要删除数据库中的表对象。
 
 ```py
-In [67]: q('DROP TABLE IF EXISTS numbs')  ![1](img/1.png)
+In [67]: q('DROP TABLE IF EXISTS numbs')  # ①
 Out[67]: <sqlite3.Cursor at 0x1054eff80>
 
-In [68]: q('SELECT * FROM sqlite_master').fetchall()  ![2](img/2.png)
+In [68]: q('SELECT * FROM sqlite_master').fetchall()  # ②
 Out[68]: []
 
-In [69]: con.close()  ![3](img/3.png)
+In [69]: con.close()  # ③
 
-In [70]: !rm -f $path*  ![4](img/4.png)
+In [70]: !rm -f $path*  # ④
 ```
 
 ![1](img/#co_input_output_operations_CO11-1)
@@ -595,24 +595,24 @@ In [70]: !rm -f $path*  ![4](img/4.png)
 
 ```py
 In [71]: dtimes = np.arange('2019-01-01 10:00:00', '2025-12-31 22:00:00',
-                           dtype='datetime64[m]')  ![1](img/1.png)
+                           dtype='datetime64[m]')  # ①
 
 In [72]: len(dtimes)
 Out[72]: 3681360
 
 In [73]: dty = np.dtype([('Date', 'datetime64[m]'),
-                         ('No1', 'f'), ('No2', 'f')])  ![2](img/2.png)
+                         ('No1', 'f'), ('No2', 'f')])  # ②
 
-In [74]: data = np.zeros(len(dtimes), dtype=dty)  ![3](img/3.png)
+In [74]: data = np.zeros(len(dtimes), dtype=dty)  # ③
 
-In [75]: data['Date'] = dtimes  ![4](img/4.png)
+In [75]: data['Date'] = dtimes  # ④
 
-In [76]: a = np.random.standard_normal((len(dtimes), 2)).round(4)  ![5](img/5.png)
+In [76]: a = np.random.standard_normal((len(dtimes), 2)).round(4)  # ⑤
 
-In [77]: data['No1'] = a[:, 0]  ![6](img/6.png)
-         data['No2'] = a[:, 1]  ![6](img/6.png)
+In [77]: data['No1'] = a[:, 0]  # ⑥
+         data['No2'] = a[:, 1]  # ⑥
 
-In [78]: data.nbytes  ![7](img/7.png)
+In [78]: data.nbytes  # ⑦
 Out[78]: 58901760
 ```
 
@@ -647,16 +647,16 @@ Out[78]: 58901760
 保存`ndarray`对象是高度优化的，因此非常快速。大约 60 MB 的数据在磁盘上保存约 0.1 秒（这里使用 SSD）。大小为 480 MB 的较大`ndarray`对象在磁盘上保存大约需要 1 秒钟。
 
 ```py
-In [79]: %time np.save(path + 'array', data)  ![1](img/1.png)
+In [79]: %time np.save(path + 'array', data)  # ①
 
          CPU times: user 4.06 ms, sys: 99.3 ms, total: 103 ms
          Wall time: 107 ms
 
-In [80]: ll $path*  ![2](img/2.png)
+In [80]: ll $path*  # ②
 
          -rw-r--r--  1 yves  staff  58901888 Jan 18 10:05 /Users/yves/Documents/Temp/data/array.npy
 
-In [81]: %time np.load(path + 'array.npy')  ![3](img/3.png)
+In [81]: %time np.load(path + 'array.npy')  # ③
 
          CPU times: user 1.81 ms, sys: 47.4 ms, total: 49.2 ms
          Wall time: 46.7 ms
@@ -669,24 +669,24 @@ Out[81]: array([('2019-01-01T10:00',  1.51310003,  0.69730002),
                 ('2025-12-31T21:59', -1.1997    , -1.097     )],
                dtype=[('Date', '<M8[m]'), ('No1', '<f4'), ('No2', '<f4')])
 
-In [82]: %time data = np.random.standard_normal((10000, 6000)).round(4)  ![4](img/4.png)
+In [82]: %time data = np.random.standard_normal((10000, 6000)).round(4)  # ④
 
          CPU times: user 2.81 s, sys: 354 ms, total: 3.17 s
          Wall time: 3.23 s
 
-In [83]: data.nbytes  ![4](img/4.png)
+In [83]: data.nbytes  # ④
 Out[83]: 480000000
 
-In [84]: %time np.save(path + 'array', data)  ![4](img/4.png)
+In [84]: %time np.save(path + 'array', data)  # ④
 
          CPU times: user 23.9 ms, sys: 878 ms, total: 902 ms
          Wall time: 964 ms
 
-In [85]: ll $path*  ![4](img/4.png)
+In [85]: ll $path*  # ④
 
          -rw-r--r--  1 yves  staff  480000080 Jan 18 10:05 /Users/yves/Documents/Temp/data/array.npy
 
-In [86]: %time np.load(path + 'array.npy')  ![4](img/4.png)
+In [86]: %time np.load(path + 'array.npy')  # ④
 
          CPU times: user 1.95 ms, sys: 441 ms, total: 443 ms
          Wall time: 441 ms
@@ -777,7 +777,7 @@ In [90]: filename = path + 'numbers'
 In [91]: con = sq3.Connection(filename + '.db')
 
 In [92]: query = 'CREATE TABLE numbers (No1 real, No2 real,\
- No3 real, No4 real, No5 real)'  ![1](img/1.png)
+ No3 real, No4 real, No5 real)'  # ①
 
 In [93]: q = con.execute
          qm = con.executemany
@@ -794,7 +794,7 @@ Out[94]: <sqlite3.Cursor at 0x1054e2260>
 
 ```py
 In [95]: %%time
-         qm('INSERT INTO numbers VALUES (?, ?, ?, ?, ?)', data)  ![1](img/1.png)
+         qm('INSERT INTO numbers VALUES (?, ?, ?, ?, ?)', data)  # ①
          con.commit()
 
          CPU times: user 7.16 s, sys: 147 ms, total: 7.3 s
@@ -805,7 +805,7 @@ In [96]: ll $path*
          -rw-r--r--  1 yves  staff  52633600 Jan 18 10:05 /Users/yves/Documents/Temp/data/numbers.db
 
 In [97]: %%time
-         temp = q('SELECT * FROM numbers').fetchall()  ![2](img/2.png)
+         temp = q('SELECT * FROM numbers').fetchall()  # ②
          print(temp[:3])
 
          [(0.4918, 1.3707, 0.137, 0.3981, -1.0059), (0.4516, 1.4445, 0.0555, -0.0397, 0.44), (0.1629, -0.8473, -0.8223, -0.4621, -0.5137)]
@@ -814,14 +814,14 @@ In [97]: %%time
 
 In [98]: %%time
          query = 'SELECT * FROM numbers WHERE No1 > 0 AND No2 < 0'
-         res = np.array(q(query).fetchall()).round(3)  ![3](img/3.png)
+         res = np.array(q(query).fetchall()).round(3)  # ③
 
          CPU times: user 770 ms, sys: 73.9 ms, total: 844 ms
          Wall time: 854 ms
 
-In [99]: res = res[::100]  ![4](img/4.png)
+In [99]: res = res[::100]  # ④
          plt.figure(figsize=(10, 6))
-         plt.plot(res[:, 0], res[:, 1], 'ro')  ![4](img/4.png)
+         plt.plot(res[:, 0], res[:, 1], 'ro')  # ④
          plt.savefig('../../images/ch09/io_01.png');
 ```
 
@@ -852,7 +852,7 @@ In [99]: res = res[::100]  ![4](img/4.png)
 使用 `pandas` 读取整个表与将其读入 `NumPy` `ndarray` 对象大致需要相同的时间。在这里和那里，瓶颈是 `SQL` 数据库。
 
 ```py
-In [100]: %time data = pd.read_sql('SELECT * FROM numbers', con)  ![1](img/1.png)
+In [100]: %time data = pd.read_sql('SELECT * FROM numbers', con)  # ①
 
           CPU times: user 2.11 s, sys: 175 ms, total: 2.29 s
           Wall time: 2.33 s
@@ -873,7 +873,7 @@ Out[101]:       No1     No2     No3     No4     No5
 数据现在在内存中。这样可以进行更快的分析。加速通常是一个数量级或更多。`pandas` 也可以处理更复杂的查询，尽管它既不意味着也不能替代 `SQL` 数据库，当涉及复杂的关系数据结构时。多个条件组合的查询结果显示在 图 9-2 中。
 
 ```py
-In [102]: %time data[(data['No1'] > 0) & (data['No2'] < 0)].head()  ![1](img/1.png)
+In [102]: %time data[(data['No1'] > 0) & (data['No2'] < 0)].head()  # ①
 
           CPU times: user 19.4 ms, sys: 9.56 ms, total: 28.9 ms
           Wall time: 27.5 ms
@@ -887,7 +887,7 @@ Out[102]:        No1     No2     No3     No4     No5
 
 In [103]: %%time
           res = data[['No1', 'No2']][((data['No1'] > 0.5) | (data['No1'] < -0.5))
-                               & ((data['No2'] < -1) | (data['No2'] > 1))]  ![2](img/2.png)
+                               & ((data['No2'] < -1) | (data['No2'] > 1))]  # ②
 
           CPU times: user 20.6 ms, sys: 9.18 ms, total: 29.8 ms
           Wall time: 28 ms
@@ -914,18 +914,18 @@ In [104]: plt.figure(figsize=(10, 6))
 使用 `pandas` 的另一个优点不仅仅是这个，因为 `pandas` 与 `PyTables` 等紧密集成 — 后续部分的主题。在这里，知道它们的组合可以显著加速 I/O 操作就足够了。如下所示：
 
 ```py
-In [105]: h5s = pd.HDFStore(filename + '.h5s', 'w')  ![1](img/1.png)
+In [105]: h5s = pd.HDFStore(filename + '.h5s', 'w')  # ①
 
-In [106]: %time h5s['data'] = data  ![2](img/2.png)
+In [106]: %time h5s['data'] = data  # ②
 
           CPU times: user 33 ms, sys: 43.3 ms, total: 76.3 ms
           Wall time: 85.8 ms
 
-In [107]: h5s  ![3](img/3.png)
+In [107]: h5s  # ③
 Out[107]: <class 'pandas.io.pytables.HDFStore'>
           File path: /Users/yves/Documents/Temp/data/numbers.h5s
 
-In [108]: h5s.close()  ![4](img/4.png)
+In [108]: h5s.close()  # ④
 ```
 
 ![1](img/#co_input_output_operations_CO18-1)
@@ -948,17 +948,17 @@ In [108]: h5s.close()  ![4](img/4.png)
 
 ```py
 In [109]: %%time
-          h5s = pd.HDFStore(filename + '.h5s', 'r')  ![1](img/1.png)
-          data_ = h5s['data']  ![2](img/2.png)
-          h5s.close()  ![3](img/3.png)
+          h5s = pd.HDFStore(filename + '.h5s', 'r')  # ①
+          data_ = h5s['data']  # ②
+          h5s.close()  # ③
 
           CPU times: user 8.24 ms, sys: 21.2 ms, total: 29.4 ms
           Wall time: 28.5 ms
 
-In [110]: data_ is data  ![4](img/4.png)
+In [110]: data_ is data  # ④
 Out[110]: False
 
-In [111]: (data_ == data).all()  ![5](img/5.png)
+In [111]: (data_ == data).all()  # ⑤
 Out[111]: No1    True
           No2    True
           No3    True
@@ -966,10 +966,10 @@ Out[111]: No1    True
           No5    True
           dtype: bool
 
-In [112]: np.allclose(data_, data)  ![5](img/5.png)
+In [112]: np.allclose(data_, data)  # ⑤
 Out[112]: True
 
-In [113]: ll $path*  ![6](img/6.png)
+In [113]: ll $path*  # ⑥
 
           -rw-r--r--  1 yves  staff  52633600 Jan 18 10:05 /Users/yves/Documents/Temp/data/numbers.db
           -rw-r--r--  1 yves  staff  48007192 Jan 18 10:05 /Users/yves/Documents/Temp/data/numbers.h5s
@@ -1004,7 +1004,7 @@ In [113]: ll $path*  ![6](img/6.png)
 交换金融数据最广泛使用的格式之一是 `CSV` 格式。尽管它并没有真正标准化，但它可以被任何平台处理，并且绝大多数与数据和金融分析有关的应用程序都可以处理。前一节展示了如何使用标准 Python 功能将数据写入 `CSV` 文件并从 `CSV` 文件中读取数据（参见“读写文本文件”）。`pandas` 使得整个过程更加方便，代码更加简洁，并且总体执行更快（还可以参见图 9-3）：
 
 ```py
-In [114]: %time data.to_csv(filename + '.csv')  ![1](img/1.png)
+In [114]: %time data.to_csv(filename + '.csv')  # ①
 
           CPU times: user 6.82 s, sys: 277 ms, total: 7.1 s
           Wall time: 7.54 s
@@ -1016,7 +1016,7 @@ In [115]: ll $path
           -rw-r--r--  1 yves  staff  52633600 Jan 18 10:05 numbers.db
           -rw-r--r--  1 yves  staff  48007192 Jan 18 10:05 numbers.h5s
 
-In [116]: %time df = pd.read_csv(filename + '.csv')  ![2](img/2.png)
+In [116]: %time df = pd.read_csv(filename + '.csv')  # ②
 
           CPU times: user 1.4 s, sys: 124 ms, total: 1.53 s
           Wall time: 1.58 s
@@ -1042,12 +1042,12 @@ In [117]: df[['No1', 'No2', 'No3', 'No4']].hist(bins=20, figsize=(10, 6));
 尽管处理 `Excel` 电子表格是本书的后续章节的主题，但以下代码简要地演示了 `pandas` 如何以 `Excel` 格式写入数据并从 `Excel` 电子表格中读取数据。在这种情况下，我们将数据集限制为 100,000 行：
 
 ```py
-In [118]: %time data[:100000].to_excel(filename + '.xlsx')  ![1](img/1.png)
+In [118]: %time data[:100000].to_excel(filename + '.xlsx')  # ①
 
           CPU times: user 23.2 s, sys: 498 ms, total: 23.7 s
           Wall time: 23.9 s
 
-In [119]: %time df = pd.read_excel(filename + '.xlsx', 'Sheet1')  ![2](img/2.png)
+In [119]: %time df = pd.read_excel(filename + '.xlsx', 'Sheet1')  # ②
 
           CPU times: user 5.47 s, sys: 74.7 ms, total: 5.54 s
           Wall time: 5.57 s
@@ -1087,7 +1087,7 @@ In [122]: rm -f $path*
 首先，一些导入：
 
 ```py
-In [123]: import tables as tb  ![1](img/1.png)
+In [123]: import tables as tb  # ①
           import datetime as dt
 ```
 
@@ -1102,25 +1102,25 @@ In [123]: import tables as tb  ![1](img/1.png)
 ```py
 In [124]: filename = path + 'pytab.h5'
 
-In [125]: h5 = tb.open_file(filename, 'w')  ![1](img/1.png)
+In [125]: h5 = tb.open_file(filename, 'w')  # ①
 
 In [126]: row_des = {
-              'Date': tb.StringCol(26, pos=1),  ![2](img/2.png)
-              'No1': tb.IntCol(pos=2),  ![3](img/3.png)
-              'No2': tb.IntCol(pos=3),  ![3](img/3.png)
-              'No3': tb.Float64Col(pos=4),  ![4](img/4.png)
-              'No4': tb.Float64Col(pos=5)  ![4](img/4.png)
+              'Date': tb.StringCol(26, pos=1),  # ②
+              'No1': tb.IntCol(pos=2),  # ③
+              'No2': tb.IntCol(pos=3),  # ③
+              'No3': tb.Float64Col(pos=4),  # ④
+              'No4': tb.Float64Col(pos=5)  # ④
               }
 
 In [127]: rows = 2000000
 
-In [128]: filters = tb.Filters(complevel=0)  ![5](img/5.png)
+In [128]: filters = tb.Filters(complevel=0)  # ⑤
 
-In [129]: tab = h5.create_table('/', 'ints_floats',  ![6](img/6.png)
-                                row_des,  ![7](img/7.png)
-                                title='Integers and Floats',  ![8](img/8.png)
-                                expectedrows=rows,  ![9](img/9.png)
-                                filters=filters)  ![10](img/10.png)
+In [129]: tab = h5.create_table('/', 'ints_floats',  # ⑥
+                                row_des,  # ⑦
+                                title='Integers and Floats',  # ⑧
+                                expectedrows=rows,  # ⑨
+                                filters=filters)  # ⑩
 
 In [130]: type(tab)
 Out[130]: tables.table.Table
@@ -1180,26 +1180,26 @@ Out[131]: /ints_floats (Table(0,)) 'Integers and Floats'
 为了用数字数据填充表格，生成两个具有随机数字的`ndarray`对象。一个是随机整数，另一个是随机浮点数。通过一个简单的 Python 循环来填充表格。
 
 ```py
-In [132]: pointer = tab.row  ![1](img/1.png)
+In [132]: pointer = tab.row  # ①
 
-In [133]: ran_int = np.random.randint(0, 10000, size=(rows, 2))  ![2](img/2.png)
+In [133]: ran_int = np.random.randint(0, 10000, size=(rows, 2))  # ②
 
-In [134]: ran_flo = np.random.standard_normal((rows, 2)).round(4)  ![3](img/3.png)
+In [134]: ran_flo = np.random.standard_normal((rows, 2)).round(4)  # ③
 
 In [135]: %%time
           for i in range(rows):
-              pointer['Date'] = dt.datetime.now()  ![4](img/4.png)
-              pointer['No1'] = ran_int[i, 0]  ![4](img/4.png)
-              pointer['No2'] = ran_int[i, 1]  ![4](img/4.png)
-              pointer['No3'] = ran_flo[i, 0]  ![4](img/4.png)
-              pointer['No4'] = ran_flo[i, 1]  ![4](img/4.png)
-              pointer.append()  ![5](img/5.png)
-          tab.flush()  ![6](img/6.png)
+              pointer['Date'] = dt.datetime.now()  # ④
+              pointer['No1'] = ran_int[i, 0]  # ④
+              pointer['No2'] = ran_int[i, 1]  # ④
+              pointer['No3'] = ran_flo[i, 0]  # ④
+              pointer['No4'] = ran_flo[i, 1]  # ④
+              pointer.append()  # ⑤
+          tab.flush()  # ⑥
 
           CPU times: user 8.36 s, sys: 136 ms, total: 8.49 s
           Wall time: 8.92 s
 
-In [136]: tab  ![7](img/7.png)
+In [136]: tab  # ⑦
 Out[136]: /ints_floats (Table(2000000,)) 'Integers and Floats'
             description := {
             "Date": StringCol(itemsize=26, shape=(), dflt=b'', pos=0),
@@ -1247,21 +1247,21 @@ In [137]: ll $path*
 
 ```py
 In [138]: dty = np.dtype([('Date', 'S26'), ('No1', '<i4'), ('No2', '<i4'),
-                                           ('No3', '<f8'), ('No4', '<f8')])  ![1](img/1.png)
+                                           ('No3', '<f8'), ('No4', '<f8')])  # ①
 
-In [139]: sarray = np.zeros(len(ran_int), dtype=dty)  ![2](img/2.png)
+In [139]: sarray = np.zeros(len(ran_int), dtype=dty)  # ②
 
-In [140]: sarray[:4]  ![3](img/3.png)
+In [140]: sarray[:4]  # ③
 Out[140]: array([(b'', 0, 0,  0.,  0.), (b'', 0, 0,  0.,  0.), (b'', 0, 0,  0.,  0.),
                  (b'', 0, 0,  0.,  0.)],
                 dtype=[('Date', 'S26'), ('No1', '<i4'), ('No2', '<i4'), ('No3', '<f8'), ('No4', '<f8')])
 
 In [141]: %%time
-          sarray['Date'] = dt.datetime.now()  ![4](img/4.png)
-          sarray['No1'] = ran_int[:, 0]  ![4](img/4.png)
-          sarray['No2'] = ran_int[:, 1]  ![4](img/4.png)
-          sarray['No3'] = ran_flo[:, 0]  ![4](img/4.png)
-          sarray['No4'] = ran_flo[:, 1]  ![4](img/4.png)
+          sarray['Date'] = dt.datetime.now()  # ④
+          sarray['No1'] = ran_int[:, 0]  # ④
+          sarray['No2'] = ran_int[:, 1]  # ④
+          sarray['No3'] = ran_flo[:, 0]  # ④
+          sarray['No4'] = ran_flo[:, 1]  # ④
 
           CPU times: user 82.7 ms, sys: 37.9 ms, total: 121 ms
           Wall time: 133 ms
@@ -1269,7 +1269,7 @@ In [141]: %%time
 In [142]: %%time
           h5.create_table('/', 'ints_floats_from_array', sarray,
                                 title='Integers and Floats',
-                                expectedrows=rows, filters=filters)  ![5](img/5.png)
+                                expectedrows=rows, filters=filters)  # ⑤
 
           CPU times: user 39 ms, sys: 61 ms, total: 100 ms
           Wall time: 123 ms
@@ -1311,7 +1311,7 @@ Out[142]: /ints_floats_from_array (Table(2000000,)) 'Integers and Floats'
 In [143]: type(h5)
 Out[143]: tables.file.File
 
-In [144]: h5  ![1](img/1.png)
+In [144]: h5  # ①
 Out[144]: File(filename=/Users/yves/Documents/Temp/data/pytab.h5, title='', mode='w', root_uep='/', filters=Filters(complevel=0, shuffle=False, bitshuffle=False, fletcher32=False, least_significant_digit=None))
           / (RootGroup) ''
           /ints_floats (Table(2000000,)) 'Integers and Floats'
@@ -1333,7 +1333,7 @@ Out[144]: File(filename=/Users/yves/Documents/Temp/data/pytab.h5, title='', mode
             byteorder := 'little'
             chunkshape := (2621,)
 
-In [145]: h5.remove_node('/', 'ints_floats_from_array')  ![2](img/2.png)
+In [145]: h5.remove_node('/', 'ints_floats_from_array')  # ②
 ```
 
 ![1](img/#co_input_output_operations_CO26-1)
@@ -1347,23 +1347,23 @@ In [145]: h5.remove_node('/', 'ints_floats_from_array')  ![2](img/2.png)
 `Table` 对象在大多数情况下的行为与 `NumPy` 结构化的 `ndarray` 对象非常相似（另见 图 9-5）：
 
 ```py
-In [146]: tab[:3]  ![1](img/1.png)
+In [146]: tab[:3]  # ①
 Out[146]: array([(b'2018-01-18 10:06:28.516235', 8576, 5991, -0.0528,  0.2468),
                  (b'2018-01-18 10:06:28.516332', 2990, 9310, -0.0261,  0.3932),
                  (b'2018-01-18 10:06:28.516344', 4400, 4823,  0.9133,  0.2579)],
                 dtype=[('Date', 'S26'), ('No1', '<i4'), ('No2', '<i4'), ('No3', '<f8'), ('No4', '<f8')])
 
-In [147]: tab[:4]['No4']  ![2](img/2.png)
+In [147]: tab[:4]['No4']  # ②
 Out[147]: array([ 0.2468,  0.3932,  0.2579, -0.5582])
 
-In [148]: %time np.sum(tab[:]['No3'])  ![3](img/3.png)
+In [148]: %time np.sum(tab[:]['No3'])  # ③
 
           CPU times: user 64.5 ms, sys: 97.1 ms, total: 162 ms
           Wall time: 165 ms
 
 Out[148]: 88.854299999999697
 
-In [149]: %time np.sum(np.sqrt(tab[:]['No1']))  ![3](img/3.png)
+In [149]: %time np.sum(np.sqrt(tab[:]['No1']))  # ③
 
           CPU times: user 59.3 ms, sys: 69.4 ms, total: 129 ms
           Wall time: 130 ms
@@ -1372,7 +1372,7 @@ Out[149]: 133349920.36892509
 
 In [150]: %%time
           plt.figure(figsize=(10, 6))
-          plt.hist(tab[:]['No3'], bins=30);  ![4](img/4.png)
+          plt.hist(tab[:]['No3'], bins=30);  # ④
           plt.savefig('../../images/ch09/io_05.png');
 
           CPU times: user 244 ms, sys: 67.6 ms, total: 312 ms
@@ -1402,16 +1402,16 @@ In [150]: %%time
 `PyTables` 还提供了通过典型的 `SQL`-like 语句查询数据的灵活工具，如下例所示（其结果如 图 9-6 所示；与 图 9-2 相比，基于 `pandas` 查询）：
 
 ```py
-In [151]: query = '((No3 < -0.5) | (No3 > 0.5)) & ((No4 < -1) | (No4 > 1))'  ![1](img/1.png)
+In [151]: query = '((No3 < -0.5) | (No3 > 0.5)) & ((No4 < -1) | (No4 > 1))'  # ①
 
-In [152]: iterator = tab.where(query)  ![2](img/2.png)
+In [152]: iterator = tab.where(query)  # ②
 
-In [153]: %time res = [(row['No3'], row['No4']) for row in iterator]  ![3](img/3.png)
+In [153]: %time res = [(row['No3'], row['No4']) for row in iterator]  # ③
 
           CPU times: user 487 ms, sys: 128 ms, total: 615 ms
           Wall time: 637 ms
 
-In [154]: res = np.array(res)  ![4](img/4.png)
+In [154]: res = np.array(res)  # ④
           res[:3]
 Out[154]: array([[ 0.7694,  1.4866],
                  [ 0.9201,  1.3346],
@@ -1506,8 +1506,8 @@ In [161]: filename = path + 'pytabc.h5'
 
 In [162]: h5c = tb.open_file(filename, 'w')
 
-In [163]: filters = tb.Filters(complevel=5,  ![1](img/1.png)
-                               complib='blosc')  ![2](img/2.png)
+In [163]: filters = tb.Filters(complevel=5,  # ①
+                               complib='blosc')  # ②
 
 In [164]: tabc = h5c.create_table('/', 'ints_floats', sarray,
                                   title='Integers and Floats',
@@ -1515,9 +1515,9 @@ In [164]: tabc = h5c.create_table('/', 'ints_floats', sarray,
 
 In [165]: query = '((No3 < -0.5) | (No3 > 0.5)) & ((No4 < -1) | (No4 > 1))'
 
-In [166]: iteratorc = tabc.where(query)  ![3](img/3.png)
+In [166]: iteratorc = tabc.where(query)  # ③
 
-In [167]: %time res = [(row['No3'], row['No4']) for row in iteratorc]  ![4](img/4.png)
+In [167]: %time res = [(row['No3'], row['No4']) for row in iteratorc]  # ④
 
           CPU times: user 362 ms, sys: 55.3 ms, total: 418 ms
           Wall time: 445 ms
@@ -1548,7 +1548,7 @@ Out[168]: array([[ 0.7694,  1.4866],
 使用原始数据生成压缩的`Table`对象并对其进行分析比使用未压缩的`Table`对象稍慢一些。那么将数据读入`ndarray`对象呢？让我们来检查一下：
 
 ```py
-In [169]: %time arr_non = tab.read()  ![1](img/1.png)
+In [169]: %time arr_non = tab.read()  # ①
 
           CPU times: user 42.9 ms, sys: 69.9 ms, total: 113 ms
           Wall time: 117 ms
@@ -1559,7 +1559,7 @@ Out[170]: 100122200
 In [171]: arr_non.nbytes
 Out[171]: 100000000
 
-In [172]: %time arr_com = tabc.read()  ![2](img/2.png)
+In [172]: %time arr_com = tabc.read()  # ②
 
           CPU times: user 123 ms, sys: 60.5 ms, total: 184 ms
           Wall time: 191 ms
@@ -1570,12 +1570,12 @@ Out[173]: 40612465
 In [174]: arr_com.nbytes
 Out[174]: 100000000
 
-In [175]: ll $path*  ![3](img/3.png)
+In [175]: ll $path*  # ③
 
           -rw-r--r--  1 yves  staff  200312336 Jan 18 10:06 /Users/yves/Documents/Temp/data/pytab.h5
           -rw-r--r--  1 yves  staff   40647761 Jan 18 10:06 /Users/yves/Documents/Temp/data/pytabc.h5
 
-In [176]: h5c.close()  ![4](img/4.png)
+In [176]: h5c.close()  # ④
 ```
 
 ![1](img/#co_input_output_operations_CO30-1)
@@ -1612,13 +1612,13 @@ In [176]: h5c.close()  ![4](img/4.png)
 
 ```py
 In [177]: %%time
-          arr_int = h5.create_array('/', 'integers', ran_int)  ![1](img/1.png)
-          arr_flo = h5.create_array('/', 'floats', ran_flo)  ![2](img/2.png)
+          arr_int = h5.create_array('/', 'integers', ran_int)  # ①
+          arr_flo = h5.create_array('/', 'floats', ran_flo)  # ②
 
           CPU times: user 3.24 ms, sys: 33.1 ms, total: 36.3 ms
           Wall time: 41.6 ms
 
-In [178]: h5  ![3](img/3.png)
+In [178]: h5  # ③
 Out[178]: File(filename=/Users/yves/Documents/Temp/data/pytab.h5, title='', mode='w', root_uep='/', filters=Filters(complevel=0, shuffle=False, bitshuffle=False, fletcher32=False, least_significant_digit=None))
           / (RootGroup) ''
           /floats (Array(2000000, 2)) ''
@@ -1680,16 +1680,16 @@ In [182]: filename = path + 'earray.h5'
 
 In [183]: h5 = tb.open_file(filename, 'w')
 
-In [184]: n = 500  ![1](img/1.png)
+In [184]: n = 500  # ①
 
-In [185]: ear = h5.create_earray('/', 'ear',  ![2](img/2.png)
-                                atom=tb.Float64Atom(),  ![3](img/3.png)
-                                shape=(0, n))  ![4](img/4.png)
+In [185]: ear = h5.create_earray('/', 'ear',  # ②
+                                atom=tb.Float64Atom(),  # ③
+                                shape=(0, n))  # ④
 
 In [186]: type(ear)
 Out[186]: tables.earray.EArray
 
-In [187]: rand = np.random.standard_normal((n, n))  ![5](img/5.png)
+In [187]: rand = np.random.standard_normal((n, n))  # ⑤
           rand[:4, :4]
 Out[187]: array([[-1.25983231,  1.11420699,  0.1667485 ,  0.7345676 ],
                  [-0.13785424,  1.22232417,  1.36303097,  0.13521042],
@@ -1698,7 +1698,7 @@ Out[187]: array([[-1.25983231,  1.11420699,  0.1667485 ,  0.7345676 ],
 
 In [188]: %%time
           for _ in range(750):
-              ear.append(rand)  ![6](img/6.png)
+              ear.append(rand)  # ⑥
           ear.flush()
 
           CPU times: user 728 ms, sys: 1.11 s, total: 1.84 s
@@ -1756,11 +1756,11 @@ In [191]: out = h5.create_earray('/', 'out',
 In [192]: out.size_on_disk
 Out[192]: 0
 
-In [193]: expr = tb.Expr('3 * sin(ear) + sqrt(abs(ear))')  ![1](img/1.png)
+In [193]: expr = tb.Expr('3 * sin(ear) + sqrt(abs(ear))')  # ①
 
-In [194]: expr.set_output(out, append_mode=True)  ![2](img/2.png)
+In [194]: expr.set_output(out, append_mode=True)  # ②
 
-In [195]: %time expr.eval()  ![3](img/3.png)
+In [195]: %time expr.eval()  # ③
 
           CPU times: user 2.98 s, sys: 1.38 s, total: 4.36 s
           Wall time: 3.28 s
@@ -1779,7 +1779,7 @@ In [197]: out[0, :10]
 Out[197]: array([-1.73369462,  3.74824436,  0.90627898,  2.86786818,  1.75424957,
                  -0.91108973, -1.68313885,  1.29073295, -1.68665599, -1.71345309])
 
-In [198]: %time out_ = out.read()  ![4](img/4.png)
+In [198]: %time out_ = out.read()  # ④
 
           CPU times: user 879 ms, sys: 1.11 s, total: 1.99 s
           Wall time: 2.18 s
@@ -1808,14 +1808,14 @@ Out[199]: array([-1.73369462,  3.74824436,  0.90627898,  2.86786818,  1.75424957
 考虑到整个操作是在内存之外进行的，可以认为是相当快的，尤其是在标准硬件上执行。作为基准，可以考虑 `numexpr` 模块的内存性能（也见[Link to Come]）。它更快，但并不是很大的优势：
 
 ```py
-In [200]: import numexpr as ne  ![1](img/1.png)
+In [200]: import numexpr as ne  # ①
 
-In [201]: expr = '3 * sin(out_) + sqrt(abs(out_))'  ![2](img/2.png)
+In [201]: expr = '3 * sin(out_) + sqrt(abs(out_))'  # ②
 
-In [202]: ne.set_num_threads(1)  ![3](img/3.png)
+In [202]: ne.set_num_threads(1)  # ③
 Out[202]: 4
 
-In [203]: %time ne.evaluate(expr)[0, :10]  ![4](img/4.png)
+In [203]: %time ne.evaluate(expr)[0, :10]  # ④
 
           CPU times: user 1.72 s, sys: 529 ms, total: 2.25 s
           Wall time: 2.38 s
@@ -1823,10 +1823,10 @@ In [203]: %time ne.evaluate(expr)[0, :10]  ![4](img/4.png)
 Out[203]: array([-1.64358578,  0.22567882,  3.31363043,  2.50443549,  4.27413965,
                  -1.41600606, -1.68373023,  4.01921805, -1.68117412, -1.66053597])
 
-In [204]: ne.set_num_threads(4)  ![5](img/5.png)
+In [204]: ne.set_num_threads(4)  # ⑤
 Out[204]: 1
 
-In [205]: %time ne.evaluate(expr)[0, :10]  ![6](img/6.png)
+In [205]: %time ne.evaluate(expr)[0, :10]  # ⑥
 
           CPU times: user 2.29 s, sys: 804 ms, total: 3.09 s
           Wall time: 1.56 s
@@ -1872,17 +1872,17 @@ In [207]: !rm -f $path*
 通常情况下，首先生成一些足够大的示例数据集，以说明 `TsTables` 的好处。以下代码基于几何布朗运动的模拟生成了三个相当长的金融时间序列（见[Link to Come]）。
 
 ```py
-In [208]: no = 5000000  ![1](img/1.png)
-          co = 3  ![2](img/2.png)
-          interval = 1. / (12 * 30 * 24 * 60)  ![3](img/3.png)
-          vol = 0.2  ![4](img/4.png)
+In [208]: no = 5000000  # ①
+          co = 3  # ②
+          interval = 1. / (12 * 30 * 24 * 60)  # ③
+          vol = 0.2  # ④
 
 In [209]: %%time
-          rn = np.random.standard_normal((no, co))  ![5](img/5.png)
-          rn[0] = 0.0  ![6](img/6.png)
+          rn = np.random.standard_normal((no, co))  # ⑤
+          rn[0] = 0.0  # ⑥
           paths = 100 * np.exp(np.cumsum(-0.5 * vol ** 2 * interval +
-                  vol * np.sqrt(interval) * rn, axis=0))  ![7](img/7.png)
-          paths[0] = 100  ![8](img/8.png)
+                  vol * np.sqrt(interval) * rn, axis=0))  # ⑦
+          paths[0] = 100  # ⑧
 
           CPU times: user 932 ms, sys: 204 ms, total: 1.14 s
           Wall time: 1.2 s
@@ -1969,16 +1969,16 @@ In [215]: df[::100000].plot(figsize=(10, 6));
 In [216]: import tstables as tstab
 
 In [217]: class ts_desc(tb.IsDescription):
-              timestamp = tb.Int64Col(pos=0)  ![1](img/1.png)
-              ts1 = tb.Float64Col(pos=1)  ![2](img/2.png)
-              ts2 = tb.Float64Col(pos=2)  ![2](img/2.png)
-              ts3 = tb.Float64Col(pos=3)  ![2](img/2.png)
+              timestamp = tb.Int64Col(pos=0)  # ①
+              ts1 = tb.Float64Col(pos=1)  # ②
+              ts2 = tb.Float64Col(pos=2)  # ②
+              ts3 = tb.Float64Col(pos=3)  # ②
 
-In [218]: h5 = tb.open_file(path + 'tstab.h5', 'w')  ![3](img/3.png)
+In [218]: h5 = tb.open_file(path + 'tstab.h5', 'w')  # ③
 
-In [219]: ts = h5.create_ts('/', 'ts', ts_desc)  ![4](img/4.png)
+In [219]: ts = h5.create_ts('/', 'ts', ts_desc)  # ④
 
-In [220]: %time ts.append(df)  ![5](img/5.png)
+In [220]: %time ts.append(df)  # ⑤
 
           CPU times: user 692 ms, sys: 403 ms, total: 1.1 s
           Wall time: 1.12 s
@@ -2017,15 +2017,15 @@ In [222]: ls -n $path
 使用`TsTables`编写数据显然非常快，即使与硬件有关。对数据的块的读取也是如此。方便的是，`TaTables`返回一个`DataFrame`对象（另见图 9-8）。
 
 ```py
-In [223]: read_start_dt = dt.datetime(2019, 2, 1, 0, 0)  ![1](img/1.png)
-          read_end_dt = dt.datetime(2019, 2, 5, 23, 59)  ![2](img/2.png)
+In [223]: read_start_dt = dt.datetime(2019, 2, 1, 0, 0)  # ①
+          read_end_dt = dt.datetime(2019, 2, 5, 23, 59)  # ②
 
-In [224]: %time rows = ts.read_range(read_start_dt, read_end_dt)  ![3](img/3.png)
+In [224]: %time rows = ts.read_range(read_start_dt, read_end_dt)  # ③
 
           CPU times: user 80.5 ms, sys: 36.2 ms, total: 117 ms
           Wall time: 116 ms
 
-In [225]: rows.info()  ![4](img/4.png)
+In [225]: rows.info()  # ④
 
           <class 'pandas.core.frame.DataFrame'>
           DatetimeIndex: 431941 entries, 2019-02-01 00:00:00 to 2019-02-05 23:59:00
@@ -2036,7 +2036,7 @@ In [225]: rows.info()  ![4](img/4.png)
           dtypes: float64(3)
           memory usage: 13.2 MB
 
-In [226]: rows.head()  ![4](img/4.png)
+In [226]: rows.head()  # ④
 Out[226]:                            ts1        ts2         ts3
           2019-02-01 00:00:00  52.063640  40.474580  217.324713
           2019-02-01 00:00:01  52.087455  40.471911  217.250070
@@ -2077,11 +2077,11 @@ In [229]: import random
 
 In [230]: h5 = tb.open_file(path + 'tstab.h5', 'r')
 
-In [231]: ts = h5.root.ts._f_get_timeseries()  ![1](img/1.png)
+In [231]: ts = h5.root.ts._f_get_timeseries()  # ①
 
 In [235]: %%time
-          for _ in range(100):  ![2](img/2.png)
-              d = random.randint(1, 24)  ![3](img/3.png)
+          for _ in range(100):  # ②
+              d = random.randint(1, 24)  # ③
               read_start_dt = dt.datetime(2019, 2, d, 0, 0, 0)
               read_end_dt = dt.datetime(2019, 2, d + 3, 23, 59, 59)
               rows = ts.read_range(read_start_dt, read_end_dt)
@@ -2089,7 +2089,7 @@ In [235]: %%time
           CPU times: user 3.51 s, sys: 1.03 s, total: 4.55 s
           Wall time: 4.62 s
 
-In [233]: rows.info()  ![4](img/4.png)
+In [233]: rows.info()  # ④
 
           <class 'pandas.core.frame.DataFrame'>
           DatetimeIndex: 431941 entries, 2019-02-01 00:00:00 to 2019-02-05 23:59:00

@@ -37,13 +37,13 @@
 转换为 Python 代码，实现人类示例的简单类可能如下所示。
 
 ```py
-In [1]: class HumanBeing(object):  ![1](img/1.png)
-            def __init__(self, first_name, eye_color):  ![2](img/2.png)
-                self.first_name = first_name  ![3](img/3.png)
-                self.eye_color = eye_color  ![4](img/4.png)
-                self.position = 0  ![5](img/5.png)
-            def walk_steps(self, steps):  ![6](img/6.png)
-                self.position += steps  ![7](img/7.png)
+In [1]: class HumanBeing(object):  # ①
+            def __init__(self, first_name, eye_color):  # ②
+                self.first_name = first_name  # ③
+                self.eye_color = eye_color  # ④
+                self.position = 0  # ⑤
+            def walk_steps(self, steps):  # ⑥
+                self.position += steps  # ⑦
 ```
 
 ![1](img/#co_object_orientated_programming_CO1-1)
@@ -77,17 +77,17 @@ In [1]: class HumanBeing(object):  ![1](img/1.png)
 根据类定义，可以实例化并使用一个新的 Python 对象。
 
 ```py
-In [2]: Sandra = HumanBeing('Sandra', 'blue')  ![1](img/1.png)
+In [2]: Sandra = HumanBeing('Sandra', 'blue')  # ①
 
-In [3]: Sandra.first_name  ![2](img/2.png)
+In [3]: Sandra.first_name  # ②
 Out[3]: 'Sandra'
 
-In [4]: Sandra.position  ![2](img/2.png)
+In [4]: Sandra.position  # ②
 Out[4]: 0
 
-In [5]: Sandra.walk_steps(5)  ![3](img/3.png)
+In [5]: Sandra.walk_steps(5)  # ③
 
-In [6]: Sandra.position  ![4](img/4.png)
+In [6]: Sandra.position  # ④
 Out[6]: 5
 ```
 
@@ -188,24 +188,24 @@ Python 建模的方式
 为了简单起见，考虑一个整数对象。即使对于这样一个简单的 Python 对象，主要的面向对象编程（OOP）特征也是存在的。
 
 ```py
-In [7]: n = 5  ![1](img/1.png)
+In [7]: n = 5  # ①
 
-In [8]: type(n)  ![2](img/2.png)
+In [8]: type(n)  # ②
 Out[8]: int
 
-In [9]: n.numerator  ![3](img/3.png)
+In [9]: n.numerator  # ③
 Out[9]: 5
 
-In [10]: n.bit_length()  ![4](img/4.png)
+In [10]: n.bit_length()  # ④
 Out[10]: 3
 
-In [11]: n + n  ![5](img/5.png)
+In [11]: n + n  # ⑤
 Out[11]: 10
 
-In [12]: 2 * n  ![6](img/6.png)
+In [12]: 2 * n  # ⑥
 Out[12]: 10
 
-In [13]: n.__sizeof__()  ![7](img/7.png)
+In [13]: n.__sizeof__()  # ⑦
 Out[13]: 28
 ```
 
@@ -242,26 +242,26 @@ Out[13]: 28
 `list`对象有一些额外的方法，但基本上表现方式相同。
 
 ```py
-In [14]: l = [1, 2, 3, 4]  ![1](img/1.png)
+In [14]: l = [1, 2, 3, 4]  # ①
 
-In [15]: type(l)  ![2](img/2.png)
+In [15]: type(l)  # ②
 Out[15]: list
 
-In [16]: l[0]  ![3](img/3.png)
+In [16]: l[0]  # ③
 Out[16]: 1
 
-In [17]: l.append(10)  ![4](img/4.png)
+In [17]: l.append(10)  # ④
 
-In [18]: l + l  ![5](img/5.png)
+In [18]: l + l  # ⑤
 Out[18]: [1, 2, 3, 4, 10, 1, 2, 3, 4, 10]
 
-In [19]: 2 * l  ![6](img/6.png)
+In [19]: 2 * l  # ⑥
 Out[19]: [1, 2, 3, 4, 10, 1, 2, 3, 4, 10]
 
-In [20]: sum(l)  ![7](img/7.png)
+In [20]: sum(l)  # ⑦
 Out[20]: 20
 
-In [21]: l.__sizeof__()  ![8](img/8.png)
+In [21]: l.__sizeof__()  # ⑧
 Out[21]: 104
 ```
 
@@ -302,17 +302,17 @@ Out[21]: 104
 `int`和`list`对象是标准的 Python 对象。`NumPy`的`ndarray`对象是一个来自开源包的“自定义”对象。
 
 ```py
-In [22]: import numpy as np  ![1](img/1.png)
+In [22]: import numpy as np  # ①
 
-In [23]: a = np.arange(16).reshape((4, 4))  ![2](img/2.png)
+In [23]: a = np.arange(16).reshape((4, 4))  # ②
 
-In [24]: a  ![2](img/2.png)
+In [24]: a  # ②
 Out[24]: array([[ 0,  1,  2,  3],
                 [ 4,  5,  6,  7],
                 [ 8,  9, 10, 11],
                 [12, 13, 14, 15]])
 
-In [25]: type(a)  ![3](img/3.png)
+In [25]: type(a)  # ③
 Out[25]: numpy.ndarray
 ```
 
@@ -331,37 +331,37 @@ Out[25]: numpy.ndarray
 尽管`ndarray`对象不是标准对象，但在许多情况下表现得就像是一个标准对象——这要归功于下文中解释的 Python 数据模型。
 
 ```py
-In [26]: a.nbytes  ![1](img/1.png)
+In [26]: a.nbytes  # ①
 Out[26]: 128
 
-In [27]: a.sum()  ![2](img/2.png)
+In [27]: a.sum()  # ②
 Out[27]: 120
 
-In [28]: a.cumsum(axis=0)  ![3](img/3.png)
+In [28]: a.cumsum(axis=0)  # ③
 Out[28]: array([[ 0,  1,  2,  3],
                 [ 4,  6,  8, 10],
                 [12, 15, 18, 21],
                 [24, 28, 32, 36]])
 
-In [29]: a + a  ![4](img/4.png)
+In [29]: a + a  # ④
 Out[29]: array([[ 0,  2,  4,  6],
                 [ 8, 10, 12, 14],
                 [16, 18, 20, 22],
                 [24, 26, 28, 30]])
 
-In [30]: 2 * a  ![5](img/5.png)
+In [30]: 2 * a  # ⑤
 Out[30]: array([[ 0,  2,  4,  6],
                 [ 8, 10, 12, 14],
                 [16, 18, 20, 22],
                 [24, 26, 28, 30]])
 
-In [31]: sum(a)  ![6](img/6.png)
+In [31]: sum(a)  # ⑥
 Out[31]: array([24, 28, 32, 36])
 
-In [32]: np.sum(a)  ![7](img/7.png)
+In [32]: np.sum(a)  # ⑦
 Out[32]: 120
 
-In [33]: a.__sizeof__()  ![8](img/8.png)
+In [33]: a.__sizeof__()  # ⑧
 Out[33]: 112
 ```
 
@@ -402,11 +402,11 @@ Out[33]: 112
 最后，快速查看`pandas`的`DataFrame`对象，因为其行为大多与`ndarray`对象相同。首先，基于`ndarray`对象实例化`DataFrame`对象。
 
 ```py
-In [34]: import pandas as pd  ![1](img/1.png)
+In [34]: import pandas as pd  # ①
 
-In [35]: df = pd.DataFrame(a, columns=list('abcd'))  ![2](img/2.png)
+In [35]: df = pd.DataFrame(a, columns=list('abcd'))  # ②
 
-In [36]: type(df)  ![3](img/3.png)
+In [36]: type(df)  # ③
 Out[36]: pandas.core.frame.DataFrame
 ```
 
@@ -425,45 +425,45 @@ Out[36]: pandas.core.frame.DataFrame
 其次，查看属性、方法和操作。
 
 ```py
-In [37]: df.columns  ![1](img/1.png)
+In [37]: df.columns  # ①
 Out[37]: Index(['a', 'b', 'c', 'd'], dtype='object')
 
-In [38]: df.sum()  ![2](img/2.png)
+In [38]: df.sum()  # ②
 Out[38]: a    24
          b    28
          c    32
          d    36
          dtype: int64
 
-In [39]: df.cumsum()  ![3](img/3.png)
+In [39]: df.cumsum()  # ③
 Out[39]:     a   b   c   d
          0   0   1   2   3
          1   4   6   8  10
          2  12  15  18  21
          3  24  28  32  36
 
-In [40]: df + df  ![4](img/4.png)
+In [40]: df + df  # ④
 Out[40]:     a   b   c   d
          0   0   2   4   6
          1   8  10  12  14
          2  16  18  20  22
          3  24  26  28  30
 
-In [41]: 2 * df  ![5](img/5.png)
+In [41]: 2 * df  # ⑤
 Out[41]:     a   b   c   d
          0   0   2   4   6
          1   8  10  12  14
          2  16  18  20  22
          3  24  26  28  30
 
-In [42]: np.sum(df)  ![6](img/6.png)
+In [42]: np.sum(df)  # ⑥
 Out[42]: a    24
          b    28
          c    32
          d    36
          dtype: int64
 
-In [43]: df.__sizeof__()  ![7](img/7.png)
+In [43]: df.__sizeof__()  # ⑦
 Out[43]: 208
 ```
 
@@ -500,23 +500,23 @@ Out[43]: 208
 本节涉及主要概念和具体语法，以利用 Python 中的 OOP。当前的背景是构建自定义类来模拟无法轻松、高效或适当地由现有 Python 对象类型建模的对象类型。在*金融工具*的示例中，只需两行代码即可创建一个新的 Python 类。
 
 ```py
-In [44]: class FinancialInstrument(object):  ![1](img/1.png)
-             pass  ![2](img/2.png)
+In [44]: class FinancialInstrument(object):  # ①
+             pass  # ②
 
-In [45]: fi = FinancialInstrument()  ![3](img/3.png)
+In [45]: fi = FinancialInstrument()  # ③
 
-In [46]: type(fi)  ![4](img/4.png)
+In [46]: type(fi)  # ④
 Out[46]: __main__.FinancialInstrument
 
-In [47]: fi  ![4](img/4.png)
+In [47]: fi  # ④
 Out[47]: <__main__.FinancialInstrument at 0x10a21c828>
 
-In [48]: fi.__str__()  ![5](img/5.png)
+In [48]: fi.__str__()  # ⑤
 Out[48]: '<__main__.FinancialInstrument object at 0x10a21c828>'
 
-In [49]: fi.price = 100  ![6](img/6.png)
+In [49]: fi.price = 100  # ⑥
 
-In [50]: fi.price  ![6](img/6.png)
+In [50]: fi.price  # ⑥
 Out[50]: 100
 ```
 
@@ -546,25 +546,25 @@ Out[50]: 100
 
 ```py
 In [51]: class FinancialInstrument(object):
-             author = 'Yves Hilpisch'  ![1](img/1.png)
-             def __init__(self, symbol, price):  ![2](img/2.png)
-                 self.symbol = symbol  ![3](img/3.png)
-                 self.price = price  ![3](img/3.png)
+             author = 'Yves Hilpisch'  # ①
+             def __init__(self, symbol, price):  # ②
+                 self.symbol = symbol  # ③
+                 self.price = price  # ③
 
-In [52]: FinancialInstrument.author  ![1](img/1.png)
+In [52]: FinancialInstrument.author  # ①
 Out[52]: 'Yves Hilpisch'
 
-In [53]: aapl = FinancialInstrument('AAPL', 100)  ![4](img/4.png)
+In [53]: aapl = FinancialInstrument('AAPL', 100)  # ④
 
-In [54]: aapl.symbol  ![5](img/5.png)
+In [54]: aapl.symbol  # ⑤
 Out[54]: 'AAPL'
 
-In [55]: aapl.author  ![6](img/6.png)
+In [55]: aapl.author  # ⑥
 Out[55]: 'Yves Hilpisch'
 
-In [56]: aapl.price = 105  ![7](img/7.png)
+In [56]: aapl.price = 105  # ⑦
 
-In [57]: aapl.price  ![7](img/7.png)
+In [57]: aapl.price  # ⑦
 Out[57]: 105
 ```
 
@@ -599,23 +599,23 @@ Out[57]: 105
 金融工具的价格经常变动，金融工具的符号可能不会变动。为了向类定义引入封装，可以定义两个方法`get_price()`和`set_price()`。接下来的代码还额外继承了之前的类定义（不再继承自`object`）。
 
 ```py
-In [58]: class FinancialInstrument(FinancialInstrument):  ![1](img/1.png)
-             def get_price(self):  ![2](img/2.png)
-                 return self.price  ![2](img/2.png)
-             def set_price(self, price):  ![3](img/3.png)
-                 self.price = price  ![4](img/4.png)
+In [58]: class FinancialInstrument(FinancialInstrument):  # ①
+             def get_price(self):  # ②
+                 return self.price  # ②
+             def set_price(self, price):  # ③
+                 self.price = price  # ④
 
-In [59]: fi = FinancialInstrument('AAPL', 100)  ![5](img/5.png)
+In [59]: fi = FinancialInstrument('AAPL', 100)  # ⑤
 
-In [60]: fi.get_price()  ![6](img/6.png)
+In [60]: fi.get_price()  # ⑥
 Out[60]: 100
 
-In [61]: fi.set_price(105)  ![7](img/7.png)
+In [61]: fi.set_price(105)  # ⑦
 
-In [62]: fi.get_price()  ![6](img/6.png)
+In [62]: fi.get_price()  # ⑥
 Out[62]: 105
 
-In [63]: fi.price  ![8](img/8.png)
+In [63]: fi.price  # ⑧
 Out[63]: 105
 ```
 
@@ -657,7 +657,7 @@ Out[63]: 105
 In [64]: class FinancialInstrument(object):
              def __init__(self, symbol, price):
                  self.symbol = symbol
-                 self.__price = price  ![1](img/1.png)
+                 self.__price = price  # ①
              def get_price(self):
                  return self.__price
              def set_price(self, price):
@@ -665,24 +665,24 @@ In [64]: class FinancialInstrument(object):
 
 In [65]: fi = FinancialInstrument('AAPL', 100)
 
-In [66]: fi.get_price()  ![2](img/2.png)
+In [66]: fi.get_price()  # ②
 Out[66]: 100
 
-In [67]: fi.__price  ![3](img/3.png)
+In [67]: fi.__price  # ③
 
          ----------------------------------------
          AttributeErrorTraceback (most recent call last)
          <ipython-input-67-74c0dc05c9ae> in <module>()
-----> 1 fi.__price  ![3](img/3.png)
+----> 1 fi.__price  # ③
 
          AttributeError: 'FinancialInstrument' object has no attribute '__price'
 
-In [68]: fi._FinancialInstrument__price  ![4](img/4.png)
+In [68]: fi._FinancialInstrument__price  # ④
 Out[68]: 100
 
-In [69]: fi._FinancialInstrument__price = 105  ![4](img/4.png)
+In [69]: fi._FinancialInstrument__price = 105  # ④
 
-In [70]: fi.set_price(100)  ![5](img/5.png)
+In [70]: fi.set_price(100)  # ⑤
 ```
 
 ![1](img/#co_object_orientated_programming_CO12-1)
@@ -714,30 +714,30 @@ In [70]: fi.set_price(100)  ![5](img/5.png)
 ```py
 In [71]: class PortfolioPosition(object):
              def __init__(self, financial_instrument, position_size):
-                 self.position = financial_instrument  ![1](img/1.png)
-                 self.__position_size = position_size  ![2](img/2.png)
+                 self.position = financial_instrument  # ①
+                 self.__position_size = position_size  # ②
              def get_position_size(self):
                  return self.__position_size
              def update_position_size(self, position_size):
                  self.__position_size = position_size
              def get_position_value(self):
                  return self.__position_size * \
-                        self.position.get_price()  ![3](img/3.png)
+                        self.position.get_price()  # ③
 
 In [72]: pp = PortfolioPosition(fi, 10)
 
 In [73]: pp.get_position_size()
 Out[73]: 10
 
-In [74]: pp.get_position_value()  ![3](img/3.png)
+In [74]: pp.get_position_value()  # ③
 Out[74]: 1000
 
-In [75]: pp.position.get_price()  ![4](img/4.png)
+In [75]: pp.position.get_price()  # ④
 Out[75]: 100
 
-In [76]: pp.position.set_price(105)  ![5](img/5.png)
+In [76]: pp.position.set_price(105)  # ⑤
 
-In [77]: pp.get_position_value()  ![6](img/6.png)
+In [77]: pp.get_position_value()  # ⑥
 Out[77]: 1050
 ```
 
@@ -789,14 +789,14 @@ Out[77]: 1050
 
 ```py
 In [78]: class Vector(object):
-             def __init__(self, x=0, y=0, z=0):  ![1](img/1.png)
-                 self.x = x  ![1](img/1.png)
-                 self.y = y  ![1](img/1.png)
-                 self.z = z  ![1](img/1.png)
+             def __init__(self, x=0, y=0, z=0):  # ①
+                 self.x = x  # ①
+                 self.y = y  # ①
+                 self.z = z  # ①
 
-In [79]: v = Vector(1, 2, 3)  ![2](img/2.png)
+In [79]: v = Vector(1, 2, 3)  # ②
 
-In [80]: v  ![3](img/3.png)
+In [80]: v  # ③
 Out[80]: <__main__.Vector at 0x10a245d68>
 ```
 
@@ -821,10 +821,10 @@ In [81]: class Vector(Vector):
 
 In [82]: v = Vector(1, 2, 3)
 
-In [83]: v  ![1](img/1.png)
+In [83]: v  # ①
 Out[83]: Vector(1, 2, 3)
 
-In [84]: print(v)  ![1](img/1.png)
+In [84]: print(v)  # ①
 
          Vector(1, 2, 3)
 ```
@@ -839,12 +839,12 @@ In [84]: print(v)  ![1](img/1.png)
 In [85]: class Vector(Vector):
              def __abs__(self):
                  return (self.x ** 2 +  self.y ** 2 +
-                         self.z ** 2) ** 0.5  ![1](img/1.png)
+                         self.z ** 2) ** 0.5  # ①
 
              def __bool__(self):
                  return bool(abs(self))
 
-In [86]: v = Vector(1, 2, -1)  ![2](img/2.png)
+In [86]: v = Vector(1, 2, -1)  # ②
 
 In [87]: abs(v)
 Out[87]: 2.449489742783178
@@ -852,9 +852,9 @@ Out[87]: 2.449489742783178
 In [88]: bool(v)
 Out[88]: True
 
-In [89]: v = Vector()  ![3](img/3.png)
+In [89]: v = Vector()  # ③
 
-In [90]: v  ![3](img/3.png)
+In [90]: v  # ③
 Out[90]: Vector(0, 0, 0)
 
 In [91]: abs(v)
@@ -884,12 +884,12 @@ In [93]: class Vector(Vector):
                  x = self.x + other.x
                  y = self.y + other.y
                  z = self.z + other.z
-                 return Vector(x, y, z)  ![1](img/1.png)
+                 return Vector(x, y, z)  # ①
 
              def __mul__(self, scalar):
                  return Vector(self.x * scalar,
                                self.y * scalar,
-                               self.z * scalar)  ![1](img/1.png)
+                               self.z * scalar)  # ①
 
 In [94]: v = Vector(1, 2, 3)
 
@@ -909,7 +909,7 @@ Out[96]: Vector(2, 4, 6)
 ```py
 In [97]: class Vector(Vector):
              def __len__(self):
-                 return 3  ![1](img/1.png)
+                 return 3  # ①
 
              def __getitem__(self, i):
                  if i in [0, -3]: return self.x
@@ -957,15 +957,15 @@ In [103]: class Vector(Vector):
 
 In [104]: v = Vector(1, 2, 3)
 
-In [105]: for i in range(3):  ![1](img/1.png)
-              print(v[i])  ![1](img/1.png)
+In [105]: for i in range(3):  # ①
+              print(v[i])  # ①
 
           1
           2
           3
 
-In [106]: for coordinate in v:  ![2](img/2.png)
-              print(coordinate)  ![2](img/2.png)
+In [106]: for coordinate in v:  # ②
+              print(coordinate)  # ②
 
           1
           2

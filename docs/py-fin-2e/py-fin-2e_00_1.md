@@ -342,24 +342,24 @@ Meriwether 为数百万美元购买的同样计算能力，如今可能只需数
 现在我们将把这个问题和算法翻译成 Python 代码。读者可以通过使用 `IPython` 等工具来跟踪单个步骤，但在这个阶段并不是非常必要。
 
 ```py
-In [6]: S0 = 100.  ![1](img/1.png)
-        K = 105.  ![1](img/1.png)
-        T = 1.0  ![1](img/1.png)
-        r = 0.05  ![1](img/1.png)
-        sigma = 0.2  ![1](img/1.png)
+In [6]: S0 = 100.  # ①
+        K = 105.  # ①
+        T = 1.0  # ①
+        r = 0.05  # ①
+        sigma = 0.2  # ①
 
 In [7]: import math
-        import numpy as np  ![2](img/2.png)
+        import numpy as np  # ②
 
         I = 100000
 
-        np.random.seed(1000)  ![3](img/3.png)
-        z = np.random.standard_normal(I)  ![4](img/4.png)
-        ST = S0 * np.exp((r - sigma ** 2 / 2) * T + sigma * math.sqrt(T) * z)  ![5](img/5.png)
-        hT = np.maximum(ST - K, 0)  ![6](img/6.png)
-        C0 = math.exp(-r * T) * np.mean(hT)  ![7](img/7.png)
+        np.random.seed(1000)  # ③
+        z = np.random.standard_normal(I)  # ④
+        ST = S0 * np.exp((r - sigma ** 2 / 2) * T + sigma * math.sqrt(T) * z)  # ⑤
+        hT = np.maximum(ST - K, 0)  # ⑥
+        C0 = math.exp(-r * T) * np.mean(hT)  # ⑦
 
-In [8]: print('Value of the European Call Option %5.3f:' % C0)  ![8](img/8.png)
+In [8]: print('Value of the European Call Option %5.3f:' % C0)  # ⑧
 
         Value of the European Call Option 8.019:
 ```
@@ -497,13 +497,13 @@ Python 的效率显而易见的领域之一是交互式数据分析。这是一�
 这些任务足够复杂，以至于不久之前人们会认为这是专业金融分析师的事情。如今，即使是金融学生也能轻松应对这些问题。让我们看看这究竟是如何运作的——在这个阶段不必担心语法细节（一切都将在后续章节中详细解释）。
 
 ```py
-In [10]: import numpy as np  ![1](img/1.png)
-         import pandas as pd  ![1](img/1.png)
+In [10]: import numpy as np  # ①
+         import pandas as pd  # ①
 
 In [11]: data = pd.read_csv('http://hilpisch.com/tr_eikon_eod_data.csv',
-                           index_col=0, parse_dates=True)  ![2](img/2.png)
-         data = pd.DataFrame(data['.SPX'])  ![3](img/3.png)
-         data.info()  ![4](img/4.png)
+                           index_col=0, parse_dates=True)  # ②
+         data = pd.DataFrame(data['.SPX'])  # ③
+         data.info()  # ④
 
          <class 'pandas.core.frame.DataFrame'>
          DatetimeIndex: 1972 entries, 2010-01-04 to 2017-10-31
@@ -512,10 +512,10 @@ In [11]: data = pd.read_csv('http://hilpisch.com/tr_eikon_eod_data.csv',
          dtypes: float64(1)
          memory usage: 30.8 KB
 
-In [12]: data['rets'] = np.log(data / data.shift(1))  ![5](img/5.png)
-         data['vola'] = data['rets'].rolling(252).std() * np.sqrt(252)  ![6](img/6.png)
+In [12]: data['rets'] = np.log(data / data.shift(1))  # ⑤
+         data['vola'] = data['rets'].rolling(252).std() * np.sqrt(252)  # ⑥
 
-In [13]: data[['.SPX', 'vola']].plot(subplots=True, figsize=(10, 6));  ![7](img/7.png)
+In [13]: data[['.SPX', 'vola']].plot(subplots=True, figsize=(10, 6));  # ⑦
          plt.savefig('../images/01_chapter/spx_volatility.png')
 ```
 

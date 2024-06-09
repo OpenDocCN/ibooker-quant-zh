@@ -56,13 +56,13 @@
 从相当基本的角度来看，`DataFrame`类被设计用来管理带索引和标签的数据，与`SQL`数据库表或电子表格应用程序中的工作表并没有太大的不同。考虑以下创建`DataFrame`对象的示例：
 
 ```py
-In [1]: import pandas as pd  ![1](img/1.png)
+In [1]: import pandas as pd  # ①
 
-In [2]: df = pd.DataFrame([10, 20, 30, 40],  ![2](img/2.png)
-                          columns=['numbers'],  ![3](img/3.png)
-                          index=['a', 'b', 'c', 'd'])  ![4](img/4.png)
+In [2]: df = pd.DataFrame([10, 20, 30, 40],  # ②
+                          columns=['numbers'],  # ③
+                          index=['a', 'b', 'c', 'd'])  # ④
 
-In [3]: df  ![5](img/5.png)
+In [3]: df  # ⑤
 Out[3]:    numbers
         a       10
         b       20
@@ -107,38 +107,38 @@ Out[3]:    numbers
 与此类`DataFrame`对象一起工作通常非常方便和高效，例如，与常规的`ndarray`对象相比，当您想要像扩大现有对象一样时，后者更为专业和受限。以下是展示在`DataFrame`对象上进行典型操作的简单示例：
 
 ```py
-In [4]: df.index  ![1](img/1.png)
+In [4]: df.index  # ①
 Out[4]: Index(['a', 'b', 'c', 'd'], dtype='object')
 
-In [5]: df.columns  ![2](img/2.png)
+In [5]: df.columns  # ②
 Out[5]: Index(['numbers'], dtype='object')
 
-In [6]: df.loc['c']  ![3](img/3.png)
+In [6]: df.loc['c']  # ③
 Out[6]: numbers    30
         Name: c, dtype: int64
 
-In [7]: df.loc[['a', 'd']]  ![4](img/4.png)
+In [7]: df.loc[['a', 'd']]  # ④
 Out[7]:    numbers
         a       10
         d       40
 
-In [8]: df.iloc[1:3]  ![5](img/5.png)
+In [8]: df.iloc[1:3]  # ⑤
 Out[8]:    numbers
         b       20
         c       30
 
-In [9]: df.sum()  ![6](img/6.png)
+In [9]: df.sum()  # ⑥
 Out[9]: numbers    100
         dtype: int64
 
-In [10]: df.apply(lambda x: x ** 2)  ![7](img/7.png)
+In [10]: df.apply(lambda x: x ** 2)  # ⑦
 Out[10]:    numbers
          a      100
          b      400
          c      900
          d     1600
 
-In [11]: df ** 2  ![8](img/8.png)
+In [11]: df ** 2  # ⑧
 Out[11]:    numbers
          a      100
          b      400
@@ -181,7 +181,7 @@ Out[11]:    numbers
 与`NumPy`的`ndarray`对象相反，可以在两个维度上扩大`DataFrame`对象：
 
 ```py
-In [12]: df['floats'] = (1.5, 2.5, 3.5, 4.5)  ![1](img/1.png)
+In [12]: df['floats'] = (1.5, 2.5, 3.5, 4.5)  # ①
 
 In [13]: df
 Out[13]:    numbers  floats
@@ -190,7 +190,7 @@ Out[13]:    numbers  floats
          c       30     3.5
          d       40     4.5
 
-In [14]: df['floats']  ![2](img/2.png)
+In [14]: df['floats']  # ②
 Out[14]: a    1.5
          b    2.5
          c    3.5
@@ -210,7 +210,7 @@ Out[14]: a    1.5
 
 ```py
 In [15]: df['names'] = pd.DataFrame(['Yves', 'Sandra', 'Lilli', 'Henry'],
-                                    index=['d', 'a', 'b', 'c'])  ![1](img/1.png)
+                                    index=['d', 'a', 'b', 'c'])  # ①
 
 In [16]: df
 Out[16]:    numbers  floats   names
@@ -228,7 +228,7 @@ Out[16]:    numbers  floats   names
 
 ```py
 In [17]: df.append({'numbers': 100, 'floats': 5.75, 'names': 'Jil'},
-                        ignore_index=True)  ![1](img/1.png)
+                        ignore_index=True)  # ①
 Out[17]:    numbers  floats   names
          0       10    1.50  Sandra
          1       20    2.50   Lilli
@@ -237,7 +237,7 @@ Out[17]:    numbers  floats   names
          4      100    5.75     Jil
 
 In [18]: df = df.append(pd.DataFrame({'numbers': 100, 'floats': 5.75,
-                                      'names': 'Jil'}, index=['y',]))  ![2](img/2.png)
+                                      'names': 'Jil'}, index=['y',]))  # ②
 
 In [19]: df
 Out[19]:    floats   names  numbers
@@ -247,7 +247,7 @@ Out[19]:    floats   names  numbers
          d    4.50    Yves       40
          y    5.75     Jil      100
 
-In [20]: df = df.append(pd.DataFrame({'names': 'Liz'}, index=['z',]))  ![3](img/3.png)
+In [20]: df = df.append(pd.DataFrame({'names': 'Liz'}, index=['z',]))  # ③
 
 In [21]: df
 Out[21]:    floats   names  numbers
@@ -258,7 +258,7 @@ Out[21]:    floats   names  numbers
          y    5.75     Jil    100.0
          z     NaN     Liz      NaN
 
-In [22]: df.dtypes  ![4](img/4.png)
+In [22]: df.dtypes  # ④
 Out[22]: floats     float64
          names       object
          numbers    float64
@@ -284,12 +284,12 @@ Out[22]: floats     float64
 尽管现在存在缺失值，但大多数方法调用仍将起作用。例如：
 
 ```py
-In [23]: df[['numbers', 'floats']].mean()  ![1](img/1.png)
+In [23]: df[['numbers', 'floats']].mean()  # ①
 Out[23]: numbers    40.00
          floats      3.55
          dtype: float64
 
-In [24]: df[['numbers', 'floats']].std()  ![2](img/2.png)
+In [24]: df[['numbers', 'floats']].std()  # ②
 Out[24]: numbers    35.355339
          floats      1.662077
          dtype: float64
@@ -329,7 +329,7 @@ Out[28]: array([[-1.74976547,  0.3426804 ,  1.1530358 , -0.25243604],
 尽管可以更直接地构造`DataFrame`对象（如前所示），但通常使用`ndarray`对象是一个很好的选择，因为`pandas`将保留基本结构，并且“只”会添加元信息（例如，索引值）。它还代表了金融应用和一般科学研究的典型用例。例如：
 
 ```py
-In [29]: df = pd.DataFrame(a)  ![1](img/1.png)
+In [29]: df = pd.DataFrame(a)  # ①
 
 In [30]: df
 Out[30]:           0         1         2         3
@@ -363,7 +363,7 @@ Out[30]:           0         1         2         3
 与结构化数组一样，正如我们已经看到的那样，`DataFrame`对象具有可以直接通过分配具有正确数量元素的`list`来定义的列名。这说明您可以在需要时定义/更改`DataFrame`对象的属性：
 
 ```py
-In [31]: df.columns = ['No1', 'No2', 'No3', 'No4']  ![1](img/1.png)
+In [31]: df.columns = ['No1', 'No2', 'No3', 'No4']  # ①
 
 In [32]: df
 Out[32]:         No1       No2       No3       No4
@@ -377,7 +377,7 @@ Out[32]:         No1       No2       No3       No4
          7 -0.326238  0.055676  0.222400 -1.443217
          8 -0.756352  0.816454  0.750445 -0.455947
 
-In [33]: df['No2'].mean()  ![2](img/2.png)
+In [33]: df['No2'].mean()  # ②
 Out[33]: 0.70103309414564585
 ```
 
@@ -392,7 +392,7 @@ Out[33]: 0.70103309414564585
 要高效处理金融时间序列数据，必须能够处理时间索引。这也可以被视为`pandas`的一项重要优势。例如，假设我们的四个列中的九个数据条目对应于从 2019 年 1 月开始的每月末数据。然后，可以使用`date_range()`函数生成`DatetimeIndex`对象，如下所示：
 
 ```py
-In [34]: dates = pd.date_range('2019-1-1', periods=9, freq='M')  ![1](img/1.png)
+In [34]: dates = pd.date_range('2019-1-1', periods=9, freq='M')  # ①
 
 In [35]: dates
 Out[35]: DatetimeIndex(['2019-01-31', '2019-02-28', '2019-03-31', '2019-04-30',
@@ -500,7 +500,7 @@ Out[39]: array([[-1.74976547,  0.3426804 ,  1.1530358 , -0.25243604],
 像`NumPy`的`ndarray`对象一样，`pandas`的`DataFrame`类内置了许多便利方法。作为入门，考虑`info()`方法和+describe()。
 
 ```py
-In [40]: df.info()  ![1](img/1.png)
+In [40]: df.info()  # ①
 
          <class 'pandas.core.frame.DataFrame'>
          DatetimeIndex: 9 entries, 2019-01-31 to 2019-09-30
@@ -513,7 +513,7 @@ In [40]: df.info()  ![1](img/1.png)
          dtypes: float64(4)
          memory usage: 360.0 bytes
 
-In [41]: df.describe()  ![2](img/2.png)
+In [41]: df.describe()  # ②
 Out[41]:             No1       No2       No3       No4
          count  9.000000  9.000000  9.000000  9.000000
          mean  -0.150212  0.701033  0.289193 -0.387788
@@ -536,28 +536,28 @@ Out[41]:             No1       No2       No3       No4
 此外，您可以轻松地按列或按行获取和累积和，平均值，如下所示：
 
 ```py
-In [42]: df.sum()  ![1](img/1.png)
+In [42]: df.sum()  # ①
 Out[42]: No1   -1.351906
          No2    6.309298
          No3    2.602739
          No4   -3.490089
          dtype: float64
 
-In [43]: df.mean()  ![2](img/2.png)
+In [43]: df.mean()  # ②
 Out[43]: No1   -0.150212
          No2    0.701033
          No3    0.289193
          No4   -0.387788
          dtype: float64
 
-In [44]: df.mean(axis=0)  ![2](img/2.png)
+In [44]: df.mean(axis=0)  # ②
 Out[44]: No1   -0.150212
          No2    0.701033
          No3    0.289193
          No4   -0.387788
          dtype: float64
 
-In [45]: df.mean(axis=1)  ![3](img/3.png)
+In [45]: df.mean(axis=1)  # ③
 Out[45]: 2019-01-31   -0.126621
          2019-02-28    0.161669
          2019-03-31    0.010661
@@ -569,7 +569,7 @@ Out[45]: 2019-01-31   -0.126621
          2019-09-30    0.088650
          Freq: M, dtype: float64
 
-In [46]: df.cumsum()  ![4](img/4.png)
+In [46]: df.cumsum()  # ④
 Out[46]:                  No1       No2       No3       No4
          2019-01-31 -1.749765  0.342680  1.153036 -0.252436
          2019-02-28 -0.768445  0.856899  1.374215 -1.322479
@@ -601,14 +601,14 @@ Out[46]:                  No1       No2       No3       No4
 `DataFrame`对象也按预期理解`NumPy`通用函数：
 
 ```py
-In [47]: np.mean(df)  ![1](img/1.png)
+In [47]: np.mean(df)  # ①
 Out[47]: No1   -0.150212
          No2    0.701033
          No3    0.289193
          No4   -0.387788
          dtype: float64
 
-In [48]: np.log(df)  ![2](img/2.png)
+In [48]: np.log(df)  # ②
 
          /Users/yves/miniconda3/envs/base/lib/python3.6/site-packages/ipykernel_launcher.py:1: RuntimeWarning: invalid value encountered in log
            """Entry point for launching an IPython kernel.
@@ -624,7 +624,7 @@ Out[48]:                  No1       No2       No3       No4
  2019-08-31       NaN -2.888206 -1.503279       NaN
  2019-09-30       NaN -0.202785 -0.287089       NaN
 
-In [49]: np.sqrt(abs(df)) ![3](img/3.png)
+In [49]: np.sqrt(abs(df)) # ③
 Out[49]:                  No1       No2       No3       No4
  2019-01-31  1.322787  0.585389  1.073795  0.502430
  2019-02-28  0.990616  0.717091  0.470297  1.034429
@@ -636,14 +636,14 @@ Out[49]:                  No1       No2       No3       No4
  2019-08-31  0.571173  0.235958  0.471593  1.201340
  2019-09-30  0.869685  0.903578  0.866282  0.675238
 
-In [50]: np.sqrt(abs(df)).sum() ![4](img/4.png)
+In [50]: np.sqrt(abs(df)).sum() # ④
 Out[50]: No1    7.384345
  No2    7.075190
  No3    6.397719
  No4    7.538440
  dtype: float64
 
-In [51]: 100 * df + 100 ![5](img/5.png)
+In [51]: 100 * df + 100 # ⑤
 Out[51]:                    No1         No2         No3         No4
  2019-01-31  -74.976547  134.268040  215.303580   74.756396
  2019-02-28  198.132079  151.421884  122.117967   -7.004333
@@ -687,12 +687,12 @@ Out[51]:                    No1         No2         No3         No4
 通常情况下，一旦数据存储在`DataFrame`对象中，数据的绘制就只需一行代码即可（参见图 5-1）：
 
 ```py
-In [52]: from pylab import plt, mpl  ![1](img/1.png)
-         plt.style.use('seaborn')  ![1](img/1.png)
-         mpl.rcParams['font.family'] = 'serif'  ![1](img/1.png)
+In [52]: from pylab import plt, mpl  # ①
+         plt.style.use('seaborn')  # ①
+         mpl.rcParams['font.family'] = 'serif'  # ①
          %matplotlib inline
 
-In [53]: df.cumsum().plot(lw=2.0, figsize=(10, 6));  ![2](img/2.png)
+In [53]: df.cumsum().plot(lw=2.0, figsize=(10, 6));  # ②
          # plt.savefig('../../images/ch05/pd_plot_01.png')
 ```
 
@@ -743,7 +743,7 @@ In [53]: df.cumsum().plot(lw=2.0, figsize=(10, 6));  ![2](img/2.png)
 作为另一个示例，考虑绘制相同数据的柱状图（参见图 5-1）。
 
 ```py
-In [54]: df.plot(kind='bar', figsize=(10, 6));  ![1](img/1.png)
+In [54]: df.plot(kind='bar', figsize=(10, 6));  # ①
          # plt.savefig('../../images/ch05/pd_plot_02.png')
 ```
 
@@ -818,30 +818,30 @@ Out[61]:                  No1       No2       No3       No4 Quarter
 现在，我们可以按`Quarter`列进行分组，并且可以输出单个组的统计信息：
 
 ```py
-In [62]: groups = df.groupby('Quarter')  ![1](img/1.png)
+In [62]: groups = df.groupby('Quarter')  # ①
 
-In [63]: groups.size()  ![2](img/2.png)
+In [63]: groups.size()  # ②
 Out[63]: Quarter
          Q1    3
          Q2    3
          Q3    3
          dtype: int64
 
-In [64]: groups.mean()  ![3](img/3.png)
+In [64]: groups.mean()  # ③
 Out[64]:               No1       No2       No3       No4
          Quarter
          Q1      -0.319314  0.370634  0.305396 -0.295772
          Q2       0.168035  1.129395 -0.005765 -0.688388
          Q3      -0.299357  0.603071  0.567948 -0.179203
 
-In [65]: groups.max()  ![4](img/4.png)
+In [65]: groups.max()  # ④
 Out[65]:               No1       No2       No3       No4
          Quarter
          Q1       0.981321  0.514219  1.153036  0.435163
          Q2       1.618982  1.541605  0.672721 -0.104411
          Q3       0.184519  0.937082  0.750445  1.361556
 
-In [66]: groups.aggregate([min, max]).round(2)  ![5](img/5.png)
+In [66]: groups.aggregate([min, max]).round(2)  # ⑤
 Out[66]:           No1         No2         No3         No4
                    min   max   min   max   min   max   min   max
          Quarter
@@ -907,11 +907,11 @@ Out[70]:                        No1                 No4
 数据选择通常通过在列值上制定条件来完成，并可能逻辑地组合多个这样的条件。考虑以下数据集。
 
 ```py
-In [71]: data = np.random.standard_normal((10, 2))  ![1](img/1.png)
+In [71]: data = np.random.standard_normal((10, 2))  # ①
 
-In [72]: df = pd.DataFrame(data, columns=['x', 'y'])  ![2](img/2.png)
+In [72]: df = pd.DataFrame(data, columns=['x', 'y'])  # ②
 
-In [73]: df.info()  ![2](img/2.png)
+In [73]: df.info()  # ②
 
          <class 'pandas.core.frame.DataFrame'>
          RangeIndex: 10 entries, 0 to 9
@@ -921,7 +921,7 @@ In [73]: df.info()  ![2](img/2.png)
          dtypes: float64(2)
          memory usage: 240.0 bytes
 
-In [74]: df.head()  ![3](img/3.png)
+In [74]: df.head()  # ③
 Out[74]:           x         y
          0  1.189622 -1.690617
          1 -1.356399 -1.232435
@@ -929,7 +929,7 @@ Out[74]:           x         y
          3  0.007315 -0.612939
          4  1.299748 -1.733096
 
-In [75]: df.tail()  ![4](img/4.png)
+In [75]: df.tail()  # ④
 Out[75]:           x         y
          5 -0.983310  0.357508
          6 -1.613579  1.470714
@@ -957,7 +957,7 @@ Out[75]:           x         y
 下面的代码说明了 Python 的比较运算符和逻辑运算符在两列值上的应用。
 
 ```py
-In [76]: df['x'] > 0.5  ![1](img/1.png)
+In [76]: df['x'] > 0.5  # ①
 Out[76]: 0     True
          1    False
          2    False
@@ -970,7 +970,7 @@ Out[76]: 0     True
          9    False
          Name: x, dtype: bool
 
-In [77]: (df['x'] > 0) & (df['y'] < 0)  ![2](img/2.png)
+In [77]: (df['x'] > 0) & (df['y'] < 0)  # ②
 Out[77]: 0     True
          1    False
          2    False
@@ -983,7 +983,7 @@ Out[77]: 0     True
          9    False
          dtype: bool
 
-In [78]: (df['x'] > 0) | (df['y'] < 0)  ![3](img/3.png)
+In [78]: (df['x'] > 0) | (df['y'] < 0)  # ③
 Out[78]: 0     True
          1     True
          2     True
@@ -1012,20 +1012,20 @@ Out[78]: 0     True
 使用结果布尔`Series`对象，复杂数据（行）的选择很简单。
 
 ```py
-In [79]: df[df['x'] > 0]  ![1](img/1.png)
+In [79]: df[df['x'] > 0]  # ①
 Out[79]:           x         y
          0  1.189622 -1.690617
          3  0.007315 -0.612939
          4  1.299748 -1.733096
          9  0.108863  0.507810
 
-In [80]: df[(df['x'] > 0) & (df['y'] < 0)]  ![2](img/2.png)
+In [80]: df[(df['x'] > 0) & (df['y'] < 0)]  # ②
 Out[80]:           x         y
          0  1.189622 -1.690617
          3  0.007315 -0.612939
          4  1.299748 -1.733096
 
-In [81]: df[(df.x > 0) | (df.y < 0)]  ![3](img/3.png)
+In [81]: df[(df.x > 0) | (df.y < 0)]  # ③
 Out[81]:           x         y
          0  1.189622 -1.690617
          1 -1.356399 -1.232435
@@ -1052,7 +1052,7 @@ Out[81]:           x         y
 比较运算符也可以一次应用于完整的 `DataFrame` 对象。
 
 ```py
-In [82]: df > 0  ![1](img/1.png)
+In [82]: df > 0  # ①
 Out[82]:        x      y
          0   True  False
          1  False  False
@@ -1065,7 +1065,7 @@ Out[82]:        x      y
          8  False  False
          9   True   True
 
-In [83]: df[df > 0]  ![2](img/2.png)
+In [83]: df[df > 0]  # ②
 Out[83]:           x         y
          0  1.189622       NaN
          1       NaN       NaN
@@ -1119,7 +1119,7 @@ Out[87]:      B
 拼接或附加基本上意味着将行从一个 `DataFrame` 对象添加到另一个 `DataFrame` 对象。这可以通过 `append()` 方法或 `pd.concat()` 函数完成。一个主要问题是如何处理索引值。
 
 ```py
-In [88]: df1.append(df2)  ![1](img/1.png)
+In [88]: df1.append(df2)  # ①
 Out[88]:      A    B
          a  100  NaN
          b  200  NaN
@@ -1129,7 +1129,7 @@ Out[88]:      A    B
          b  NaN  150
          d  NaN   50
 
-In [89]: df1.append(df2, ignore_index=True)  ![2](img/2.png)
+In [89]: df1.append(df2, ignore_index=True)  # ②
 Out[89]:      A    B
          0  100  NaN
          1  200  NaN
@@ -1139,7 +1139,7 @@ Out[89]:      A    B
          5  NaN  150
          6  NaN   50
 
-In [90]: pd.concat((df1, df2))  ![3](img/3.png)
+In [90]: pd.concat((df1, df2))  # ③
 Out[90]:      A    B
          a  100  NaN
          b  200  NaN
@@ -1149,7 +1149,7 @@ Out[90]:      A    B
          b  NaN  150
          d  NaN   50
 
-In [91]: pd.concat((df1, df2), ignore_index=True)  ![4](img/4.png)
+In [91]: pd.concat((df1, df2), ignore_index=True)  # ④
 Out[91]:      A    B
          0  100  NaN
          1  200  NaN
@@ -1181,14 +1181,14 @@ Out[91]:      A    B
 在连接这两个数据集时，`DataFrame` 对象的顺序也很重要，但方式不同。只使用第一个 `DataFrame` 对象的索引值。这种默认行为称为*左连接*。
 
 ```py
-In [92]: df1.join(df2)  ![1](img/1.png)
+In [92]: df1.join(df2)  # ①
 Out[92]:      A    B
          a  100  NaN
          b  200  150
          c  300  NaN
          d  400   50
 
-In [93]: df2.join(df1)  ![2](img/2.png)
+In [93]: df2.join(df1)  # ②
 Out[93]:      B    A
          f  200  NaN
          b  150  200
@@ -1206,25 +1206,25 @@ Out[93]:      B    A
 一共有四种不同的连接方法可用，每种方法都会导致索引值和相应数据行的处理方式不同。
 
 ```py
-In [94]: df1.join(df2, how='left')  ![1](img/1.png)
+In [94]: df1.join(df2, how='left')  # ①
 Out[94]:      A    B
          a  100  NaN
          b  200  150
          c  300  NaN
          d  400   50
 
-In [95]: df1.join(df2, how='right')  ![2](img/2.png)
+In [95]: df1.join(df2, how='right')  # ②
 Out[95]:      A    B
          f  NaN  200
          b  200  150
          d  400   50
 
-In [96]: df1.join(df2, how='inner')  ![3](img/3.png)
+In [96]: df1.join(df2, how='inner')  # ③
 Out[96]:      A    B
          b  200  150
          d  400   50
 
-In [97]: df1.join(df2, how='outer')  ![4](img/4.png)
+In [97]: df1.join(df2, how='outer')  # ④
 Out[97]:      A    B
          a  100  NaN
          b  200  150
@@ -1254,7 +1254,7 @@ Out[97]:      A    B
 ```py
 In [98]: df = pd.DataFrame()
 
-In [99]: df['A'] = df1  ![1](img/1.png)
+In [99]: df['A'] = df1  # ①
 
 In [100]: df
 Out[100]:      A
@@ -1263,7 +1263,7 @@ Out[100]:      A
           2  NaN
           3  NaN
 
-In [101]: df['B'] = df2  ![2](img/2.png)
+In [101]: df['B'] = df2  # ②
 
 In [102]: df
 Out[102]:      A    B
@@ -1284,7 +1284,7 @@ Out[102]:      A    B
 利用字典组合数据集的方式产生了类似外连接的结果，因为列是*同时*创建的。
 
 ```py
-In [103]: df = pd.DataFrame({'A': df1['A'], 'B': df2['B']})  ![1](img/1.png)
+In [103]: df = pd.DataFrame({'A': df1['A'], 'B': df2['B']})  # ①
 
 In [104]: df
 Out[104]:      A    B
@@ -1325,19 +1325,19 @@ Out[107]:      B      C
 默认情况下，此情况下的合并操作基于单个共享列 `C` 进行。然而，还有其他选项可用。
 
 ```py
-In [108]: pd.merge(df1, df2)  ![1](img/1.png)
+In [108]: pd.merge(df1, df2)  # ①
 Out[108]:      A      C    B
           0  100    NaN  200
           1  200  250.0  150
           2  400  150.0   50
 
-In [109]: pd.merge(df1, df2, on='C')  ![1](img/1.png)
+In [109]: pd.merge(df1, df2, on='C')  # ①
 Out[109]:      A      C    B
           0  100    NaN  200
           1  200  250.0  150
           2  400  150.0   50
 
-In [110]: pd.merge(df1, df2, how='outer')  ![2](img/2.png)
+In [110]: pd.merge(df1, df2, how='outer')  # ②
 Out[110]:      A      C    B
           0  100    NaN  200
           1  200  250.0  150
@@ -1397,14 +1397,14 @@ Out[116]:      A      C    B
 本章中的许多示例说明了使用 `pandas` 可以实现相同目标的多个选项。本节比较了用于逐元素添加两列的此类选项。首先，使用 `NumPy` 生成的数据集。
 
 ```py
-In [117]: data = np.random.standard_normal((1000000, 2))  ![1](img/1.png)
+In [117]: data = np.random.standard_normal((1000000, 2))  # ①
 
-In [118]: data.nbytes  ![1](img/1.png)
+In [118]: data.nbytes  # ①
 Out[118]: 16000000
 
-In [119]: df = pd.DataFrame(data, columns=['x', 'y'])  ![2](img/2.png)
+In [119]: df = pd.DataFrame(data, columns=['x', 'y'])  # ②
 
-In [120]: df.info()  ![2](img/2.png)
+In [120]: df.info()  # ②
 
           <class 'pandas.core.frame.DataFrame'>
           RangeIndex: 1000000 entries, 0 to 999999
@@ -1426,7 +1426,7 @@ In [120]: df.info()  ![2](img/2.png)
 第二，一些完成任务的性能值的选项。
 
 ```py
-In [121]: %time res = df['x'] + df['y']  ![1](img/1.png)
+In [121]: %time res = df['x'] + df['y']  # ①
 
           CPU times: user 5.68 ms, sys: 14.5 ms, total: 20.1 ms
           Wall time: 4.06 ms
@@ -1437,7 +1437,7 @@ Out[122]: 0    0.387242
           2   -0.863159
           dtype: float64
 
-In [123]: %time res = df.sum(axis=1)  ![2](img/2.png)
+In [123]: %time res = df.sum(axis=1)  # ②
 
           CPU times: user 44 ms, sys: 14.9 ms, total: 58.9 ms
           Wall time: 57.6 ms
@@ -1448,7 +1448,7 @@ Out[124]: 0    0.387242
           2   -0.863159
           dtype: float64
 
-In [125]: %time res = df.values.sum(axis=1)  ![3](img/3.png)
+In [125]: %time res = df.values.sum(axis=1)  # ③
 
           CPU times: user 16.1 ms, sys: 1.74 ms, total: 17.8 ms
           Wall time: 16.6 ms
@@ -1456,7 +1456,7 @@ In [125]: %time res = df.values.sum(axis=1)  ![3](img/3.png)
 In [126]: res[:3]
 Out[126]: array([ 0.3872424 , -0.96934273, -0.86315944])
 
-In [127]: %time res = np.sum(df, axis=1)  ![4](img/4.png)
+In [127]: %time res = np.sum(df, axis=1)  # ④
 
           CPU times: user 39.7 ms, sys: 8.91 ms, total: 48.7 ms
           Wall time: 47.7 ms
@@ -1467,7 +1467,7 @@ Out[128]: 0    0.387242
           2   -0.863159
           dtype: float64
 
-In [129]: %time res = np.sum(df.values, axis=1)  ![5](img/5.png)
+In [129]: %time res = np.sum(df.values, axis=1)  # ⑤
 
           CPU times: user 16.1 ms, sys: 1.78 ms, total: 17.9 ms
           Wall time: 16.6 ms
@@ -1499,7 +1499,7 @@ Out[130]: array([ 0.3872424 , -0.96934273, -0.86315944])
 最后，更多基于 `eval()` 和 `apply()` 方法的选项。
 
 ```py
-In [131]: %time res = df.eval('x + y')  ![1](img/1.png)
+In [131]: %time res = df.eval('x + y')  # ①
 
           CPU times: user 13.3 ms, sys: 15.6 ms, total: 28.9 ms
           Wall time: 18.5 ms
@@ -1510,7 +1510,7 @@ Out[132]: 0    0.387242
           2   -0.863159
           dtype: float64
 
-In [133]: %time res = df.apply(lambda row: row['x'] + row['y'], axis=1)  ![2](img/2.png)
+In [133]: %time res = df.apply(lambda row: row['x'] + row['y'], axis=1)  # ②
 
           CPU times: user 22 s, sys: 71 ms, total: 22.1 s
           Wall time: 22.1 s

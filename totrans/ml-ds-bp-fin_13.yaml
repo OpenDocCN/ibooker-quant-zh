@@ -1,19 +1,25 @@
 - en: Chapter 9\. Reinforcement Learning
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第9章 强化学习
 - en: Incentives drive nearly everything, and finance is not an exception. Humans
     do not learn from millions of labeled examples. Instead, we often learn from positive
     or negative experiences that we associate with our actions. Learning from experiences
     and the associated rewards or punishments is the core idea behind reinforcement
     learning (RL).^([1](ch09.xhtml#idm45174907850488))
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 激励驱动着几乎所有事物，金融也不例外。人类不是从数百万个标记示例中学习，而是经常从我们与行动相关联的积极或消极经验中学习。从经验和相关奖励或惩罚中学习是强化学习（RL）的核心思想。^([1](ch09.xhtml#idm45174907850488))
 - en: Reinforcement learning is an approach toward training a machine to find the
     best course of action through optimal policies that maximize rewards and minimize
     punishments.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习是一种通过最大化奖励和最小化惩罚的最优策略来训练机器找到最佳行动的方法。
 - en: The RL algorithms that empowered *AlphaGo* (the first computer program to defeat
     a professional human Go player) are also finding inroads into finance. Reinforcement
     learning’s main idea of *maximizing the rewards* aligns beautifully with several
@@ -24,8 +30,10 @@
     Reinforcement learning–based models go one step further than the price prediction–based
     trading strategies discussed in previous chapters and determine rule-based policies
     for actions (i.e., place an order, do nothing, cancel an order, and so on).
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 赋予*AlphaGo*（第一个击败职业人类围棋选手的计算机程序）力量的RL算法也正在金融领域发展。强化学习的主要思想是*最大化奖励*，与金融中的多个领域（包括算法交易和投资组合管理）非常契合。强化学习特别适合算法交易，因为在不确定且动态的环境中，*最大化回报的代理*概念与与金融市场互动的投资者或交易策略有许多共同之处。基于强化学习的模型比前几章讨论的基于价格预测的交易策略更进一步，并确定了基于规则的行动策略（即下订单、不做任何事情、取消订单等）。
 - en: Similarly, in portfolio management and asset allocation, reinforcement learning–based
     algorithms do not yield predictions and do not learn the structure of the market
     implicitly. They do more. They directly learn the policy of changing the portfolio
@@ -34,15 +42,19 @@
     process of completing a buy or sell order for a market instrument. Here, the algorithms
     learn through trial and error, figuring out the optimal path of execution on their
     own.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，在投资组合管理和资产配置中，基于强化学习的算法不产生预测，也不隐式地学习市场结构。它们做得更多。它们直接学习在不断变化的市场中动态改变投资组合配置权重的策略。强化学习模型也对涉及完成市场工具买卖订单的订单执行问题非常有用。在这里，算法通过试错学习，自行找出执行的最优路径。
 - en: Reinforcement learning algorithms, with their ability to tackle more nuances
     and parameters within the operational environment, can also produce derivatives
     hedging strategies. Unlike traditional finance-based hedging strategies, these
     hedging strategies are optimal and valid under real-world market frictions, such
     as transaction costs, market impact, liquidity constraints, and risk limits.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习算法具有在操作环境中处理更多细微差别和参数的能力，也可以生成衍生对冲策略。与传统基于金融的对冲策略不同，这些对冲策略在现实世界的市场摩擦下（如交易成本、市场影响、流动性限制和风险限制）是最优和有效的。
 - en: 'In this chapter, we cover three reinforcement learning–based case studies covering
     major finance applications: algorithmic trading, derivatives hedging, and portfolio
     allocation. In terms of the model development steps, the case studies follow a
@@ -51,116 +63,172 @@
     these steps will be emphasized. With multiple concepts in machine learning and
     finance implemented, these case studies can be used as a blueprint for any other
     reinforcement learning–based problem in finance.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们涵盖了三个基于强化学习的案例研究，涵盖了主要的金融应用：算法交易、衍生品对冲和投资组合配置。在模型开发步骤方面，这些案例研究遵循了在[第
+    2 章](ch02.xhtml#Chapter2)中提出的标准化七步模型开发过程。模型开发和评估是强化学习的关键步骤，这些步骤将得到强调。通过实施多个机器学习和金融概念，这些案例研究可以作为解决金融领域中任何其他基于强化学习的问题的蓝图。
 - en: 'In [“Case Study 1: Reinforcement Learning–Based Trading Strategy”](#CaseStudy1RL),
     we demonstrate the use of RL to develop an algorithmic trading strategy.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究 1：基于强化学习的交易策略”](#CaseStudy1RL)中，我们演示了使用强化学习开发算法交易策略。
 - en: 'In [“Case Study 2: Derivatives Hedging”](#CaseStudy2RL), we implement and analyze
     reinforcement learning–based techniques to calculate the optimal hedging strategies
     for portfolios of derivatives under market frictions.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究 2：衍生品对冲”](#CaseStudy2RL)中，我们实施和分析了基于强化学习的技术，用于计算在市场摩擦下的衍生品组合的最优对冲策略。
 - en: 'In [“Case Study 3: Portfolio Allocation”](#CaseStudy3RL), we illustrate the
     use of a reinforcement learning–based technique on a dataset of cryptocurrency
     in order to allocate capital into different cryptocurrencies to maximize risk-adjusted
     returns. We also introduce a reinforcement learning–based *simulation environment*
     to train and test the model.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究 3：投资组合配置”](#CaseStudy3RL)中，我们展示了使用基于强化学习的技术处理加密货币数据集，以将资本分配到不同的加密货币以最大化风险调整后收益。我们还介绍了一个基于强化学习的*仿真环境*，用于训练和测试模型。
 - en: This Chapter’s Code Repository
+  id: totrans-10
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 本章代码库
 - en: A Python-based Jupyter notebook for all the case studies presented in this chapter
     is included under the folder [Chapter 9 - Reinforcement Learning](https://oreil.ly/Fp0xD)
     in the code repository for this book. To work through any machine learning problems
     in Python involving RL models (such as DQN or policy gradient) presented in this
     chapter, readers need to modify the template slightly to align with their problem
     statement.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书代码库中的[第 9 章 - 强化学习](https://oreil.ly/Fp0xD)文件夹中包含了本章中所有案例研究的基于 Python 的 Jupyter
+    笔记本。要解决涉及 RL 模型（如 DQN 或策略梯度）的任何 Python 机器学习问题，请读者稍微修改模板，以与其问题陈述保持一致。
 - en: Reinforcement Learning—Theory and Concepts
+  id: totrans-12
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 强化学习——理论与概念
 - en: Reinforcement learning is an extensive topic covering a wide range of concepts
     and terminology. The theory section of this chapter covers the items and topics
     listed in [Figure 9-1](#RLConcepts).^([2](ch09.xhtml#idm45174907783768))
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习是一个广泛涵盖各种概念和术语的主题。本章理论部分涵盖了[图 9-1](#RLConcepts)中列出的项目和主题。^([2](ch09.xhtml#idm45174907783768))
 - en: '![mlbf 0901](Images/mlbf_0901.png)'
+  id: totrans-14
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0901](Images/mlbf_0901.png)'
 - en: Figure 9-1\. RL summary of concepts
+  id: totrans-15
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-1\. RL 概念总结
 - en: In order to solve any problem using RL, it is important to first understand
     and define the RL components.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用 RL 解决任何问题，首先理解和定义 RL 组件至关重要。
 - en: RL Components
+  id: totrans-17
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: RL 组件
 - en: The main components of an RL system are agent, actions, environment, state,
     and reward.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: RL 系统的主要组件包括代理、动作、环境、状态和奖励。
 - en: Agent
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理
 - en: The entity that performs actions.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 执行动作的实体。
 - en: Actions
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 动作
 - en: The things an agent can do within its environment.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个代理在其环境内可以执行的操作。
 - en: Environment
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境
 - en: The world in which the agent resides.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理所居住的世界。
 - en: State
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: The current situation.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前的情况。
 - en: Reward
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励
 - en: The immediate return sent by the environment to evaluate the last action by
     the agent.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境即时返回，用于评估代理的最后一个动作。
 - en: The goal of reinforcement learning is to learn an optimal strategy through experimental
     trials and relatively simple feedback loops. With the optimal strategy, the agent
     is capable of actively adapting to the environment to maximize the rewards. Unlike
     in supervised learning, these reward signals are not given to the model immediately.
     Instead, they are returned as a consequence of a sequence of actions that the
     agent makes.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习的目标是通过实验试验和相对简单的反馈循环学习最优策略。有了最优策略，代理能够积极适应环境以最大化奖励。与监督学习不同，这些奖励信号不会立即提供给模型，而是作为代理进行一系列行动的结果而返回。
 - en: An agent’s actions are usually conditioned on what the agent perceives from
     the environment. What the agent perceives is referred to as the observation or
     the state of the environment. [Figure 9-2](#RLComp) summarizes the components
     of a reinforcement learning system.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理的行动通常取决于代理从环境中感知到的内容。代理感知到的内容被称为观察或环境的状态。[图 9-2](#RLComp) 总结了强化学习系统的组成部分。
 - en: '![mlbf 0902](Images/mlbf_0902.png)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0902](Images/mlbf_0902.png)'
 - en: Figure 9-2\. RL components
+  id: totrans-32
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-2\. 强化学习组件
 - en: The interaction between the agent and the environment involves a sequence of
     actions and observed rewards in time, <math alttext="t equals 1 comma 2 period
     period period upper T"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn>
@@ -180,51 +248,86 @@
     <mn>1</mn></msub> <mo>,</mo> <msub><mi>R</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>S</mi>
     <mn>2</mn></msub> <mo>,</mo> <msub><mi>A</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo>
     <mo>.</mo> <msub><mi>A</mi> <mi>T</mi></msub></mrow></math> .
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理和环境之间的互动涉及时间上的一系列动作和观察到的奖励，<math alttext="t equals 1 comma 2 period period
+    period upper T"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>.</mo>
+    <mo>.</mo> <mo>.</mo> <mi>T</mi></mrow></math> 。在这个过程中，代理累积关于环境的知识，学习最优策略，并决定下一步应采取哪种行动，以有效地学习最佳策略。让我们用时间步
+    *t* 标记状态、动作和奖励，分别为 <math alttext="upper S Subscript t Baseline comma upper A Subscript
+    t Baseline period period period upper R Subscript t Baseline"><mrow><msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub> <mo>.</mo> <mo>.</mo>
+    <mo>.</mo> <msub><mi>R</mi> <mi>t</mi></msub></mrow></math> 。因此，互动序列完全由一个情节（也称为“试验”或“轨迹”）描述，并且该序列以终端状态结束
+    <math alttext="upper S Subscript upper T Baseline colon upper S 1 comma upper
+    A 1 comma upper R 2 comma upper S 2 comma upper A 2 period period period upper
+    A Subscript upper T Baseline"><mrow><msub><mi>S</mi> <mi>T</mi></msub> <mo>:</mo>
+    <msub><mi>S</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>A</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>R</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>S</mi> <mn>2</mn></msub>
+    <mo>,</mo> <msub><mi>A</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <msub><mi>A</mi> <mi>T</mi></msub></mrow></math> 。
 - en: 'In addition to the five components of reinforcement learning mentioned so far,
     there are three additional components of reinforcement learning: policy, value
     function (and Q-value), and model of the environment. Let us discuss the components
     in detail.'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了迄今为止提到的强化学习的五个组成部分之外，还有三个额外的强化学习组成部分：策略、值函数（以及 Q 值）和环境模型。让我们详细讨论这些组成部分。
 - en: Policy
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 策略
 - en: 'A policy is an algorithm or a set of rules that describes how an agent makes
     its decisions. More formally, a policy is a function, usually denoted as *π*,
     that maps a state (*s*) and an action (*a*):'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略是描述代理如何做出决策的算法或一组规则。更正式地说，策略是一个函数，通常表示为 *π*，它映射一个状态 (*s*) 和一个动作 (*a*)：
 - en: <math alttext="a Subscript t Baseline equals pi left-parenthesis s Subscript
     t Baseline right-parenthesis" display="block"><mrow><msub><mi>a</mi> <mi>t</mi></msub>
     <mo>=</mo> <mi>π</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="a Subscript t Baseline equals pi left-parenthesis s Subscript
+    t Baseline right-parenthesis" display="block"><mrow><msub><mi>a</mi> <mi>t</mi></msub>
+    <mo>=</mo> <mi>π</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>)</mo></mrow></mrow></math>
 - en: This means that an agent decides its action given its current state. The policy
     can be can be either deterministic or stochastic. A deterministic policy maps
     a state to actions. On the other hand, a stochastic policy outputs a probability
     distribution over actions. It means that instead of being sure of taking action
     *a*, there is a probability assigned to the action given a state.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着一个agent根据其当前状态决定其行动。策略可以是确定性的，也可以是随机的。确定性策略将一个状态映射到行动。另一方面，随机策略输出在动作上的概率分布。这意味着与其确定地采取行动*a*不同，给定一个状态，对该行动分配了一个概率。
 - en: Our goal in reinforcement learning is to learn an optimal policy (which is also
     referred to as <math alttext="pi Superscript asterisk"><msup><mi>π</mi> <mo>*</mo></msup></math>
     ). An optimal policy tells us how to act to maximize return in every state.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在强化学习中的目标是学习一个最优策略（也称为<math alttext="pi Superscript asterisk"><msup><mi>π</mi>
+    <mo>*</mo></msup></math>）。最优策略告诉我们如何在每个状态下采取行动以最大化回报。
 - en: Value function (and Q-value)
+  id: totrans-40
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 值函数（和Q值）
 - en: 'The goal of a reinforcement learning agent is to learn to perform a task well
     in an environment. Mathematically, this means maximizing the future reward, or
     cumulative discounted reward, <math alttext="upper G"><mi>G</mi></math> , which
     can be expressed in the following equation as a function of reward function <math
     alttext="upper R"><mi>R</mi></math> at different times:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习agent的目标是学习在环境中执行任务。从数学上讲，这意味着最大化未来奖励或累积折现奖励<math alttext="upper G"><mi>G</mi></math>，可以将其表达为不同时间奖励函数<math
+    alttext="upper R"><mi>R</mi></math>的函数：
 - en: <math alttext="upper G Subscript t Baseline equals upper R Subscript t plus
     1 Baseline plus gamma upper R Subscript t plus 2 Baseline plus period period period
     equals sigma-summation Underscript 0 Overscript normal infinity Endscripts y Superscript
@@ -234,34 +337,59 @@
     <mo>+</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>=</mo> <munderover><mo>∑</mo>
     <mrow><mn>0</mn></mrow> <mi>∞</mi></munderover> <msup><mi>y</mi> <mi>k</mi></msup>
     <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></math>
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper G Subscript t Baseline equals upper R Subscript t plus
+    1 Baseline plus gamma upper R Subscript t plus 2 Baseline plus period period period
+    equals sigma-summation Underscript 0 Overscript normal infinity Endscripts y Superscript
+    k Baseline upper R Subscript t plus k plus 1 Baseline" display="block"><mrow><msub><mi>G</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <mi>γ</mi> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>=</mo> <munderover><mo>∑</mo>
+    <mrow><mn>0</mn></mrow> <mi>∞</mi></munderover> <msup><mi>y</mi> <mi>k</mi></msup>
+    <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></math>
 - en: The discounting factor <math alttext="gamma"><mi>γ</mi></math> is a value between
     0 and 1 to penalize the rewards in the future, as future rewards do not provide
     immediate benefits and may have higher uncertainty. Future reward is an important
     input to the value function.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 折扣因子<math alttext="gamma"><mi>γ</mi></math>是一个介于0和1之间的值，用于惩罚未来的奖励，因为未来的奖励不会提供即时的好处，可能具有更高的不确定性。未来的奖励是值函数的重要输入。
 - en: 'The value function (or state value) measures the attractiveness of a state
     through a prediction of future reward <math alttext="upper G Subscript t"><msub><mi>G</mi>
     <mi>t</mi></msub></math> . The value function of a state *s* is the expected return,
     with a policy <math alttext="pi"><mi>π</mi></math> if we are in this state at
     time *t*:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 值函数（或状态值）通过对未来奖励的预测<math alttext="upper G Subscript t"><msub><mi>G</mi> <mi>t</mi></msub></math>
+    来衡量状态的吸引力。如果我们在时间*t*处于这个状态，状态*s*的值函数是预期回报，采取策略<math alttext="pi"><mi>π</mi></math>：
 - en: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
     equals upper E left-bracket upper G Subscript t Baseline vertical-bar upper S
     Subscript t Baseline equals s right-bracket EndLayout" display="block"><mrow><mi>V</mi>
     <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mrow><mo>[</mo>
     <msub><mi>G</mi> <mi>t</mi></msub> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub>
     <mo>=</mo> <mi>s</mi> <mo>]</mo></mrow></mrow></math>
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
+    equals upper E left-bracket upper G Subscript t Baseline vertical-bar upper S
+    Subscript t Baseline equals s right-bracket EndLayout" display="block"><mrow><mi>V</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mrow><mo>[</mo>
+    <msub><mi>G</mi> <mi>t</mi></msub> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub>
+    <mo>=</mo> <mi>s</mi> <mo>]</mo></mrow></mrow></math>
 - en: 'Similarly, we define the action-value function (Q-value) of a state-action
     pair ( <math alttext="s comma a"><mrow><mi>s</mi> <mo>,</mo> <mi>a</mi></mrow></math>
     ) as:'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样地，我们定义状态-动作对（<math alttext="s comma a"><mrow><mi>s</mi> <mo>,</mo> <mi>a</mi></mrow></math>
+    ）的动作值函数（Q值）为：
 - en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s comma a right-parenthesis
     equals upper E left-bracket upper G Subscript t Baseline vertical-bar upper S
     Subscript t Baseline equals s comma upper A Subscript t Baseline equals a right-bracket
@@ -269,20 +397,32 @@
     <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mrow><mo>[</mo> <msub><mi>G</mi>
     <mi>t</mi></msub> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>s</mi>
     <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub> <mo>=</mo> <mi>a</mi> <mo>]</mo></mrow></mrow></math>
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s comma a right-parenthesis
+    equals upper E left-bracket upper G Subscript t Baseline vertical-bar upper S
+    Subscript t Baseline equals s comma upper A Subscript t Baseline equals a right-bracket
+    EndLayout" display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo>
+    <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mrow><mo>[</mo> <msub><mi>G</mi>
+    <mi>t</mi></msub> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>s</mi>
+    <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub> <mo>=</mo> <mi>a</mi> <mo>]</mo></mrow></mrow></math>
 - en: So the value function is the expected return for a state following a policy
     <math alttext="pi"><mi>π</mi></math> . The Q-value is the expected reward for
     the state-action pair following a policy <math alttext="pi"><mi>π</mi></math>
     .
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，值函数是遵循策略<math alttext="pi"><mi>π</mi></math>的状态的预期回报。Q值是遵循策略<math alttext="pi"><mi>π</mi></math>的状态-动作对的预期奖励。
 - en: 'The value function and the Q-value are interconnected as well. Since we follow
     the target policy <math alttext="pi"><mi>π</mi></math> , we can make use of the
     probability distribution over possible actions and the Q-values to recover the
     value function:'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 值函数和Q值也是相互关联的。由于我们遵循目标策略<math alttext="pi"><mi>π</mi></math>，我们可以利用可能行动的概率分布和Q值来恢复值函数：
 - en: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
     equals sigma-summation Underscript a element-of upper A Endscripts upper Q left-parenthesis
     s comma a right-parenthesis pi left-parenthesis a vertical-bar s right-parenthesis
@@ -290,22 +430,36 @@
     <mo>=</mo> <munder><mo>∑</mo> <mrow><mi>a</mi><mo>∈</mo><mi>A</mi></mrow></munder>
     <mi>Q</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow>
     <mi>π</mi> <mrow><mo>(</mo> <mi>a</mi> <mo>|</mo> <mi>s</mi> <mo>)</mo></mrow></mrow></math>
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
+    equals sigma-summation Underscript a element-of upper A Endscripts upper Q left-parenthesis
+    s comma a right-parenthesis pi left-parenthesis a vertical-bar s right-parenthesis
+    EndLayout" display="block"><mrow><mi>V</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <munder><mo>∑</mo> <mrow><mi>a</mi><mo>∈</mo><mi>A</mi></mrow></munder>
+    <mi>Q</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow>
+    <mi>π</mi> <mrow><mo>(</mo> <mi>a</mi> <mo>|</mo> <mi>s</mi> <mo>)</mo></mrow></mrow></math>
 - en: The preceding equation represents the relationship between the value function
     and Q-value.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述方程表示值函数和Q值之间的关系。
 - en: The relationship between reward function ( <math alttext="upper R"><mi>R</mi></math>
     ), future rewards ( <math alttext="upper G"><mi>G</mi></math> ), value function,
     and Q-value is used to derive the Bellman equations (discussed later in this chapter),
     which are one of the key components of many reinforcement learning models.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励函数（<math alttext="upper R"><mi>R</mi></math>）、未来奖励（<math alttext="upper G"><mi>G</mi></math>）、值函数和Q值之间的关系被用来推导贝尔曼方程（本章后面讨论），这是许多强化学习模型的关键组成部分之一。
 - en: Model
+  id: totrans-53
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 模型
 - en: 'The model is a descriptor of the environment. With the model, we can learn
     or infer how the environment would interact with and provide feedback to the agent.
     Models are used for *planning*, by which we mean any way of deciding on a course
@@ -315,96 +469,142 @@
     function*. We already discussed the reward function. The transition function (*P*)
     records the probability of transitioning from one state to another after taking
     an action.'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型是环境的描述符。有了模型，我们可以学习或推断环境将如何与代理人交互并提供反馈。模型被用于*规划*，这意味着通过考虑可能的未来情况来决定行动方式的任何方式。例如，股票市场的模型负责预测未来价格走势。模型有两个主要部分：*转移概率函数*（*P*）和*奖励函数*。我们已经讨论了奖励函数。转移函数（*P*）记录了在采取行动后从一个状态转移到另一个状态的概率。
 - en: Overall, an RL agent may be directly or indirectly trying to learn a policy
     or value function shown in [Figure 9-3](#ModelValPolicy). The approach to learning
     a policy varies depending on the RL model type. When we fully know the environment,
     we can find the optimal solution by using *model-based approaches*.^([3](ch09.xhtml#idm45174907622280))
     When we do not know the environment, we follow a *model-free approach* and try
     to learn the model explicitly as part of the algorithm.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，强化学习代理人可能直接或间接地尝试学习在[图 9-3](#ModelValPolicy)中显示的策略或值函数。学习策略的方法因强化学习模型类型而异。当我们完全了解环境时，我们可以通过使用*基于模型的方法*找到最优解。^([3](ch09.xhtml#idm45174907622280))
+    当我们不了解环境时，我们遵循*无模型方法*并尝试在算法的一部分明确学习模型。
 - en: '![mlbf 0903](Images/mlbf_0903.png)'
+  id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0903](Images/mlbf_0903.png)'
 - en: Figure 9-3\. Model, value, and policy
+  id: totrans-57
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-3\. 模型、价值和策略
 - en: RL components in a trading context
+  id: totrans-58
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 在交易环境中的强化学习组件
 - en: 'Let’s try to understand what the RL components correspond to in a trading setting:'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们尝试理解强化学习组件在交易设置中的对应关系：
 - en: Agent
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理人
 - en: The agent is our trading agent. We can think of the agent as a human trader
     who makes trading decisions based on the current state of the exchange and their
     account.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理人是我们的交易代理人。我们可以将代理人视为根据交易所的当前状态和其账户做出交易决策的人类交易员。
 - en: Action
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 行动
 - en: 'There would be three actions: *Buy, Hold,* and *Sell*.'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 会有三种操作：*买入*、*持有*和*卖出*。
 - en: Reward function
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励函数
 - en: An obvious reward function would be the *realized PnL (Profit and Loss)*. Other
     reward functions can be *Sharpe ratio* or *maximum drawdown*.^([4](ch09.xhtml#idm45174907605976))
     There can be a wide range of complex reward functions that offer a trade-off between
     profit and risk.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个明显的奖励函数可能是*实现的盈亏（Profit and Loss，PnL）*。其他奖励函数可以是*夏普比率*或*最大回撤*。^([4](ch09.xhtml#idm45174907605976))
+    可能存在许多复杂的奖励函数，这些函数在利润和风险之间提供权衡。
 - en: Environment
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境
 - en: The environment in a trading context would be the *exchange*. In the case of
     trading on an exchange, we do not observe the complete state of the environment.
     Specifically, we are unaware of the other agents, and what an agent observes is
     not the true state of the environment but some derivation of it.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 在交易环境中，环境被称为*交易所*。在交易所交易时，我们无法观察到环境的完整状态。具体来说，我们不知道其他代理人，代理人观察到的并非环境的真实状态，而是其某种推导。
 - en: This is referred to as a *partially observable Markov decision process* (POMDP).
     This is the most common type of environment that we encounter in finance.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 这被称为*部分可观察马尔可夫决策过程*（POMDP）。这是我们在金融领域中遇到的最常见类型的环境。
 - en: RL Modeling Framework
+  id: totrans-69
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 强化学习建模框架
 - en: In this section, we describe the core framework of reinforcement learning used
     across several RL models.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我们描述了多个强化学习模型中使用的核心框架。
 - en: Bellman equations
+  id: totrans-71
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 贝尔曼方程
 - en: Bellman equations refer to a set of equations that decompose the value function
     and Q-value into the immediate reward plus the discounted future values.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 贝尔曼方程是一组方程，将值函数和Q值分解为即时奖励加上折现未来价值。
 - en: In RL, the main aim of an agent is to get the most expected sum of rewards from
     every state it lands in. To achieve that, we must try to get the optimal value
     function and Q-value; the Bellman equations help us to do so.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 在强化学习中，代理人的主要目标是从其到达的每个状态中获得最大的期望奖励总和。为了实现这一点，我们必须尝试获得最优的值函数和Q值；贝尔曼方程帮助我们做到这一点。
 - en: We use the relationship between reward function (R), future rewards (G), value
     function, and Q-value to derive the Bellman equation for value function, as shown
     in [Equation 9-1](#BelEqValFunc).
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们利用奖励函数（R）、未来奖励（G）、价值函数和Q值之间的关系推导出了价值函数的贝尔曼方程，如[方程9-1](#BelEqValFunc)所示。
 - en: Equation 9-1\. Bellman equation for value function
+  id: totrans-75
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 方程9-1。价值函数的贝尔曼方程
 - en: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
     equals upper E left-bracket upper R Subscript t plus 1 Baseline plus gamma upper
     V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis vertical-bar
@@ -414,8 +614,18 @@
     <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>)</mo></mrow> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>s</mi>
     <mo>]</mo></mrow></math>
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
+    equals upper E left-bracket upper R Subscript t plus 1 Baseline plus gamma upper
+    V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis vertical-bar
+    upper S Subscript t Baseline equals s right-bracket EndLayout" display="block"><mrow><mi>V</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mo>[</mo>
+    <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo>
+    <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>s</mi>
+    <mo>]</mo></mrow></math>
 - en: Here, the value function is decomposed into two parts; an immediate reward,
     <math alttext="upper R Subscript t plus 1"><msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></math>
     , and the discounted value of the successor state, <math alttext="gamma upper
@@ -429,17 +639,28 @@
     at the time *t*+1\. This is the Bellman equation for value function. This equation
     can be maximized to get an equation called Bellman Optimality Equation for value
     function, represented by *V*(s)*.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，价值函数分解为两部分；即即时奖励，<math alttext="upper R Subscript t plus 1"><msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></math>，以及继任状态的折现价值，<math alttext="gamma
+    upper V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis"><mrow><mi>γ</mi>
+    <mi>V</mi> <mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></math>，如前述方程所示。因此，我们将问题分解为即时奖励和折现后继状态。在时间*t*的状态*s*的状态值*V(s)*可以使用当前奖励<math
+    alttext="upper R Subscript t plus 1"><msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></math>和时间*t*+1的价值函数来计算。这就是价值函数的贝尔曼方程。可以最大化这个方程，得到一个称为价值函数贝尔曼最优方程的方程，用*V*(s)*表示。
 - en: We follow a very similar algorithm to estimate the optimal state-action values
     (Q-values). The simplified iteration algorithms for value function and Q-value
     are shown in Equations [9-2](#IterationAlgoV) and [9-3](#IterationAlgoQ).
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们采用了一个非常类似的算法来估计最优状态-动作值（Q值）。价值函数和Q值的简化迭代算法分别显示在方程[9-2](#IterationAlgoV)和[9-3](#IterationAlgoQ)中。
 - en: Equation 9-2\. Iteration algorithm for value function
+  id: totrans-79
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 方程9-2。价值函数的迭代算法
 - en: <math display="block"><mrow><msub><mi>V</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <munder><mi>m</mi> <mi>a</mi></munder>
     <mi>a</mi> <mi>x</mi> <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder>
@@ -448,12 +669,23 @@
     <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
     <mo>+</mo> <mi>γ</mi> <msub><mi>V</mi> <mi>k</mi></msub> <mrow><mo>(</mo><msup><mi>s</mi>
     <mo>′</mo></msup> <mo>)</mo></mrow></mfenced></mrow></math>
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>V</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <munder><mi>m</mi> <mi>a</mi></munder>
+    <mi>a</mi> <mi>x</mi> <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder>
+    <msubsup><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow>
+    <mi>a</mi></msubsup> <mfenced separators="" open="(" close=")"><msubsup><mi>R</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
+    <mo>+</mo> <mi>γ</mi> <msub><mi>V</mi> <mi>k</mi></msub> <mrow><mo>(</mo><msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>)</mo></mrow></mfenced></mrow></math>
 - en: Equation 9-3\. Iteration algorithm for Q-value
+  id: totrans-81
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 方程9-3。Q值的迭代算法
 - en: <math display="block"><mrow><msub><mi>Q</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo>
     <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder> <msubsup><mi>P</mi>
@@ -464,30 +696,51 @@
     <mo>*</mo> <msub><mi>Q</mi> <mi>k</mi></msub> <mrow><mo>(</mo> <msup><mi>s</mi>
     <mo>′</mo></msup> <mo>,</mo> <msup><mi>a</mi> <mo>′</mo></msup> <mo>)</mo></mrow>
     <mo stretchy="false">]</mo></mrow></mrow></math>
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>Q</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder> <msubsup><mi>P</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
+    <mrow><mo stretchy="false">[</mo> <msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup> <mo>+</mo> <mi>γ</mi> <mo>*</mo>
+    <munder><mi>m</mi> <msup><mi>a</mi> <mo>′</mo></msup></munder> <mi>a</mi> <mi>x</mi>
+    <mo>*</mo> <msub><mi>Q</mi> <mi>k</mi></msub> <mrow><mo>(</mo> <msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>,</mo> <msup><mi>a</mi> <mo>′</mo></msup> <mo>)</mo></mrow>
+    <mo stretchy="false">]</mo></mrow></mrow></math>
 - en: where
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中
 - en: <math display="inline"><msubsup><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi>
     <mo>′</mo></msup></mrow> <mi>a</mi></msubsup></math> is the transition probability
     from state *s* to state s′, given that action *a* was chosen.
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math display="inline"><msubsup><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup></math> 是从状态*s*到状态*s*′的转移概率，假设选择了动作*a*。
 - en: <math display="inline"><msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
     <mo>′</mo></msup></mrow> <mi>a</mi></msubsup></math> is the reward that the agent
     gets when it goes from state *s* to state s′, given that action *a* was chosen.
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math display="inline"><msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup></math> 是当代理从状态*s*到状态*s*′时获得的奖励，假设选择了动作*a*。
 - en: Bellman equations are important because they let us express values of states
     as values of other states. This means that if we know the value function or Q-value
     of *s*[t+1], we can very easily calculate the value of *s*[t]. This opens a lot
     of doors for iterative approaches for calculating the value for each state, since
     if we know the value of the next state, we can know the value of the current state.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 贝尔曼方程之所以重要，是因为它们让我们将状态的价值表达为其他状态的价值。这意味着，如果我们知道*s*[t+1]的价值函数或Q值，我们可以非常容易地计算*s*[t]的价值。这为迭代方法计算每个状态的价值打开了很多门，因为如果我们知道下一个状态的价值，我们就可以知道当前状态的价值。
 - en: If we have complete information about the environment, the iteration algorithms
     shown in Equations [9-2](#IterationAlgoV) and [9-3](#IterationAlgoQ) turn into
     a planning problem, solvable by dynamic programming that we will demonstrate in
@@ -496,65 +749,95 @@
     display="inline"><msub><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow></msub></math>
     and thus cannot apply the Bellman equations directly, but they lay the theoretical
     foundation for many RL algorithms.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们对环境有完整的信息，Equations [9-2](#IterationAlgoV) 和 [9-3](#IterationAlgoQ) 中显示的迭代算法就会变成一个规划问题，可以通过我们将在下一节中演示的动态规划来解决。不幸的是，在大多数情况下，我们不知道<math
+    display="inline"><msub><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow></msub></math>或<math
+    display="inline"><msub><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow></msub></math>，因此无法直接应用贝尔曼方程，但它们为许多强化学习算法奠定了理论基础。
 - en: Markov decision processes
+  id: totrans-88
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 马尔可夫决策过程
 - en: 'Almost all RL problems can be framed as Markov decision processes (MDPs). MDPs
     formally describe an environment for reinforcement learning. A Markov decision
     process consists of five elements: <math><mrow><mi>M</mi> <mo>=</mo> <mi>S</mi>
     <mo>,</mo> <mi>A</mi> <mo>,</mo> <mi>P</mi> <mo>,</mo> <mi>R</mi> <mo>,</mo> <mi>γ</mi></mrow></math>
     , where the symbols carry the same meanings as defined in the previous section:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 几乎所有的强化学习问题都可以被建模为马尔可夫决策过程（MDPs）。MDPs正式描述了强化学习的环境。马尔可夫决策过程由五个元素组成：<math><mrow><mi>M</mi>
+    <mo>=</mo> <mi>S</mi> <mo>,</mo> <mi>A</mi> <mo>,</mo> <mi>P</mi> <mo>,</mo> <mi>R</mi>
+    <mo>,</mo> <mi>γ</mi></mrow></math>，符号的含义与前一节中定义的相同：
 - en: '*S*: a set of states'
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*S*: 一组状态'
 - en: '*A*: a set of actions'
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*A*: 一组行动'
 - en: '*P*: transition probability'
+  id: totrans-92
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*P*: 转移概率'
 - en: '*R*: reward function'
+  id: totrans-93
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*R*: 奖励函数'
 - en: '*γ*: discounting factor for future rewards'
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*γ*: 未来奖励的折现因子'
 - en: MDPs frame the agent–environment interaction as a sequential decision problem
     over a series of time steps t = 1, …, T. The agent and the environment interact
     continually, the agent selecting actions and the environment responding to these
     actions and presenting new situations to the agent, with the aim of coming up
     with an optimal policy or strategy. Bellman equations form the basis for the overall
     algorithm.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: MDP将代理-环境交互框架化为随时间步t = 1，…，T的序列决策问题。代理和环境持续交互，代理选择行动，环境对这些行动作出响应，并向代理呈现新的情况，目的是提出一个最优策略或战略。贝尔曼方程构成了整个算法的基础。
 - en: All states in MDP have the Markov property, referring to the fact that the future
     depends only on the current state, not on the history.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: MDP中的所有状态都具有马尔可夫性质，指的是未来仅取决于当前状态，而不取决于历史。
 - en: Let us look into an example of MDP in a financial context and analyze the Bellman
     equation. Trading in the market can be formalized as an MDP, which is a process
     that has specified transition probabilities from state to state. [Figure 9-4](#MDP)
     shows an example of MDP in the financial market, with a set of states, transition
     probability, action, and reward.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们在金融背景下看一个马尔可夫决策过程（MDP）的例子，并分析贝尔曼方程。市场交易可以形式化为一个MDP，这是一个具有从状态到状态的指定转移概率的过程。[Figure 9-4](#MDP)展示了金融市场中MDP的一个示例，具有一组状态、转移概率、行动和奖励。
 - en: '![mlbf 0904](Images/mlbf_0904.png)'
+  id: totrans-98
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0904](Images/mlbf_0904.png)'
 - en: Figure 9-4\. Markov decision process
+  id: totrans-99
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 9-4. 马尔可夫决策过程
 - en: 'The MDP presented here has three states: bull, bear, and stagnant market, represented
     by three states (s[0], s[1], s[2]). The three actions of a trader are hold, buy,
     and sell, represented by a[0], a[1], a[2], respectively. This is a hypothetical
@@ -574,19 +857,25 @@
     state s[2] (bear market) and get a negative reward of –250\. In state s[3] it
     has no other choice than to take action buy (a[1]), which will most likely lead
     it back to state s[0] (bull market), gaining a reward of +200 on the way.'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 此处介绍的MDP有三个状态：牛市、熊市和停滞市场，分别由三个状态（s[0]、s[1]、s[2]）表示。交易员的三个动作是持有、买入和卖出，分别由a[0]、a[1]、a[2]表示。这是一个假设性的设置，我们假设转移概率是已知的，交易员的行动会导致市场状态的变化。在接下来的章节中，我们将探讨解决RL问题的方法，而不需做出这样的假设。图表还显示了不同行动的转移概率和奖励。如果我们从状态s[0]（牛市）开始，代理可以选择a[0]、a[1]、a[2]（卖出、买入或持有）之间的行动。如果它选择行动买入（a[1]），它可以肯定地留在状态s[0]，但没有任何奖励。因此，如果它想要的话，它可以决定永远留在那里。但如果它选择行动持有（a[0]），它有70%的概率获得+50的奖励，并保持在状态s[0]。然后它可以再次尝试尽可能多地获得奖励。但在某个时候，它会以状态s[1]（停滞市场）结束。在状态s[1]中，它只有两个可能的动作：持有（a[0]）或买入（a[1]）。它可以选择重复选择行动a[1]来保持不动，或者选择进入状态s[2]（熊市），并获得-250的负奖励。在状态s[2]中，它别无选择，只能采取买入行动（a[1]），这很可能会使其回到状态s[0]（牛市），并在途中获得+200的奖励。
 - en: Now, by looking at this MDP, it is possible to come up with an optimal policy
     or a strategy to achieve the most reward over time. In state s[0] it is clear
     that action a[0] is the best option, and in state s[2] the agent has no choice
     but to take action a[1], but in state s[1] it is not obvious whether the agent
     should stay put (a[0]) or sell (a[2]).
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，通过查看这个MDP，可以提出一个最优策略或策略，以实现长期内最大的奖励。在状态s[0]中，明显行动a[0]是最佳选择，在状态s[2]中，代理没有选择，只能采取行动a[1]，但在状态s[1]中，不明确代理应该保持不动（a[0]）还是卖出（a[2]）。
 - en: 'Let’s apply the following Bellman equation as per [Equation 9-3](#IterationAlgoQ)
     to get the optimal Q-value:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们根据以下贝尔曼方程（参见 [方程 9-3](#IterationAlgoQ)）来获取最优的Q值：
 - en: <math display="block"><mrow><msub><mi>Q</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo>
     <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder> <msubsup><mi>P</mi>
@@ -597,40 +886,65 @@
     <mo>*</mo> <msub><mi>Q</mi> <mi>k</mi></msub> <mrow><mo>(</mo><msup><mi>s</mi>
     <mo>′</mo></msup> <mo>,</mo><msup><mi>a</mi> <mo>′</mo></msup> <mo>)</mo></mrow><mo
     stretchy="false">]</mo></mrow></math>
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>Q</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder> <msubsup><mi>P</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
+    <mo stretchy="false">[</mo><msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup> <mo>+</mo> <mi>γ</mi> <mo>*</mo>
+    <munder><mi>m</mi> <msup><mi>a</mi> <mo>′</mo></msup></munder> <mi>a</mi> <mi>x</mi>
+    <mo>*</mo> <msub><mi>Q</mi> <mi>k</mi></msub> <mrow><mo>(</mo><msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>,</mo><msup><mi>a</mi> <mo>′</mo></msup> <mo>)</mo></mrow><mo
+    stretchy="false">]</mo></mrow></math>
 - en: '[PRE0]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '`Output`'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE1]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'This gives us the optimal policy (Q-value) for this MDP, when using a discount
     rate of 0.95\. Looking for the highest Q-value for each of the states: in a bull
     market (s[0]) choose action hold (a[0]); in a stagnant market (s[1]) choose action
     sell (a[2]); and in a bear market (s[2]) choose action buy (a[1]).'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用折现率为0.95时，这为我们提供了该MDP的最优策略（Q值）。在牛市（s[0]）中选择持有行动（a[0]）；在停滞市场（s[1]）中选择卖出行动（a[2]）；在熊市（s[2]）中选择买入行动（a[1]）。
 - en: The preceding example is a demonstration of a dynamic programming (DP) algorithm
     for obtaining optimal policy. These methods make an unrealistic assumption of
     complete knowledge of the environment but are the conceptual foundations for most
     other approaches.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述示例演示了通过动态规划（DP）算法获取最优策略的过程。这些方法假设了对环境的完全了解，虽然在实践中往往是不现实的，但它们构成了大多数其他方法的概念基础。
 - en: Temporal difference learning
+  id: totrans-109
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 时间差分学习
 - en: Reinforcement learning problems with discrete actions can often be modeled as
     Markov decision processes, as we saw in the previous example, but in most cases
     the agent initially has no insight into the transition probabilities. It also
     does not know what the rewards are going to be. This is where temporal difference
     (TD) learning can be useful.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有离散动作的强化学习问题通常可以建模为马尔可夫决策过程，正如我们在前面的例子中看到的，但在大多数情况下，代理程序最初对转移概率一无所知。它也不知道奖励会是什么。这就是时间差分（TD）学习可以发挥作用的地方。
 - en: A TD learning algorithm is very similar to the value iteration algorithm ([Equation
     9-2](#IterationAlgoV)) based on the Bellman equation but is tweaked to take into
     account the fact that the agent has only partial knowledge of the MDP. In general,
@@ -639,8 +953,12 @@
     random policy, to explore the MDP, and as it progresses, the TD learning algorithm
     updates the estimates of the state values based on the transitions and rewards
     that are actually observed.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: TD 学习算法与基于 Bellman 方程的值迭代算法（[Equation 9-2](#IterationAlgoV)）非常相似，但调整为考虑到代理只有对
+    MDP 的部分知识。通常情况下，我们假设代理最初只知道可能的状态和动作，什么也不知道。例如，代理使用探索策略，即纯随机策略，来探索 MDP，随着进展，TD
+    学习算法基于实际观察到的转换和奖励更新状态值的估计。
 - en: 'The key idea in TD learning is to update the value function V(*S[t]*) toward
     an estimated return <math alttext="upper R Subscript t plus 1 Baseline plus gamma
     upper V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis"><mrow><msub><mi>R</mi>
@@ -651,19 +969,35 @@
     *α*, which defines how aggressive we want to be when updating our value. When
     *α* is close to zero, we’re not updating very aggressively. When *α* is close
     to one, we’re simply replacing the old value with the updated value:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: TD 学习中的关键思想是向估计的回报更新值函数 V(*S[t]*)，接近一个估算的回报 <math alttext="upper R Subscript
+    t plus 1 Baseline plus gamma upper V left-parenthesis upper S Subscript t plus
+    1 Baseline right-parenthesis"><mrow><msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math>（称为*TD 目标*）。我们希望更新值函数的程度由*学习率*超参数 *α* 控制，它定义了我们在更新值时的侵略性。当
+    *α* 接近零时，更新不太侵略。当 *α* 接近一时，我们简单地用更新后的值替换旧值：
 - en: <math display="block"><mrow><mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
     <mo>)</mo></mrow> <mo>←</mo> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
     <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>+</mo> <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>)</mo></mrow> <mo>–</mo> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
     <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>←</mo> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
 - en: 'Similarly, for Q-value estimation:'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，对于 Q 值估计：
 - en: <math display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
     <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>←</mo> <mi>Q</mi>
     <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi>
@@ -673,15 +1007,29 @@
     <mo>,</mo> <msub><mi>a</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>)</mo></mrow> <mo>–</mo> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
     <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>←</mo> <mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi>
+    <mi>t</mi></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo> <mi>γ</mi> <mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
 - en: Many RL models use the TD learning algorithm that we will see in the next section.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多 RL 模型使用我们将在下一节中看到的 TD 学习算法。
 - en: Artificial neural network and deep learning
+  id: totrans-117
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 人工神经网络和深度学习
 - en: Reinforcement learning models often leverage an artificial neural network and
     deep learning methods to approximate a value or policy function. That is, ANN
     can learn to map states to values, or state-action pairs to Q-values. ANNs use
@@ -690,32 +1038,46 @@
     iteratively adjusting them in such a way that the rewards are maximized. Refer
     to [3](ch03.xhtml#Chapter3) and [5](ch05.xhtml#Chapter5) for more details on methods
     related to ANN (including deep learning).
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习模型通常利用人工神经网络和深度学习方法来近似值或策略函数。也就是说，人工神经网络可以学习将状态映射到值，或者将状态-动作对映射到 Q 值。在 RL
+    的上下文中，ANN 可以使用*系数*或*权重*来近似将输入映射到输出的函数。ANN 的学习意味着通过迭代调整权重，使得奖励最大化。详见 [3](ch03.xhtml#Chapter3)
+    和 [5](ch05.xhtml#Chapter5) ，了解与 ANN 相关的方法（包括深度学习）的更多细节。
 - en: Reinforcement Learning Models
+  id: totrans-119
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 强化学习模型
 - en: Reinforcement learning can be categorized into *model-based* and *model-free*
     algorithms, based on whether the rewards and probabilities for each step are readily
     accessible.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据每步的奖励和概率是否易于访问，强化学习可以分为*基于模型*和*无模型*算法。
 - en: Model-based algorithms
+  id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 基于模型的算法
 - en: Model-based algorithms try to understand the environment and create a model
     to represent it. When the RL problem includes well-defined transition probabilities
     and a limited number of states and actions, it can be framed as a *finite MDP*
     for which dynamic programming (DP) can compute an exact solution, similar to the
     previous example.^([5](ch09.xhtml#idm45174907045944))
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于模型的算法试图理解环境并创建一个代表它的模型。当 RL 问题包括明确定义的转移概率以及有限数量的状态和动作时，可以将其框架化为一个*有限 MDP*，动态规划（DP）可以计算出一个精确解，类似于前面的例子。^([5](ch09.xhtml#idm45174907045944))
 - en: Model-free algorithms
+  id: totrans-123
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 无模型算法
 - en: Model-free algorithms try to maximize the expected reward only from real experience,
     without a model or prior knowledge. Model-free algorithms are used when we have
     incomplete information about the model. The agent’s policy *π(s)* provides the
@@ -730,45 +1092,66 @@
     section. Policy-based algorithms (also known as *direct policy search*) directly
     learn an optimal policy that maps state to action (or tries to approximate optimal
     policy, if true optimal policy is not attainable).
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 无模型算法仅尝试从实际经验中最大化预期奖励，而不使用模型或先验知识。 当我们对模型有不完整的信息时，我们使用无模型算法。 代理的策略 *π(s)* 提供了在某一状态下采取的最优行动的指导方针，目标是最大化总奖励。
+    每个状态都与一个值函数 *V(s)* 相关联，该函数预测我们能够在该状态上采取相应策略时获得的未来奖励的预期数量。 换句话说，值函数量化了状态的好坏程度。
+    无模型算法进一步分为*基于值的*和*基于策略的*。 基于值的算法通过选择状态中的最佳行动来学习状态或 Q 值。 这些算法通常基于我们在 RL 框架部分讨论的时序差分学习。
+    基于策略的算法（也称为*直接策略搜索*）直接学习将状态映射到动作的最优策略（或者，如果无法达到真正的最优策略，则尝试近似最优策略）。
 - en: In most situations in finance, we do not fully know the environment, rewards,
     or transition probabilities, and we must fall back to model-free algorithms and
     related approaches.^([6](ch09.xhtml#idm45174907036600)) Hence, the focus of the
     next section and of the case studies will be the model-free methods and related
     algorithms.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 在大多数金融情况下，我们并不完全了解环境、奖励或转移概率，因此必须依赖于无模型算法和相关方法。因此，下一节和案例研究的重点将放在无模型方法和相关算法上。
 - en: '[Figure 9-5](#TaxRLModels) shows a taxonomy of model-free reinforcement learning.
     We highly recommend that readers refer to *Reinforcement Learning: An Introduction*
     for a more in-depth understanding of the algorithms and the concepts.'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 9-5](#TaxRLModels) 展示了无模型强化学习的分类。我们强烈建议读者参考 *强化学习: 一种介绍* 以更深入地了解算法和概念。'
 - en: '![mlbf 0905](Images/mlbf_0905.png)'
+  id: totrans-127
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0905](Images/mlbf_0905.png)'
 - en: Figure 9-5\. Taxonomy of RL models
+  id: totrans-128
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-5\. RL 模型分类
 - en: In the context of model-free methods, temporal difference learning is one of
     the most used approaches. In TD, the algorithm refines its estimates based on
     its own prior estimates. The value-based algorithms *Q-learning* and *SARSA* use
     this approach.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 在无模型方法的背景下，时序差分学习是其中最常用的方法之一。在 TD 中，算法根据自身的先前估计来优化其估计。 基于值的算法*Q-learning* 和
+    *SARSA* 使用了这种方法。
 - en: Model-free methods often leverage an artificial neural network to approximate
     a value or policy function. *Policy gradient* and *deep Q-network (DQN)* are two
     commonly used model-free algorithms that use artificial neutral networks. Policy
     gradient is a policy-based approach that directly parameterizes the policy. Deep
     Q-network is a value-based method that combines deep learning with *Q-learning*,
     which sets the learning objective to optimize the estimates of Q-value.^([7](ch09.xhtml#idm45174907028376))
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 无模型方法通常利用人工神经网络来近似值或策略函数。 *策略梯度* 和 *深度 Q 网络（DQN）* 是两种常用的无模型算法，它们使用人工神经网络。 策略梯度是一种直接参数化策略的基于策略的方法。
+    深度 Q 网络是一种基于值的方法，它将深度学习与 *Q-learning* 结合在一起，将学习目标设置为优化 Q 值的估计。
 - en: Q-Learning
+  id: totrans-131
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Q-学习
 - en: '*Q-learning* is an adaptation of TD learning. The algorithm evaluates which
     action to take based on a Q-value (or action-value) function that determines the
     value of being in a certain state and taking a certain action at that state. For
@@ -776,43 +1159,62 @@
     of the rewards, *R*, which the agent gets upon leaving the state *s* with action
     *a*, plus the rewards it expects to earn later. Since the target policy would
     act optimally, we take the maximum of the Q-value estimates for the next state.'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Q-learning* 是TD学习的一种适应。该算法根据Q值（或动作值）函数评估要采取的动作，该函数确定处于某个状态并采取某个动作时的价值。对于每个状态-动作对*(s,
+    a)*，该算法跟踪奖励的运行平均值*R*，代理在离开状态*s*并采取动作*a*后获得的奖励，以及它预计在之后获得的奖励。由于目标策略将最优地行动，我们取下一状态的Q值估计的最大值。'
 - en: The learning proceeds *off-policy*—that is, the algorithm does *not* need to
     select actions based on the policy that is implied by the value function alone.
     However, convergence requires that all state-action pairs continue to be updated
     throughout the training process, and a straightforward way to ensure that this
     occurs is to use an *ε-greedy* policy, which is defined further in the following
     section.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 学习进行*离策略*，即算法*不*需要根据仅由值函数暗示的策略选择动作。然而，收敛需要在整个训练过程中更新所有状态-动作对，并确保这一点的简单方法是使用*ε-贪心*策略，该策略在以下章节进一步定义。
 - en: 'The steps of Q-learning are:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: Q-learning 的步骤如下：
 - en: At time step *t*, we start from state *s[t]* and pick an action according to
     Q-values, <math alttext="a Subscript t Baseline equals m a x Subscript a Baseline
     upper Q left-parenthesis s Subscript t Baseline comma a right-parenthesis"><mrow><msub><mi>a</mi>
     <mi>t</mi></msub> <mo>=</mo> <mi>m</mi> <mi>a</mi> <msub><mi>x</mi> <mi>a</mi></msub>
     <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <mi>a</mi>
     <mo>)</mo></mrow></mrow></math> .
+  id: totrans-135
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在时间步*t*，我们从状态*s[t]*开始，并根据Q值选择动作，<math alttext="a Subscript t Baseline equals
+    m a x Subscript a Baseline upper Q left-parenthesis s Subscript t Baseline comma
+    a right-parenthesis"><mrow><msub><mi>a</mi> <mi>t</mi></msub> <mo>=</mo> <mi>m</mi>
+    <mi>a</mi> <msub><mi>x</mi> <mi>a</mi></msub> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mi>t</mi></msub> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow></mrow></math> 。
 - en: We apply an *ε-greedy* approach that selects an action randomly with a probability
     of *ε* or otherwise chooses the best action according to the Q-value function.
     This ensures the exploration of new actions in a given state while also exploiting
     the learning experience.^([8](ch09.xhtml#idm45174907004296))
+  id: totrans-136
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 我们应用一个*ε-贪心*方法，根据*ε*的概率随机选择动作，或者根据Q值函数选择最佳动作。这确保了在给定状态下探索新动作，同时利用学习经验。^([8](ch09.xhtml#idm45174907004296))
 - en: With action *a[t]*, we observe reward *R[t+1]* and get into the next state *S[t+1]*.
+  id: totrans-137
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过动作*a[t]*，我们观察奖励*R[t+1]*并进入下一个状态*S[t+1]*。
 - en: 'We update the action-value function:'
+  id: totrans-138
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 我们更新动作值函数：
 - en: <math display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
     <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>←</mo> <mi>Q</mi>
     <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi>
@@ -823,21 +1225,38 @@
     <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>–</mo> <mi>Q</mi> <mrow><mo>(</mo>
     <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub>
     <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
+  id: totrans-139
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>←</mo> <mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi>
+    <mi>t</mi></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo> <mi>γ</mi> <munder><mo
+    movablelimits="true" form="prefix">max</mo> <mi>a</mi></munder> <mi>Q</mi> <mrow><mo>(</mo>
+    <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo>
+    <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>–</mo> <mi>Q</mi> <mrow><mo>(</mo>
+    <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
 - en: We increment the time step, *t = t+1*, and repeat the steps.
+  id: totrans-140
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 我们增加时间步长，*t = t+1*，然后重复步骤。
 - en: Given enough iterations of the steps above, this algorithm will converge to
     the optimal Q-value.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 经过足够的迭代步骤，该算法将收敛到最优的Q值。
 - en: SARSA
+  id: totrans-142
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: SARSA
 - en: SARSA is also a TD learning–based algorithm. It refers to the procedure of updating
     the Q-value by following a sequence of <math alttext="period period period upper
     S Subscript t Baseline comma upper A Subscript t Baseline comma upper R Subscript
@@ -852,38 +1271,63 @@
     is an *on-policy* algorithm in which the agent grasps the optimal policy and uses
     the same to act. In this algorithm, the policies used for *updating* and for *acting*
     are the same. Q-learning is considered an *off-policy* algorithm.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: SARSA 也是基于 TD 学习的算法。它指的是通过遵循一系列<math alttext="period period period upper S Subscript
+    t Baseline comma upper A Subscript t Baseline comma upper R Subscript t plus 1
+    Baseline comma upper S Subscript t plus 1 Baseline comma upper A Subscript t plus
+    1 Baseline comma period period period"><mrow><mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <msub><mi>S</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>A</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo></mrow></math> 的步骤更新 Q 值。SARSA 的前两个步骤与
+    Q 学习的步骤类似。然而，与 Q 学习不同，SARSA 是一个*在策略*算法，其中代理掌握最优策略并使用相同策略来行动。在这个算法中，用于*更新*和*行动*的策略是相同的。Q
+    学习被认为是一个*离策略*算法。
 - en: Deep Q-Network
+  id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 深度 Q 网络
 - en: 'In the previous section, we saw how Q-learning allows us to learn the optimal
     Q-value function in an environment with discrete state actions using iterative
     updates based on the Bellman equation. However, Q-learning may have the following
     drawbacks:'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前面的部分中，我们看到了如何使用 Q 学习基于贝尔曼方程进行迭代更新，在具有离散状态动作的环境中学习最优 Q 值函数。然而，Q 学习可能具有以下缺点：
 - en: In cases where the state and action space are large, the optimal Q-value table
     quickly becomes computationally infeasible.
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在状态和动作空间较大的情况下，最优 Q 值表很快变得计算上不可行。
 - en: Q-learning may suffer from instability and divergence.
+  id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Q 学习可能会遭受不稳定性和发散问题。
 - en: 'To address these shortcomings, we use ANNs to approximate Q-values. For example,
     if we use a function with parameter *θ* to calculate Q-values, we can label the
     Q-value function as *Q(s,a;θ)*. The deep Q-learning algorithm approximates the
     Q-values by learning a set of weights, *θ*, of a multilayered deep Q-network that
     maps states to actions. The algorithm aims to greatly improve and stabilize the
     training procedure of Q-learning through two innovative mechanisms:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了解决这些问题，我们使用人工神经网络来近似 Q 值。例如，如果我们使用一个参数为*θ*的函数来计算 Q 值，我们可以将 Q 值函数标记为*Q(s,a;θ)*。深度
+    Q 学习算法通过学习一个多层次深度 Q 网络的权重*θ*来近似 Q 值，旨在通过两种创新机制显著改进和稳定 Q 学习的训练过程：
 - en: Experience replay
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 经验回放
 - en: Instead of running Q-learning on state-action pairs as they occur during simulation
     or actual experience, the algorithm stores the history of state, action, reward,
     and next state transitions that are experienced by the agent in one large *replay
@@ -892,11 +1336,16 @@
     could be used multiple times. Experience replay improves data efficiency, removes
     correlations in the observation sequences, and smooths over changes in the data
     distribution.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 不是在仿真或实际经验中运行 Q 学习的状态-动作对，算法将代理在一个大的*回放记忆*中存储状态、动作、奖励和下一个状态的转换历史。这可以称为*小批量*观察。在
+    Q 学习更新过程中，随机从回放记忆中抽取样本，因此一个样本可以被多次使用。经验回放提高了数据效率，消除了观察序列中的相关性，并平滑了数据分布中的变化。
 - en: Periodically updated target
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 周期性更新目标
 - en: '*Q* is optimized toward target values that are only periodically updated. The
     Q-network is cloned and kept frozen as the optimization targets every *C* step
     (*C* is a hyperparameter). This modification makes the training more stable as
@@ -905,8 +1354,10 @@
     loss function defined as the squared difference between the DQN’s estimate of
     the target and its estimate of the Q-value of the current state-action pair, *Q(s,a:θ)*.
     The loss function is as follows:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Q*被优化为仅周期性更新的目标值。Q网络被克隆并保持冻结，作为优化目标的每个*C*步骤（*C*是一个超参数）。这种修改使训练更加稳定，因为它克服了短期振荡。为了学习网络参数，算法将梯度下降应用于损失函数，该损失函数定义为DQN对目标的估计与当前状态-动作对的Q值的估计之间的平方差，*Q(s,a:θ)*。损失函数如下：'
 - en: <math display="block"><mrow><mi>L</mi> <mrow><mo>(</mo> <msub><mi>θ</mi> <mi>i</mi></msub>
     <mo>)</mo></mrow> <mo>=</mo> <mi>𝔼</mi> <mo stretchy="false">[</mo> <msup><mfenced
     separators="" open="(" close=")"><mi>r</mi> <mo>+</mo> <mi>γ</mi> <munder><mo
@@ -915,8 +1366,17 @@
     <mrow><mi>i</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>–</mo>
     <mi>Q</mi> <mrow><mo>(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>;</mo><msub><mi>θ</mi>
     <mi>i</mi></msub> <mo>)</mo></mrow></mfenced> <mn>2</mn></msup> <mo stretchy="false">]</mo></mrow></math>
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mi>L</mi> <mrow><mo>(</mo> <msub><mi>θ</mi> <mi>i</mi></msub>
+    <mo>)</mo></mrow> <mo>=</mo> <mi>𝔼</mi> <mo stretchy="false">[</mo> <msup><mfenced
+    separators="" open="(" close=")"><mi>r</mi> <mo>+</mo> <mi>γ</mi> <munder><mo
+    movablelimits="true" form="prefix">max</mo> <msup><mi>a</mi> <mo>′</mo></msup></munder>
+    <mi>Q</mi> <mrow><mo>(</mo><msup><mi>s</mi> <mo>′</mo></msup> <mo>,</mo><mi>a</mi><mo>′</mo><mo>;</mo><msub><mi>θ</mi>
+    <mrow><mi>i</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>–</mo>
+    <mi>Q</mi> <mrow><mo>(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>;</mo><msub><mi>θ</mi>
+    <mi>i</mi></msub> <mo>)</mo></mrow></mfenced> <mn>2</mn></msup> <mo stretchy="false">]</mo></mrow></math>
 - en: The loss function is essentially a mean squared error (MSE) function, where
     <math display="inline"><mfenced separators="" open="(" close=")"><mi>r</mi> <mo>+</mo>
     <mi>γ</mi> <msub><mo movablelimits="true" form="prefix">max</mo> <msup><mi>a</mi>
@@ -929,42 +1389,65 @@
     the network, which are computed when the loss function is minimized. Both the
     target and the current estimate depend on the set of weights, underlining the
     distinction from supervised learning, in which targets are fixed prior to training.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 损失函数本质上是一个均方误差（MSE）函数，其中<math display="inline"><mfenced separators="" open="("
+    close=")"><mi>r</mi> <mo>+</mo> <mi>γ</mi> <msub><mo movablelimits="true" form="prefix">max</mo>
+    <msup><mi>a</mi> <mo>′</mo></msup></msub> <mi>Q</mi> <mrow><mo>(</mo><msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>,</mo><mi>a</mi><mo>′</mo><mo>;</mo><msub><mi>θ</mi> <mrow><mi>i</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mfenced></math>表示目标值，而<math alttext="upper Q left-bracket s
+    comma a semicolon theta Subscript i Baseline right-bracket"><mrow><mi>Q</mi> <mo>[</mo>
+    <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>;</mo> <msub><mi>θ</mi> <mi>i</mi></msub>
+    <mo>]</mo></mrow></math>表示预测值。*θ*是网络的权重，当最小化损失函数时计算出来。目标和当前估计都依赖于权重集合，强调了与监督学习的区别，在监督学习中，目标在训练之前是固定的。
 - en: An example of the DQN for the trading example containing buy, sell, and hold
     actions is represented in [Figure 9-6](#DQN). Here, we provide the network only
     the state (*s*) as input, and we receive Q-values for all possible actions (i.e.,
     buy, sell, and hold) at once. We will be using DQN in the first and third case
     studies of this chapter.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 包含买入、卖出和持有动作的交易示例的DQN示例在[图 9-6](#DQN)中表示。在这里，我们只将状态（*s*）作为输入提供给网络，并一次性接收所有可能动作（即买入、卖出和持有）的Q值。我们将在本章的第一和第三个案例研究中使用DQN。
 - en: '![mlbf 0906](Images/mlbf_0906.png)'
+  id: totrans-156
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0906](Images/mlbf_0906.png)'
 - en: Figure 9-6\. DQN
+  id: totrans-157
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-6\. DQN
 - en: Policy gradient
+  id: totrans-158
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 策略梯度
 - en: '*Policy gradient* is a policy-based method in which we learn a policy function,
     *π*, which is a direct map from each state to the best corresponding action at
     that state. It is a more straightforward approach than the value-based method,
     without the need for a Q-value function.'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '*策略梯度*是一种基于策略的方法，我们在其中学习一个策略函数，*π*，它是从每个状态直接映射到该状态的最佳对应动作的直接映射。这是一种比基于价值的方法更为直接的方法，无需Q值函数。'
 - en: Policy gradient methods learn the policy directly with a parameterized function
     respect to *θ, π(a|s;θ)*. This function can be a complex function and might require
     a sophisticated model. In policy gradient methods, we use ANNs to map state to
     action because they are efficient at learning complex functions. The loss function
     of the ANN is the opposite of the expected return (cumulative future rewards).
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略梯度方法直接学习参数化函数关于*θ, π(a|s;θ)*。这个函数可能是一个复杂的函数，可能需要一个复杂的模型。在策略梯度方法中，我们使用人工神经网络将状态映射到动作，因为它们在学习复杂函数时是有效的。人工神经网络的损失函数是期望回报的相反数（累积未来奖励）。
 - en: 'The objective function of the policy gradient method can be defined as:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略梯度方法的目标函数可以定义为：
 - en: <math alttext="upper J left-parenthesis theta right-parenthesis equals upper
     V Subscript pi Sub Subscript theta Baseline left-parenthesis upper S 1 right-parenthesis
     equals double-struck upper E Subscript pi Sub Subscript theta Baseline left-bracket
@@ -973,98 +1456,147 @@
     <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo>
     <msub><mi>𝔼</mi> <msub><mi>π</mi> <mi>θ</mi></msub></msub> <mrow><mo>[</mo> <msub><mi>V</mi>
     <mn>1</mn></msub> <mo>]</mo></mrow></mrow></math>
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper J left-parenthesis theta right-parenthesis equals upper
+    V Subscript pi Sub Subscript theta Baseline left-parenthesis upper S 1 right-parenthesis
+    equals double-struck upper E Subscript pi Sub Subscript theta Baseline left-bracket
+    upper V 1 right-bracket" display="block"><mrow><mi>J</mi> <mrow><mo>(</mo> <mi>θ</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>V</mi> <msub><mi>π</mi> <mi>θ</mi></msub></msub>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo>
+    <msub><mi>𝔼</mi> <msub><mi>π</mi> <mi>θ</mi></msub></msub> <mrow><mo>[</mo> <msub><mi>V</mi>
+    <mn>1</mn></msub> <mo>]</mo></mrow></mrow></math>
 - en: where *θ* represents a set of weights of the ANN that maps states to actions.
     The idea here is to maximize the objective function and compute the weights (*θ*)
     of the ANN.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中，*θ*表示将状态映射到动作的人工神经网络（ANN）的权重集合。这里的思想是最大化目标函数并计算人工神经网络的权重（*θ*）。
 - en: 'Since this is a maximization problem, we optimize the policy by taking the
     *gradient ascent* (as opposed to gradient descent, which is used to minimize the
     loss function), with the partial derivative of the objective with respect to the
     policy parameter *θ*:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这是一个最大化问题，我们通过*梯度上升*（与用于最小化损失函数的梯度下降相反）来优化策略，使用策略参数*θ*的偏导数：
 - en: <math alttext="theta left-arrow theta plus StartFraction normal partial-differential
     Over normal partial-differential theta EndFraction upper J left-parenthesis theta
     right-parenthesis" display="block"><mrow><mi>θ</mi> <mo>←</mo> <mi>θ</mi> <mo>+</mo>
     <mfrac><mi>∂</mi> <mrow><mi>∂</mi><mi>θ</mi></mrow></mfrac> <mi>J</mi> <mrow><mo>(</mo>
     <mi>θ</mi> <mo>)</mo></mrow></mrow></math>
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="theta left-arrow theta plus StartFraction normal partial-differential
+    Over normal partial-differential theta EndFraction upper J left-parenthesis theta
+    right-parenthesis" display="block"><mrow><mi>θ</mi> <mo>←</mo> <mi>θ</mi> <mo>+</mo>
+    <mfrac><mi>∂</mi> <mrow><mi>∂</mi><mi>θ</mi></mrow></mfrac> <mi>J</mi> <mrow><mo>(</mo>
+    <mi>θ</mi> <mo>)</mo></mrow></mrow></math>
 - en: Using gradient ascent, we can find the best *θ* that produces the highest return.
     Computing the gradient numerically can be done by perturbing *θ* by a small amount
     *ε* in the kth dimension or by using an analytical approach for deriving the gradient.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用梯度上升，我们可以找到产生最高回报的最佳*θ*。通过在第k维度中微调*θ*的小量*ε*或使用分析方法来计算数值梯度。
 - en: We will be using the policy gradient method for case study 2 later in this chapter.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章后面的案例研究2中，我们将使用策略梯度方法。
 - en: Key Challenges in Reinforcement Learning
+  id: totrans-168
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 强化学习中的关键挑战
 - en: 'So far, we have covered only what reinforcement learning algorithms can do.
     However, several shortcomings are outlined below:'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们只讨论了强化学习算法能够做到的事情。然而，以下列出了几个缺点：
 - en: Resource efficiency
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 资源效率
 - en: Current deep reinforcement learning algorithms require vast amounts of time,
     training data, and computational resources in order to reach a desirable level
     of proficiency. Thus, making reinforcement learning algorithms trainable under
     limited resources will continue to be an important issue.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前的深度强化学习算法需要大量的时间、训练数据和计算资源，以达到理想的熟练水平。因此，使强化学习算法在有限资源下可训练将继续是一个重要问题。
 - en: Credit assignment
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 信用分配
 - en: In RL, reward signals can occur significantly later than actions that contributed
     to the result, complicating the association of actions with their consequences.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 在强化学习中，奖励信号可能出现比导致结果的行动晚得多，复杂化了行动与后果的关联。
 - en: Interpretability
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 可解释性
 - en: In RL, it is relatively difficult for a model to provide any meaningful, intuitive
     relationships between input and their corresponding output that can be easily
     understood. Most advanced reinforcement learning algorithms incorporate deep neural
     networks, which make interpretability even more difficult due to a large number
     of layers and nodes inside the neural network.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 在强化学习中，模型很难提供任何有意义的、直观的输入与相应输出之间的关系，这些关系能够轻松理解。大多数先进的强化学习算法采用深度神经网络，由于神经网络内部有大量的层和节点，这使得解释性变得更加困难。
 - en: Let us look at the case studies now.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来看看案例研究。
 - en: 'Case Study 1: Reinforcement Learning–Based Trading Strategy'
+  id: totrans-177
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究1：基于强化学习的交易策略
 - en: 'Algorithmic trading primarily has three components: *policy development*, *parameter
     optimization*, and *backtesting*. The policy determines what actions to take based
     on the current state of the market. Parameter optimization is performed using
     a search over possible values of strategy parameters, such as thresholds or coefficients.
     Finally, backtesting assesses the viability of a trading strategy by exploring
     how it would have played out using historical data.'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法交易主要包括三个组成部分：*策略开发*、*参数优化*和*回测*。策略根据市场当前状态决定采取什么行动。参数优化通过搜索策略参数的可能值（如阈值或系数）来执行。最后，回测通过探索如何使用历史数据进行交易来评估交易策略的可行性。
 - en: RL is based around coming up with a policy to maximize the reward in a given
     environment. Instead of needing to hand code a rule-based trading policy, RL learns
     one directly. There is no need to explicitly specify rules and thresholds. Their
     ability to decide policy on their own makes RL models very suitable machine learning
     algorithms to create automated algorithmic trading models, or *trading bots*.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习的基础是设计一种策略来最大化给定环境中的奖励。与手工编写基于规则的交易策略不同，强化学习直接学习策略。不需要明确规定规则和阈值。它们自行决定策略的能力使得强化学习模型非常适合创建自动化算法交易模型，或者*交易机器人*。
 - en: In terms of *parameter optimization* and *backtesting* steps, RL allows for
     end-to-end optimization and maximizes (potentially delayed) rewards. Reinforcement
     learning agents are trained in a simulation, which can be as complex as desired.
     Taking into account latencies, liquidity, and fees, we can seamlessly combine
     the backtesting and parameter optimization steps without needing to go through
     separate stages.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 就参数优化和回测步骤而言，强化学习允许端到端优化并最大化（潜在的延迟）奖励。强化学习代理在一个可以复杂到任意程度的模拟中训练。考虑到延迟、流动性和费用，我们可以无缝地将回测和参数优化步骤结合在一起，而无需经历单独的阶段。
 - en: Additionally, RL algorithms learn powerful policies parameterized by artificial
     neural networks. RL algorithms can also learn to adapt to various market conditions
     by experiencing them in historical data, given that they are trained over a long-time
@@ -1072,15 +1604,19 @@
     changing markets than supervised learning–based trading strategies, which, due
     to the simplistic nature of the policy, may not have a parameterization powerful
     enough to learn to adapt to changing market conditions.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，强化学习算法通过人工神经网络参数化学习强大的策略。强化学习算法还可以通过历史数据中的经验来适应各种市场条件，前提是它们经过长时间的训练并具有足够的记忆。这使它们比基于监督学习的交易策略更能适应市场变化，因为监督学习策略由于策略的简单性可能无法具备足够强大的参数化来适应市场变化。
 - en: Reinforcement learning, with its capability to easily handle policy, parameter
     optimization, and backtesting, is ideal for the next wave of algorithmic trading.
     Anecdotally, it seems that several of the more sophisticated algorithmic execution
     desks at large investment banks and hedge funds are beginning to use reinforcement
     learning to optimize their decision making.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习，凭借其处理策略、参数优化和回测的能力，是下一波算法交易的理想选择。传闻称，一些大型投资银行和对冲基金的高级算法执行团队开始使用强化学习来优化决策。
 - en: In this case study, we will create an end-to-end trading strategy based on reinforcement
     learning. We will use the Q-learning approach with deep Q-network (DQN) to come
     up with a policy and an implementation of the trading strategy. As discussed before,
@@ -1090,49 +1626,74 @@
     based on the state *s* and provided action *a*. In addition to developing a specific
     trading strategy, this case study will discuss the general framework and components
     of a reinforcement learning–based trading strategy.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们将基于强化学习创建一个端到端的交易策略。我们将使用深度 Q 网络（DQN）的 Q 学习方法来制定策略和实施交易策略。正如之前讨论的，名称“Q-learning”是指
+    Q 函数，它根据状态 *s* 和提供的行动 *a* 返回预期的奖励。除了开发具体的交易策略，本案例研究还将讨论基于强化学习的交易策略的一般框架和组成部分。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-184
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Creating a Reinforcement Learning–Based Trading Strategy
+  id: totrans-185
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 创建基于强化学习的交易策略的蓝图
 - en: 1\. Problem definition
+  id: totrans-186
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: 'In the reinforcement learning framework for this case study, the algorithm
     takes an action (buy, sell, or hold) depending on the current state of the stock
     price. The algorithm is trained using a deep Q-learning model to perform the best
     action. The key components of the reinforcement learning framework for this case
     study are:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究的强化学习框架中，算法根据股票价格的当前状态采取行动（买入、卖出或持有）。该算法使用深度 Q 学习模型进行训练以执行最佳行动。这个案例研究强化学习框架的关键组成部分包括：
 - en: Agent
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理人
 - en: Trading agent.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易代理人。
 - en: Action
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 行动
 - en: Buy, sell, or hold.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 买入、卖出或持有。
 - en: Reward function
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励函数
 - en: 'Realized profit and loss (PnL) is used as the reward function for this case
     study. The reward depends on the action: sell (realized profit and loss), buy
     (no reward), or hold (no reward).'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现的盈亏（PnL）被用作这个案例研究的奖励函数。奖励取决于行动：卖出（实现的盈亏）、买入（无奖励）或持有（无奖励）。
 - en: State
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: A sigmoid function^([10](ch09.xhtml#idm45174906688584)) of the differences of
     past stock prices for a given time window is used as the state. State *S[t]* is
     described as <math alttext="left-parenthesis d Subscript t minus tau plus 1 Baseline
@@ -1148,55 +1709,89 @@
     is the time window size. A sigmoid function converts the differences of the past
     stock prices into a number between zero and one, which helps to normalize the
     values to probabilities and makes the state simpler to interpret.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 在给定时间窗口内过去股票价格的差异的sigmoid函数^([10](ch09.xhtml#idm45174906688584))被用作状态。状态 *S[t]*
+    被描述为 <math alttext="left-parenthesis d Subscript t minus tau plus 1 Baseline comma
+    d Subscript t minus 1 Baseline comma d Subscript t Baseline right-parenthesis"><mrow><mo>(</mo>
+    <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mi>τ</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mi>t</mi></msub> <mo>)</mo></mrow></math> ，其中 <math
+    display="inline"><mrow><msub><mi>d</mi> <mi>T</mi></msub> <mo>=</mo> <mi>s</mi>
+    <mi>i</mi> <mi>g</mi> <mi>m</mi> <mi>o</mi> <mi>i</mi> <mi>d</mi> <mrow><mo>(</mo>
+    <msub><mi>p</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>p</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math> ，<math alttext="p Subscript t"><msub><mi>p</mi>
+    <mi>t</mi></msub></math> 是时间 *t* 的价格，<math alttext="tau"><mi>τ</mi></math> 是时间窗口大小。sigmoid函数将过去股票价格的差异转换为介于零和一之间的数字，有助于将值标准化为概率，并使状态更易于解释。
 - en: Environment
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境
 - en: Stock exchange or the stock market.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 股票交易或股市。
 - en: Selecting the RL Components for a Trading Strategy
+  id: totrans-198
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 选择用于交易策略的强化学习组件
 - en: 'Formulating an intelligent behavior for a reinforcement learning–based trading
     strategy begins with identification of the correct components of the RL model.
     Hence, before we go into the model development, we should carefully identify the
     following RL components:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 制定基于强化学习的交易策略的智能行为始于正确识别RL模型的组件。因此，在进入模型开发之前，我们应仔细识别以下RL组件：
 - en: Reward function
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励函数
 - en: This is an important parameter, as it decides whether the RL algorithm will
     learn to optimize the appropriate metric. In addition to the return or PnL, the
     reward function can incorporate risk embedded in the underlying instrument or
     include other parameters such as volatility or maximum drawdown. It can also include
     the transaction costs of the buy/sell actions.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个重要的参数，因为它决定了RL算法是否将学习优化适当的指标。除了回报或利润和损失外，奖励函数还可以包括嵌入在基础工具中的风险或包括其他参数，如波动性或最大回撤。它还可以包括买入/卖出操作的交易成本。
 - en: State
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: State determines the observations that the agent receives from the environment
     for taking a decision. The state should be representative of current market behavior
     as compared to the past and can also include values of any signals that are believed
     to be predictive or items related to market microstructure, such as volume traded.
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态确定了代理从环境中接收用于决策的观察结果。状态应该代表与过去相比的当前市场行为，并且还可以包括被认为具有预测性的任何信号的值或与市场微观结构相关的项目，例如交易量。
 - en: The data that we will use will be the S&P 500 closing prices. The data is extracted
     from Yahoo Finance and contains ten years of daily data from 2010 to 2019.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用的数据是标准普尔500指数的收盘价格。该数据来自Yahoo Finance，包含从2010年到2019年的十年日常数据。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-205
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-206
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The list of libraries used for all of the steps of model implementation, from
     *data loading* to *model evaluation*, including deep learning–based model development,
     are included here. The details of most of these packages and functions have been
@@ -1204,141 +1799,213 @@
     The packages used for different purposes have been separated in the Python code
     here, and their usage will be demonstrated in different steps of the model development
     process.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里列出了用于模型实现的所有步骤，从*数据加载*到*模型评估*，包括基于深度学习的模型开发。大多数这些软件包和函数的细节已在第[2](ch02.xhtml#Chapter2)章、第[3](ch03.xhtml#Chapter3)章和第[4](ch04.xhtml#Chapter4)章中提供。用于不同目的的软件包已在此处的Python代码中分开，并且它们的用法将在模型开发过程的不同步骤中进行演示。
 - en: '`Packages for reinforcement learning`'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于强化学习的软件包`'
 - en: '[PRE2]'
+  id: totrans-209
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '`Packages/modules for data processing and visualization`'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于数据处理和可视化的软件/模块`'
 - en: '[PRE3]'
+  id: totrans-211
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 2.2\. Loading the data
+  id: totrans-212
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: 'The fetched data for the time period of 2010 to 2019 is loaded:'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 加载了2010年至2019年的时间段的获取数据：
 - en: '[PRE4]'
+  id: totrans-214
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 3\. Exploratory data analysis
+  id: totrans-215
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: 'We will look at descriptive statistics and data visualization in this section.
     Let us have a look at the dataset we have:'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我们将查看描述性统计和数据可视化。让我们看一下我们的数据集：
 - en: '[PRE5]'
+  id: totrans-217
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '`Output`'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE6]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[PRE7]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '`Output`'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 09in02](Images/mlbf_09in02.png)'
+  id: totrans-222
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in02](Images/mlbf_09in02.png)'
 - en: The data has a total of 2,515 rows and six columns, which contain the categories
     *open*, *high*, *low*, *close*, *adjusted close price*, and *total volume*. The
     adjusted close price is the closing price adjusted for the split and dividends.
     For the purpose of this case study, we will be focusing on the closing price.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据总共有2,515行和六列，其中包含*开盘价*、*最高价*、*最低价*、*收盘价*、*调整后的收盘价*和*总成交量*等类别。调整后的收盘价是根据拆分和股利调整后的收盘价。对于本案例研究，我们将重点放在收盘价上。
 - en: '![mlbf 09in03](Images/mlbf_09in03.png)'
+  id: totrans-224
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in03](Images/mlbf_09in03.png)'
 - en: The chart shows that S&P 500 has been in an upward-trending series between 2010
     and 2019\. Let us perform the data preparation.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 图表显示，标准普尔500指数在2010年至2019年间呈上升趋势。让我们进行数据准备。
 - en: 4\. Data preparation
+  id: totrans-226
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: This step is important in order to create a meaningful, reliable, and clean
     dataset that can be used without any errors in the reinforcement learning algorithm.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一步是为了创建一个有意义、可靠且干净的数据集，以便在强化学习算法中使用，而无需任何错误。
 - en: 4.1\. Data cleaning
+  id: totrans-228
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清洗
 - en: 'In this step, we check for NAs in the rows and either drop them or fill them
     with the mean of the column:'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此步骤中，我们检查行中的NAs，并且要么删除它们，要么用列的平均值填充它们：
 - en: '[PRE8]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '`Output`'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE9]'
+  id: totrans-232
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: As there are no null values in the data, there is no need to perform any further
     data cleaning.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于数据中没有空值，因此无需进行进一步的数据清理。
 - en: 5\. Evaluate algorithms and models
+  id: totrans-234
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: This is the key step of the reinforcement learning model development, where
     we will define all the relevant functions and classes and train the algorithm.
     In the first step, we prepare the data for the training set and the test set.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是强化学习模型开发的关键步骤，我们将在此定义所有相关函数和类并训练算法。在第一步中，我们为训练集和测试集准备数据。
 - en: 5.1\. Train-test split
+  id: totrans-236
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 训练测试拆分
 - en: 'In this step, we partition the original dataset into training set and test
     set. We use the test set to confirm the performance of our final model and to
     understand if there is any overfitting. We will use 80% of the dataset for modeling
     and 20% for testing:'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此步骤中，我们将原始数据集分成训练集和测试集。我们使用测试集来确认我们最终模型的性能，并了解是否存在过度拟合。我们将使用80%的数据集进行建模，20%用于测试：
 - en: '[PRE10]'
+  id: totrans-238
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 5.2\. Implementation steps and modules
+  id: totrans-239
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 实施步骤和模块
 - en: The overall algorithm of this case study (and of reinforcement learning in general)
     is a bit complex as it requires building *class-based code structure* and the
     simultaneous use of many modules and functions. This additional section was added
     for this case study to provide a functional explanation of what is happening in
     the program.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究（以及通常的强化学习）的整体算法有点复杂，因为它需要构建*基于类的代码结构*并同时使用许多模块和函数。为了提供对程序中正在发生的事情的功能性解释，本案例研究添加了这一附加部分。
 - en: The algorithm, in simple terms, decides whether to buy, sell, or hold when provided
     with the current market price.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法简单来说，是在提供当前市场价格时决定是买入、卖出还是持有。
 - en: '[Figure 9-7](#RLTrading) provides an overview of the training of the Q-learning-based
     algorithm in the context of this case study. The algorithm evaluates which action
     to take based on a Q-value, which determines the value of being in a certain state
     and taking a certain action at that state.'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 9-7](#RLTrading) 提供了本案例研究背景下基于Q-learning的算法训练概述。该算法评估基于Q值采取哪种操作，Q值确定处于某一状态并采取某一动作时的价值。'
 - en: As per [Figure 9-7](#RLTrading), the state (*s*) is decided on the basis of
     the current and historical behavior of the price (P[t], P[t–1],…). Based on the
     current state, the action is “buy.” With this action, we observe a reward of *$10*
@@ -1346,85 +2013,126 @@
     the current reward and the next state’s Q-value, the algorithm updates the Q-value
     function. The algorithm keeps on moving through the next time steps. Given sufficient
     iterations of the steps above, this algorithm will converge to the optimal Q-value.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据[图 9-7](#RLTrading)，状态 (*s*) 基于当前和历史价格行为 (P[t], P[t–1],…)。根据当前状态，采取“购买”操作。这一动作导致
+    *$10* 的奖励（即与动作相关的PnL），并进入下一个状态。使用当前奖励和下一个状态的Q值，算法更新Q值函数。算法继续通过下一个时间步骤。通过足够的迭代步骤，该算法将收敛到最优Q值。
 - en: '![mlbf 0907](Images/mlbf_0907.png)'
+  id: totrans-244
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0907](Images/mlbf_0907.png)'
 - en: Figure 9-7\. Reinforcement learning for trading
+  id: totrans-245
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-7\. 交易强化学习
 - en: The deep Q-network that we use in this case study uses an ANN to approximate
     Q-values; hence, the action value function is defined as *Q(s,a;θ)*. The deep
     Q-learning algorithm approximates the Q-value function by learning a set of weights,
     *θ*, of a multilayered DQN that maps states to actions.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们使用深度Q网络来近似Q值；因此，动作价值函数定义为 *Q(s,a;θ)*。深度Q学习算法通过学习多层DQN的一组权重 *θ* 来近似Q值函数。
 - en: Modules and functions
+  id: totrans-247
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 模块和函数
 - en: 'Implementing this DQN algorithm requires implementation of several functions
     and modules that interact with each other during the model training. Here is a
     summary of the modules and functions:'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现这个DQN算法需要实现几个相互交互的函数和模块。以下是这些模块和函数的摘要：
 - en: Agent class
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理类
 - en: The agent is defined as “Agent” class. This holds the variables and member functions
     that perform the Q-learning. An object of the `Agent` class is created using the
     training phase and is used for training the model.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理被定义为“Agent”类。该类包含变量和成员函数，执行Q-learning。使用训练阶段创建`Agent`类的对象，并用于模型训练。
 - en: Helper functions
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 辅助函数
 - en: In this module, we create additional functions that are helpful for training.
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个模块中，我们创建了一些对训练有帮助的额外函数。
 - en: Training module
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练模块
 - en: In this step, we perform the training of the data using the variables and the
     functions defined in the agent and helper methods. During training, the prescribed
     action for each day is predicted, the rewards are computed, and the deep learning–based
     Q-learning model weights are updated iteratively over a number of episodes. Additionally,
     the profit and loss of each action is summed to determine whether an overall profit
     has occurred. The aim is to maximize the total profit.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们使用代理和辅助方法中定义的变量和函数对数据进行训练。在训练过程中，预测每一天的规定动作，计算奖励，并迭代更新基于深度学习的Q-learning模型权重。此外，将每个动作的盈亏相加，以确定是否发生了总体利润。旨在最大化总利润。
 - en: We provide a deep dive into the interaction between the different modules and
     functions in [“5.5\. Training the model”](#training_model_cs).
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们深入探讨了在[“5.5\. 训练模型”](#training_model_cs)中不同模块和函数之间的交互。
 - en: Let us look at each of these in detail.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们详细看看每一个。
 - en: 5.3\. Agent class
+  id: totrans-257
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. 代理类
 - en: 'The `agent` class consists of the following components:'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: '`agent`类包括以下组件：'
 - en: '`Constructor`'
+  id: totrans-259
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`构造函数`'
 - en: Function `model`
+  id: totrans-260
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数`model`
 - en: Function `act`
+  id: totrans-261
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数`act`
 - en: Function `expReplay`
+  id: totrans-262
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数`expReplay`
 - en: 'The `Constructor` is defined as `init` function and contains important parameters
     such as `discount factor` for reward function, `epsilon` for the *ε-greedy* approach,
     `state size`, and `action size`. The number of actions is set at three (i.e.,
@@ -1433,43 +2141,65 @@
     defines whether training is ongoing. This variable is changed to `True` during
     the evaluation/testing phase. Also, if the pretrained model has to be used in
     the evaluation/training phase, it is passed using the `model_name` variable:'
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Constructor` 被定义为 `init` 函数，包含重要的参数，如奖励函数的 `discount factor`、*ε-greedy* 方法的
+    `epsilon`、`state size` 和 `action size`。动作的数量设定为三个（即购买、出售和持有）。`memory` 变量定义了 `replay
+    memory` 的大小。此函数的输入参数还包括 `is_eval` 参数，用于定义是否正在进行训练。在评估/测试阶段，此变量被设置为 `True`。此外，如果需要在评估/训练阶段使用预训练模型，则使用
+    `model_name` 变量传递：'
 - en: '[PRE11]'
+  id: totrans-264
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'The function `model` is a deep learning model that maps the states to actions.
     This function takes in the state of the environment and returns a *Q-value* table
     or a policy that refers to a probability distribution over actions. This function
     is built using the Keras Python library.^([11](ch09.xhtml#idm45174906222520))
     The architecture for the deep learning model used is:'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数 `model` 是一个深度学习模型，将环境的状态映射到动作。此函数接受环境状态并返回一个 *Q-value* 表或指代动作的策略，该策略指代动作的概率分布。此函数是使用Python的Keras库构建的。^([11](ch09.xhtml#idm45174906222520))
+    所使用的深度学习模型的架构是：
 - en: The model expects rows of data with number of variables equal to the *state
     size*, which comes as an input.
+  id: totrans-266
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模型预期数据行数与输入的 *state size* 相等，作为输入。
 - en: The first, second, and third hidden layers have *64*, *32*, and *8* nodes, respectively,
     and all of these layers use the ReLU activation function.
+  id: totrans-267
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第一、第二和第三隐藏层分别具有 *64*、*32* 和 *8* 个节点，所有这些层都使用ReLU激活函数。
 - en: The output layer has the number of nodes equal to the action size (i.e., three),
     and the node uses a linear activation function:^([12](ch09.xhtml#idm45174906129432))
+  id: totrans-268
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输出层的节点数等于动作大小（即三个），节点使用线性激活函数。^([12](ch09.xhtml#idm45174906129432))
 - en: '[PRE12]'
+  id: totrans-269
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'The function `act` returns an action given a state. The function uses the `model`
     function and returns a buy, sell, or hold action:'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数 `act` 根据状态返回一个动作。此函数使用 `model` 函数并返回购买、出售或持有动作：
 - en: '[PRE13]'
+  id: totrans-271
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'The function `expReplay` is the key function, where the neural network is trained
     based on the observed experience. This function implements the *Experience replay*
     mechanism as previously discussed. Experience replay stores a history of state,
@@ -1479,197 +2209,292 @@
     The *epsilon greedy* approach implemented in this function prevents overfitting.
     In order to explain the function, different steps are numbered in the comments
     of the following Python code, along with an outline of the steps:'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数 `expReplay` 是关键函数，其中基于观察到的经验训练神经网络。此函数实现了之前讨论过的 *Experience replay* 机制。Experience
+    replay 存储了代理所经历的状态、动作、奖励和下一个状态转换的历史记录。它将迷你批次的观察数据（*replay memory*）作为输入，并通过最小化损失函数更新基于深度学习的Q-learning模型权重。在此函数中实现了
+    *epsilon greedy* 方法，以防止过拟合。为了解释函数，以下Python代码的评论中编号了不同的步骤，并概述了这些步骤：
 - en: Prepare the replay buffer memory, which is the set of observation used for training.
     New experiences are added to the replay buffer memory using a for loop.
+  id: totrans-273
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 准备回放缓冲内存，这是用于训练的一组观察。使用循环将新的经验添加到回放缓冲内存中。
 - en: '*Loop* across all the observations of state, action, reward, and next state
     transitions in the mini-batch.'
+  id: totrans-274
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*Loop* 遍历迷你批次中的所有状态、动作、奖励和下一个状态转换的观察。'
 - en: The target variable for the Q-table is updated based on the Bellman equation.
     The update happens if the current state is the terminal state or the end of the
     episode. This is represented by the variable `done` and is defined further in
     the training function. If it is not `done`, the target is just set to reward.
+  id: totrans-275
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 基于贝尔曼方程更新Q表的目标变量。如果当前状态是终端状态或者是本集的末尾，则进行更新。变量 `done` 表示是否结束，并在训练函数中进一步定义。如果不是
+    `done`，则目标仅设置为奖励。
 - en: Predict the Q-value of the next state using a deep learning model.
+  id: totrans-276
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用深度学习模型预测下一个状态的Q值。
 - en: The Q-value of this state for the action in the current replay buffer is set
     to the target.
+  id: totrans-277
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 这种状态在当前回放缓冲区中的动作的Q值被设置为目标。
 - en: The deep learning model weights are updated by using the `model.fit` function.
+  id: totrans-278
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用`model.fit`函数更新深度学习模型权重。
 - en: The epsilon greedy approach is implemented. Recall that this approach selects
     an action randomly with a probability of *ε* or the best action, according to
     the Q-value function, with probability 1–*ε*.
+  id: totrans-279
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 实施ε贪婪方法。回想一下，这种方法以ε的概率随机选择一个动作，或者根据Q值函数以1–ε的概率选择最佳动作。
 - en: '[PRE14]'
+  id: totrans-280
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 5.4\. Helper functions
+  id: totrans-281
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.4\. 辅助函数
 - en: In this module, we create additional functions that are helpful for training.
     Some of the important helper functions are discussed here. For details about other
     helper functions, refer to the Jupyter notebook in the GitHub repository for this
     book.
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个模块中，我们创建了一些对训练有帮助的额外函数。这里讨论了一些重要的辅助函数。有关其他辅助函数的详细信息，请参考该书籍的GitHub存储库中的Jupyter笔记本。
 - en: The function `getState` generates the states given the stock data, time *t*
     (the day of prediction), and window *n* (number of days to go back in time). First,
     the vector of price difference is computed, followed by scaling this vector from
     zero to one with a `sigmoid` function. This is returned as the state.
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`getState`根据股票数据、时间*t*（预测日）和窗口*n*（向前回溯的天数）生成状态。首先计算价格差向量，然后使用`sigmoid`函数将该向量从零缩放到一。这将作为状态返回。
 - en: '[PRE15]'
+  id: totrans-284
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: The function `plot_behavior` returns the plot of the market price along with
     indicators for the buy and sell actions. It is used for the overall evaluation
     of the algorithm during the training and testing phase.
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`plot_behavior`返回市场价格的图表，并显示买入和卖出动作的指示器。它用于训练和测试阶段算法的整体评估。
 - en: '[PRE16]'
+  id: totrans-286
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 5.5\. Training the model
+  id: totrans-287
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.5\. 训练模型
 - en: 'We will proceed to train the data. Based on our agent, we define the following
     variables and instantiate the stock agent:'
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将继续训练数据。根据我们的代理，我们定义以下变量并实例化股票代理：
 - en: Episode
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: 剧集
 - en: The number of times the code is trained through the entire data. In this case
     study, we use 10 episodes.
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码在整个数据上训练的次数。在本案例研究中，我们使用10集。
 - en: Windows size
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: 窗口大小
 - en: Number of market days to consider to evaluate the state.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑评估状态的市场日数。
 - en: Batch size
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: 批大小
 - en: Size of the replay buffer or memory use during training.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 回放缓冲区大小或训练期间的内存使用。
 - en: Once these variables are defined, we train the model iterating through the episodes.
     [Figure 9-8](#TraingStepsQTrd) provides a deep dive into the training steps and
     brings together all the elements discussed so far. The upper section showing steps
     1 to 7 describes the steps in the *training* module, and the lower section describes
     the steps in the `replay buffer` function (i.e., `exeReplay` function).
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦定义了这些变量，我们通过集数训练模型。[图9-8](#TraingStepsQTrd)提供了深入的训练步骤，并整合了到目前为止讨论的所有元素。显示步骤1到7的上部分描述了*训练*模块中的步骤，下部分描述了`回放缓冲区`函数中的步骤（即`exeReplay`函数）。
 - en: '![mlbf 0908](Images/mlbf_0908.png)'
+  id: totrans-296
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0908](Images/mlbf_0908.png)'
 - en: Figure 9-8\. Training steps of Q-trading
+  id: totrans-297
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-8\. Q交易的训练步骤
 - en: 'Steps 1 to 6 shown in [Figure 9-8](#TraingStepsQTrd) are numbered in the following
     Python code and are described as follows:'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[图9-8](#TraingStepsQTrd)中展示的1到6步骤在以下Python代码中编号，并描述如下：
 - en: Get the current state using the helper function `getState`. It returns a vector
     of states, where the length of the vector is defined by windows size and the values
     of the states are between zero and one.
+  id: totrans-299
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用辅助函数`getState`获取当前状态。它返回一个状态向量，其长度由窗口大小定义，状态值在零到一之间。
 - en: Get the action for the given state using the `act` function of the agent class.
+  id: totrans-300
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用代理类的`act`函数获取给定状态的动作。
 - en: Get the reward for the given action. The mapping of the action and reward is
     described in the problem definition section of this case study.
+  id: totrans-301
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 获取给定动作的奖励。行动和奖励的映射在本案例研究的问题定义部分中描述。
 - en: Get the next state using the `getState` function. The detail of the next state
     is further used in the Bellman equation for updating the Q-function.
+  id: totrans-302
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用`getState`函数获取下一个状态。下一个状态的详细信息进一步用于更新Q函数的贝尔曼方程。
 - en: 'The details of the state, next state, action, etc., are saved in the memory
     of the agent object, which is used further by the `exeReply` function. A sample
     mini-batch is as follows:'
+  id: totrans-303
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 状态的细节、下一个状态、动作等保存在代理对象的内存中，该对象进一步由`exeReply`函数使用。一个示例小批次如下：
 - en: '![mlbf 09in04](Images/mlbf_09in04.png)'
+  id: totrans-304
   prefs:
   - PREF_IND
   type: TYPE_IMG
+  zh: '![mlbf 09in04](Images/mlbf_09in04.png)'
 - en: Check if the batch is complete. The size of a batch is defined by the batch
     size variable. If the batch is complete, then we move to the `Replay buffer` function
     and update the Q-function by minimizing the MSE between the Q-predicted and the
     Q-target. If not, then we move to the next time step.
+  id: totrans-305
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查批次是否完整。批次的大小由批次大小变量定义。如果批次完整，则我们转到`Replay buffer`功能，并通过最小化Q预测和Q目标之间的MSE来更新Q函数。如果不完整，则我们转到下一个时间步骤。
 - en: The code produces the final results of each episode, along with the plot showing
     the buy and sell actions and the total profit for each episode of the training
     phase.
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 该代码生成每个周期的最终结果，以及显示训练阶段每个周期的买卖操作和总利润的图表。
 - en: '[PRE17]'
+  id: totrans-307
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '`Output`'
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE18]'
+  id: totrans-309
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '![mlbf 09in05](Images/mlbf_09in05.png)'
+  id: totrans-310
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in05](Images/mlbf_09in05.png)'
 - en: '[PRE19]'
+  id: totrans-311
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '![mlbf 09in06](Images/mlbf_09in06.png)'
+  id: totrans-312
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in06](Images/mlbf_09in06.png)'
 - en: '[PRE20]'
+  id: totrans-313
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '![mlbf 09in07](Images/mlbf_09in07.png)'
+  id: totrans-314
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in07](Images/mlbf_09in07.png)'
 - en: '[PRE21]'
+  id: totrans-315
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '![mlbf 09in08](Images/mlbf_09in08.png)'
+  id: totrans-316
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in08](Images/mlbf_09in08.png)'
 - en: The charts show the details of the buy/sell pattern and the total gains of the
     first two (zero and one) and last two (9 and 10) episodes. The details of other
     episodes can be seen in Jupyter notebook under the GitHub repository for this
     book.
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: 图表显示了买卖模式的详细信息以及前两个（0和1）和后两个（9和10）周期的总收益。其他周期的详细信息可以在本书的GitHub存储库中的Jupyter笔记本中查看。
 - en: As we can see, in the beginning of episodes 0 and 1, since the agent has no
     preconception of the consequences of its actions, it takes randomized actions
     to observe the rewards associated with it. In episode zero, there is an overall
@@ -1682,37 +2507,51 @@
     is perhaps less than that of episode zero, but far more robust. The buy and sell
     actions in the later episodes have been performed uniformly over the entire time
     period, and the overall profit is stable.
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们所看到的，在第0和1周期的开始阶段，由于代理人对其行动后果没有先验观念，它会采取随机化的行动来观察相关的奖励。在第零周期中，总体利润为$6,738，确实是一个强劲的结果，但在第一个周期中，我们经历了总体损失$45。每个周期的累积奖励波动较大，说明了算法正在经历的探索过程。观察第9和10周期，似乎代理人开始从训练中学习。它发现了策略并开始始终稳定地利用它。这些后两个周期的买卖行动导致的利润可能少于第零周期，但更加稳健。后续周期的买卖行动在整个时间段内都是一致的，并且总体利润是稳定的。
 - en: Ideally, the number of training episodes should be higher than the number used
     in this case study. A higher number of training episodes will lead to a better
     training performance. Before we move on to the testing, let us go through the
     details about model tuning.
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: 理想情况下，训练周期的数量应该高于本案例研究中使用的数量。更多的训练周期将导致更好的训练表现。在我们进入测试之前，让我们详细了解模型调优的细节。
 - en: 5.6\. Model tuning
+  id: totrans-320
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.6\. 模型调优
 - en: Similar to other machine learning techniques, we can find the best combination
     of model hyperparameters in RL by using techniques such as grid search. The grid
     search for RL-based problems are computationally intensive. Hence, in this section,
     rather than performing the grid search, we present the key hyperparameters to
     consider, along with their intuition and potential impact on the model output.
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似于其他机器学习技术，我们可以通过使用网格搜索等技术来找到RL中的最佳模型超参数组合。针对基于RL的问题进行的网格搜索计算密集。因此，在本节中，我们不进行网格搜索，而是呈现需要考虑的关键超参数、它们的直觉以及对模型输出的潜在影响。
 - en: Gamma (discount factor)
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: Gamma（折现因子）
 - en: Decaying gamma will have the agent prioritize short-term rewards as it learns
     what those rewards are, and place less emphasis on long-term rewards. Lowering
     the discount factor in this case study may cause the algorithm to focus on the
     long-term rewards.
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着学习的进行，衰减的伽马会使代理人优先考虑短期奖励，并且对长期奖励的重视程度降低。在这个案例研究中降低折现因子可能导致算法集中于长期奖励。
 - en: Epsilon
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: Epsilon
 - en: The epsilon variable drives the *exploration versus exploitation* property of
     the model. The more we get to know our environment, the less random exploration
     we want to do. When we reduce epsilon, the likelihood of a random action becomes
@@ -1720,38 +2559,55 @@
     that we already discovered. However, in the trading setup, we do not want the
     algorithm to *overfit* to the training data, and the epsilon should be modified
     accordingly.
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: epsilon 变量驱动模型的“探索与利用”属性。我们越了解我们的环境，我们就越不想进行随机探索。当我们减少 epsilon 时，随机行动的可能性变小，我们会更多地利用我们已经发现的高价值行动机会。然而，在交易设置中，我们不希望算法对训练数据进行过拟合，因此
+    epsilon 应相应地进行修改。
 - en: Episodes and batch size
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: 情节和批次大小
 - en: A higher number of episodes and larger batch size in the training set will lead
     to better training and a more optimal Q-value. However, there is a trade-off,
     as increasing the number of episodes and batch size increases the total training
     time.
+  id: totrans-327
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练集中更多的情节和更大的批次大小将导致更好的训练和更优化的 Q 值。然而，存在一种权衡，增加情节和批次大小会增加总训练时间。
 - en: Window size
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
+  zh: 窗口大小
 - en: Window size determines the number of market days to consider to evaluate the
     state. This can be increased in case we want the state to be determined by a greater
     number of days in the past.
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 窗口大小确定了考虑以评估状态的市场日数。如果我们希望状态由过去更多天数确定，则可以增加这个数量。
 - en: Number of layers and nodes of the deep learning model
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习模型的层数和节点数
 - en: This can be modified for better training and a more optimal Q-value. The details
     about the impact of changing the layers and nodes of ANN models are discussed
     in [Chapter 3](ch03.xhtml#Chapter3), and the grid search for a deep learning model
     is discussed in [Chapter 5](ch05.xhtml#Chapter5).
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可以修改以实现更好的训练和更优化的 Q 值。有关改变 ANN 模型的层数和节点的影响的详细信息在[第三章](ch03.xhtml#Chapter3)中讨论，并且在[第五章](ch05.xhtml#Chapter5)中讨论了深度学习模型的网格搜索。
 - en: 6\. Testing the data
+  id: totrans-332
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 测试数据
 - en: 'After training the data, it is evaluated against the test dataset. This is
     an important step, especially for reinforcement learning, as the agent may mistakenly
     correlate reward with certain spurious features from the data, or it may overfit
@@ -1760,70 +2616,99 @@
     The Python code looks similar to the training set we saw before. However, the
     `is_eval` flag is set to `true`, the `reply buffer` function is not called, and
     there is no training. Let us look at the results:'
+  id: totrans-333
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练数据后，对测试数据集进行评估是一个重要的步骤，特别是对于强化学习，因为代理可能会错误地将奖励与数据的某些伪特征相关联，或者可能会过度拟合特定的图表模式。在测试步骤中，我们查看已经训练好的模型（*model_ep10*）在测试数据上的表现。Python
+    代码看起来与我们之前看到的训练集类似。但是，`is_eval` 标志设置为 `true`，`reply buffer` 函数不被调用，也没有训练。让我们看看结果：
 - en: '[PRE22]'
+  id: totrans-334
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '`Output`'
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE23]'
+  id: totrans-336
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '![mlbf 09in09](Images/mlbf_09in09.png)'
+  id: totrans-337
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in09](Images/mlbf_09in09.png)'
 - en: Looking at the results above, our model resulted in an overall profit of $1,280,
     and we can say that our DQN agent performs quite well on the test set.
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: 从上面的结果来看，我们的模型在测试集上总体上实现了 $1,280 的利润，我们可以说我们的 DQN 代理在测试集上表现相当不错。
 - en: Conclusion
+  id: totrans-339
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we created an automated trading strategy, or a *trading
     bot*, that simply needs to be fed running stock market data to produce a trading
     signal. We saw that the algorithm decides the policy by itself, and the overall
     approach is much simpler and more principled than the supervised learning–based
     approach. The trained model was profitable in the test set, corroborating the
     effectiveness of the RL-based trading strategy.
+  id: totrans-340
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们创建了一个自动化交易策略，或者*交易机器人*，只需提供运行中的股票市场数据就能产生交易信号。我们看到算法自行决定策略，总体方法比基于监督学习的方法简单得多，更有原则性。经过训练的模型在测试集上盈利，证实了基于强化学习的交易策略的有效性。
 - en: In using a reinforcement learning model such as DQN, which is based on a deep
     neural network, we can learn policies that are more complex and powerful than
     what a human trader could learn.
+  id: totrans-341
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用基于深度神经网络的强化学习模型如 DQN 时，我们可以学习到比人类交易员更复杂和更强大的策略。
 - en: Given the high complexity and low interpretability of the RL-based model, visualization
     and testing steps become quite important. For interpretability, we used the plots
     of the training episodes of the training algorithm and found that the model starts
     to learn over a period of time, discovers the strategy, and starts to exploit
     it. A sufficient number of tests should be conducted on different time periods
     before deploying the model for live trading.
+  id: totrans-342
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑到基于强化学习的模型的高复杂性和低可解释性，可视化和测试步骤变得非常重要。为了可解释性，我们使用训练算法的训练周期图表，并发现模型随着时间开始学习，发现策略并开始利用它。在将模型用于实时交易之前，应在不同时间段进行足够数量的测试。
 - en: While using RL-based models, we should carefully select the RL components, such
     as the reward function and state, and ensure understanding of their impact on
     the overall model results. Before implementing or training the model, it is important
     to think of questions, such as “How can we engineer the reward function or the
     state so that the RL algorithm has the potential to learn to optimize the right
     metric?”
+  id: totrans-343
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用基于强化学习的模型时，我们应该仔细选择强化学习组件，例如奖励函数和状态，并确保理解它们对整体模型结果的影响。在实施或训练模型之前，重要的是考虑以下问题：“我们如何设计奖励函数或状态，使得强化学习算法有潜力学习优化正确的度量标准？”
 - en: Overall, these RL-based models can enable financial practitioners to create
     trading strategies with a very flexible approach. The framework provided in this
     case study can be a great starting point to develop more powerful models for algorithmic
     trading.
+  id: totrans-344
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，这些基于强化学习的模型可以使金融从业者以非常灵活的方式创建交易策略。本案例研究提供的框架可以成为开发算法交易更强大模型的绝佳起点。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-345
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 2: Derivatives Hedging'
+  id: totrans-346
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究2：衍生品对冲
 - en: Much of traditional finance theory for handling derivatives pricing and risk
     management is based on the idealized complete markets assumption of perfect hedgability,
     without trading restrictions, transaction costs, market impact, or liquidity constraints.
@@ -1831,8 +2716,10 @@
     risk management using derivatives requires human oversight and maintenance; the
     models themselves are insufficient. Implementation is still partially driven by
     the trader’s intuitive understanding of the shortcomings of the existing tools.
+  id: totrans-347
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理衍生品定价和风险管理的传统金融理论大部分基于理想化的完全市场假设，即完美对冲性，没有交易限制、交易成本、市场冲击或流动性约束。然而，在实践中，这些摩擦是非常真实的。因此，使用衍生品进行实际风险管理需要人类的监督和维护；单靠模型本身是不够的。实施仍然部分受到交易员对现有工具局限性直觉理解的驱动。
 - en: Reinforcement learning algorithms, with their ability to tackle more nuances
     and parameters within the operational environment, are inherently aligned with
     the objective of hedging. These models can produce dynamic strategies that are
@@ -1843,35 +2730,47 @@
     many variables to make more precise and accurate hedging decisions. Moreover,
     the availability of vast amounts of data makes RL-based models more useful and
     effective than ever before.
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习算法因其在操作环境中处理更多细微差别和参数的能力，天生与对冲目标一致。这些模型能够生成动态策略，即使在存在摩擦的世界中也是最优的。无模型强化学习方法几乎不需要理论假设。这使得对冲自动化无需频繁人为干预，显著加快了整个对冲过程。这些模型可以从大量历史数据中学习，并考虑多个变量以做出更精确和准确的对冲决策。此外，大量数据的可用性使得基于强化学习的模型比以往任何时候都更加有用和有效。
 - en: In this case study, we implement a reinforcement learning–based hedging strategy
     that adopts the ideas presented in the paper [“Deep Hedging”](https://oreil.ly/6_Qvz)
     by Hans Bühler et al. We will build an optimal hedging strategy for a specific
     type of derivative (call options) by minimizing the risk-adjusted PnL. We use
     the measure *CVaR* (conditional value at risk), which quantifies the amount of
     tail risk of a position or portfolio as a risk assessment measure.
+  id: totrans-349
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们实施了一种基于强化学习的对冲策略，采用了汉斯·比勒等人在论文["深度对冲"](https://oreil.ly/6_Qvz)中提出的观点。我们将通过最小化风险调整后的损益（PnL）来构建一种特定类型衍生品（认购期权）的最优对冲策略。我们使用*CVaR*（条件价值风险）来量化头寸或投资组合的尾部风险作为风险评估措施。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-350
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Implementing a Reinforcement Learning–Based Hedging Strategy
+  id: totrans-351
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 基于强化学习的对冲策略实施蓝图
 - en: 1\. Problem definition
+  id: totrans-352
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: 'In the reinforcement learning framework for this case study, the algorithm
     decides the best hedging strategy for call options using market prices of the
     underlying asset. A direct policy search reinforcement learning strategy is used.
     The overall idea, derived from the “Deep Hedging” paper, is based on minimizing
     the hedge error under a risk assessment measure. The overall PnL of a call option
     hedging strategy over a period of time, from *t*=1 to *t*=T, can be written as:'
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究的强化学习框架中，算法利用基础资产的市场价格决定看涨期权的最佳对冲策略。采用直接的策略搜索强化学习策略。总体思路源自于“Deep Hedging”论文，其目标是在风险评估度量下最小化对冲误差。从*t*=1到*t*=T的一段时间内，看涨期权对冲策略的总体PnL可以写成：
 - en: <math display="block"><mrow><mi>P</mi> <mi>n</mi> <msub><mi>L</mi> <mi>T</mi></msub>
     <mrow><mo>(</mo> <mi>Z</mi> <mo>,</mo> <mi>δ</mi> <mo>)</mo></mrow> <mo>=</mo>
     <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo>
@@ -1880,16 +2779,30 @@
     <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
     <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow>
     <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub></mrow></math>
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mi>P</mi> <mi>n</mi> <msub><mi>L</mi> <mi>T</mi></msub>
+    <mrow><mo>(</mo> <mi>Z</mi> <mo>,</mo> <mi>δ</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>δ</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub></mrow></math>
 - en: where
+  id: totrans-355
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中
 - en: <math alttext="upper Z Subscript upper T"><msub><mi>Z</mi> <mi>T</mi></msub></math>
     is the payoff of a call option at maturity.
+  id: totrans-356
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="upper Z Subscript upper T"><msub><mi>Z</mi> <mi>T</mi></msub></math>
+    是到期日看涨期权的收益。
 - en: <math display="inline"><mrow><msub><mi>δ</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
     <mrow><mo>(</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi>
     <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow></mrow></math>
@@ -1897,15 +2810,25 @@
     , where <math alttext="delta"><mi>δ</mi></math> is the hedge and <math alttext="upper
     S Subscript t"><msub><mi>S</mi> <mi>t</mi></msub></math> is the spot price on
     day <math alttext="t"><mi>t</mi></math> .
+  id: totrans-357
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math display="inline"><mrow><msub><mi>δ</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow></mrow></math>
+    是第<math alttext="t"><mi>t</mi></math>天对冲工具的现金流，其中<math alttext="delta"><mi>δ</mi></math>是对冲，<math
+    alttext="upper S Subscript t"><msub><mi>S</mi> <mi>t</mi></msub></math>是第<math
+    alttext="t"><mi>t</mi></math>天的现货价格。
 - en: <math alttext="upper C Subscript t"><msub><mi>C</mi> <mi>t</mi></msub></math>
     is the transaction cost at time <math alttext="t"><mi>t</mi></math> and may be
     constant or proportional to the hedge size.
+  id: totrans-358
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="upper C Subscript t"><msub><mi>C</mi> <mi>t</mi></msub></math>
+    是第<math alttext="t"><mi>t</mi></math>时间点的交易成本，可能是常数或与对冲规模成比例。
 - en: 'The individual components in the equation are the components of the cash flow.
     However, it would be preferable to take into account the risk arising from any
     position while designing the reward function. We use the measure CVaR as the risk
@@ -1913,8 +2836,11 @@
     shortfall` (risk aversion parameter)^([13](ch09.xhtml#idm45174904541224)) for
     the confidence level <math alttext="alpha"><mi>α</mi></math> . Now the reward
     function is modified to the following:'
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: 方程中的各个组成部分是现金流的组成部分。然而，在设计奖励函数时，最好考虑到任何头寸带来的风险。我们使用CVaR作为风险评估度量。CVaR量化了尾部风险的数量，并且是对置信水平<math
+    alttext="alpha"><mi>α</mi></math> 的`expected shortfall`（风险厌恶参数）^([13](ch09.xhtml#idm45174904541224))。现在奖励函数修改如下：
 - en: <math display="block"><mrow><msub><mi>V</mi> <mi>T</mi></msub> <mo>=</mo> <mi>f</mi>
     <mo>(</mo> <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo>
     <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>δ</mi>
@@ -1922,11 +2848,21 @@
     <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
     <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow>
     <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>
+  id: totrans-360
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>V</mi> <mi>T</mi></msub> <mo>=</mo> <mi>f</mi>
+    <mo>(</mo> <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>δ</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>
 - en: where <math alttext="f"><mi>f</mi></math> represents the CVaR.
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中<math alttext="f"><mi>f</mi></math>代表CVaR。
 - en: We will train an *RNN-based* network to learn the optimal hedging strategy (i.e.,
     <math alttext="delta 1 comma delta 2 period period period comma delta Subscript
     upper T Baseline"><mrow><msub><mi>δ</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>δ</mi>
@@ -1935,40 +2871,67 @@
     aversion parameter, ( <math alttext="alpha"><mi>α</mi></math> ), by minimizing
     CVaR. We assume transaction costs to be zero for simplicity. The model can easily
     be extended to incorporate transaction costs and other market frictions.
+  id: totrans-362
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将训练一个*RNN-based*网络来学习最优的对冲策略（即，<math alttext="delta 1 comma delta 2 period
+    period period comma delta Subscript upper T Baseline"><mrow><msub><mi>δ</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>δ</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>δ</mi> <mi>T</mi></msub></mrow></math> ），给定股票价格、行权价格和风险厌恶参数（<math
+    alttext="alpha"><mi>α</mi></math>），通过最小化CVaR来实现。我们假设交易成本为零以简化模型。该模型可以轻松扩展以包括交易成本和其他市场摩擦。
 - en: The data used for the synthetic underlying stock price is generated using Monte
     Carlo simulation, assuming a lognormal price distribution. We assume an interest
     rate of 0% and annual volatility of 20%.
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于合成基础股票价格的数据是通过蒙特卡洛模拟生成的，假设价格服从对数正态分布。我们假设利率为0%，年波动率为20%。
 - en: 'The key components of the model are:'
+  id: totrans-364
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的关键组成部分是：
 - en: Agent
+  id: totrans-365
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理人
 - en: Trader or trading agent.
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易员或交易代理人。
 - en: Action
+  id: totrans-367
   prefs: []
   type: TYPE_NORMAL
+  zh: 行动
 - en: Hedging strategy (i.e., <math alttext="delta 1 comma delta 2 period period period
     comma delta Subscript upper T Baseline"><mrow><msub><mi>δ</mi> <mn>1</mn></msub>
     <mo>,</mo> <msub><mi>δ</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo>
     <mo>,</mo> <msub><mi>δ</mi> <mi>T</mi></msub></mrow></math> ).
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: 对冲策略（即，<math alttext="delta 1 comma delta 2 period period period comma delta
+    Subscript upper T Baseline"><mrow><msub><mi>δ</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>δ</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo>
+    <msub><mi>δ</mi> <mi>T</mi></msub></mrow></math>）。
 - en: Reward function
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励函数
 - en: CVaR—this is a convex function and is minimized during the model training.
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: CVaR——这是一个凸函数，在模型训练过程中被最小化。
 - en: State
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: State is the representation of the current market and relevant product variables.
     The state represents the model inputs, which include the simulated stock price
     path (i.e., <math alttext="upper S 1 comma upper S 2 period period period comma
@@ -1976,84 +2939,133 @@
     <msub><mi>S</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo>
     <msub><mi>S</mi> <mi>T</mi></msub></mrow></math> ), strike, and risk aversion
     parameter ( <math alttext="alpha"><mi>α</mi></math> ).
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态是当前市场和相关产品变量的表示。该状态代表模型输入，包括模拟的股票价格路径（即，<math alttext="upper S 1 comma upper
+    S 2 period period period comma upper S Subscript upper T Baseline"><mrow><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>S</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo>
+    <mo>.</mo> <mo>,</mo> <msub><mi>S</mi> <mi>T</mi></msub></mrow></math> ），行权价格和风险厌恶参数（<math
+    alttext="alpha"><mi>α</mi></math>）。
 - en: Environment
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境
 - en: Stock exchange or stock market.
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: 股票交易或股票市场。
 - en: 2\. Getting started
+  id: totrans-375
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门指南
 - en: 2.1\. Loading the Python packages
+  id: totrans-376
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The loading of Python packages is similar to the previous case studies. Please
     refer to the Jupyter notebook for this case study for more details.
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: 加载Python包类似于以前的案例研究。有关更多详细信息，请参阅此案例研究的Jupyter笔记本。
 - en: 2.2\. Generating the data
+  id: totrans-378
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 生成数据
 - en: In this step we generate the data for this case study using a Black-Scholes
     simulation.
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们使用Black-Scholes模拟生成了本案例研究的数据。
 - en: 'This function generates the Monte Carlo paths for the stock price and gets
     the option price on each of the Monte Carlo paths. The calculation as shown is
     based on the lognormal assumption of stock prices:'
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: 此函数生成股票价格的蒙特卡罗路径，并获取每个蒙特卡罗路径上的期权价格。如所示的计算基于股票价格的对数正态假设：
 - en: <math display="block"><mrow><msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>=</mo> <msub><mi>S</mi> <mi>t</mi></msub> <msup><mi>e</mi> <mrow><mfenced
     separators="" open="(" close=")"><mi>μ</mi><mo>–</mo><mfrac><mn>1</mn> <mn>2</mn></mfrac><msup><mi>σ</mi>
     <mn>2</mn></msup></mfenced> <mi>Δ</mi><mi>t</mi><mo>+</mo><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt><mi>Z</mi></mrow></msup></mrow></math>
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>=</mo> <msub><mi>S</mi> <mi>t</mi></msub> <msup><mi>e</mi> <mrow><mfenced
+    separators="" open="(" close=")"><mi>μ</mi><mo>–</mo><mfrac><mn>1</mn> <mn>2</mn></mfrac><msup><mi>σ</mi>
+    <mn>2</mn></msup></mfenced> <mi>Δ</mi><mi>t</mi><mo>+</mo><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt><mi>Z</mi></mrow></msup></mrow></math>
 - en: where <math alttext="upper S"><mi>S</mi></math> is stock price, <math alttext="sigma"><mi>σ</mi></math>
     is volatility, <math alttext="mu"><mi>μ</mi></math> is the drift, <math alttext="t"><mi>t</mi></math>
     is time, and <math alttext="upper Z"><mi>Z</mi></math> is a standard normal variable.
+  id: totrans-382
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="upper S"><mi>S</mi></math> 是股票价格，<math alttext="sigma"><mi>σ</mi></math>
+    是波动率，<math alttext="mu"><mi>μ</mi></math> 是漂移，<math alttext="t"><mi>t</mi></math>
+    是时间，<math alttext="upper Z"><mi>Z</mi></math> 是标准正态变量。
 - en: '[PRE24]'
+  id: totrans-383
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 'We generate 50,000 simulations of the spot price over a period of one month.
     The total number of time steps is 30\. Hence, for each Monte Carlo scenario, there
     is one observation per day. The parameters needed for the simulation are defined
     below:'
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们对一个月内的现货价格生成了50,000次模拟。总时间步数为30。因此，每个蒙特卡罗场景每天观察一次。模拟所需的参数如下定义：
 - en: '[PRE25]'
+  id: totrans-385
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: 3\. Exploratory data analysis
+  id: totrans-386
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: 'We will look at descriptive statistics and data visualization in this section.
     Given that the data was generated by the simulation, we simply inspect one path
     as a sanity check of the simulation algorithm:'
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将在本节中查看描述性统计和数据可视化。考虑到数据是通过模拟生成的，我们简单地检查一个路径，作为模拟算法的健全性检查：
 - en: '[PRE26]'
+  id: totrans-388
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '`Output`'
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 09in10](Images/mlbf_09in10.png)'
+  id: totrans-390
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in10](Images/mlbf_09in10.png)'
 - en: 4\. Evaluate algorithms and models
+  id: totrans-391
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 评估算法和模型
 - en: In this direct policy search approach, we use an artificial neural network (ANN)
     to map the state to action. In a traditional ANN, we assume that all inputs (and
     outputs) are independent of each other. However, the hedging decision at time
@@ -2068,12 +3080,18 @@
     available to the network when mapping to an action; the extraction of relevant
     past data is then learned as part of the training process. We will use an LSTM
     model to map the state to action and get the hedging strategy (i.e., δ[1], δ[2],…δ[T]).
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种直接策略搜索方法中，我们使用人工神经网络（ANN）将状态映射到动作。在传统的ANN中，我们假设所有输入（和输出）都彼此独立。然而，时间 *t* 的对冲决策（由
+    *δ[t]* 表示）是*路径相关*的，并且受到前几个时间步的股票价格和对冲决策的影响。因此，使用传统的ANN是不可行的。循环神经网络（RNN）是一种能够捕捉底层系统时间变化动态的ANN类型，在这种情况下更为合适。RNN具有记忆能力，可以记录到目前为止计算过的信息。我们利用了RNN模型在时间序列建模中的这一特性，如[第
+    5 章](ch05.xhtml#Chapter5)所述。长短期记忆网络（LSTM）（也在[第 5 章](ch05.xhtml#Chapter5)中讨论）是一种特殊的RNN，能够学习长期依赖关系。在映射到动作时，过去的状态信息对网络可用；从而在训练过程中学习相关的过去数据。我们将使用LSTM模型将状态映射到动作，并获取对冲策略（即，δ[1]、δ[2]、…δ[T]）。
 - en: 4.1\. Policy gradient script
+  id: totrans-393
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 策略梯度脚本
 - en: We will cover the implementation steps and model training in this section. We
     provide the input variables—stock price path ( <math alttext="upper S 1 comma
     upper S 2 comma period period period upper S Subscript upper T Baseline"><mrow><msub><mi>S</mi>
@@ -2086,41 +3104,68 @@
     <mo>.</mo> <mo>.</mo> <msub><mi>δ</mi> <mi>T</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>
     as the output. [Figure 9-9](#PGTraining) provides an overview of the training
     of the policy gradient for this case study.
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将在本节中涵盖实施步骤和模型训练。我们向训练模型提供输入变量——股票价格路径（ <math alttext="upper S 1 comma upper
+    S 2 comma period period period upper S Subscript upper T Baseline"><mrow><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>S</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo>
+    <mo>.</mo> <mo>.</mo> <msub><mi>S</mi> <mi>T</mi></msub></mrow></math> ）、行权价格和风险厌恶参数，
+    <math alttext="alpha"><mi>α</mi></math> —并接收对冲策略（即， <math alttext="delta 1 comma
+    delta 2 comma period period period delta Subscript upper T Baseline right-parenthesis"><mrow><msub><mi>δ</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>δ</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo>
+    <mo>.</mo> <mo>.</mo> <msub><mi>δ</mi> <mi>T</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>）作为输出。
+    [图 9-9](#PGTraining) 概述了本案例研究中策略梯度训练的过程。
 - en: '![mlbf 0909](Images/mlbf_0909.png)'
+  id: totrans-395
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0909](Images/mlbf_0909.png)'
 - en: Figure 9-9\. Policy gradient training for derivatives hedging
+  id: totrans-396
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-9\. 用于衍生对冲的策略梯度训练
 - en: We already performed step 1 in section 2 of this case study. Steps 2 to 5 are
     self-explanatory and are implemented in the `agent` class defined later. The `agent`
     holds the variables and member functions that perform the training. An `object`
     of the `agent` class is created using the training phase and is used for training
     the model. After a sufficient number of iterations of steps 2 to 5, an optimal
     policy gradient model is generated.
+  id: totrans-397
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经在本案例研究的第 2 节中执行了步骤 1。步骤 2 到 5 是不言自明的，并在稍后定义的 `agent` 类中实现。`agent` 类保存执行训练的变量和成员函数。通过
+    `agent` 类的对象进行训练模型的创建。在执行了足够数量的步骤 2 到 5 迭代后，生成了一个最优的策略梯度模型。
 - en: 'The class consists of the following modules:'
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: 课程包括以下模块：
 - en: '`Constructor`'
+  id: totrans-399
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Constructor`'
 - en: The function `execute_graph_batchwise`
+  id: totrans-400
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数 `execute_graph_batchwise`
 - en: The functions `training`, `predict`, and `restore`
+  id: totrans-401
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数 `training`、`predict` 和 `restore`
 - en: Let us dig deeper into the Python code for each of the functions.
+  id: totrans-402
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们深入研究每个函数的Python代码。
 - en: 'The `Constructor` is defined as an `init` function, where we define the model
     parameters. We can pass the `timesteps`, `batch_size`, and `number of nodes` in
     each layer of the LSTM model to the constructor. We define the input variables
@@ -2132,11 +3177,16 @@
     function is the CVaR, which is minimized when `tf.train` is called during the
     training step. We sort the negative realized PnLs of the trading strategy and
     calculate the mean of the (1−*α*) top losses:'
+  id: totrans-403
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Constructor`被定义为`init`函数，我们在其中定义模型参数。我们可以在构造函数中传递LSTM模型的`timesteps`、`batch_size`和每层节点数。我们将模型的输入变量（即股价路径、行权价和风险厌恶参数）定义为*TensorFlow
+    placeholders*。Placeholders用于从计算图外部提供数据，并在训练阶段提供这些输入变量的数据。我们通过使用`tf.MultiRNNCell`函数在TensorFlow中实现LSTM网络。LSTM模型使用四层，节点数分别为62、46、46和1。损失函数是CVaR，在调用`tf.train`进行训练步骤时最小化。我们对交易策略的负实现PnL进行排序，并计算（1−*α*）个顶部损失的均值：'
 - en: '[PRE27]'
+  id: totrans-404
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 'The function `execute_graph_batchwise` is the key function of the program,
     in which we train the neural network based on the observed experience. It takes
     a batch of the states as input and updates the policy gradient–based LSTM model
@@ -2147,177 +3197,258 @@
     defined within it. Here, it takes the inputs and runs the `tf.train` function
     that was defined in the constructor. After a sufficient number of iterations,
     an optimal policy gradient model is generated:'
+  id: totrans-405
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`execute_graph_batchwise`是程序的关键函数，在此函数中，我们根据观察到的经验训练神经网络。它将一批状态作为输入，并通过最小化CVaR来更新基于策略梯度的LSTM模型权重。此函数通过循环遍历各个时期和批次来训练LSTM模型以预测对冲策略。首先，它准备了一批市场变量（股价、行权价和风险厌恶），并使用`sess.run`函数进行训练。这里，`sess.run`是一个TensorFlow函数，用于运行其中定义的任何操作。它获取输入并运行在构造函数中定义的`tf.train`函数。经过足够数量的迭代后，生成了一个最优的策略梯度模型：
 - en: '[PRE28]'
+  id: totrans-406
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: 'The `training` function simply triggers the `execute_graph_batchwise` function
     and provides all the inputs required for training to this function. The `predict`
     function returns the action (hedging strategy) given a state (market variables).
     The `restore` function restores the saved trained model, to be used further for
     training or prediction:'
+  id: totrans-407
   prefs: []
   type: TYPE_NORMAL
+  zh: '`training`函数简单地触发`execute_graph_batchwise`函数，并向该函数提供所有训练所需的输入。`predict`函数根据状态（市场变量）返回动作（对冲策略）。`restore`函数恢复保存的训练模型，以便用于进一步的训练或预测：'
 - en: '[PRE29]'
+  id: totrans-408
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 4.2\. Training the data
+  id: totrans-409
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 训练数据
 - en: 'The steps of training our policy-based model are:'
+  id: totrans-410
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练基于策略的模型的步骤是：
 - en: Define the risk aversion parameter for CVaR, number of features (this is total
     number of stocks, and in this case we just have one), strike price, and batch
     size. The CVaR represents the amount of loss we want to minimize. For example,
     a CVaR of 99% means that we want to avoid extreme loss, while a CVaR of 50% minimizes
     average loss. We train with a CVaR of 50% to have smaller mean loss.
+  id: totrans-411
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 为CVaR定义风险厌恶参数、特征数（这是股票的总数，在本例中我们只有一个）、行权价和批量大小。CVaR表示我们希望最小化的损失量。例如，CVaR为99%表示我们希望避免极端损失，而CVaR为50%则最小化平均损失。我们使用50%的CVaR进行训练，以获得较小的均值损失。
 - en: Instantiate the policy gradient agent, which has the RNN based-policy with the
     loss function based on the CVaR.
+  id: totrans-412
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 实例化策略梯度代理，其具有基于RNN的策略和基于CVaR的损失函数。
 - en: Iterate through the batches; the strategy is defined by the policy output of
     the LSTM-based network.
+  id: totrans-413
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过批次进行迭代；策略由基于LSTM的网络的策略输出定义。
 - en: Finally, the trained model is saved.
+  id: totrans-414
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最后，保存训练好的模型。
 - en: '[PRE30]'
+  id: totrans-415
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '`Output`'
+  id: totrans-416
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE31]'
+  id: totrans-417
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 5\. Testing the data
+  id: totrans-418
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 测试数据
 - en: Testing is an important step, especially for RL, as it is difficult for a model
     to provide any meaningful, intuitive relationships between input and their corresponding
     output that is easily understood. In the testing step, we will compare the effectiveness
     of the hedging strategy and compare it to a delta hedging strategy based on the
     Black-Scholes model. We first define the helper functions used in this step.
+  id: totrans-419
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试是一个重要的步骤，特别是对于强化学习，因为模型很难提供任何能够直观理解输入与相应输出之间关系的有意义关系。在测试步骤中，我们将比较对冲策略的有效性，并将其与基于Black-Scholes模型的delta对冲策略进行比较。我们首先定义在此步骤中使用的辅助函数。
 - en: 5.1\. Helper functions for comparison against Black-Scholes
+  id: totrans-420
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 用于与Black-Scholes比较的辅助函数
 - en: In this module, we create additional functions that are used for comparison
     against the traditional Black-Scholes model.
+  id: totrans-421
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本模块中，我们创建了用于与传统Black-Scholes模型进行比较的额外函数。
 - en: 5.1.1\. Black-Scholes price and delta
+  id: totrans-422
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.1\. Black-Scholes价格和delta
 - en: 'The function `BlackScholes_price` implements the analytical formula for the
     call option price, and `BS_delta` implements the analytical formula for the delta
     of a call option:'
+  id: totrans-423
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`BlackScholes_price`实现了看涨期权价格的解析公式，`BS_delta`实现了看涨期权的delta解析公式：
 - en: '[PRE32]'
+  id: totrans-424
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 5.1.2\. Test results and plotting
+  id: totrans-425
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.2\. 测试结果和绘图
 - en: 'The following functions are used to compute the key metrics and related plots
     for evaluating the effectiveness of the hedge. The function `test_hedging_strategy`
     computes different types of PnL, including CVaR, PnL, and Hedge PnL. The function
     `plot_deltas` plots the comparison of the RL delta versus Black-Scholes hedging
     at different time points. The function `plot_strategy_pnl` is used to plot the
     total PnL of the RL-based strategy versus Black-Scholes hedging:'
+  id: totrans-426
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下函数用于计算评估对冲效果的关键指标及相关图表。函数`test_hedging_strategy`计算不同类型的PnL，包括CVaR、PnL和对冲PnL。函数`plot_deltas`绘制了不同时间点上RL
+    delta与Black-Scholes对冲的比较。函数`plot_strategy_pnl`用于绘制基于RL策略的总PnL与Black-Scholes对冲的比较图：
 - en: '[PRE33]'
+  id: totrans-427
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 5.1.3\. Hedging error for Black-Scholes replication
+  id: totrans-428
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.3\. Black-Scholes复制的对冲误差
 - en: 'The following function is used to get the hedging strategy based on the traditional
     Black-Scholes model, which is further used for comparison against the RL-based
     hedging strategy:'
+  id: totrans-429
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下函数用于基于传统Black-Scholes模型获取对冲策略，进一步用于与基于RL的对冲策略进行比较：
 - en: '[PRE34]'
+  id: totrans-430
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 5.2\. Comparison between Black-Scholes and reinforcement learning
+  id: totrans-431
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. Black-Scholes与强化学习的比较
 - en: We will compare the effectiveness of the hedging strategy by looking at the
     influence of the CVaR risk aversion parameter and inspect how well the RL-based
     model can generalize the hedging strategy if we change the moneyness of the option,
     the drift, and the volatility of the underlying process.
+  id: totrans-432
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将通过观察CVaR风险厌恶参数的影响来比较对冲策略的有效性，并检查基于RL的模型在改变期权资金性质、漂移和基础过程波动性时的泛化能力。
 - en: 5.2.1\. Test at 99% risk aversion
+  id: totrans-433
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.1\. 在99%风险厌恶的测试中
 - en: 'As mentioned before, the CVaR represents the amount of loss we want to minimize.
     We trained the model using a risk aversion of 50% to minimize average loss. However,
     for testing purposes we increase the risk aversion to 99%, meaning that we want
     to avoid extreme loss. These results are compared against the Black-Scholes model:'
+  id: totrans-434
   prefs: []
   type: TYPE_NORMAL
+  zh: 如前所述，CVaR代表我们希望最小化的损失量。我们使用50%的风险厌恶训练模型以最小化平均损失。然而，出于测试目的，我们将风险厌恶提高到99%，意味着我们希望避免极端损失。这些结果与Black-Scholes模型进行了比较：
 - en: '[PRE35]'
+  id: totrans-435
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: 'We use the trained function and compare the Black-Scholes and RL models in
     the following code:'
+  id: totrans-436
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用训练好的函数，并在以下代码中比较Black-Scholes和RL模型：
 - en: '[PRE36]'
+  id: totrans-437
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '`Output`'
+  id: totrans-438
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE37]'
+  id: totrans-439
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '![mlbf 09in11](Images/mlbf_09in11.png)![mlbf 09in12](Images/mlbf_09in12.png)'
+  id: totrans-440
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in11](Images/mlbf_09in11.png)![mlbf 09in12](Images/mlbf_09in12.png)'
 - en: For the first test set (strike 100, same drift, same vol) with a risk aversion
     of 99%, the results look quite good. We see that the delta from both Black-Scholes
     and the RL-based approach converge over time from day 1 to 30\. The CVaRs of both
     strategies are similar and lower in magnitude, with values of 1.24 and 1.38 for
     Black-Scholes and RL, respectively. Also, the volatility of the two strategies
     is similar, as illustrated in the second chart.
+  id: totrans-441
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于第一个测试集（行权价100，相同漂移，相同波动率），在99%的风险厌恶下，结果看起来非常不错。我们看到从第1天到第30天，来自Black-Scholes和基于RL的方法的delta逐渐收敛。两种策略的CVaR相似且数量较低，Black-Scholes和RL的值分别为1.24和1.38。此外，两种策略的波动性相似，如第二张图所示。
 - en: 5.2.2\. Changing moneyness
+  id: totrans-442
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.2\. 改变资金性质
 - en: 'Let us now look at the comparison of the strategies, when the moneyness, defined
     as the ratio of strike to spot price, is changed. In order to change the moneyness,
     we decrease the strike price by 10\. The code snippet is similar to the previous
     case, and the output is shown below:'
+  id: totrans-443
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来比较各种策略，当贴现率被定义为行使价格与现货价格的比率时，它发生了变化。为了改变贴现率，我们将行使价格降低了10%。代码片段类似于前一种情况，并且输出如下：
 - en: '[PRE38]'
+  id: totrans-444
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: With the change in the moneyness, we see that the PnL of the RL strategy is
     significantly worse than that of the Black-Scholes strategy. We see a significant
     deviation of the delta between the two across all the days. The CVaR and the volatility
@@ -2325,64 +3456,96 @@
     careful while generalizing the model to different levels of moneyness and should
     train the model with the option of using a variety of strikes before implementing
     it in a production environment.
+  id: totrans-445
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着贴现率的变化，我们看到RL策略的损益（PnL）明显差于Black-Scholes策略。我们看到两者之间的delta在所有天数内有显著偏差。基于RL的策略的CVaR和波动性要高得多。结果表明，在将模型推广到不同贴现率水平时，我们应该谨慎，并且在将其应用于生产环境之前，应该用多种行使价格训练模型。
 - en: '![mlbf 09in13](Images/mlbf_09in13.png)![mlbf 09in14](Images/mlbf_09in14.png)'
+  id: totrans-446
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in13](Images/mlbf_09in13.png)![mlbf 09in14](Images/mlbf_09in14.png)'
 - en: 5.2.3\. Changing drift
+  id: totrans-447
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.3\. 改变漂移
 - en: 'Let us now look at the comparison of the strategies when the drift is changed.
     In order to change the drift, we assume the drift of the stock price is 4% per
     month, or 48% annualized. The output is shown below:'
+  id: totrans-448
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来比较各种策略，当漂移改变时。为了改变漂移，我们假设股票价格的漂移率为每月4%，年化为48%。输出如下所示：
 - en: '`Output`'
+  id: totrans-449
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE39]'
+  id: totrans-450
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: '![mlbf 09in15](Images/mlbf_09in15.png)![mlbf 09in16](Images/mlbf_09in16.png)'
+  id: totrans-451
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in15](Images/mlbf_09in15.png)![mlbf 09in16](Images/mlbf_09in16.png)'
 - en: The overall results look good for the change in drift. The conclusion is similar
     to results when the risk aversion was changed, with the deltas for the two approaches
     converging over time. Again, the CVaRs are similar in magnitude, with Black-Scholes
     producing a value of 1.21, and RL a value of 1.357.
+  id: totrans-452
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，改变漂移的结果看起来很不错。结论类似于在风险厌恶改变时的结果，两种方法的delta随时间趋于收敛。再次说明，CVaR在数量上相似，Black-Scholes产生1.21的值，而RL产生1.357的值。
 - en: 5.2.4\. Shifted volatility
+  id: totrans-453
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.4\. 转移后的波动性
 - en: 'Finally, we look at the impact of shifting the volatility. In order to change
     the volatility, we increase it by 5%:'
+  id: totrans-454
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，我们来看看波动性转移的影响。为了改变波动性，我们将其增加了5%：
 - en: '`Output`'
+  id: totrans-455
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE40]'
+  id: totrans-456
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '![mlbf 09in17](Images/mlbf_09in17.png)'
+  id: totrans-457
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in17](Images/mlbf_09in17.png)'
 - en: Looking at the results, the delta, CVaR, and overall volatility of both models
     are similar. Hence looking at the different comparisons overall, the performance
     of this RL-based hedging is on par with Black-Scholes–based hedging.
+  id: totrans-458
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看结果，两种模型的delta、CVaR和总体波动性相似。因此，从总体比较来看，基于RL的对冲表现与基于Black-Scholes的对冲持平。
 - en: '![mlbf 09in18](Images/mlbf_09in18.png)'
+  id: totrans-459
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in18](Images/mlbf_09in18.png)'
 - en: Conclusion
+  id: totrans-460
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we compared the effectiveness of a call option hedging strategy
     using RL. The RL-based hedging strategy did quite well even when certain input
     parameters were modified. However, this strategy was not able to generalize the
@@ -2390,198 +3553,292 @@
     RL is a data-intensive approach, and it is important to train the model with different
     scenarios, which becomes more important if the model is intended to be used across
     a wide variety of derivatives.
+  id: totrans-461
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们比较了使用RL进行看涨期权对冲策略的有效性。即使在修改某些输入参数时，基于RL的对冲策略也表现不错。然而，该策略无法推广到不同贴现率水平的策略。这强调了RL是一种数据密集型方法的事实，如果打算在各种衍生品中使用该模型，训练模型以适应不同的场景变得更加重要。
 - en: Although we found the RL and traditional Black-Scholes strategies comparable,
     the RL approach offers a much higher ceiling for improvement. The RL model can
     be further trained using a wide variety of instruments with different hyperparameters,
     leading to performance enhancements. It would be interesting to explore the comparison
     of these two hedging models for more exotic derivatives, given the trade-off between
     these approaches.
+  id: totrans-462
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管我们发现RL和传统的Black-Scholes策略相比可比，但RL方法提供了更高的改进潜力。RL模型可以通过使用不同的超参数训练更多种类的工具，从而提高性能。探索这两种对冲模型在更多异国衍生品上的比较将是有趣的，考虑到这些方法之间的权衡。
 - en: Overall, the RL-based approach is model independent and scalable, and it offers
     efficiency boosts for many classical problems.
+  id: totrans-463
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体上，基于RL的方法是模型独立且可扩展的，它为许多经典问题提供了效率提升。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-464
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 3: Portfolio Allocation'
+  id: totrans-465
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究 3：投资组合分配
 - en: 'As discussed in prior case studies, the most commonly used technique for portfolio
     allocation, *mean-variance portfolio optimization*, suffers from several weaknesses,
     including:'
+  id: totrans-466
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如先前的案例研究所讨论的，最常用的投资组合分配技术——*均值方差投资组合优化*，存在一些弱点，包括：
 - en: Estimation errors in the expected returns and covariance matrix caused by the
     erratic nature of financial returns.
+  id: totrans-467
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 预期收益和协方差矩阵的估计误差，由金融回报的不稳定性引起。
 - en: Unstable quadratic optimization that greatly jeopardizes the optimality of the
     resulting portfolios.
+  id: totrans-468
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不稳定的二次优化严重危及了最终投资组合的优越性。
 - en: 'We addressed some of these weaknesses in [“Case Study 1: Portfolio Management:
     Finding an Eigen Portfolio”](ch07.xhtml#CaseStudy1DR) in [Chapter 7](ch07.xhtml#Chapter7),
     and in [“Case Study 3: Hierarchical Risk Parity”](ch08.xhtml#CaseStudy3CL) in
     [Chapter 8](ch08.xhtml#Chapter8). Here, we approach this problem from an RL perspective.'
+  id: totrans-469
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在[“案例研究 1：投资组合管理：寻找特征投资组合”](ch07.xhtml#CaseStudy1DR)和[第 7 章](ch07.xhtml#Chapter7)中，以及[“案例研究
+    3：层次风险平价”](ch08.xhtml#CaseStudy3CL)和[第 8 章](ch08.xhtml#Chapter8)中解决了一些这些弱点。在这里，我们从RL的角度来解决这个问题。
 - en: Reinforcement learning algorithms, with the ability to decide the policy on
     their own, are strong models for performing portfolio allocation in an automated
     manner, without the need for continuous supervision. Automation of the manual
     steps involved in portfolio allocation can prove to be immensely useful, specifically
     for robo-advisors.
+  id: totrans-470
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习算法具有自主决策策略的能力，是在无需连续监督的情况下自动执行投资组合分配的强大模型。自动化投资组合分配中涉及的手动步骤可以证明是极为有用的，特别是对于机器顾问。
 - en: In an RL-based framework, we treat portfolio allocation not just as a one-step
     optimization problem but as *continuous control* of the portfolio with delayed
     rewards. We move from discrete optimal allocation to continuous control territory,
     and in the environment of a continuously changing market, RL algorithms can be
     leveraged to solve complex and dynamic portfolio allocation problems.
+  id: totrans-471
   prefs: []
   type: TYPE_NORMAL
+  zh: 在RL框架中，我们将投资组合分配视为不仅仅是一步优化问题，而是对具有延迟奖励的投资组合进行*连续控制*。我们从离散的最优分配转向了连续控制领域，在不断变化的市场环境中，RL算法可以用来解决复杂和动态的投资组合分配问题。
 - en: In this case study, we will use a Q-learning-based approach and DQN to come
     up with a policy for optimal portfolio allocation among a set of cryptocurrencies.
     Overall, the approach and framework in terms of the Python-based implementation
     is similar to that in case study 1\. Therefore, some repetitive sections or code
     explanation is skipped in this case study.
+  id: totrans-472
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们将采用基于Q学习的方法和DQN来制定一种在一组加密货币中进行最优投资组合分配的策略。总体上，基于Python的实现方法与案例研究
+    1 类似。因此，在本案例研究中跳过了一些重复的部分或者代码解释。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-473
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Creating a Reinforcement Learning–Based Algorithm for Portfolio
     Allocation
+  id: totrans-474
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 创建基于强化学习的投资组合分配算法的蓝图
 - en: 1\. Problem definition
+  id: totrans-475
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: 'In the reinforcement learning framework defined for this case study, the algorithm
     performs an action, which is *optimal portfolio allocation*, depending on the
     current state of the portfolio. The algorithm is trained using a deep Q-learning
     framework, and the components of the model are as follows:'
+  id: totrans-476
   prefs: []
   type: TYPE_NORMAL
+  zh: 在为本案例研究定义的强化学习框架中，算法根据投资组合的当前状态执行*最优投资组合分配*操作。该算法使用深度Q学习框架进行训练，模型的组成部分如下：
 - en: Agent
+  id: totrans-477
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理
 - en: A portfolio manager, a robo-advisor, or an individual investor.
+  id: totrans-478
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资组合经理，机器顾问或个人投资者。
 - en: Action
+  id: totrans-479
   prefs: []
   type: TYPE_NORMAL
+  zh: 行动
 - en: Assignment and rebalancing of the portfolio weights. The DQN model provides
     the Q-values, which are converted into portfolio weights.
+  id: totrans-480
   prefs: []
   type: TYPE_NORMAL
+  zh: 分配和重新平衡投资组合权重。DQN模型提供了Q值，这些Q值被转换为投资组合权重。
 - en: Reward function
+  id: totrans-481
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励函数
 - en: The Sharpe ratio. Although there can be a wide range of complex reward functions
     that provide a trade-off between profit and risk, such as percentage return or
     maximum drawdown.
+  id: totrans-482
   prefs: []
   type: TYPE_NORMAL
+  zh: 夏普比率。虽然可以存在多种复杂的奖励函数，提供了利润与风险之间的权衡，例如百分比回报或最大回撤。
 - en: State
+  id: totrans-483
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: The state is the correlation matrix of the instruments based on a specific time
     window. The correlation matrix is a suitable state variable for the portfolio
     allocation, as it contains the information about the relationships between different
     instruments and can be useful in performing portfolio allocation.
+  id: totrans-484
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态是基于特定时间窗口的工具的相关矩阵。相关矩阵作为投资组合分配的适当状态变量，因为它包含了不同工具之间关系的信息，并且在执行投资组合分配时非常有用。
 - en: Environment
+  id: totrans-485
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境
 - en: The cryptocurrency exchange.
+  id: totrans-486
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密货币交易所。
 - en: The dataset used in this case study is from the [Kaggle](https://oreil.ly/613O2)
     platform. It contains the daily prices of cryptocurrencies in 2018\. The data
     contains some of the most liquid cryptocurrencies, including Bitcoin, Ethereum,
     Ripple, Litecoin, and Dash.
+  id: totrans-487
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个案例研究中使用的数据集来自[Kaggle](https://oreil.ly/613O2)平台。它包含2018年加密货币的每日价格。数据包含一些最流动的加密货币，包括比特币、以太坊、瑞波、莱特币和达世币。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-488
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 开始——加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-489
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The standard Python packages are loaded in this step. The details have already
     been presented in the previous case studies. Refer to the Jupyter notebook for
     this case study for more details.
+  id: totrans-490
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中加载标准Python包。详细信息已在前面的案例研究中介绍过。有关更多详情，请参考本案例研究的Jupyter笔记本。
 - en: 2.2\. Loading the data
+  id: totrans-491
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: 'The fetched data is loaded in this step:'
+  id: totrans-492
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中加载获取的数据：
 - en: '[PRE41]'
+  id: totrans-493
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 3\. Exploratory data analysis
+  id: totrans-494
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: 3.1\. Descriptive statistics
+  id: totrans-495
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述性统计
 - en: 'We will look at descriptive statistics and data visualizations of the data
     in this section:'
+  id: totrans-496
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我们将查看数据的描述性统计和数据可视化：
 - en: '[PRE42]'
+  id: totrans-497
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: '`Output`'
+  id: totrans-498
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE43]'
+  id: totrans-499
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: '[PRE44]'
+  id: totrans-500
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: '`Output`'
+  id: totrans-501
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 09in19](Images/mlbf_09in19.png)'
+  id: totrans-502
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in19](Images/mlbf_09in19.png)'
 - en: The data has a total of 375 rows and 15 columns. These columns hold the daily
     prices of 15 different cryptocurrencies in 2018.
+  id: totrans-503
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据总共有375行和15列。这些列包含了2018年15种不同加密货币的每日价格。
 - en: 4\. Evaluate algorithms and models
+  id: totrans-504
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 评估算法和模型
 - en: This is the key step of the reinforcement learning model development, where
     we will define all the functions and classes and train the algorithm.
+  id: totrans-505
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是强化学习模型开发的关键步骤，我们将定义所有函数和类，并训练算法。
 - en: 4.1\. Agent and cryptocurrency environment script
+  id: totrans-506
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 代理和加密货币环境脚本
 - en: We have an `Agent` class that holds the variables and member functions that
     perform the Q-learning. This is similar to the `Agent` class defined in case study
     1, with an additional function to convert the Q-value output from the deep neural
@@ -2591,8 +3848,10 @@
     of the Python code of `Agent` class and the training module in this case study.
     Readers can refer to the Jupyter notebook in the code repository for this book
     for more details.
+  id: totrans-507
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们有一个`Agent`类，它包含变量和成员函数，执行Q-learning。这与案例研究1中定义的`Agent`类类似，还增加了一个函数，用于将来自深度神经网络的Q值输出转换为投资组合权重，反之亦然。训练模块通过多个episode和批次进行迭代，并保存状态、动作、奖励和下一个状态的信息用于训练。我们跳过详细描述`Agent`类和训练模块的Python代码。读者可以参考本书代码库中的Jupyter笔记本了解更多详情。
 - en: 'We implement a simulation environment for cryptocurrencies using a class called
     `CryptoEnvironment`. The concept of a simulation environment, or *gym*, is quite
     common in RL problems. One of the challenges of reinforcement learning is the
@@ -2603,41 +3862,63 @@
     environment and benchmark for RL research. We introduce a similar concept in the
     `CryptoEnvironment` class, where we create a simulation environment for cryptocurrencies.
     This class has the following key functions:'
+  id: totrans-508
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用名为`CryptoEnvironment`的类来实现加密货币的仿真环境。仿真环境或*gym*的概念在强化学习问题中非常普遍。强化学习的一个挑战是缺乏可以进行实验的仿真环境。*OpenAI
+    gym*是一个工具包，提供各种模拟环境（如Atari游戏，2D/3D物理仿真），因此我们可以训练代理、进行比较或开发新的强化学习算法。此外，它旨在成为强化学习研究的标准化环境和基准。我们在`CryptoEnvironment`类中引入类似的概念，创建了一个针对加密货币的仿真环境。这个类具有以下关键功能：
 - en: '`getState`'
+  id: totrans-509
   prefs: []
   type: TYPE_NORMAL
+  zh: '`getState`'
 - en: This function returns the state as well as the historical return or raw historical
     data depending on the `is_cov_matrix` or `is_raw_time_series` flag
+  id: totrans-510
   prefs: []
   type: TYPE_NORMAL
+  zh: 此函数根据 `is_cov_matrix` 或 `is_raw_time_series` 标志返回状态以及历史回报或原始历史数据。
 - en: '`getReward`'
+  id: totrans-511
   prefs: []
   type: TYPE_NORMAL
+  zh: '`getReward`'
 - en: This function returns the reward (i.e., Sharpe ratio) of the portfolio, given
     the portfolio weights and lookback period
+  id: totrans-512
   prefs: []
   type: TYPE_NORMAL
+  zh: 此函数根据投资组合权重和回溯期返回投资组合的奖励（即夏普比率）。
 - en: '[PRE45]'
+  id: totrans-513
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: Let’s explore the training of the RL model in the next step.
+  id: totrans-514
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们在下一步中探讨 RL 模型的训练。
 - en: 4.3\. Training the data
+  id: totrans-515
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.3\. 训练数据
 - en: 'As a first step, we initialize the `Agent` class and `CryptoEnvironment` class.
     Then, we set the `number of episodes` and `batch size` for the training purpose.
     Given the volatility of cryptocurrencies, we set the state `window size` to 180
     and `rebalancing frequency` to 90 days:'
+  id: totrans-516
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们初始化 `Agent` 类和 `CryptoEnvironment` 类。然后，我们为训练目的设置 `episodes` 数和 `batch
+    size`。鉴于加密货币的波动性，我们将状态 `window size` 设置为 180，`rebalancing frequency` 设置为 90 天：
 - en: '[PRE46]'
+  id: totrans-517
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: '[Figure 9-10](#QLearnPort) provides a deep dive into the training of the DQN
     algorithm used for developing the RL-based portfolio allocation strategy. If we
     look carefully, the chart is similar to the steps defined in [Figure 9-8](#TraingStepsQTrd)
@@ -2645,166 +3926,246 @@
     and *action*. Steps 1 to 7 describe the training and `CryptoEnvironment` module;
     steps 8 to 10 show what happens in the `replay buffer` function (i.e., `exeReplay`
     function) in the `Agent` module.'
+  id: totrans-518
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 9-10](#QLearnPort) 深入探讨了用于开发基于 RL 的投资组合配置策略的 DQN 算法的训练。如果我们仔细观察，该图与案例研究
+    1 中定义的步骤 [图 9-8](#TraingStepsQTrd) 类似，只是 *Q-矩阵*、*奖励函数* 和 *动作* 有细微差别。步骤 1 到 7 描述了训练和
+    `CryptoEnvironment` 模块；步骤 8 到 10 显示了 `Agent` 模块中 `replay buffer` 函数（即 `exeReplay`
+    函数）中发生的事情。'
 - en: '![mlbf 0910](Images/mlbf_0910.png)'
+  id: totrans-519
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0910](Images/mlbf_0910.png)'
 - en: Figure 9-10\. DQN training for portfolio optimization
+  id: totrans-520
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-10\. 用于组合优化的 DQN 训练
 - en: 'The details of steps 1 to 6 are:'
+  id: totrans-521
   prefs: []
   type: TYPE_NORMAL
+  zh: 步骤 1 到 6 的详细信息为：
 - en: Get the *current state* using the helper function `getState` defined in the
     `CryptoEnvironment` module. It returns a correlation matrix of the cryptocurrencies
     based on the window size.
+  id: totrans-522
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用 `CryptoEnvironment` 模块中定义的辅助函数 `getState` 获取*当前状态*。它根据窗口大小返回加密货币的相关矩阵。
 - en: Get the *action* for the given state using the `act` function of the `Agent`
     class. The action is the weight of the cryptocurrency portfolio.
+  id: totrans-523
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用 `Agent` 类的 `act` 函数获取给定状态的*动作*。动作是加密货币组合的权重。
 - en: Get the *reward* for the given action using the `getReward` function in the
     `CryptoEnvironment` module.
+  id: totrans-524
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用 `CryptoEnvironment` 模块中定义的 `getReward` 函数为给定动作获取*奖励*。
 - en: Get the next state using the `getState` function. The detail of the next state
     is further used in the Bellman equation for updating the Q-function.
+  id: totrans-525
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用 `getState` 函数获取下一个状态。下一个状态的详细信息进一步用于更新 Q 函数的贝尔曼方程。
 - en: The details of the state, next state, and action are saved in the memory of
     the `Agent` object. This memory is used further by the `exeReply` function.
+  id: totrans-526
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`Agent` 对象的内存中保存了状态、下一个状态和动作的细节。这个内存进一步由 `exeReply` 函数使用。'
 - en: Check if the batch is complete. The size of a batch is defined by the batch
     size variable. If the batch is not complete, we move to the next time iteration.
     If the batch is complete, then we move to the `Replay buffer` function and update
     the Q-function by minimizing the MSE between the Q-predicted and the Q-target
     in steps 8, 9, and 10.
+  id: totrans-527
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查批处理是否完成。批处理的大小由批处理大小变量定义。如果批处理未完成，则转到下一个时间迭代。如果批处理已完成，则转到 `Replay buffer`
+    函数，并通过在步骤 8、9 和 10 中最小化 Q 预测与 Q 目标之间的 MSE 来更新 Q 函数。
 - en: As shown in the following charts, the code produces the final results along
     with two charts for each episode. The first chart shows the total cumulative return
     over time, while the second chart shows the percentage of each cryptocurrency
     in the portfolio.
+  id: totrans-528
   prefs: []
   type: TYPE_NORMAL
+  zh: 如下图所示，代码生成了最终结果以及每轮的两张图表。第一张图显示了随时间累计的总回报，而第二张图显示了组合中每种加密货币的百分比。
 - en: '`Output`'
+  id: totrans-529
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '`Episode 0/50 epsilon 1.0`'
+  id: totrans-530
   prefs: []
   type: TYPE_NORMAL
+  zh: '`第 0/50 轮 epsilon 1.0`'
 - en: '![mlbf 09in20](Images/mlbf_09in20.png)![mlbf 09in21](Images/mlbf_09in21.png)'
+  id: totrans-531
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in20](Images/mlbf_09in20.png)![mlbf 09in21](Images/mlbf_09in21.png)'
 - en: '`Episode 1/50 epsilon 1.0`'
+  id: totrans-532
   prefs: []
   type: TYPE_NORMAL
+  zh: '`第 1/50 轮 epsilon 1.0`'
 - en: '![mlbf 09in22](Images/mlbf_09in22.png)![mlbf 09in23](Images/mlbf_09in23.png)'
+  id: totrans-533
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in22](Images/mlbf_09in22.png)![mlbf 09in23](Images/mlbf_09in23.png)'
 - en: '`Episode 48/50 epsilon 1.0`'
+  id: totrans-534
   prefs: []
   type: TYPE_NORMAL
+  zh: '`第 48/50 轮 epsilon 1.0`'
 - en: '![mlbf 09in24](Images/mlbf_09in24.png)![mlbf 09in25](Images/mlbf_09in25.png)'
+  id: totrans-535
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in24](Images/mlbf_09in24.png)![mlbf 09in25](Images/mlbf_09in25.png)'
 - en: '`Episode 49/50 epsilon 1.0`'
+  id: totrans-536
   prefs: []
   type: TYPE_NORMAL
+  zh: '`第 49/50 轮 epsilon 1.0`'
 - en: '![mlbf 09in26](Images/mlbf_09in26.png)![mlbf 09in27](Images/mlbf_09in27.png)'
+  id: totrans-537
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in26](Images/mlbf_09in26.png)![mlbf 09in27](Images/mlbf_09in27.png)'
 - en: The charts outline the details of the portfolio allocation of the first two
     and last two episodes. The details of other episodes can be seen in the Jupyter
     notebook under the GitHub repository for this book. The black line shows the performance
     of the portfolio, and the dotted grey line shows the performance of the benchmark,
     which is an equally weighted portfolio of cryptocurrencies.
+  id: totrans-538
   prefs: []
   type: TYPE_NORMAL
+  zh: 图表概述了前两个和后两个周期的投资组合配置细节。其他周期的详细信息可以在本书的GitHub存储库下的Jupyter笔记本中查看。黑线显示了投资组合的表现，虚线灰线显示了基准的表现，基准是加密货币的等权重投资组合。
 - en: In the beginning of episodes zero and one, the agent has no preconception of
     the consequences of its actions, and it takes randomized actions to observe the
     returns, which are quite volatile. Episode zero shows a clear example of erratic
     performance behavior. Episode one displays more stable movement but ultimately
     underperforms the benchmark. This is evidence that the cumulative reward per episode
     fluctuates significantly in the beginning of training.
+  id: totrans-539
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第零和第一集的开始，代理没有对其行动后果的预设，因此采取随机化的行动以观察回报，这些回报非常波动。第零集展示了行为表现不稳定的明显例子。第一集显示了更为稳定的运动，但最终表现不及基准。这表明每集累积奖励的波动在训练初期显著。
 - en: The last two charts of episodes 48 and 49 show the agent starting to learn from
     its training and discovering the optimal strategy. Overall returns are relatively
     stable and outperform the benchmark. However, the overall portfolio weights are
     still quite volatile due to the short time series and high volatility of the underlying
     cryptocurrency assets. Ideally, we would be able to increase the number of training
     episodes and the length of historical data to enhance the training performance.
+  id: totrans-540
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后两张图表，即第48集和第49集，显示代理开始从训练中学习并发现最佳策略。总体回报相对稳定且优于基准。然而，由于短期时间序列和基础加密货币资产的高波动性，整体投资组合权重仍然相当波动。理想情况下，我们可以增加训练周期数量和历史数据长度，以增强训练性能。
 - en: Let us look at the testing results.
+  id: totrans-541
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看测试结果。
 - en: 5\. Testing the data
+  id: totrans-542
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 测试数据
 - en: 'Recall that the black line shows the performance of the portfolio, and the
     dotted grey line is that of an equally weighted portfolio of cryptocurrencies:'
+  id: totrans-543
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，黑线显示了投资组合的表现，虚线灰线显示了加密货币等权重投资组合的表现：
 - en: '[PRE47]'
+  id: totrans-544
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: Despite underperforming during the initial period, the model performance was
     better overall, primarily due to avoiding the steep decline that the benchmark
     portfolio experienced in the latter part of the test window. The returns appear
     very stable, perhaps due to rotating away from the most volatile cryptocurrencies.
+  id: totrans-545
   prefs: []
   type: TYPE_NORMAL
+  zh: '尽管在初始期间表现不佳，但模型整体表现更好，主要是因为避免了基准投资组合在测试窗口后期经历的急剧下降。回报率看起来非常稳定，可能是由于避开了最具波动性的加密货币。 '
 - en: '`Output`'
+  id: totrans-546
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 09in28](Images/mlbf_09in28.png)'
+  id: totrans-547
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 09in28](Images/mlbf_09in28.png)'
 - en: 'Let us inspect the return, volatility, Sharpe ratio, alpha, and beta of the
     portfolio and benchmark:'
+  id: totrans-548
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们检查投资组合和基准的回报率、波动率、夏普比率、阿尔法和贝塔：
 - en: '[PRE48]'
+  id: totrans-549
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: '[PRE49]'
+  id: totrans-550
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: '`Output`'
+  id: totrans-551
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE50]'
+  id: totrans-552
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: Overall, the RL portfolio performs better across the board, with a higher return,
     higher Sharpe ratio, lower volatility, slight alpha, and negative correlation
     to the benchmark.
+  id: totrans-553
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，强化学习（RL）投资组合在各方面表现更佳，具有更高的回报率、更高的夏普比率、更低的波动率、略高的阿尔法，并且与基准之间呈现负相关。
 - en: Conclusion
+  id: totrans-554
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we went beyond the classic efficient frontier for portfolio
     optimization and directly learned a policy of dynamically changing portfolio weights.
     We trained an RL-based model by setting up a standardized simulation environment.
     This approach facilitated the training process and can be explored further for
     general RL-based model training.
+  id: totrans-555
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们超越了传统的投资组合优化有效边界，直接学习了动态调整投资组合权重的策略。我们通过建立标准化的仿真环境训练了基于RL的模型。这种方法简化了训练过程，并可以进一步探索用于通用RL模型训练。
 - en: The trained RL-based model outperformed an equal-weight benchmark in the test
     set. The performance of the RL-based model can be further improved by optimizing
     the hyperparameters or using a longer time series for training. However, given
@@ -2813,28 +4174,38 @@
     for live trading. Also, as discussed in case study 1, we should carefully select
     the RL components, such as the reward function and state, and ensure we understand
     their impact on the overall model results.
+  id: totrans-556
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练有素的基于强化学习的模型在测试集中表现优于等权重基准。通过优化超参数或使用更长的时间序列进行训练，可以进一步提升基于强化学习模型的性能。然而，考虑到强化学习模型的高复杂性和低可解释性，在将模型用于实时交易之前，应在不同的时间段和市场周期中进行测试。此外，正如案例研究1中讨论的，我们应当仔细选择强化学习的组成部分，例如奖励函数和状态，并确保理解它们对整体模型结果的影响。
 - en: The framework provided in this case study can enable financial practitioners
     to perform portfolio allocation and rebalancing with a very flexible and automated
     approach.
+  id: totrans-557
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究提供的框架可以使金融从业者以非常灵活和自动化的方式进行投资组合配置和再平衡。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-558
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: Chapter Summary
+  id: totrans-559
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 章节总结
 - en: Reward maximization is one of the key principles that drives algorithmic trading,
     portfolio management, derivative pricing, hedging, and trade execution. In this
     chapter, we saw that when we use RL-based approaches, explicitly defining the
     strategy or policy for trading, derivative hedging, or portfolio management is
     unnecessary. The algorithm determines the policy itself, which can lead to a much
     simpler and more principled approach than other machine learning techniques.
+  id: totrans-560
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励最大化是驱动算法交易、投资组合管理、衍生品定价、对冲和交易执行的关键原则之一。在本章中，我们看到当我们使用基于强化学习的方法时，不需要明确定义交易、衍生品对冲或投资组合管理的策略或政策。算法自己确定策略，这可以比其他机器学习技术更简单和更原则性地进行。
 - en: 'In [“Case Study 1: Reinforcement Learning–Based Trading Strategy”](#CaseStudy1RL),
     we saw that RL makes algorithmic trading a simple game, which may or may not involve
     understanding fundamental information. In [“Case Study 2: Derivatives Hedging”](#CaseStudy2RL),
@@ -2845,8 +4216,12 @@
     we performed portfolio allocation by learning a policy of changing portfolio weights
     dynamically in a continuously changing market environment, leading to further
     automation of the portfolio management process.'
+  id: totrans-561
   prefs: []
   type: TYPE_NORMAL
+  zh: '在 [“案例研究1: 基于强化学习的交易策略”](#CaseStudy1RL) 中，我们看到强化学习使得算法交易变成了一个简单的游戏，可能涉及或不涉及理解基本信息。在
+    [“案例研究2: 衍生品对冲”](#CaseStudy2RL) 中，我们探讨了使用强化学习解决传统衍生品对冲问题。这项练习表明，我们可以利用强化学习在衍生品对冲中的高效数值计算来解决传统模型的一些缺点。在
+    [“案例研究3: 投资组合配置”](#CaseStudy3RL) 中，我们通过学习在不断变化的市场环境中动态改变投资组合权重的策略，进行了投资组合配置，从而进一步实现了投资组合管理流程的自动化。'
 - en: Although RL comes with some challenges, such as being computationally expensive
     and data intensive and lacking interpretability, it aligns perfectly with some
     areas in finance that are suited for policy frameworks based on reward maximization.
@@ -2854,87 +4229,126 @@
     action spaces, such as those in the games of Go, chess, and Atari. Looking ahead,
     with the availability of more data, refined RL algorithms, and superior infrastructure,
     RL will continue to prove to be immensely useful in finance.
+  id: totrans-562
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管强化学习存在一些挑战，例如计算成本高、数据密集和缺乏可解释性，但它与某些适合基于奖励最大化的策略框架的金融领域完美契合。强化学习已在有限动作空间（例如围棋、国际象棋和Atari游戏中）中取得超越人类的表现。展望未来，随着更多数据的可用性、优化的强化学习算法和更先进的基础设施，强化学习将继续在金融领域中证明其极大的实用价值。
 - en: Exercises
+  id: totrans-563
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 练习
 - en: Using the ideas and concepts presented in case studies 1 and 2, implement a
     trading strategy based on a policy gradient algorithm for FX. Vary the key components
     (i.e., reward function, state, etc.) for this implementation.
+  id: totrans-564
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 利用案例研究1和2中提出的思想和概念，基于策略梯度算法实施外汇交易策略。变化关键组件（如奖励函数、状态等）进行此实施。
 - en: Implement the hedging of a fixed income derivative using the concepts presented
     in case study 2.
+  id: totrans-565
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用案例研究2中提出的概念，实施固定收益衍生品的对冲。
 - en: Incorporate a transaction cost in case study 2 and see the impact on the overall
     results.
+  id: totrans-566
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将交易成本纳入案例研究2，并观察其对整体结果的影响。
 - en: Based on the ideas presented in case study 3, implement a Q-learning-based portfolio
     allocation strategy on a portfolio of stocks, FX, or fixed income instruments.
+  id: totrans-567
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于第三个案例研究中提出的想法，在股票、外汇或固定收益工具组合上实施基于Q-learning的投资组合配置策略。
 - en: ^([1](ch09.xhtml#idm45174907850488-marker)) Reinforcement learning is also referred
     to as RL throughout this chapter.
+  id: totrans-568
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch09.xhtml#idm45174907850488-marker)) 本章中也将统称强化学习为RL。
 - en: '^([2](ch09.xhtml#idm45174907783768-marker)) For more details, be sure to check
     out *Reinforcement Learning: An Introduction* by Richard Sutton and Andrew Barto
     (MIT Press), or David Silver’s free online [RL course at University College London](https://oreil.ly/niRu-).'
+  id: totrans-569
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch09.xhtml#idm45174907783768-marker)) 欲知更多详情，请查阅理查德·萨顿（Richard Sutton）和安德鲁·巴托（Andrew
+    Barto）的《强化学习导论》（MIT出版社），或是戴维·银（David Silver）在伦敦大学学院的免费在线[RL课程](https://oreil.ly/niRu-)。
 - en: ^([3](ch09.xhtml#idm45174907622280-marker)) See [“Reinforcement Learning Models”](#reinforcement_learning_models)
     for more details on model-based and model-free approaches.
+  id: totrans-570
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch09.xhtml#idm45174907622280-marker)) 查看[“强化学习模型”](#reinforcement_learning_models)以获取关于基于模型和无模型方法的更多详细信息。
 - en: ^([4](ch09.xhtml#idm45174907605976-marker)) A maximum drawdown is the maximum
     observed loss from peak to trough of a portfolio before a new peak is attained;
     it is an indicator of downside risk over a specified time period.
+  id: totrans-571
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch09.xhtml#idm45174907605976-marker)) 最大回撤是在达到新高之前投资组合从峰值到谷底的最大观察损失；它是指定时间段内下行风险的指标。
 - en: ^([5](ch09.xhtml#idm45174907045944-marker)) If the state and action spaces of
     MDP are finite, then it is called a finite Markov decision process.
+  id: totrans-572
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([5](ch09.xhtml#idm45174907045944-marker)) 如果MDP的状态和动作空间是有限的，则称为有限马尔可夫决策过程。
 - en: ^([6](ch09.xhtml#idm45174907036600-marker)) The MDP example based on dynamic
     programming that was discussed in the previous section was an example of a model-based
     algorithm. As seen there, example rewards and transition probabilities are needed
     for such algorithms.
+  id: totrans-573
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([6](ch09.xhtml#idm45174907036600-marker)) 前一节讨论的基于动态规划的MDP示例是模型基础算法的一个示例。正如在那里看到的那样，这些算法需要示例奖励和转移概率。
 - en: ^([7](ch09.xhtml#idm45174907028376-marker)) There are some models, such as the
     actor-critic model, that leverage both policy-based and value-based methods.
+  id: totrans-574
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([7](ch09.xhtml#idm45174907028376-marker)) 有一些模型，如演员-评论家模型，同时利用基于策略和基于价值的方法。
 - en: ^([8](ch09.xhtml#idm45174907004296-marker)) *Off-policy*, *ε-greedy*, *exploration*,
     and *exploitation* are commonly used terms in RL and will be used in other sections
     and case studies as well.
+  id: totrans-575
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([8](ch09.xhtml#idm45174907004296-marker)) *离策略*、*ε-贪婪*、*探索*和*开发* 是RL中常用的术语，将在其他章节和案例研究中使用。
 - en: ^([9](ch09.xhtml#idm45174906929688-marker)) Refer to [Chapter 3](ch03.xhtml#Chapter3)
     for more details on gradient descent.
+  id: totrans-576
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([9](ch09.xhtml#idm45174906929688-marker)) 参考[第三章](ch03.xhtml#Chapter3)以获取更多关于梯度下降的详细信息。
 - en: ^([10](ch09.xhtml#idm45174906688584-marker)) Refer to [Chapter 3](ch03.xhtml#Chapter3)
     for more details on the sigmoid function.
+  id: totrans-577
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([10](ch09.xhtml#idm45174906688584-marker)) 参考[第三章](ch03.xhtml#Chapter3)以获取关于Sigmoid函数的更多详细信息。
 - en: ^([11](ch09.xhtml#idm45174906222520-marker)) The details of the Keras-based
     implementation of deep learning models are shown in [Chapter 3](ch03.xhtml#Chapter3).
+  id: totrans-578
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([11](ch09.xhtml#idm45174906222520-marker)) Keras-based深度学习模型的详细实现细节显示在[第三章](ch03.xhtml#Chapter3)中。
 - en: ^([12](ch09.xhtml#idm45174906129432-marker)) Refer to [Chapter 3](ch03.xhtml#Chapter3)
     for more details on the linear and ReLU activation functions.
+  id: totrans-579
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([12](ch09.xhtml#idm45174906129432-marker)) 参考[第三章](ch03.xhtml#Chapter3)以获取关于线性和ReLU激活函数的更多详细信息。
 - en: ^([13](ch09.xhtml#idm45174904541224-marker)) The expected shortfall is the expected
     value of an investment in the tail scenario.
+  id: totrans-580
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([13](ch09.xhtml#idm45174904541224-marker)) 预期损失是在尾部情景中投资的预期价值。

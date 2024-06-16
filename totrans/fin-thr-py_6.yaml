@@ -3,6 +3,7 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第六章。动态经济
 - en: Multiperiod models of securities markets are much more realistic than single
     period models. In fact, they are extensively used for practical purposes in the
     financial industry.
@@ -10,6 +11,7 @@
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 证券市场的多期模型比单期模型更加真实。事实上，在金融行业中，它们被广泛用于实际目的。
 - en: ''
   id: totrans-2
   prefs:
@@ -20,6 +22,7 @@
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Stanley Pliska（1997）
 - en: Although markets are not complete at any one time, they are dynamically complete
     in the sense that any consumption process can be financed by trading the given
     set of financial securities, adjusting portfolios through time as uncertainty
@@ -28,6 +31,7 @@
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 尽管市场在任何一个时间点上都不完全，但从某种意义上说，它们在动态上是完全的，因为任何消费过程都可以通过交易给定的一组金融证券来融资，随着时间的推移调整投资组合，因为不确定性逐步解决。
 - en: ''
   id: totrans-5
   prefs:
@@ -38,6 +42,7 @@
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Darrell Duffie（1986）
 - en: In reality, quantitative information—such as changes in stock prices or interest
     rates—is revealed gradually over time. While static model economies are an elegant
     way of introducing fundamental notions in finance, a realistic financial model
@@ -45,6 +50,7 @@
   id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，量化信息（如股票价格或利率的变化）会随着时间逐渐显露出来。尽管静态模型经济学是引入金融基本概念的一种优雅方式，但现实的金融模型需要对金融世界进行动态表示。
 - en: 'The formalism needed to properly model dynamic economies is more involved and
     cannot be covered in full detail in this chapter. However, the chapter can present
     two of the most important dynamic model economies based on discrete time dynamics:
@@ -55,6 +61,7 @@
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了正确地建模动态经济，需要更多的形式化工具，这在本章中无法完全详细说明。然而，本章可以介绍基于离散时间动态的两个最重要的动态模型经济：Cox-Ross-Rubinstein（1979）二叉期权定价模型和Black-Scholes-Merton（1973）期权定价模型的离散蒙特卡罗模拟版本。在这种情况下，“离散时间”意味着相关日期集从仅两个扩展到更大但仍有限的数字，比如说，五个或五十个。
 - en: 'The tools used in this chapter are more or less the same as before: linear
     algebra, probability theory, and also, like in the previous chapter, stochastic
     elements to implement Monte Carlo simulation. Duffie (1988) and Pliska (1997)
@@ -64,6 +71,7 @@
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章使用的工具与以前大致相同：线性代数，概率论，以及像前一章一样的随机元素来实现蒙特卡罗模拟。Duffie（1988）和Pliska（1997）是离散时间动态金融建模的优秀资源。Glasserman（2004）是金融中蒙特卡罗模拟方法的全面参考书。
 - en: Topics covered in this chapter are stochastic processes, option pricing in dynamically
     complete markets, binomial option pricing, Black-Scholes-Merton (1973) dynamic
     simulation, early exercise and American option pricing, as well as Least-Squares
@@ -71,40 +79,49 @@
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖的主题包括随机过程，动态完全市场中的期权定价，二叉期权定价，Black-Scholes-Merton（1973）动态模拟，早期行权和美式期权定价，以及最小二乘蒙特卡罗（LSM）期权定价。
 - en: 'The following table gives an overview of the topics in finance, mathematics,
     and Python found in this chapter:'
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 下表概述了本章发现的金融、数学和Python主题：
 - en: '| Finance | Mathematics | Python |'
   id: totrans-12
   prefs: []
   type: TYPE_TB
+  zh: '| 金融 | 数学 | Python |'
 - en: '| --- | --- | --- |'
   id: totrans-13
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| Uncertainty, tree-based | Stochastic process, binomial tree | `NumPy`, `ndarray`
     |'
   id: totrans-14
   prefs: []
   type: TYPE_TB
+  zh: '| 不确定性，基于树结构 | 随机过程，二叉树 | `NumPy`, `ndarray` |'
 - en: '| Uncertainty, simulation-based | Stochastic process, Monte Carlo simulation
     | `NumPy`, `ndarray`, `rng.standard_normal` |'
   id: totrans-15
   prefs: []
   type: TYPE_TB
+  zh: '| 不确定性，基于模拟 | 随机过程，蒙特卡罗模拟 | `NumPy`, `ndarray`, `rng.standard_normal` |'
 - en: '| European option pricing | Inner values, backward induction, risk-neutral
     expectation | `NumPy`, `ndarray`, `np.maximum` |'
   id: totrans-16
   prefs: []
   type: TYPE_TB
+  zh: '| 欧式期权定价 | 内在价值，反向归纳，风险中性期望 | `NumPy`, `ndarray`, `np.maximum` |'
 - en: '| American option pricing | Inner values, continuation values, OLS regression,
     backward induction, risk-neutral expectation | `NumPy`, `ndarray`, `np.polyval`,
     `np.polyfit`, `np.where` |'
   id: totrans-17
   prefs: []
   type: TYPE_TB
+  zh: '| 美式期权定价 | 内在价值，继续价值，OLS回归，反向归纳，风险中性期望 | `NumPy`, `ndarray`, `np.polyval`,
+    `np.polyfit`, `np.where` |'
 - en: As in [Chapter 5](ch05_split_000.xhtml#static_economy), the major goal of this
     chapter is *generalization*. While [Chapter 5](ch05_split_000.xhtml#static_economy)
     generalizes the *state space*, this chapter sets out to generalize the *discrete
@@ -117,11 +134,14 @@
   id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 如同[第五章](ch05_split_000.xhtml#static_economy)，本章的主要目标是*泛化*。虽然[第五章](ch05_split_000.xhtml#static_economy)泛化了*状态空间*，本章旨在泛化*时间上的离散的相关点*，这些点在新信息揭示和经济行动发生时。虽然需要一些额外的形式主义来实现这一点，但本章则较少形式化，因为它只专注于两个特定的模型，并不试图为离散时间中的动态经济提供一般框架。这样的一般框架，包括许多Python实现的例子，可以在Hilpisch
+    (2015)中找到。
 - en: Binomial Option Pricing
   id: totrans-19
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 二项式期权定价
 - en: The binomial option pricing model became popular immediately after publication
     in 1979—both as a numerically efficient method to price European options and American
     options as well as a teaching tool. While the Black-Scholes-Merton (1973) model
@@ -131,6 +151,8 @@
   id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 1979年发布后，二项式期权定价模型立即流行起来——既作为计算欧式期权和美式期权的数值高效方法，也作为教学工具。虽然Black-Scholes-Merton
+    (1973)模型依赖于连续时间金融和随机微积分，但二项式期权定价模型在某种意义上是BSM模型的离散时间版本，可以完全通过基础数学理解。
 - en: 'In the Cox-Ross-Rubinstein (1979) model, there are two traded financial assets:
     a risky one, called *stock*, and a risk-less one, called *bond*. The model economy
     is considered over a *finite set of dates* <math alttext="script upper T identical-to
@@ -145,6 +167,16 @@
   id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Cox-Ross-Rubinstein (1979)模型中，有两种交易金融资产：一种风险的，称为*股票*，一种无风险的，称为*债券*。该模型经济在一个*有限日期集合*
+    <math alttext="script upper T identical-to StartSet t 0 equals 0 comma t 1 comma
+    t 2 comma period period period comma t Subscript upper M Baseline equals upper
+    T EndSet"><mrow><mi>𝒯</mi> <mo>≡</mo> <mo>{</mo> <msub><mi>t</mi> <mn>0</mn></msub>
+    <mo>=</mo> <mn>0</mn> <mo>,</mo> <msub><mi>t</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>t</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>t</mi> <mi>M</mi></msub> <mo>=</mo> <mi>T</mi> <mo>}</mo></mrow></math>
+    中进行，其中包含 <math alttext="upper M plus 1 comma upper M greater-than 1"><mrow><mi>M</mi>
+    <mo>+</mo> <mn>1</mn> <mo>,</mo> <mi>M</mi> <mo>></mo> <mn>1</mn></mrow></math>
+    个元素。
 - en: 'Given a stock price of <math alttext="upper S Subscript t Sub Subscript i"><msub><mi>S</mi>
     <msub><mi>t</mi> <mi>i</mi></msub></msub></math> , the stock price at the next
     date <math alttext="upper S Subscript t Sub Subscript i plus 1"><msub><mi>S</mi>
@@ -153,6 +185,10 @@
   id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定股票价格为 <math alttext="upper S Subscript t Sub Subscript i"><msub><mi>S</mi>
+    <msub><mi>t</mi> <mi>i</mi></msub></msub></math> ，股票在下一个日期 <math alttext="upper
+    S Subscript t Sub Subscript i plus 1"><msub><mi>S</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub></msub></math>
+    只能取两个不同的值：
 - en: <math alttext="upper S Subscript t Sub Subscript i plus 1 Baseline equals StartLayout
     Enlarged left-brace 1st Row  upper S Subscript t Sub Subscript i Baseline dot
     u 2nd Row  upper S Subscript t Sub Subscript i Baseline dot d EndLayout" display="block"><mrow><msub><mi>S</mi>
@@ -177,6 +213,8 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="u"><mi>u</mi></math> 代表*向上移动*，<math alttext="d"><mi>d</mi></math>
+    代表*向下移动*。
 - en: 'To simplify the handling of dates, assume an evenly spaced time grid with <math
     alttext="upper M"><mi>M</mi></math> time intervals of length <math alttext="normal
     upper Delta t equals StartFraction upper T Over upper M EndFraction"><mrow><mi>Δ</mi>
@@ -192,6 +230,17 @@
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了简化日期处理，假设时间网格均匀分布，长度为 <math alttext="upper M"><mi>M</mi></math> 个时间间隔，每个间隔长度为
+    <math alttext="normal upper Delta t equals StartFraction upper T Over upper M
+    EndFraction"><mrow><mi>Δ</mi> <mi>t</mi> <mo>=</mo> <mfrac><mi>T</mi> <mi>M</mi></mfrac></mrow></math>
+    。那么有限的日期集合可以写成 <math alttext="script upper T identical-to StartSet t 0 equals
+    0 comma t 1 equals normal upper Delta t comma t 2 equals 2 normal upper Delta
+    t comma period period period comma upper T EndSet"><mrow><mi>𝒯</mi> <mo>≡</mo>
+    <mo>{</mo> <msub><mi>t</mi> <mn>0</mn></msub> <mo>=</mo> <mn>0</mn> <mo>,</mo>
+    <msub><mi>t</mi> <mn>1</mn></msub> <mo>=</mo> <mi>Δ</mi> <mi>t</mi> <mo>,</mo>
+    <msub><mi>t</mi> <mn>2</mn></msub> <mo>=</mo> <mn>2</mn> <mi>Δ</mi> <mi>t</mi>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <mi>T</mi> <mo>}</mo></mrow></math>
+    。此外，定义：
 - en: <math alttext="StartLayout Enlarged left-brace 1st Row  u identical-to e Superscript
     sigma StartRoot normal upper Delta t EndRoot Baseline 2nd Row  d identical-to
     e Superscript minus sigma StartRoot normal upper Delta t EndRoot Baseline equals
@@ -219,6 +268,9 @@
   id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果表明，这一定义的一个后果是性质 <math alttext="u dot d equals 1"><mrow><mi>u</mi> <mo>·</mo>
+    <mi>d</mi> <mo>=</mo> <mn>1</mn></mrow></math> ，这在创建所谓的*可重组*二项树时非常方便。 <math><mrow><mi>σ</mi><mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>>0</mn></mrow></msub></mrow></math> 表示常数*波动率因子*。
 - en: Assume that the risk-less, constant short rate is given by <math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi>
     <mrow><mn>≥0</mn></mrow></msub></mrow></math> . Given a bond price of <math alttext="upper
     B Subscript t Sub Subscript i"><msub><mi>B</mi> <msub><mi>t</mi> <mi>i</mi></msub></msub></math>
@@ -226,6 +278,9 @@
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设无风险、恒定的短期利率由 <math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math>
+    给定。给定债券价格为 <math alttext="upper B Subscript t Sub Subscript i"><msub><mi>B</mi>
+    <msub><mi>t</mi> <mi>i</mi></msub></msub></math> ，则债券在一期后的价格为
 - en: <math alttext="upper B Subscript t Sub Subscript i plus 1 Baseline equals upper
     B Subscript t Sub Subscript i Baseline dot e Superscript r dot left-parenthesis
     t Super Subscript i plus 1 Superscript minus t Super Subscript i Superscript right-parenthesis"
@@ -247,6 +302,7 @@
   id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者
 - en: <math alttext="upper B Subscript t plus normal upper Delta t Baseline equals
     upper B Subscript t Baseline dot e Superscript r dot normal upper Delta t" display="block"><mrow><msub><mi>B</mi>
     <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub> <mo>=</mo> <msub><mi>B</mi>
@@ -263,6 +319,8 @@
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于一些 <math alttext="t element-of script upper T minus upper T"><mrow><mi>t</mi>
+    <mo>∈</mo> <mi>𝒯</mi> <mo>∖</mo> <mi>T</mi></mrow></math> 。
 - en: 'A central numerical parameter value to be derived, based on the preceding assumptions,
     is the martingale probability for an upward movement at any given node. Given
     that there are only two branches for every node, the downward probability is then
@@ -272,6 +330,9 @@
   id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于上述假设推导出的一个重要数值参数是任何给定节点上向上移动的鞅概率。鉴于每个节点只有两个分支，向下概率也因此被确定。用 <math><mrow><mi>q</mi><mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>>0</mn></mrow></msub> <mo>,</mo><mn>0</mn><mo><</mo><mi>q</mi><mo><</mo><mn>1</mn></mrow></math>
+    表示*鞅概率*向上移动。从股票价格的鞅性质可以得出：
 - en: <math alttext="StartLayout 1st Row 1st Column upper S Subscript t 2nd Column
     equals 3rd Column e Superscript minus r normal upper Delta t Baseline bold upper
     E Superscript upper Q Baseline left-parenthesis upper S Subscript t plus normal
@@ -328,11 +389,13 @@
   id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 这表明鞅测度在每个节点以及整个树上都是固定的。
 - en: The basics of the binomial option pricing model are easily translated into Python
     code:^([1](ch06.xhtml#idm44853685071096))
   id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 二项期权定价模型的基础很容易转化为Python代码：^([1](ch06.xhtml#idm44853685071096))
 - en: '[PRE0]'
   id: totrans-37
   prefs: []
@@ -342,82 +405,102 @@
   id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO1-1)'
 - en: The initial stock price value.
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始股票价格值。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO1-2)'
   id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO1-2)'
 - en: The strike price for the option to be valued.
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 期权的行使价格。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO1-3)'
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO1-3)'
 - en: The constant risk-less short rate.
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 常数无风险短期利率。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO1-4)'
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO1-4)'
 - en: The time horizon and option maturity.
   id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间跨度和期权到期时间。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO1-5)'
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO1-5)'
 - en: The constant volatility factor.
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 恒定波动率因子。
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO1-6)'
   id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dynamic_economy_CO1-6)'
 - en: The number of time intervals.
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间间隔的数量。
 - en: '[![7](Images/7.png)](#co_dynamic_economy_CO1-7)'
   id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_dynamic_economy_CO1-7)'
 - en: The resulting length of each time interval.
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个时间间隔的结果长度。
 - en: '[![8](Images/8.png)](#co_dynamic_economy_CO1-8)'
   id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_dynamic_economy_CO1-8)'
 - en: The discount factor for the fixed time interval.
   id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 固定时间间隔的折现因子。
 - en: '[![9](Images/9.png)](#co_dynamic_economy_CO1-9)'
   id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_dynamic_economy_CO1-9)'
 - en: The upward and downward factors.
   id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 上涨和下跌因子。
 - en: '[![10](Images/10.png)](#co_dynamic_economy_CO1-11)'
   id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](Images/10.png)](#co_dynamic_economy_CO1-11)'
 - en: The martingale probability for an upward movement.
   id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 上涨移动的马丁格尔概率。
 - en: 'The simulation of the stock price process and the valuation of options in this
     model are a bit more involved. The following presents two different implementations:
     one based on *Python loops*, which might be easier to understand at the beginning,
@@ -426,16 +509,19 @@
   id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 该模型中股票价格过程的模拟和期权估值稍微复杂。以下展示了两种不同的实现方式：一种基于*Python循环*，可能更容易理解；另一种基于*向量化的`NumPy`代码*，更为简洁高效，但一开始可能更难理解。
 - en: Simulation and Valuation Based on Python Loops
   id: totrans-59
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 基于Python循环的模拟和估值
 - en: 'Even though the implementation in this subsection uses Python loops, the basic
     data structure is a `NumPy` `ndarray` object:'
   id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使本小节的实现使用了Python循环，基本数据结构是`NumPy`的`ndarray`对象：
 - en: '[PRE1]'
   id: totrans-61
   prefs: []
@@ -445,71 +531,88 @@
   id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO2-1)'
 - en: Initializes the `ndarray` object.
   id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始化`ndarray`对象。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO2-3)'
   id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO2-3)'
 - en: Sets the initial stock price value in the upper-lefthand corner.
   id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置左上角的初始股票价格值。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO2-5)'
   id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO2-5)'
 - en: Sets a counter `z` to 1.
   id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 将计数器`z`设为1。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO2-6)'
   id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO2-6)'
 - en: Iterates from `1` to `m+1`, that is, over all time steps after 0.
   id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`1`到`m+1`迭代，即从0后的所有时间步。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO2-7)'
   id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO2-7)'
 - en: Iterates over the relevant nodes for the given time step.
   id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 迭代给定时间步骤的相关节点。
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO2-8)'
   id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dynamic_economy_CO2-8)'
 - en: Calculates the up and down values and sets them in the `ndarray` object.
   id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算上涨和下跌值，并在`ndarray`对象中设置它们。
 - en: '[![7](Images/7.png)](#co_dynamic_economy_CO2-10)'
   id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_dynamic_economy_CO2-10)'
 - en: Increases the counter by 1 to include more relevant nodes in the next step.
   id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 将计数器增加1以包括下一步中更多相关节点。
 - en: '[![8](Images/8.png)](#co_dynamic_economy_CO2-11)'
   id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_dynamic_economy_CO2-11)'
 - en: The resulting recombining binomial tree.
   id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的再组合二项树。
 - en: European option pricing
   id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 欧式期权定价
 - en: The valuation of a European option based on the available stock price process
     happens by calculating the inner values of the option at maturity and applying
     *backward induction*. This basically means starting at the end, moving backward
@@ -518,10 +621,12 @@
   id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据可用股票价格过程对欧式期权进行估值是通过计算期权在到期时的内在价值，并应用*反向归纳*来实现的。这基本上意味着从末尾开始，逐步向前移动到现在，在每个节点重复应用风险中性定价范式，正如在[第2章](ch02_split_000.xhtml#two_state_economy)中介绍的简单静态双状态经济中。
 - en: 'The following Python code assumes a European put option payoff:'
   id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码假设欧式看跌期权的支付：
 - en: '[PRE2]'
   id: totrans-81
   prefs: []
@@ -531,47 +636,58 @@
   id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO3-1)'
 - en: The `ndarray` object for the inner values.
   id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 内部值的`ndarray`对象。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO3-2)'
   id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO3-2)'
 - en: This calculates the inner values for the relevant nodes.
   id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这计算了相关节点的内在价值。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO3-4)'
   id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO3-4)'
 - en: This does the node-wise valuation by applying risk-neutral pricing.
   id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过应用风险中性定价进行节点估值。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO3-5)'
   id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO3-5)'
 - en: The resulting present value binomial tree.
   id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的现值二项树。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO3-6)'
   id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO3-6)'
 - en: The present value today of the European put option.
   id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 欧式看跌期权的现值。
 - en: American option pricing
   id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 美式期权定价
 - en: 'One of the major features of the binomial option pricing model is that American
     options are as easily valued as their European counterparts. An *American option*
     can be exercised at any time *on and before* the maturity date. The adjustment
@@ -583,6 +699,7 @@
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 二项式期权定价模型的主要特点之一是美式期权与其欧式对应物一样容易估值。*美式期权*可以在到期日之前的任何时间行使。向后估值算法需要进行的调整很简单：只需检查美式期权在任何给定节点的内在价值是否高于继续价值，即不行使期权的现值。如果是这样，则行使该期权，并将美式期权的价值设置为内在价值。形式上，可以得到
 - en: <math alttext="upper V Subscript t Baseline equals max left-bracket h Subscript
     t Baseline comma e Superscript minus r normal upper Delta t Baseline bold upper
     E Superscript upper Q Baseline left-parenthesis upper V Subscript t plus normal
@@ -614,10 +731,18 @@
   id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中<math alttext="h Subscript t"><msub><mi>h</mi> <mi>t</mi></msub></math>是时间<math
+    alttext="t"><mi>t</mi></math>的内在价值，而<math alttext="e Superscript minus r normal
+    upper Delta t Baseline bold upper E Superscript upper Q Baseline left-parenthesis
+    upper V Subscript t plus normal upper Delta t Baseline right-parenthesis"><mrow><msup><mi>e</mi>
+    <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup> <msup><mi>𝐄</mi>
+    <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>V</mi> <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub>
+    <mo>)</mo></mrow></mrow></math>是继续价值。
 - en: 'In Python, a single line of code needs to be added:'
   id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Python中，只需添加一行代码：
 - en: '[PRE3]'
   id: totrans-97
   prefs: []
@@ -627,39 +752,47 @@
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO4-1)'
 - en: This line checks for the early exercise decision and puts the inner value as
     the American option value when it is higher than the continuation value.
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 此行检查是否应提前行权，并在内在价值高于继续价值时将内在价值作为美式期权价值。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO4-2)'
   id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO4-2)'
 - en: The resulting binomial tree for the present values of the American put option.
   id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 美式看跌期权现值的结果二项树。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO4-3)'
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO4-3)'
 - en: The present value today of the American put option, which is considerably higher
     than without early exercise.
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天的美式看跌期权现值显著高于不提前行权时的价值。
 - en: Simulation and Valuation Based on Vectorized Code
   id: totrans-104
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 基于向量化代码的模拟和估值
 - en: 'The algorithm implementation that follows makes systematic use of `NumPy` vectorization
     capabilities. The implementation is presented step by step, also with some illustrating
     lines of code not needed for the algorithm implementation itself:'
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 随后的算法实现系统地利用了`NumPy`的向量化能力。该实现逐步呈现，还包括一些示例性代码行，这些行不是算法实现本身所需的：
 - en: '[PRE4]'
   id: totrans-106
   prefs: []
@@ -669,59 +802,72 @@
   id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO5-1)'
 - en: Creates an `ndarray` object for the number of upward movements from `0` to `m`.
   id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 为从`0`到`m`的向上运动次数创建`ndarray`对象。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO5-3)'
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO5-3)'
 - en: Calculating the squares by a vectorized operation.
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用向量化操作计算向量的平方。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO5-4)'
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO5-4)'
 - en: Calculating the powers of 2 by using the `u` object as a vector exponent.
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`u`对象作为向量指数计算2的幂。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO5-5)'
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO5-5)'
 - en: Resizes the `u` object from one dimension to two dimensions. The number of upward
     movements is now stored in each row.
   id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`u`对象从一维调整为二维。现在每行中存储向上运动的次数。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO5-6)'
   id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO5-6)'
 - en: Transposes the `u` object to get a two-dimensional `ndarray` object `d` with
     the number of downward movements in each column.
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 转置`u`对象以获得二维`ndarray`对象`d`，其中每列中的下降运动次数。
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO5-8)'
   id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dynamic_economy_CO5-8)'
 - en: Combines the `u` and `d` objects to arrive at the net number of upward and downward
     movements. For instance, `+2` means “two more upward movements than downward movements”
     or `-1` means “one more downward movement than upward movements.”^([2](ch06.xhtml#idm44853683423000))
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`u`和`d`对象组合起来，得到向上和向下移动的净数目。例如，`+2`表示“比向下移动多两次向上移动”或`-1`表示“比向上移动少一次向下移动”。^([2](ch06.xhtml#idm44853683423000))
 - en: 'Equipped with a matrix containing the net number of movements in the binomial
     tree, simulation of the stock price process boils down to a single line of code:'
   id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 配备有包含二叉树中净移动次数的矩阵，股票价格过程的仿真归结为单行代码：
 - en: '[PRE5]'
   id: totrans-120
   prefs: []
@@ -731,23 +877,28 @@
   id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO6-1)'
 - en: The vectorized simulation of the stock price process (binomial tree).
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 股票价格过程的向量化仿真（二叉树）。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO6-2)'
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO6-2)'
 - en: Only the numbers on and above the diagonal are relevant.
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 与之前一样，只有对角线及以上的数字才相关。
 - en: 'The valuation of both the European and American put options is also vectorized
     to some extent. A single loop over the time steps remains:'
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 对欧式和美式看跌期权的估值在某种程度上也进行了向量化。仅需对时间步长进行一次循环：
 - en: '[PRE6]'
   id: totrans-126
   prefs: []
@@ -757,64 +908,79 @@
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO7-1)'
 - en: The calculation of the inner value of the put option, fully vectorized this
     time.
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 此次完全向量化的看跌期权内在价值的计算。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO7-2)'
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO7-2)'
 - en: As before, only the numbers on and above the diagonal are relevant.
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 与之前一样，只有对角线及以上的数字才相关。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO7-3)'
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO7-3)'
 - en: Creates a copy of the `h` object.
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建`h`对象的副本。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO7-4)'
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO7-4)'
 - en: The partly vectorized valuation algorithm for the European put option.
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 部分向量化的欧式看跌期权估值算法。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO7-6)'
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO7-6)'
 - en: The present value of the European put option.
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 欧式看跌期权的现值。
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO7-7)'
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dynamic_economy_CO7-7)'
 - en: The partly vectorized valuation algorithm for the American put option.
   id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 部分向量化的美式看跌期权估值算法。
 - en: '[![7](Images/7.png)](#co_dynamic_economy_CO7-10)'
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_dynamic_economy_CO7-10)'
 - en: The present value of the American put option.
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 美式看跌期权的现值。
 - en: European and American Options
   id: totrans-141
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 欧美期权
 - en: The beauty of the (recombining) binomial option pricing model of Cox, Ross,
     and Rubinstein (1979) not only lies in its simplicity but also in the fact that
     it can be used to value both European options and American options with high accuracy
@@ -823,11 +989,13 @@
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: Cox、Ross和Rubinstein（1979）的（再组合）二叉期权定价模型之美不仅在于其简单性，还在于其能够高效且精确地对欧式期权和美式期权进行估值的事实。在极限情况下，时间步长无限小，该模型收敛于Black-Scholes-Merton（1973）模型，这是另一个优点。
 - en: Speed Comparison
   id: totrans-143
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 速度比较
 - en: 'Vectorizing code not only makes Python code more concise, but it generally
     allows for significant speed improvements. The following code snippets implement
     the previous algorithms for a speed comparison based on a larger, more realistic
@@ -835,6 +1003,7 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化代码不仅使Python代码更简洁，而且通常可以显著提高速度。以下代码片段实现了前述算法，用于基于更大、更现实的时间步长进行速度比较。首先，需要调整基本数值参数：
 - en: '[PRE7]'
   id: totrans-145
   prefs: []
@@ -844,17 +1013,20 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO8-1)'
 - en: Increases the number of time intervals to a realistic level, yielding rather
     accurate numerical option values.
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 将时间间隔增加到一个现实水平，得出相当精确的数值期权价值。
 - en: 'The function `binomial_looping()` integrates all elements of the *loop-based
     implementation* of the simulation and valuation algorithm for the American put
     option:'
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`binomial_looping()`集成了对美式看跌期权的仿真和估值算法的*基于循环的实现*的所有要素：
 - en: '[PRE8]'
   id: totrans-149
   prefs: []
@@ -864,6 +1036,7 @@
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 作者电脑上执行速度不到200毫秒：
 - en: '[PRE9]'
   id: totrans-151
   prefs: []
@@ -875,6 +1048,7 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`binomial_vectorization()`集成了对美式看跌期权的仿真和估值算法的*向量化实现*的所有要素：
 - en: '[PRE10]'
   id: totrans-153
   prefs: []
@@ -981,6 +1155,19 @@
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设时间<math alttext="script upper T identical-to StartSet t 0 equals 0 comma t
+    1 comma t 2 comma period period period comma t Subscript upper M Baseline equals
+    upper T EndSet"><mrow><mi>𝒯</mi> <mo>≡</mo> <mo>{</mo> <msub><mi>t</mi> <mn>0</mn></msub>
+    <mo>=</mo> <mn>0</mn> <mo>,</mo> <msub><mi>t</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>t</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>t</mi> <mi>M</mi></msub> <mo>=</mo> <mi>T</mi> <mo>}</mo></mrow></math>中有限的相关点，具有<math
+    alttext="upper M plus 1 comma upper M greater-than 1"><mrow><mi>M</mi> <mo>+</mo>
+    <mn>1</mn> <mo>,</mo> <mi>M</mi> <mo>></mo> <mn>1</mn></mrow></math>，以及固定的时间间隔长度<math
+    alttext="normal upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math>。给定前一股票价格<math
+    alttext="upper S Subscript t minus normal upper Delta t"><msub><mi>S</mi> <mrow><mi>t</mi><mo>-</mo><mi>Δ</mi><mi>t</mi></mrow></msub></math>，则股票价格<math
+    alttext="upper S Subscript t Baseline comma 0 less-than t less-than-or-equal-to
+    upper T"><mrow><msub><mi>S</mi> <mi>t</mi></msub> <mo>,</mo> <mn>0</mn> <mo><</mo>
+    <mi>t</mi> <mo>≤</mo> <mi>T</mi></mrow></math>可以按照差分方程进行模拟。
 - en: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
     normal upper Delta t Baseline dot exp left-parenthesis left-parenthesis r minus
     StartFraction sigma squared Over 2 EndFraction right-parenthesis normal upper
@@ -1012,6 +1199,8 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中<math alttext="z"><mi>z</mi></math>是标准正态分布的随机变量。这种方案称为*欧拉离散化*。已知它能确保随着<math
+    alttext="normal upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math>趋于0，离散时间过程收敛于连续时间过程。
 - en: 'The dynamic Monte Carlo simulation is—with the background knowledge from the
     static simulation in [Chapter 5](ch05_split_000.xhtml#static_economy)—straightforward
     to implement in Python. [Figure 6-1](#bsm_dyn_01) shows 10 simulated stock price
@@ -1019,6 +1208,7 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 动态蒙特卡洛模拟在静态模拟的背景知识支持下（参见[第5章](ch05_split_000.xhtml#static_economy)）在Python中易于实现。图[6-1](#bsm_dyn_01)显示了10条模拟股价路径：
 - en: '[PRE12]'
   id: totrans-168
   prefs: []
@@ -1028,69 +1218,84 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO9-1)'
 - en: The financial parameters are as before.
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融参数与之前相同。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO9-6)'
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO9-6)'
 - en: These are the Monte Carlo simulation parameters (paths, time steps, length of
     time interval, discount factor for single time interval).
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是蒙特卡洛模拟的参数（路径、时间步长、时间间隔长度、单个时间间隔的折现因子）。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO9-12)'
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO9-12)'
 - en: A two-dimensional `ndarray` object with standard normally distributed random
     numbers of appropriate size is generated.
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成了一个适当大小的标准正态分布随机数的二维`ndarray`对象。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO9-14)'
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO9-14)'
 - en: Another two-dimensional `ndarray` object of the same shape is instantiated,
     and the initial values for the single stock price paths are set.
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个相同形状的二维`ndarray`对象被实例化，并设置了单只股票价格路径的初始值。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO9-17)'
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO9-17)'
 - en: The single stock price paths are simulated based on the initial stock prices,
     the random number matrix, and the difference equation for the geometric Brownian
     motion.
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于初始股票价格、随机数矩阵和几何布朗运动的差分方程，模拟了单只股票价格路径。
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO9-19)'
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dynamic_economy_CO9-19)'
 - en: Plots the first 10 simulated paths.
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制前10条模拟路径。
 - en: '![ftwp 0601](Images/ftwp_0601.png)'
   id: totrans-181
   prefs: []
   type: TYPE_IMG
+  zh: '![ftwp 0601](Images/ftwp_0601.png)'
 - en: Figure 6-1\. Simulated stock price paths for Black-Scholes-Merton (1973)
   id: totrans-182
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 6-1\. Black-Scholes-Merton（1973年）模拟股价路径
 - en: 'As in the static case, the end-of-period values of the stock price can be visualized
     in the form of a histogram (see [Figure 6-2](#bsm_dyn_02)):'
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 与静态情况一样，股票期末价值可以以直方图形式可视化（参见 [图 6-2](#bsm_dyn_02)）：
 - en: '[PRE13]'
   id: totrans-184
   prefs: []
@@ -1100,38 +1305,47 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO10-1)'
 - en: Mathematically expected value for <math alttext="upper S Subscript upper T"><msub><mi>S</mi>
     <mi>T</mi></msub></math> .
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 数学期望值为 <math alttext="upper S Subscript upper T"><msub><mi>S</mi> <mi>T</mi></msub></math>
+    。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO10-2)'
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO10-2)'
 - en: The average over all simulated values `ST`.
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有模拟值 `ST` 的平均值。
 - en: '![ftwp 0602](Images/ftwp_0602.png)'
   id: totrans-189
   prefs: []
   type: TYPE_IMG
+  zh: '![ftwp 0602](Images/ftwp_0602.png)'
 - en: Figure 6-2\. Frequency distribution of simulated end-of-period stock prices
     for Black-Scholes-Merton (1973)
   id: totrans-190
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 6-2\. Black-Scholes-Merton (1973) 模型模拟期末股票价格频率分布
 - en: Monte Carlo Valuation of the European Put Option
   id: totrans-191
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 欧式看跌期权的蒙特卡洛估值
 - en: The Monte Carlo estimator for the price of the European put option is
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 欧式看跌期权价格的蒙特卡洛估计量是
 - en: <math alttext="upper P 0 equals e Superscript minus r upper T Baseline StartFraction
     1 Over upper I EndFraction sigma-summation Underscript i equals 1 Overscript upper
     I Endscripts max left-parenthesis upper K minus upper S Subscript upper T Baseline
@@ -1160,6 +1374,8 @@
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="upper I"><mi>I</mi></math> 是模拟价格路径的数量。在这种背景下，欧式看跌期权定价仅涉及几行
+    Python 代码，仅需给定模拟股价路径。[图 6-3](#bsm_dyn_03) 显示了到期内在价值的模拟直方图：
 - en: '[PRE14]'
   id: totrans-195
   prefs: []
@@ -1169,43 +1385,52 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO11-1)'
 - en: Calculates the inner values in vectorized fashion.
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 以向量化方式计算内在价值。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO11-3)'
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO11-3)'
 - en: Plots the frequency distribution of the inner values at maturity, illustrating
     the highly asymmetric payoff that is typical for an option.^([3](ch06.xhtml#idm44853679632632))
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制了到期内在价值的频率分布，说明典型的期权高度不对称回报。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO11-4)'
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO11-4)'
 - en: Calculates the average over all inner values and discounts the average to the
     present.
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算所有内在价值的平均值并对其现值折现。
 - en: '![ftwp 0603](Images/ftwp_0603.png)'
   id: totrans-202
   prefs: []
   type: TYPE_IMG
+  zh: '![ftwp 0603](Images/ftwp_0603.png)'
 - en: Figure 6-3\. Frequency distribution of simulated inner values at maturity for
     the European put option
   id: totrans-203
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 6-3\. 欧式看跌期权到期内在价值模拟频率分布
 - en: Monte Carlo Valuation of the American Put Option
   id: totrans-204
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 美式看跌期权的蒙特卡洛估值
 - en: The valuation of American (put) options based on Monte Carlo simulation is a
     bit more involved. The most popular algorithm in this regard is the *Least-Squares
     Monte Carlo* (LSM) algorithm from Longstaff and Schwartz (2001) because it is
@@ -1217,11 +1442,15 @@
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于蒙特卡洛模拟的美式（看跌）期权定价稍显复杂。在这方面最流行的算法是 Longstaff 和 Schwartz (2001) 的*最小二乘蒙特卡洛*（LSM）算法，因为在数值和计算角度上相对简单高效。本章的范围不允许深入讨论，但可以呈现一种简明扼要、高度向量化的
+    Python 实现。有关应用于 Black-Scholes-Merton (1973) 模型经济学的 LSM 算法的详细处理，包括 Python 代码，请参阅
+    Hilpisch (2015, 第 7 章)。
 - en: 'The following Python code implements the LSM algorithm for American option
     valuation:'
   id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的 Python 代码实现了 LSM 算法用于美式期权定价：
 - en: '[PRE15]'
   id: totrans-207
   prefs: []
@@ -1231,23 +1460,28 @@
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dynamic_economy_CO12-1)'
 - en: Calculates the inner values over the complete stock price path `ndarray` object.
   id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算完整股价路径 `ndarray` 对象的内在价值。
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO12-2)'
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dynamic_economy_CO12-2)'
 - en: Sets the initial simulated American option price values to the inner values
     at maturity.
   id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 将初始模拟的美式期权价格值设定为到期内在价值。
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO12-3)'
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dynamic_economy_CO12-3)'
 - en: The algorithm also works based on backward induction, starting at <math alttext="upper
     T minus normal upper Delta t"><mrow><mi>T</mi> <mo>-</mo> <mi>Δ</mi> <mi>t</mi></mrow></math>
     and stopping at <math alttext="normal upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math>
@@ -1255,29 +1489,37 @@
   id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 该算法还基于反向归纳法，从 <math alttext="upper T minus normal upper Delta t"><mrow><mi>T</mi>
+    <mo>-</mo> <mi>Δ</mi> <mi>t</mi></mrow></math> 开始，并在 <math alttext="normal upper
+    Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math> 处停止。
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO12-4)'
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dynamic_economy_CO12-4)'
 - en: This is the central step of the algorithm during which the continuation values
     are estimated (approximated) based on the OLS regression of the present simulated
     option values against the stock price levels.
   id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是算法的核心步骤，在此步骤中，根据当前模拟期权价值对股价水平进行OLS回归，估计（近似）继续价值。
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO12-6)'
   id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dynamic_economy_CO12-6)'
 - en: If the inner value is higher than the estimated (approximated) continuation
     value, exercise takes place and otherwise not.
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果内在价值高于估计（近似）的继续价值，就进行行权，否则不行权。
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO12-7)'
   id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dynamic_economy_CO12-7)'
 - en: The present value is calculated as the average over the American option price
     vector at <math alttext="t equals normal upper Delta t"><mrow><mi>t</mi> <mo>=</mo>
     <mi>Δ</mi> <mi>t</mi></mrow></math> as derived based on the LSM algorithm and
@@ -1286,11 +1528,15 @@
   id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前值被计算为基于LSM算法导出的在<math alttext="t equals normal upper Delta t"><mrow><mi>t</mi>
+    <mo>=</mo> <mi>Δ</mi> <mi>t</mi></mrow></math>时刻的美式期权价格向量的平均值，并对剩余的时间间隔到当前<math
+    alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math>进行折现。
 - en: Early Exercise and Monte Carlo Simulation
   id: totrans-220
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 提前行权和蒙特卡洛模拟
 - en: The efficient, Monte Carlo simulation–based valuation of options and derivatives
     with early exercise features had been a mainly unsolved problem until the end
     of the 1990s. At the beginning of the 2000s only, researchers were able to propose
@@ -1304,11 +1550,13 @@
   id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 直到1990年代末，基于蒙特卡洛模拟的具有提前行权特征的期权和衍生产品的有效定价一直是一个主要未解决的问题。直到2000年初，研究人员才能够提出在模拟环境中处理提前行权的计算有效算法。在科学和金融中，一旦有了这样的算法——比如LSM算法——实现和应用几乎显得相当自然。毕竟，仅仅需要几行Python代码就能够基于模拟准确地估值本节中的美式看涨期权。然而，LSM算法必须被视为金融计算时期的一个重大突破（见[第1章](ch01.xhtml#finance_python)）。
 - en: Conclusions
   id: totrans-222
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter presents in a rather informal manner two popular, dynamically complete
     financial models. The first is the so-called *recombining binomial tree model*
     by Cox-Ross-Rubinstein (1979). The beauty of it lies in its simplicity and that
@@ -1319,6 +1567,7 @@
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章以比较非正式的方式介绍了两种流行的、动态完备的金融模型。第一种是由考克斯-罗斯-鲁宾斯坦（1979年）提出的所谓*再组合二叉树模型*。其美妙之处在于其简单性，它使人能够以高中数学为基础以一种数值高效的方式实现欧式期权和美式期权定价。与需要高级随机微积分的连续时间金融模型相比，它还是一个很好的“教学和理解”工具。
 - en: The second model is a *dynamic Monte Carlo simulation version* of the Black-Scholes-Merton
     (1973) continuous time option pricing model. Using `NumPy` simulation techniques,
     dynamic Monte Carlo simulation can also be implemented in a numerically efficient
@@ -1328,6 +1577,7 @@
   id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种模型是Black-Scholes-Merton（1973年）连续时间期权定价模型的*动态蒙特卡洛模拟版本*。使用`NumPy`模拟技术，动态蒙特卡洛模拟也可以以数值高效的方式实现。即使是包含耗时OLS回归步骤的Longstaff和Schwartz（2001年）的计算要求较高的最小二乘蒙特卡洛算法，基于向量化技术实现时也相当快速。
 - en: In summary, `NumPy`, with its powerful vectorization capabilities, has proven
     once again that it allows not only for concise algorithmic code but also for fast
     execution times—even in the context of more realistic and complex dynamic model
@@ -1335,27 +1585,33 @@
   id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 总之，`NumPy`凭借其强大的向量化能力再次证明，它不仅可以编写简洁的算法代码，而且可以实现快速的执行时间——即使在更加现实和复杂的动态模型经济环境下也是如此。
 - en: Further Resources
   id: totrans-226
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步资源
 - en: 'Papers cited in this chapter:'
   id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的论文有：
 - en: 'Black, Fischer and Myron Scholes. 1973\. “The Pricing of Options and Corporate
     Liabilities.” *Journal of Political Economy* 81 (3): 638–659.'
   id: totrans-228
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Black, Fischer 和 Myron Scholes. 1973\. “期权定价与公司负债。” *政治经济学杂志* 81 (3): 638–659.'
 - en: 'Cox, John, Stephen Ross and Mark Rubinstein. 1979\. “Option Pricing: A Simplified
     Approach.” *Journal of Financial Economics* 7 (3): 229–263.'
   id: totrans-229
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Cox, John, Stephen Ross 和 Mark Rubinstein. 1979\. “期权定价：一种简化方法。” *金融经济学杂志*
+    7 (3): 229–263.'
 - en: 'Duffie, Darrell. 1986\. “Stochastic Equilibria: Existence, Spanning Number,
     and the *No Expected Gains from Financial Trade* Hypothesis.” *Econometrica* 54
     (5): 1161–1183.'
@@ -1363,6 +1619,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Duffie, Darrell. 1986\. “随机均衡：存在性、跨度数及*金融交易无预期收益*假设。” *计量经济学* 54 (5): 1161–1183.'
 - en: 'Longstaff, Francis and Eduardo Schwartz. 2001\. “Valuing American Options by
     Simulation: A Simple Least Squares Approach.” *Review of Financial Studies* 14
     (1): 113–147.'
@@ -1370,58 +1627,70 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Longstaff, Francis 和 Eduardo Schwartz. 2001\. “模拟法估值美式期权：一种简单的最小二乘方法。” *金融研究评论*
+    14 (1): 113–147.'
 - en: 'Merton, Robert. 1973\. “Theory of Rational Option Pricing.” *Bell Journal of
     Economics and Management Science* (4): 141–183.'
   id: totrans-232
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Merton, Robert. 1973\. “理性期权定价理论。” *贝尔经济与管理科学杂志* (4): 141–183.'
 - en: 'Books cited in this chapter:'
   id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍：
 - en: 'Duffie, Darrell. 1988\. *Security Markets—Stochastic Models*. San Diego: Academic
     Press.'
   id: totrans-234
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Duffie, Darrell. 1988\. *证券市场—随机模型*. 圣迭戈: Academic Press.'
 - en: 'Glasserman, Paul. 2004\. *Monte Carlo Methods in Financial Engineering*. New
     York: Springer Verlag.'
   id: totrans-235
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Glasserman, Paul. 2004\. *金融工程中的蒙特卡洛方法*. 纽约: Springer Verlag.'
 - en: 'Hilpisch, Yves. 2018\. *Python for Finance*. 2nd ed. Sebastopol: O’Reilly.'
   id: totrans-236
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Hilpisch, Yves. 2018\. *Python金融学*. 第二版. Sebastopol: O’Reilly.'
 - en: Hilpisch, Yves. 2015\. *Derivatives Analytics with Python*. Wiley Finance.
   id: totrans-237
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Hilpisch, Yves. 2015\. *Python衍生品分析*. Wiley Finance.
 - en: 'Pliska, Stanley. 1997\. *Introduction to Mathematical Finance.* Malden and
     Oxford: Blackwell Publishers.'
   id: totrans-238
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Pliska, Stanley. 1997\. *数学金融导论.* Malden 和 Oxford: Blackwell Publishers.'
 - en: ^([1](ch06.xhtml#idm44853685071096-marker)) The parameters assumed in this chapter
     are from Longstaff and Schwartz (2001, table 1).
   id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch06.xhtml#idm44853685071096-marker)) 本章假设的参数来自Longstaff和Schwartz（2001年，表1）。
 - en: ^([2](ch06.xhtml#idm44853683423000-marker)) Note that only the numbers on and
     above the diagonal are relevant. Numbers below the diagonal can be ignored. They
     result from the specific vectorized operations implemented on the `ndarray` object.
   id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch06.xhtml#idm44853683423000-marker)) 需要注意只有对角线及以上的数字是相关的。忽略对角线以下的数字，这些数字是在`ndarray`对象上实现的特定向量化操作的结果。
 - en: ^([3](ch06.xhtml#idm44853679632632-marker)) Here, as also often seen in practice,
     there is a large number of cases for which the option expires worthless, that
     is, with a payoff of 0.
   id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch06.xhtml#idm44853679632632-marker)) 此处，正如在实践中经常见到的，有大量情况是期权无价值到期，即回报为0。

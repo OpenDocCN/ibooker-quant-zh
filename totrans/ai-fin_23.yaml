@@ -1,7 +1,9 @@
 - en: Appendix C. Convolutional Neural Networks
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 附录C. 卷积神经网络
 - en: '[Part III](part03.xhtml#part_statistical_inefficiencies) focuses on dense neural
     networks (DNNs) and recurrent neural networks (RNNs) as two standard types of
     neural networks. The charm of DNNs lies in the fact that they are good universal
@@ -10,204 +12,318 @@
     RNNs are specifically designed to handle sequential data, such as time series
     data. This is helpful when trying, for example, to predict future values of financial
     time series.'
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第三部分](part03.xhtml#part_statistical_inefficiencies)集中介绍了密集神经网络（DNNs）和递归神经网络（RNNs）作为两种标准的神经网络类型。DNNs之所以迷人在于它们是良好的通用逼近器。例如，本书中的强化学习示例利用DNNs来逼近最优动作策略。另一方面，RNNs专门设计用于处理序列数据，如时间序列数据，这在试图预测金融时间序列的未来值时非常有用。'
 - en: However, *convolutional neural networks* (CNNs) are another standard type of
     neural network that is widely used in practice. They have been particularly successful,
     among other domains, in computer vision. CNNs were able to set new benchmarks
     in a number of standard tests and challenges, such as the ImageNet Challenge;
     for more on this, see *The Economist* (2016) or Gerrish (2018). Computer vision
     in turn is important in such domains as autonomous vehicles or security and surveillance.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '*卷积神经网络*（CNNs）是另一种广泛应用的神经网络类型。在实践中它们非常成功，尤其在计算机视觉领域。CNNs在诸如ImageNet挑战赛等多个标准测试和挑战中设立了新的基准；更多相关内容请参见《经济学人》（2016年）或Gerrish（2018年）。计算机视觉在自动驾驶车辆、安全监控等领域尤为重要。'
 - en: This brief appendix illustrates the application of a CNN to the prediction of
     financial time series data. For details on CNNs, see Chollet (2017, ch. 5) and
     Goodfellow et al. (2016, ch. 9).
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 本附录简要展示了CNN在预测金融时间序列数据中的应用。有关CNN的详细信息，请参阅Chollet（2017年，第5章）和Goodfellow等人（2016年，第9章）。
 - en: Features and Labels Data
+  id: totrans-4
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 特征和标签数据
 - en: 'The following Python code first takes care of the required imports and customizations.
     It then imports the data set that contains end-of-day (EOD) data for a number
     of financial instruments. This data set is used throughout the book for different
     examples:'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的Python代码首先处理所需的导入和定制。然后导入包含多种金融工具每日结束数据（EOD）的数据集。这个数据集在本书中的不同示例中都有使用：
 - en: '[PRE0]'
+  id: totrans-6
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO1-1)'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO1-1)'
 - en: Retrieves and selects the financial time series data
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索并选择金融时间序列数据
 - en: 'The next step is to generate the features data, lag the data, split it into
     training and test data sets, and finally normalize it based on the statistics
     of the training data set:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来的步骤是生成特征数据，延迟数据，将其拆分为训练和测试数据集，最后基于训练数据集的统计数据进行归一化：
 - en: '[PRE1]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO2-1)'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO2-1)'
 - en: Simple moving average feature
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单移动平均特征
 - en: '[![2](Images/2.png)](#co_convolutional_neural_networks_CO2-2)'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_convolutional_neural_networks_CO2-2)'
 - en: Rolling minimum value feature
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最小值特征
 - en: '[![3](Images/3.png)](#co_convolutional_neural_networks_CO2-3)'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_convolutional_neural_networks_CO2-3)'
 - en: Rolling maximum value feature
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最大值特征
 - en: '[![4](Images/4.png)](#co_convolutional_neural_networks_CO2-4)'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_convolutional_neural_networks_CO2-4)'
 - en: Time series momentum feature
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间序列动量特征
 - en: '[![5](Images/5.png)](#co_convolutional_neural_networks_CO2-5)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_convolutional_neural_networks_CO2-5)'
 - en: Rolling volatility feature
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动波动率特征
 - en: '[![6](Images/6.png)](#co_convolutional_neural_networks_CO2-6)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_convolutional_neural_networks_CO2-6)'
 - en: Gaussian normalization of training data set
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练数据集的高斯归一化
 - en: '[![7](Images/7.png)](#co_convolutional_neural_networks_CO2-9)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_convolutional_neural_networks_CO2-9)'
 - en: Gaussian normalization of test data set
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试数据集的高斯归一化
 - en: Training the Model
+  id: totrans-25
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 模型训练
 - en: 'The implementation of CNNs is similar to that of DNNs. First, the Python code
     that follows takes care of the imports from `Keras` and the definition of the
     function to set all relevant seed values of the random number generators:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: CNN的实现与DNN类似。以下Python代码首先处理来自`Keras`的导入以及设置所有相关随机数生成器种子值的函数定义：
 - en: '[PRE2]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'The following Python code implements and trains a simple CNN. At the core of
     the model is a *one-dimensional convolutional layer* that is suited for time series
     data (see [Keras convolutional layers](https://oreil.ly/AXQ33) for details):'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码实现并训练了一个简单的CNN模型。该模型的核心是适用于时间序列数据的*一维卷积层*（详见[Keras卷积层](https://oreil.ly/AXQ33)）：
 - en: '[PRE3]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[Figure C-1](#figure_cnn_01) presents the performance metrics for the training
     and validation data sets over the different training epochs:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure C-1](#figure_cnn_01) 展示了训练和验证数据集在不同训练时期的性能指标：'
 - en: '[PRE4]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '![aiif 1701](Images/aiif_1701.png)'
+  id: totrans-32
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1701](Images/aiif_1701.png)'
 - en: Figure C-1\. Performance metrics for the training and validation of the CNN
+  id: totrans-33
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure C-1\. CNN训练和验证的性能指标
 - en: Testing the Model
+  id: totrans-34
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 测试模型
 - en: 'Finally, the Python code that follows applies the trained model to the test
     data set. The CNN model outperforms the passive benchmark investment significantly.
     However, taking into account transaction costs in the form of typical (retail)
     bid-ask spreads, it eats up larger parts of the outperformance. [Figure C-2](#figure_cnn_02)
     visualizes the performances over time:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，下面的Python代码将训练好的模型应用于测试数据集。CNN模型明显优于被动基准投资。然而，考虑到以典型（零售）买卖点差的形式存在的交易成本，它会吞噬大部分超额收益。[Figure C-2](#figure_cnn_02)
+    可视化了随时间的表现：
 - en: '[PRE5]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO3-1)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO3-1)'
 - en: The accuracy ratio out-of-sample
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本外准确率比例
 - en: '[![2](Images/2.png)](#co_convolutional_neural_networks_CO3-2)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_convolutional_neural_networks_CO3-2)'
 - en: The positions (long/short) based on the predictions
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据预测的仓位（多头/空头）
 - en: '[![3](Images/3.png)](#co_convolutional_neural_networks_CO3-4)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_convolutional_neural_networks_CO3-4)'
 - en: The number of trades resulting from the positions
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于仓位预测的交易数目
 - en: '[![4](Images/4.png)](#co_convolutional_neural_networks_CO3-5)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_convolutional_neural_networks_CO3-5)'
 - en: Proportional transaction costs for given bid-ask spread
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定买卖点差的比例交易成本
 - en: '[![5](Images/5.png)](#co_convolutional_neural_networks_CO3-6)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_convolutional_neural_networks_CO3-6)'
 - en: The strategy performance *before* transaction costs
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 在交易成本之前的策略表现
 - en: '[![6](Images/6.png)](#co_convolutional_neural_networks_CO3-7)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_convolutional_neural_networks_CO3-7)'
 - en: The strategy performance *after* transaction costs
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 在交易成本之后的策略表现
 - en: '![aiif 1702](Images/aiif_1702.png)'
+  id: totrans-49
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1702](Images/aiif_1702.png)'
 - en: Figure C-2\. Gross performance of passive benchmark investment and CNN strategy
     (before/after transaction costs)
+  id: totrans-50
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure C-2\. 被动基准投资和CNN策略的总体表现（交易成本之前/之后）
 - en: Resources
+  id: totrans-51
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 资源
 - en: 'Books and papers cited in this appendix:'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本附录中引用的书籍和论文：
 - en: 'Chollet, François. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Chollet, François. 2017\. *Python深度学习*. Shelter Island: Manning.'
 - en: '*Economist, The*. 2016\. “From Not Working to Neural Networking.” *The Economist*
     Special Report, June 23, 2016\. [*https://oreil.ly/6VvlS*](https://oreil.ly/6VvlS).'
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*《经济学家》*. 2016\. “从不工作到神经网络。” *《经济学家》* 特别报道, 2016年6月23日. [*https://oreil.ly/6VvlS*](https://oreil.ly/6VvlS).'
 - en: 'Gerrish, Sean. 2018\. *How Smart Machines Think*. Cambridge: MIT Press.'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Gerrish, Sean. 2018\. *智能机器如何思考*. Cambridge: MIT Press.'
 - en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
     Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *深度学习*. Cambridge:
+    MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'

@@ -1,23 +1,30 @@
 - en: Chapter 3\. Deep Learning for Time Series Modeling
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第3章 深度学习用于时间序列建模
 - en: '...Yes, it is true that a Turing machine can compute any computable function
     given enough memory and enough time, but nature had to solve problems in real
     time. To do this, it made use of the brain’s neural networks that, like the most
     powerful computers on the planet, have massively parallel processors. Algorithms
     that run efficiently on them will eventually win out.'
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '... 是的，图灵机可以在有足够内存和时间的情况下计算任何可计算函数，但自然界必须实时解决问题。为此，它利用了类似于地球上最强大的计算机的大规模并行处理器的大脑神经网络。在它们上面高效运行的算法最终将获胜。'
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Terrence J. Sejnowski (2018)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Terrence J. Sejnowski（2018）
 - en: '*Deep learning* has recently become a buzzword for some good reasons, although
     recent attempts to improve deep learning practices are not the first of their
     kind. However, it is quite understandable why deep learning has been appreciated
@@ -27,47 +34,65 @@
     use the number of hidden layers as a comparison benchmark to distinguish a neural
     network from deep learning, a useful but not particularly rigorous way to make
     this distinction. A better definition can clarify the difference.'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*深度学习*最近成为一种流行词有其充分的理由，尽管最近试图改进深度学习实践并不是第一次尝试。然而，深度学习为何近二十年来备受推崇，这是很容易理解的。深度学习是一个抽象的概念，用几句话来定义它是很困难的。与神经网络（NN）不同，深度学习具有更复杂的结构，隐藏层定义了复杂性。因此，一些研究人员使用隐藏层的数量作为区分神经网络和深度学习的比较基准，这是一种有用但不特别严格的区分方式。一个更好的定义可以澄清这种区别。'
 - en: 'At a high level, deep learning can be defined:'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在高层次上，深度学习可以定义为：
 - en: Deep learning methods are representation-learning^([1](ch03.html#idm45737247845584))
     methods with multiple levels of representation, obtained by composing simple but
     nonlinear modules that each transform the representation at one level (starting
     with the raw input) into a representation at a higher, slightly more abstract
     level.
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 深度学习方法是多层次表示学习^([1](ch03.html#idm45737247845584))方法，通过组合简单但非线性的模块，在每个级别将表示从一个级别（从原始输入开始）转换为稍高、稍抽象的级别的表示。
 - en: ''
+  id: totrans-7
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Le Cunn et al. (2015)
+  id: totrans-8
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Le Cunn 等人（2015）
 - en: 'Applications of deep learning date back to the 1940s, when *Cybernetics* by
     Norbert Wiener was published. Connectivist thinking then dominated between the
     1980s and 1990s. Recent developments in deep learning, such as backpropagation
     and neural networks, have created the field as we know it. Basically, there have
     been three waves of deep learning, so we might wonder why deep learning is in
     its heyday *now*? Goodfellow et al. (2016) list some plausible reasons, including:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习的应用可以追溯到上世纪40年代，当时 Norbert Wiener 出版了《*控制论*》。在1980年代和1990年代之间，连接主义思维主导了这一领域。如今，深度学习的最新发展，比如反向传播和神经网络，塑造了我们所知道的这一领域。基本上，深度学习经历了三波发展，因此我们可能会想知道为什么深度学习如今如此盛行？Goodfellow
+    等人（2016）列举了一些可能的原因，包括：
 - en: Increasing data sizes
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据规模增加
 - en: Increasing model sizes
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模型规模增加
 - en: Increasing accuracy, complexity, and real-world impact
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 提高准确性、复杂性和实际影响
 - en: 'It seems like modern technology and data availability have paved the way for
     an era of deep learning in which new data-driven methods are proposed so that
     we are able to model time series using unconventional models. This development
@@ -75,287 +100,449 @@
     ability to include longer time periods: the *recurrent neural network* (RNN) and
     *long short-term memory* (LSTM). In this section, we will concentrate on the practicality
     of these models in Python after briefly discussing the theoretical background.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 现代技术和数据可用性似乎为一个深度学习时代铺平了道路，在这个时代，我们提出了新的数据驱动方法，使我们能够使用非常规模型对时间序列建模。这一发展引发了深度学习的新浪潮。在能够包括更长时间段的能力方面，两种方法表现出色：*循环神经网络*（RNN）和*长短期记忆网络*（LSTM）。在本节中，我们将简要讨论理论背景后，集中讨论这些模型在Python中的实用性。
 - en: Recurrent Neural Networks
+  id: totrans-14
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 循环神经网络
 - en: 'An RNN has a neural network structure with at least one feedback connection
     so that the network can learn sequences. A feedback connection results in a loop,
     enabling us to unveil the nonlinear characteristics. This type of connection brings
     us a new and quite useful property: *memory*. Thus, an RNN can make use not only
     of the input data but also the previous outputs, which sounds compelling when
     it comes to time series modeling.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: RNN 具有神经网络结构，至少有一个反馈连接，使得网络可以学习序列。反馈连接导致循环，使我们能够揭示非线性特性。这种类型的连接带来了一个新而非常有用的属性：*记忆*。因此，RNN
+    不仅可以利用输入数据，还可以利用先前的输出，这在时间序列建模时显得非常吸引人。
 - en: 'RNNs come in many forms, such as:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: RNN 有多种形式，例如：
 - en: One-to-one
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 一对一
 - en: A one-to-one RNN consists of a single input and a single output, which makes
     it the most basic type of RNN.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 一对一的 RNN 包含单个输入和单个输出，这使得它成为最基本的 RNN 类型。
 - en: One-to-many
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 一对多
 - en: In this form, an RNN produces multiple outputs for a single input.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种形式中，RNN 对单个输入产生多个输出。
 - en: Many-to-one
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 多对一
 - en: As opposed to the one-to-many structure, many-to-one has multiple inputs for
     a single output.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 不同于一对多结构，多对一具有多个输入和单个输出。
 - en: Many-to-many
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 多对多
 - en: This structure has multiple inputs and outputs and is known as the most complicated
     structure for an RNN.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种结构具有多个输入和输出，被称为 RNN 的最复杂结构。
 - en: A hidden unit in an RNN feeds itself back into the neural network so that the
     RNN has recurrent layers (unlike a feed-forward neural network) making it a suitable
     method for modeling time series data. Therefore, in RNNs, activation of a neuron
     comes from a previous time-step indication that the RNN represents as an accumulating
     state of the network instance (Buduma and Locascio 2017).
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 RNN 中，隐藏单元将其自身的输出反馈到神经网络中，使得 RNN 具有递归层（不同于前馈神经网络），这使得它成为建模时间序列数据的合适方法。因此，在
+    RNN 中，神经元的激活来自前一个时间步，表明 RNN 将其表示为网络实例的累积状态（Buduma 和 Locascio 2017）。
 - en: 'As summarized by Nielsen (2019):'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如 Nielsen（2019）总结的那样：
 - en: RNNs have time steps one at a time in an orderly fashion.
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: RNN 按顺序逐个时间步处理。
 - en: The state of the network stays as it is from one time step to another.
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 网络的状态从一个时间步保持不变到另一个时间步。
 - en: An RNN updates its state based on the time step.
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个 RNN 根据时间步更新其状态。
 - en: These dimensions are illustrated in [Figure 3-1](#RNN_dimensions). As can be
     seen, the RNN structure on the right-hand side has a time step, which is the main
     difference between it and the feed-forward network.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些维度在 [Figure 3-1](#RNN_dimensions) 中有所说明。正如可以看到的那样，右侧的 RNN 结构具有时间步长，这是它与前馈网络之间的主要区别。
 - en: '![RNN structure](assets/mlfr_0301.png)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
+  zh: '![RNN 结构](assets/mlfr_0301.png)'
 - en: Figure 3-1\. RNN structure^([2](ch03.html#idm45737247426656))
+  id: totrans-32
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-1\. RNN 结构^([2](ch03.html#idm45737247426656))
 - en: 'RNNs have a three-dimensional input, comprised of:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: RNN 具有三维输入，包括：
 - en: Batch size
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 批处理大小
 - en: Time steps
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 时间步长
 - en: Number of features
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 特征数
 - en: '*Batch size* denotes the number of observations or number of rows of data.
     *Time steps* are the number of times to feed the model. Finally, *number of features*
     is the number of columns of each sample.'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '*批处理大小* 表示观察次数或数据行数。*时间步* 是馈送模型的次数。最后，*特征数* 是每个样本的列数。'
 - en: 'We’ll start with the following code:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将从以下代码开始：
 - en: '[PRE0]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](assets/1.png)](#co_deep_learning_for_time_series_modeling_CO1-1)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_deep_learning_for_time_series_modeling_CO1-1)'
 - en: Defining the number of steps for prediction
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义预测步骤的数量
 - en: '[![2](assets/2.png)](#co_deep_learning_for_time_series_modeling_CO1-2)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_deep_learning_for_time_series_modeling_CO1-2)'
 - en: Defining the number of features as 1
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 将特征数定义为 1
 - en: '[![3](assets/3.png)](#co_deep_learning_for_time_series_modeling_CO1-3)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_deep_learning_for_time_series_modeling_CO1-3)'
 - en: Calling a sequential model to run the RNN
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用一个顺序模型来运行 RNN
 - en: '[![4](assets/4.png)](#co_deep_learning_for_time_series_modeling_CO1-4)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_deep_learning_for_time_series_modeling_CO1-4)'
 - en: Identifying the number of hidden neurons, activation function, and input shape
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定隐藏神经元的数量、激活函数和输入形状
 - en: '[![5](assets/5.png)](#co_deep_learning_for_time_series_modeling_CO1-5)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_deep_learning_for_time_series_modeling_CO1-5)'
 - en: Adding a dropout layer to prevent overfitting
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加一个 dropout 层以防止过拟合
 - en: '[![6](assets/6.png)](#co_deep_learning_for_time_series_modeling_CO1-6)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_deep_learning_for_time_series_modeling_CO1-6)'
 - en: Adding one more hidden layer with 256 neurons with the `relu` activation function
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加一个具有 `relu` 激活函数的 256 个神经元的隐藏层
 - en: '[![7](assets/7.png)](#co_deep_learning_for_time_series_modeling_CO1-7)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_deep_learning_for_time_series_modeling_CO1-7)'
 - en: Flattening the model to transform the three-dimensional matrix into a vector
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 将模型展平以将三维矩阵转换为向量
 - en: '[![8](assets/8.png)](#co_deep_learning_for_time_series_modeling_CO1-8)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_deep_learning_for_time_series_modeling_CO1-8)'
 - en: Adding an output layer with `linear` activation function
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加具有 `linear` 激活函数的输出层
 - en: '[![9](assets/9.png)](#co_deep_learning_for_time_series_modeling_CO1-9)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_deep_learning_for_time_series_modeling_CO1-9)'
 - en: Compiling the RNN model
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译 RNN 模型
 - en: '[![10](assets/10.png)](#co_deep_learning_for_time_series_modeling_CO1-10)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_deep_learning_for_time_series_modeling_CO1-10)'
 - en: Creating a dependent variable `y`
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个依赖变量 `y`
 - en: 'After configuring the model and generating a dependent variable, let’s extract
     the data and run the prediction for the stock prices for both Apple and Microsoft:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 在配置模型并生成一个依赖变量之后，让我们提取数据并为苹果和微软的股票价格运行预测：
 - en: '[PRE1]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](assets/1.png)](#co_deep_learning_for_time_series_modeling_CO2-1)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_deep_learning_for_time_series_modeling_CO2-1)'
 - en: Calling the `split_sequence` function to define the lookback period
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用 `split_sequence` 函数来定义回顾期
 - en: '[![2](assets/2.png)](#co_deep_learning_for_time_series_modeling_CO2-2)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_deep_learning_for_time_series_modeling_CO2-2)'
 - en: Reshaping training data into a three-dimensional case
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 将训练数据转换成三维情况
 - en: '[![3](assets/3.png)](#co_deep_learning_for_time_series_modeling_CO2-3)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_deep_learning_for_time_series_modeling_CO2-3)'
 - en: Fitting the RNN model to Apple’s stock price
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 RNN 模型拟合到苹果的股票价格
 - en: '[![4](assets/4.png)](#co_deep_learning_for_time_series_modeling_CO2-4)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_deep_learning_for_time_series_modeling_CO2-4)'
 - en: Defining the starting point of the prediction for Apple
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义苹果预测的起始点
 - en: '[![5](assets/5.png)](#co_deep_learning_for_time_series_modeling_CO2-5)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_deep_learning_for_time_series_modeling_CO2-5)'
 - en: Renaming the variable
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 重命名变量
 - en: '[![6](assets/6.png)](#co_deep_learning_for_time_series_modeling_CO2-6)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_deep_learning_for_time_series_modeling_CO2-6)'
 - en: Creating an empty list to store predictions
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个空列表以存储预测结果
 - en: '[![7](assets/7.png)](#co_deep_learning_for_time_series_modeling_CO2-7)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_deep_learning_for_time_series_modeling_CO2-7)'
 - en: Reshaping the `x_input`, which is used for prediction
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整用于预测的 `x_input` 的形状
 - en: '[![8](assets/8.png)](#co_deep_learning_for_time_series_modeling_CO2-8)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_deep_learning_for_time_series_modeling_CO2-8)'
 - en: Running prediction for Apple stock
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行苹果股票的预测
 - en: '[![9](assets/9.png)](#co_deep_learning_for_time_series_modeling_CO2-9)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_deep_learning_for_time_series_modeling_CO2-9)'
 - en: Storing `yhat` into `tempList_aapl`
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 `yhat` 存储到 `tempList_aapl` 中
 - en: 'For the sake of visualization, the following code block is used, resulting
     in [Figure 3-2](#rnn):'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了可视化，使用以下代码块，结果为 [图 3-2](#rnn)：
 - en: '[PRE2]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[Figure 3-2](#rnn) shows the stock price prediction results for Apple and Microsoft.
     Simply eyeballing this, we can readily observe that there is room for improvement
     in terms of predictive performance of the model in both cases.'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 3-2](#rnn) 展示了苹果和微软的股票价格预测结果。简单地观察可以很容易地发现，在预测模型的性能方面还有改进的空间。'
 - en: 'Even if we can have satisfactory predictive performance, the drawbacks of the
     RNN model should not be overlooked. The main drawbacks of the model are:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使我们可以有令人满意的预测性能，也不应忽视 RNN 模型的缺点。该模型的主要缺点是：
 - en: The vanishing or exploding gradient problem (please see the following note for
     a detailed explanation).
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 梯度消失或梯度爆炸问题（请参阅以下说明详细解释）。
 - en: Training an RNN is a very difficult task as it requires a considerable amount
     of data.
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 训练 RNN 是一项非常困难的任务，因为它需要大量数据。
 - en: An RNN is unable to process very long sequences when the *tanh* activation function
     is used.
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当使用 *tanh* 激活函数时，RNN 无法处理非常长的序列。
 - en: Note
+  id: totrans-87
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: A vanishing gradient is a commonplace problem in deep learning scenarios that
     are not properly designed. The vanishing gradient problem arises if the gradient
     tends to get smaller as we conduct the backpropagation. It implies that neurons
     are learning so slowly that optimization grinds to a halt.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 梯度消失是深度学习场景中常见的问题，如果不恰当设计，梯度消失问题会出现。在反向传播过程中，如果梯度趋向变小，则意味着神经元学习速度太慢，优化停滞不前。
 - en: Unlike the vanishing gradient problem, the exploding gradient problem occurs
     when small changes in the backpropagation results in huge updates to the weights
     during the optimization process.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 与梯度消失问题不同，梯度爆炸问题发生在反向传播的微小变化导致优化过程中权重的巨大更新时。
 - en: '![RNN predictions](assets/mlfr_0302.png)'
+  id: totrans-90
   prefs: []
   type: TYPE_IMG
+  zh: '![RNN 预测](assets/mlfr_0302.png)'
 - en: Figure 3-2\. RNN prediction results
+  id: totrans-91
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-2. RNN 预测结果
 - en: 'The drawbacks of RNNs are well stated by Haviv et al. (2019):'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: Haviv 等人（2019）明确指出了 RNN 的缺点：
 - en: This is due to the dependency of the network on its past states, and through
     them on the entire input history. This ability comes with a cost—RNNs are known
     to be hard to train (Pascanu et al. 2013a). This difficulty is commonly associated
@@ -363,76 +550,109 @@
     long times (Hochreiter 1998). When training is successful, the network’s hidden
     state represents these memories. Understanding how such representation forms throughout
     training can open new avenues for improving learning of memory-related tasks.
+  id: totrans-93
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 这是因为网络依赖于其过去的状态，并通过这些状态依赖于整个输入历史。这种能力带来了代价——RNN 被认为很难训练（Pascanu 等人 2013a）。这种困难通常与在尝试在长时间内传播错误时出现的梯度消失有关（Hochreiter
+    1998）。当训练成功时，网络的隐藏状态代表了这些记忆。理解这种表示在训练过程中是如何形成的，可以为改进与记忆相关的任务的学习开辟新的途径。
 - en: Long-Short Term Memory
+  id: totrans-94
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 长短期记忆
 - en: The LSTM deep learning approach was developed by Hochreiter and Schmidhuber
     (1997) and is mainly based on the *gated recurrent unit* (GRU).
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: LSTM 深度学习方法由 Hochreiter 和 Schmidhuber（1997）开发，主要基于*门控循环单元*（GRU）。
 - en: 'GRU was proposed to deal with the vanishing gradient problem, which is common
     in neural network structures and occurs when the weight update becomes too small
     to create a significant change in the network. GRU consists of two gates: *update*
     and *reset*. When an early observation is detected as highly important, then we
     do not update the hidden state. Similarly, when early observations are not significant,
     that leads to resetting the state.'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: GRU 是为了解决梯度消失问题而提出的，这在神经网络结构中很常见，当权重更新变得太小，无法对网络产生显著变化时，就会发生梯度消失。GRU 由两个门组成：*更新*和*重置*。当检测到早期观察非常重要时，我们不会更新隐藏状态。同样，当早期观察不重要时，会导致状态重置。
 - en: As previously discussed, one of the most appealing features of an RNN is its
     ability to connect past and present information. However, this ability turns out
     to be a failure when *long-term dependencies* comes into the picture. Long-term
     dependencies mean that the model learns from early observations.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 如   正如之前讨论的，RNN 最吸引人的特性之一是它能够连接过去和现在的信息。然而，当*长期依赖*出现时，这种能力就会失败。长期依赖意味着模型从早期的观察中学习。
 - en: 'For instance, let’s examine the following sentence:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，让我们来审视以下句子：
 - en: '*Countries have their own currencies as in the USA, where people transact with
     dollars…*'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '*各国都有自己的货币，例如美国，人们用美元进行交易……*'
 - en: In the case of short-term dependencies, it is known that the next predicted
     word is about a currency, but what if it is asked *which* currency it’s about?
     Things get complicated because we might have mentioned various currencies earlier
     on in the text, implying long-term dependencies. It is necessary to go way back
     to find something relevant about the countries using dollars.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 在短期依赖的情况下，人们知道下一个预测的词是关于货币的，但如果问到*是哪种货币*呢？事情变得复杂，因为我们可能在文中早些时候提到过各种货币，暗示了长期依赖。需要回溯到更早的部分，找到与使用美元的国家相关的内容。
 - en: 'LSTM tries to attack the weakness of RNN regarding long-term dependencies.
     LSTM has a quite useful tool to get rid of the unnecessary information so that
     it works more efficiently. LSTM works with gates, enabling it to forget irrelevant
     data. These gates are:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: LSTM 试图解决 RNN 在长期依赖方面的弱点。LSTM 拥有一个非常有用的工具来去除不必要的信息，从而提高效率。LSTM 使用门控机制，使其能够忘记无关的数据。这些门包括：
 - en: Forget gates
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 忘记门
 - en: Input gates
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输入门
 - en: Output gates
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输出门
 - en: 'Forget gates are created to sort out the necessary and unnecessary information
     so that LSTM performs more efficiently than RNN. In doing so, the value of the
     activation function, *sigmoid*, becomes zero if the information is irrelevant.
     Forget gates can be formulated as:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 忘记门的作用是筛选出必要和不必要的信息，以使 LSTM 比 RNN 更加高效。在这样做的过程中，当信息无关时，激活函数的值*sigmoid*变为零。忘记门的公式可以表示为：
 - en: <math display="block"><mrow><msub><mi>F</mi> <mi>t</mi></msub> <mo>=</mo> <mi>σ</mi>
     <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub> <msub><mi>W</mi> <mi>I</mi></msub>
     <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
     <msub><mi>W</mi> <mi>f</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>f</mi></msub>
     <mo>)</mo></mrow></mrow></math>
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>F</mi> <mi>t</mi></msub> <mo>=</mo> <mi>σ</mi>
+    <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub> <msub><mi>W</mi> <mi>I</mi></msub>
+    <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <msub><mi>W</mi> <mi>f</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>f</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
 - en: where <math alttext="sigma"><mi>σ</mi></math> is the activation function, <math
     alttext="h Subscript t minus 1"><msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
     is the previous hidden state, <math alttext="upper W Subscript upper I"><msub><mi>W</mi>
@@ -440,160 +660,263 @@
     <mi>f</mi></msub></math> are weights, and finally, <math alttext="b Subscript
     f"><msub><mi>b</mi> <mi>f</mi></msub></math> is the bias parameter in the forget
     cell.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="sigma"><mi>σ</mi></math> 是激活函数，<math alttext="h Subscript
+    t minus 1"><msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
+    是先前的隐藏状态，<math alttext="upper W Subscript upper I"><msub><mi>W</mi> <mi>I</mi></msub></math>
+    和 <math alttext="upper W Subscript f"><msub><mi>W</mi> <mi>f</mi></msub></math>
+    是权重，最后，<math alttext="b Subscript f"><msub><mi>b</mi> <mi>f</mi></msub></math>
+    是遗忘单元中的偏置参数。
 - en: 'Input gates are fed by the current timestep, <math alttext="upper X Subscript
     t"><msub><mi>X</mi> <mi>t</mi></msub></math> , and the hidden state of the previous
     timestep, <math alttext="t minus 1"><mrow><mi>t</mi> <mo>-</mo> <mn>1</mn></mrow></math>
     . The goal of input gates is to determine the extent that information should be
     added to the long-term state. The input gate can be formulated like this:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入门由当前时间步的 <math alttext="upper X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math>
+    和上一个时间步的隐藏状态 <math alttext="t minus 1"><mrow><mi>t</mi> <mo>-</mo> <mn>1</mn></mrow></math>
+    提供。输入门的目标是确定应将信息添加到长期状态的程度。可以如此表述输入门：
 - en: <math display="block"><mrow><msub><mi>I</mi> <mi>t</mi></msub> <mo>=</mo> <mi>σ</mi>
     <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub> <msub><mi>W</mi> <mi>I</mi></msub>
     <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
     <msub><mi>W</mi> <mi>f</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>I</mi></msub>
     <mo>)</mo></mrow></mrow></math>
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>I</mi> <mi>t</mi></msub> <mo>=</mo> <mi>σ</mi>
+    <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub> <msub><mi>W</mi> <mi>I</mi></msub>
+    <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <msub><mi>W</mi> <mi>f</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>I</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
 - en: 'Output gates basically determine the extent of the output that should be read,
     and work as follows:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出门基本上决定了应该读取的输出程度，并且工作如下：
 - en: <math display="block"><mrow><msub><mi>O</mi> <mi>t</mi></msub> <mo>=</mo> <mi>σ</mi>
     <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub> <msub><mi>W</mi> <mi>o</mi></msub>
     <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
     <msub><mi>W</mi> <mi>o</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>I</mi></msub>
     <mo>)</mo></mrow></mrow></math>
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>O</mi> <mi>t</mi></msub> <mo>=</mo> <mi>σ</mi>
+    <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub> <msub><mi>W</mi> <mi>o</mi></msub>
+    <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <msub><mi>W</mi> <mi>o</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>I</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
 - en: 'These gates are not the sole components of LSTM. The other components are:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些门不是 LSTM 的唯一组成部分。其他组成部分包括：
 - en: Candidate memory cell
+  id: totrans-113
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 候选记忆单元
 - en: Memory cell
+  id: totrans-114
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 记忆单元
 - en: Hidden state
+  id: totrans-115
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 隐藏状态
 - en: 'Candidate memory cell determines the extent to which information passes to
     the cell state. Differently, the activation function in the candidate cell is
     tanh and takes the following form:'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 候选记忆单元决定信息传递到单元状态的程度。不同的是，候选单元中的激活函数是 tanh，并且采用以下形式：
 - en: <math display="block"><mrow><mover accent="true"><msub><mi>C</mi> <mi>t</mi></msub>
     <mo>^</mo></mover> <mo>=</mo> <mi>ϕ</mi> <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub>
     <msub><mi>W</mi> <mi>c</mi></msub> <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
     <msub><mi>W</mi> <mi>c</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>c</mi></msub>
     <mo>)</mo></mrow></mrow></math>
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mover accent="true"><msub><mi>C</mi> <mi>t</mi></msub>
+    <mo>^</mo></mover> <mo>=</mo> <mi>ϕ</mi> <mrow><mo>(</mo> <msub><mi>X</mi> <mi>t</mi></msub>
+    <msub><mi>W</mi> <mi>c</mi></msub> <mo>+</mo> <msub><mi>h</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <msub><mi>W</mi> <mi>c</mi></msub> <mo>+</mo> <msub><mi>b</mi> <mi>c</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
 - en: 'Memory cell allows LSTM to remember or to forget the information:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 内存单元允许 LSTM 记住或遗忘信息：
 - en: <math display="block"><mrow><msub><mi>C</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>F</mi>
     <mi>t</mi></msub> <mo>⊙</mo> <mi>C</mi> <mo>+</mo> <mrow><mi>t</mi> <mo>-</mo>
     <mn>1</mn></mrow> <mo>+</mo> <msub><mi>I</mi> <mi>t</mi></msub> <mo>⊙</mo> <mover
     accent="true"><msub><mi>C</mi> <mi>t</mi></msub> <mo>^</mo></mover></mrow></math>
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>C</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>F</mi>
+    <mi>t</mi></msub> <mo>⊙</mo> <mi>C</mi> <mo>+</mo> <mrow><mi>t</mi> <mo>-</mo>
+    <mn>1</mn></mrow> <mo>+</mo> <msub><mi>I</mi> <mi>t</mi></msub> <mo>⊙</mo> <mover
+    accent="true"><msub><mi>C</mi> <mi>t</mi></msub> <mo>^</mo></mover></mrow></math>
 - en: where <math alttext="circled-dot"><mo>⊙</mo></math> is Hadamard product.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="circled-dot"><mo>⊙</mo></math> 是哈达玛积。
 - en: 'In this recurrent network, hidden state is a tool to circulate information.
     Memory cell relates output gate to hidden state:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种循环网络中，隐藏状态是循环信息的工具。记忆单元将输出门与隐藏状态联系起来：
 - en: <math display="block"><mrow><msub><mi>h</mi> <mi>t</mi></msub> <mo>=</mo> <mi>ϕ</mi>
     <mrow><mo>(</mo> <msub><mi>c</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>⊙</mo>
     <msub><mi>O</mi> <mi>t</mi></msub></mrow></math>
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mrow><msub><mi>h</mi> <mi>t</mi></msub> <mo>=</mo> <mi>ϕ</mi>
+    <mrow><mo>(</mo> <msub><mi>c</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>⊙</mo>
+    <msub><mi>O</mi> <mi>t</mi></msub></mrow></math>
 - en: '[Figure 3-3](#LSTM_structure) exhibits the LSTM structure.'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3-3 展示了 LSTM 结构。
 - en: '![LSTM_structure](assets/mlfr_0303.png)'
+  id: totrans-124
   prefs: []
   type: TYPE_IMG
+  zh: '![LSTM_structure](assets/mlfr_0303.png)'
 - en: Figure 3-3\. LSTM structure
+  id: totrans-125
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-3\. LSTM 结构
 - en: 'Now, let’s predict the stock prices using LSTM:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们使用 LSTM 预测股票价格：
 - en: '[PRE3]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](assets/1.png)](#co_deep_learning_for_time_series_modeling_CO3-1)'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_deep_learning_for_time_series_modeling_CO3-1)'
 - en: Defining the number of steps for prediction
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义预测步骤的数量
 - en: '[![2](assets/2.png)](#co_deep_learning_for_time_series_modeling_CO3-2)'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_deep_learning_for_time_series_modeling_CO3-2)'
 - en: Defining the number of feature as 1
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 将特征数定义为 1
 - en: '[![3](assets/3.png)](#co_deep_learning_for_time_series_modeling_CO3-3)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_deep_learning_for_time_series_modeling_CO3-3)'
 - en: Identifying the number of hidden neurons, the activation function, which is
     `relu`, and input shape
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定隐藏神经元的数量，激活函数为 `relu`，以及输入形状
 - en: '[![4](assets/4.png)](#co_deep_learning_for_time_series_modeling_CO3-4)'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_deep_learning_for_time_series_modeling_CO3-4)'
 - en: Adding a dropout layer to prevent overfitting
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加一个 dropout 层以防止过拟合
 - en: '[![5](assets/5.png)](#co_deep_learning_for_time_series_modeling_CO3-5)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_deep_learning_for_time_series_modeling_CO3-5)'
 - en: Adding one more hidden layer with 256 neurons, with a `relu` activation function
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加一个具有 256 个神经元的额外隐藏层，使用 `relu` 激活函数
 - en: '[![6](assets/6.png)](#co_deep_learning_for_time_series_modeling_CO3-6)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_deep_learning_for_time_series_modeling_CO3-6)'
 - en: Flattening the model to vectorize the three-dimensional matrix
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 将模型展平以向量化三维矩阵
 - en: '[![7](assets/7.png)](#co_deep_learning_for_time_series_modeling_CO3-7)'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_deep_learning_for_time_series_modeling_CO3-7)'
 - en: Adding an output layer with a `linear` activation function
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加一个具有 `linear` 激活函数的输出层
 - en: '[![8](assets/8.png)](#co_deep_learning_for_time_series_modeling_CO3-8)'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_deep_learning_for_time_series_modeling_CO3-8)'
 - en: Compiling LSTM with Root Mean Square Propagation, `rmsprop`, and mean squared
     error (MSE), `mean_squared_error`
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用均方根传播 `rmsprop` 和均方误差（MSE） `mean_squared_error` 编译 LSTM
 - en: '[![9](assets/9.png)](#co_deep_learning_for_time_series_modeling_CO3-9)'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_deep_learning_for_time_series_modeling_CO3-9)'
 - en: Fitting the LSTM model to Apple’s stock price
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: Note
+  id: totrans-146
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: 'Root Mean Square Propagation (`RMSProp`) is an optimization method in which
     we calculate the moving average of the squared gradients for each weight. We then
     find the difference of weight, which is to be used to compute the new weight:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: <math display="block"><mrow><msub><mi>v</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>ρ</mi>
@@ -604,34 +927,45 @@
     <msub><mi>g</mi> <mi>t</mi></msub></mrow></math><math display="block"><mrow><msub><mi>w</mi>
     <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>=</mo> <msub><mi>w</mi>
     <mi>t</mi></msub> <mo>+</mo> <mi>Δ</mi> <msub><mi>w</mi> <mi>t</mi></msub></mrow></math>
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: 'Pursuing the same procedure and given the Microsoft stock price, a prediction
     analysis is carried out:'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-150
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'The following code creates the plot ([Figure 3-4](#LSTM)) that shows the prediction
     results:'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-152
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: LSTM seems to outperform the RNN, particularly in the way it captures the extreme
     values better.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '![LSTM predictions](assets/mlfr_0304.png)'
+  id: totrans-154
   prefs: []
   type: TYPE_IMG
 - en: Figure 3-4\. LSTM prediction results
+  id: totrans-155
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: Conclusion
+  id: totrans-156
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -642,65 +976,79 @@
     for prediction. For an extension, it would be a wise approach to include multiple
     features in the models based on deep learning, which is not allowed in parametric
     time series models.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: In the next chapter, we will discuss volatility predictions based on parametric
     and ML models so that we can compare their performance.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: References
+  id: totrans-159
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 'Articles cited in this chapter:'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: Ding, Daizong, et al. 2019\. “Modeling Extreme Events in Time Series Prediction.”
     *Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery
     and Data Mining*. 1114-1122.
+  id: totrans-161
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Haviv, Doron, Alexander Rivkind, and Omri Barak. 2019\. “Understanding and Controlling
     Memory in Recurrent Neural Networks.” arXiv preprint. arXiv:1902.07275.
+  id: totrans-162
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Hochreiter, Sepp, and Jürgen Schmidhuber. 1997\. “Long Short-term Memory.”
     *Neural Computation* 9 (8): 1735-1780.'
+  id: totrans-163
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'LeCun, Yann, Yoshua Bengio, and Geoffrey Hinton. 2015\. “Deep Learning.” *Nature*
     521, (7553): 436-444.'
+  id: totrans-164
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Books cited in this chapter:'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: 'Buduma, N., and N. Locascio. 2017\. *Fundamentals of Deep Learning: Designing
     Next-generation Machine Intelligence Algorithms*. Sebastopol: O’Reilly.'
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Goodfellow, I., Y. Bengio, and A. Courville. 2016\. *Deep Learning*. Cambridge,
     MA: MIT Press.'
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Nielsen, A. 2019\. *Practical Time Series Analysis: Prediction with Statistics
     and Machine Learning*. Sebastopol: O’Reilly.'
+  id: totrans-168
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Patterson, Josh, and Adam Gibson. 2017\. *Deep Learning: A Practitioner’S Approach*.
     Sebastopol: O’Reilly.'
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Sejnowski, Terrence J. 2018\. *The Deep Learning Revolution*. Cambridge, MA:
     MIT Press.'
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -710,9 +1058,11 @@
     using color, shape, and size, we can create a representation for an object. In
     essence, this is how the human brain works, and we know that deep learning structures
     are inspired by the brain’s functioning.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: '^([2](ch03.html#idm45737247426656-marker)) Patterson et. al, 2017\. “Deep learning:
     A practitioner’s approach.”'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL

@@ -1,20 +1,27 @@
 - en: Chapter 7\. Working with Real-Time Data and Sockets
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 7 章。处理实时数据和套接字
 - en: If you want to find the secrets of the universe, think in terms of energy, frequency,
     and vibration.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 如果你想找到宇宙的秘密，想象能量、频率和振动的概念。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Nikola Tesla
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 尼古拉·特斯拉
 - en: 'Developing trading ideas and backtesting them is a rather asynchronous and
     non-critical process during which there are multiple steps that might or might
     not be repeated, during which no capital is at stake, and during which performance
@@ -24,40 +31,62 @@
     real-time decision making based on the streaming data a necessity. This chapter
     is about working with real-time data for which *sockets* are in general the technological
     tool of choice. In this context, here are a few words on central technical terms:'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 开发交易思路并对其进行回测是一个相对异步且非关键的过程，期间可能有多个步骤会重复或不重复，期间没有资本风险，性能和速度也不是最重要的需求。当转向市场以部署交易策略时，规则会发生显著变化。数据实时到达且通常是大量到达，这使得实时处理数据和基于流数据做出实时决策成为必要。本章讨论处理实时数据的问题，其中*套接字*通常是技术工具的首选。在这种背景下，以下是一些核心技术术语的简要介绍：
 - en: Network socket
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 网络套接字
 - en: Endpoint of a connection in a computer network, also simply *socket* for short.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算机网络中连接的终点，简称为*套接字*。
 - en: Socket address
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 套接字地址
 - en: Combination of an Internet Protocol (IP) address and a port number.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 由互联网协议（IP）地址和端口号组合而成。
 - en: Socket protocol
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 套接字协议
 - en: A protocol defining and handling the socket communication, like the Transfer
     Control Protocol (TCP).
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义和处理套接字通信的协议，如传输控制协议（TCP）。
 - en: Socket pair
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 套接字对
 - en: Combination of a local and a remote socket that communicate with each other.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本地套接字和远程套接字的组合，它们相互通信。
 - en: Socket API
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 套接字 API
 - en: The application programming interface allowing for the controlling of sockets
     and their communication.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 允许控制套接字及其通信的应用程序接口。
 - en: This chapter focuses on the use of [`ZeroMQ`](http://zeromq.org) as a lightweight,
     fast, and scalable socket programming library. It is available on multiple platforms
     with wrappers for the most popular programming languages. `ZeroMQ` supports different
@@ -66,8 +95,10 @@
     simultaneously retrieve the data. This is similar to a radio station that broadcasts
     its program that is simultaneously listened to by thousands of people via radio
     devices.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章重点介绍[`ZeroMQ`](http://zeromq.org)作为一款轻量、快速和可扩展的套接字编程库的使用。它在多个平台上都可用，并为大多数流行的编程语言提供了包装器。`ZeroMQ`支持不同的套接字通信模式。其中一种模式是所谓的*发布-订阅*（`PUB-SUB`）模式，其中一个套接字发布数据，多个套接字同时检索数据。这类似于广播自己的节目并通过收音机设备同时被成千上万的人收听的电台。
 - en: Given the `PUB-SUB` pattern, a fundamental application scenario in algorithmic
     trading is the retrieval of real-time financial data from an exchange, a trading
     platform, or a data service provider. Suppose you have developed an intraday trading
@@ -76,8 +107,10 @@
     This fits exactly such a `PUB-SUB` pattern. A central instance broadcasts the
     new tick data as it becomes available and you, as well as probably thousands of
     others, receive and process it at the same time.^([1](ch07.html#idm45785358164968))
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 在给定的`PUB-SUB`模式下，算法交易的一个基本应用场景是从交易所、交易平台或数据服务提供商检索实时金融数据。假设你已经基于 EUR/USD 货币对开发了一个日内交易思路并进行了彻底的回测。在部署时，您需要能够实时接收和处理价格数据。这正好符合`PUB-SUB`模式。一个中心实例在新的tick数据可用时广播该数据，同时您和可能还有成千上万的其他人同时接收和处理它。^([1](ch07.html#idm45785358164968))
 - en: This chapter is organized as follows. [“Running a Simple Tick Data Server”](#tick_server)
     describes how to implement and run a tick data server for sample financial data.
     [“Connecting a Simple Tick Data Client”](#tick_client) implements a tick data
@@ -86,12 +119,19 @@
     data server. Finally, [“Visualizing Streaming Data with Plotly”](#stream_plotting)
     introduces the [Plotly](http://plot.ly) plotting package as an efficient way to
     plot streaming data in real time.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的组织结构如下。[“运行一个简单的 Tick 数据服务器”](#tick_server) 描述了如何为示例财务数据实现和运行一个 Tick 数据服务器。[“连接一个简单的
+    Tick 数据客户端”](#tick_client) 实现了一个 Tick 数据客户端，用于连接到 Tick 数据服务器。[“实时信号生成”](#signal_generation)
+    展示了如何基于 Tick 数据服务器的数据实时生成交易信号。最后，[“使用 Plotly 可视化流数据”](#stream_plotting) 介绍了 [Plotly](http://plot.ly)
+    绘图包作为实时绘制流数据的有效方法。
 - en: The goal of this chapter is to have a tool set and approaches available to be
     able to work with streaming data in the context of algorithmic trading.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的目标是提供一套工具集和方法，以便在算法交易的上下文中处理流数据。
 - en: The code in this chapter makes heavy use of ports over which socket communication
     takes place and requires the simultaneous execution of two or more scripts at
     the same time. It is therefore recommended to execute the codes in this chapter
@@ -100,12 +140,18 @@
     works, however, is the execution of the tick data server script ([“Running a Simple
     Tick Data Server”](#tick_server)) in a terminal and the retrieval of data in a
     Jupyter Notebook ([“Visualizing Streaming Data with Plotly”](#stream_plotting)).
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的代码大量使用端口进行套接字通信，并且需要同时执行两个或两个以上的脚本。因此建议在不同的终端实例中执行本章的代码，运行不同的 Python 内核。在单个
+    Jupyter Notebook 中执行，例如，通常不起作用。然而，可以在终端中执行 Tick 数据服务器脚本（[“运行一个简单的 Tick 数据服务器”](#tick_server)），并在
+    Jupyter Notebook 中检索数据（[“使用 Plotly 可视化流数据”](#stream_plotting)）。
 - en: Running a Simple Tick Data Server
+  id: totrans-20
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 运行简单的 Tick 数据服务器
 - en: This section shows how to run a simple tick data server based on simulated financial
     instrument prices. The model used for the data generation is the geometric Brownian
     motion (without dividends) for which an exact Euler discretization is available,
@@ -115,12 +161,20 @@
     and <math alttext="z"><mi>z</mi></math> is a standard normal random variable.
     <math alttext="normal upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math>
     is the interval between two discrete observations of the instrument price.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节展示了如何运行一个基于模拟金融工具价格的简单 Tick 数据服务器。用于数据生成的模型是几何布朗运动（不考虑股息），其精确的欧拉离散化方法如 [方程式
+    7-1](#euler_disc) 所示。在这里，<math alttext="upper S"><mi>S</mi></math> 是工具价格，<math
+    alttext="r"><mi>r</mi></math> 是常数短期利率，<math alttext="sigma"><mi>σ</mi></math>
+    是常数波动率因子，<math alttext="z"><mi>z</mi></math> 是标准正态随机变量。 <math alttext="normal
+    upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math> 是工具价格的两次离散观察之间的间隔。
 - en: Equation 7-1\. Euler discretization of geometric Brownian motion
+  id: totrans-22
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 方程式 7-1\. 几何布朗运动的欧拉离散化
 - en: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
     normal upper Delta t Baseline dot exp left-parenthesis left-parenthesis r minus
     StartFraction sigma squared Over 2 EndFraction right-parenthesis normal upper
@@ -131,8 +185,19 @@
     <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac></mfenced>
     <mi>Δ</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msqrt><mrow><mi>Δ</mi> <mi>t</mi></mrow></msqrt>
     <mi>z</mi></mfenced></mrow></math>
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
+    normal upper Delta t Baseline dot exp left-parenthesis left-parenthesis r minus
+    StartFraction sigma squared Over 2 EndFraction right-parenthesis normal upper
+    Delta t plus sigma StartRoot normal upper Delta t EndRoot z right-parenthesis"
+    display="block"><mrow><msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>Δ</mi><mi>t</mi></mrow></msub> <mo>·</mo> <mo form="prefix">exp</mo>
+    <mfenced close=")" open="(" separators=""><mfenced close=")" open="(" separators=""><mi>r</mi>
+    <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac></mfenced>
+    <mi>Δ</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msqrt><mrow><mi>Δ</mi> <mi>t</mi></mrow></msqrt>
+    <mi>z</mi></mfenced></mrow></math>
 - en: Making use of this model, [“Sample Tick Data Server”](#py_tick_server) presents
     a Python script that implements a tick data server using `ZeroMQ` and a class
     called `InstrumentPrice` to publish new, simulated tick data in a randomized fashion.
@@ -140,156 +205,243 @@
     on a Monte Carlo simulation. Second is the length of time interval between two
     publishing events it randomized. The remainder of this section explains the major
     parts of the script in detail.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 利用这个模型，[“示例 Tick 数据服务器”](#py_tick_server) 提供了一个使用 `ZeroMQ` 和一个名为 `InstrumentPrice`
+    的类实现的 Python 脚本，以随机方式发布新的模拟 Tick 数据。发布是通过两种方式随机进行的。首先，股票价格基于蒙特卡罗模拟。第二种是两次发布事件之间的时间间隔的长度是随机的。本节的其余部分详细解释了脚本的主要部分。
 - en: 'The first part of the following script does some imports, among other things,
     for the Python wrapper of `ZeroMQ`. It also instantiates the major objects needed
     to open a socket of `PUB` type:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下脚本的第一部分执行一些导入，以及其他事情，用于 Python 的 `ZeroMQ` 包装器。它还实例化了打开 `PUB` 类型套接字所需的主要对象：
 - en: '[PRE0]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO1-1)'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO1-1)'
 - en: This imports the Python wrapper for the `ZeroMQ` library.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里导入了Python对`ZeroMQ`库的包装。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO1-2)'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO1-2)'
 - en: A `Context` object is instantiated. It is the central object for the socket
     communication.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化一个`Context`对象。它是套接字通信的中心对象。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO1-3)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO1-3)'
 - en: The socket itself is defined based on the `PUB` socket type (“communication
     pattern”).
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于`PUB`套接字类型（“通信模式”）定义套接字本身。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO1-4)'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO1-4)'
 - en: The socket gets bound to the local IP address (`0.0.0.0` on Linux and Mac OS,
     `127.0.0.1` on Windows) and the port number 5555.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 套接字绑定到本地IP地址（在Linux和Mac OS上为`0.0.0.0`，在Windows上为`127.0.0.1`）和端口号5555。
 - en: 'The class `InstrumentPrice` is for the simulation of instrument price values
     over time. As attributes, there are the major parameters for the geometric Brownian
     motion in addition to the instrument symbol and the time at which an instance
     is created. The only method `.simulate_value()` generates new values for the stock
     price given the time passed since it has been called the last time and a random
     factor:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '`InstrumentPrice`类用于模拟随时间变化的工具价格值。作为属性，除了工具符号和实例创建时间外，还有几何布朗运动的主要参数。唯一的方法`.simulate_value()`根据最后一次调用以来经过的时间和随机因子生成新的股票价格值：'
 - en: '[PRE1]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO2-1)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO2-1)'
 - en: The attribute `t` stores the time of the initialization.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 属性`t`存储初始化的时间。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO2-2)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO2-2)'
 - en: When the `.simulate_value()` method is called, the current time is recorded.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用`.simulate_value()`方法时记录当前时间。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO2-3)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO2-3)'
 - en: '`dt` represents the time interval between the current time and the one stored
     in `self.t` in (trading) year fractions.'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '`dt`表示当前时间与存储在`self.t`中的时间之间的(交易)年分数间隔。'
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO2-4)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO2-4)'
 - en: To have larger instrument price movements, this line of code scales the `dt`
     variable (by an arbitrary factor).
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了具有更大的工具价格波动，此行代码通过任意因子缩放`dt`变量。
 - en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO2-5)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO2-5)'
 - en: The attribute `t` is updated with the current time, which represents the reference
     point for the next call of the method.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 属性`t`使用当前时间更新，表示下次调用方法的参考点。
 - en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO2-6)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO2-6)'
 - en: Based on an Euler scheme for the geometric Brownian motion, a new instrument
     price is simulated.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于几何布朗运动的欧拉方案，模拟新的工具价格。
 - en: The main part of the script consists of the instantiation of an object of type
     `InstrumentPrice` and an infinite `while` loop. During the `while` loop, a new
     instrument price gets simulated, and a message is created, printed, and sent via
     the socket.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 脚本的主要部分包括类型为`InstrumentPrice`的对象的实例化和一个无限的`while`循环。在`while`循环期间，模拟新的工具价格，并创建、打印并通过套接字发送消息。
 - en: 'Finally, the execution pauses for a random amount of time:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，执行暂停一段随机时间：
 - en: '[PRE2]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO3-1)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO3-1)'
 - en: This line instantiates an `InstrumentPrice` object.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 此行实例化一个`InstrumentPrice`对象。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO3-2)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO3-2)'
 - en: An infinite `while` loop is started.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 开始了一个无限的`while`循环。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO3-3)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO3-3)'
 - en: The message text gets generated based on the `symbol` attribute and a newly
     simulated stock price value.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 消息文本基于`symbol`属性和新模拟的股票价格值生成。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO3-4)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO3-4)'
 - en: The message `str` object is printed to the standard out.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 将消息`str`对象打印到标准输出。
 - en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO3-5)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO3-5)'
 - en: It is also sent to subscribed sockets.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 它也被发送到已订阅的套接字。
 - en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO3-6)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO3-6)'
 - en: The execution of the loop is paused for a random amount of time (between 0 and
     2 seconds), simulating the random arrival of new tick data in the markets.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 循环的执行暂停了一段随机时间（在0到2秒之间），模拟了市场上新的tick数据的随机到达。
 - en: 'Executing the script prints out messages as follows:'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 执行脚本将如下打印出消息：
 - en: '[PRE3]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: At this point, it cannot yet be verified whether the script is also sending
     the same message via the socket bound to `tcp://0.0.0.0:5555` (`tcp://127.0.0.1:5555`
     on Windows). To this end, another socket subscribing to the publishing socket
     is needed to complete the socket pair.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时还不能验证脚本是否也通过绑定到`tcp://0.0.0.0:5555`（在Windows上是`tcp://127.0.0.1:5555`）的套接字发送相同的消息。为此，需要另一个订阅发布套接字的套接字来完成套接字对。
 - en: Often, the Monte Carlo simulation of prices for financial instruments relies
     on homogeneous time intervals (like “one trading day”). In many cases, this is
     a “good enough” approximation when working with, say, end-of-day closing prices
@@ -297,12 +449,16 @@
     of the data is an important characteristic that needs to be taken into account.
     The Python script for the tick data server implements the random arrival times
     by randomized time intervals during which it pauses the execution.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 在许多情况下，金融工具价格的蒙特卡洛模拟依赖于均匀时间间隔（例如“一个交易日”）。在许多情况下，当与更长的视野内的日终收盘价格一起使用时，这是一个“足够好”的近似值。在涉及到日内tick数据的情况下，数据的随机到达是需要考虑的重要特征。用于tick数据服务器的Python脚本通过在执行期间暂停的随机时间间隔实现了数据的随机到达时间。
 - en: Connecting a Simple Tick Data Client
+  id: totrans-68
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 连接一个简单的Tick数据客户端
 - en: The code for the tick data server is already quite concise, with the `InstrumentPrice`
     simulation class representing the longest part. The code for a respective tick
     data client, as shown in [“Tick Data Client”](#py_tick_client), is even more concise.
@@ -310,86 +466,134 @@
     to the publishing socket, and subscribe to the `SYMBOL` channel, which happens
     to be the only available channel here. In the `while` loop, the string-based message
     is received and printed. That makes for a rather short script.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于tick数据服务器的代码已经相当简洁，其中`InstrumentPrice`模拟类代表最长的部分。如[“Tick数据客户端”](#py_tick_client)中所示，相应的tick数据客户端代码更加简洁。只需几行代码实例化主`Context`对象，连接到发布套接字，并订阅`SYMBOL`频道，这恰好是此处唯一可用的频道。在`while`循环中，接收并打印基于字符串的消息。这使得脚本相当简短。
 - en: 'The initial part of the following script is almost symmetrical to the tick
     data server script:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下脚本的初始部分几乎与tick数据服务器脚本对称：
 - en: '[PRE4]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO4-1)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO4-1)'
 - en: This imports the Python wrapper for the `ZeroMQ` library.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这导入了`ZeroMQ`库的Python包装器。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO4-2)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO4-2)'
 - en: For the client, the main object also is an instance of `zmq.Context`.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于客户端，主要对象也是`zmq.Context`的实例。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO4-3)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO4-3)'
 - en: From here, the code is different; the socket type is set to `SUB`.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 从这里开始，代码是不同的；套接字类型设置为`SUB`。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO4-4)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO4-4)'
 - en: This socket connects to the respective IP address and port combination.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 此套接字连接到相应的IP地址和端口组合。
 - en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO4-5)'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO4-5)'
 - en: This line of code defines the so-called channel to which the socket subscribes.
     Here, there is only one, but a specification is nevertheless required. In real-world
     applications, however, you might receive data for a multitude of different symbols
     via a socket connection.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 这行代码定义了所谓的频道，该频道订阅了套接字。在这里，只有一个频道，但仍然需要规范。然而，在实际应用中，您可能通过套接字连接接收来自多种不同符号的数据。
 - en: 'The `while` loop boils down to the retrieval of the messages sent by the server
     socket and printing them out:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '`while`循环归结为获取服务器套接字发送的消息并将其打印出来：'
 - en: '[PRE5]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO5-1)'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO5-1)'
 - en: This socket receives data in an infinite loop.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 此套接字在一个无限循环中接收数据。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO5-2)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO5-2)'
 - en: This is the main line of code where the data (string-based message) is received.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是接收数据（基于字符串消息）的主要代码行。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO5-3)'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO5-3)'
 - en: '`data` is printed to `stdout`.'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '`data`被打印到`stdout`。'
 - en: 'The output of the Python script for the socket client is exactly the same as
     the one from the Python script for the socket server:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: Python套接字客户端的输出与Python套接字服务器的输出完全相同：
 - en: '[PRE6]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Retrieving data in the form of string-based messages via socket communication
     is only a prerequisite for the very tasks to be accomplished based on the data,
     like generating trading signals in real time or visualizing the data. This is
     what the two next sections cover.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过套接字通信以字符串消息的形式检索数据仅是基于数据完成任务的先决条件，例如实时生成交易信号或数据可视化。这是接下来两个章节所涵盖的内容。
 - en: '`ZeroMQ` allows the transmission of other object types, as well. For example,
     there is an option to send a Python object via a socket. To this end, the object
     is, by default, serialized and deserialized with `pickle`. The respective methods
@@ -398,12 +602,17 @@
     with Python being only one out of many languages. Therefore, string-based socket
     communication is often used, for example, in combination with standard data formats
     such as `JSON`.'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '`ZeroMQ`还允许传输其他对象类型。例如，可以通过套接字发送Python对象。为此，默认情况下使用`pickle`对对象进行序列化和反序列化。实现这一目标的方法是`.send_pyobj()`和`.recv_pyobj()`（参见[PyZMQ
+    API](https://oreil.ly/ok2kc)）。然而，在实践中，平台和数据提供商涵盖了多种环境，Python仅是其中的一种语言。因此，通常使用基于字符串的套接字通信，例如与诸如`JSON`等标准数据格式的结合。'
 - en: Signal Generation in Real Time
+  id: totrans-94
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 实时信号生成
 - en: An *online algorithm* is an algorithm based on data that is received incrementally
     (bit by bit) over time. Such an algorithm only knows the current and previous
     states of relevant variables and parameters, but nothing about the future. This
@@ -412,8 +621,10 @@
     knows the complete data set from the beginning. Many algorithms in computer science
     fall into the category of offline algorithms, such as a sorting algorithm over
     a list of numbers.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在线算法*是一种基于逐步接收的数据（逐位递增）的算法。这样的算法仅了解相关变量和参数的当前状态和先前状态，但不了解未来的情况。这对于金融交易算法而言是一种现实的设置，其中任何完全预见性的元素都被排除在外。相比之下，*离线算法*从一开始就知道完整的数据集。许多计算机科学中的算法属于离线算法的范畴，例如对数字列表的排序算法。'
 - en: 'To generate signals in real time on the basis of an online algorithm, data
     needs to be collected and processed over time. Consider, for example, a trading
     strategy based on the time series momentum of the last three five-second intervals
@@ -424,135 +635,210 @@
     implements the momentum strategy, as described previously as an online algorithm.
     Technically, there are two major parts in addition to handling the socket communication.
     First are the retrieval and storage of the tick data:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 要基于在线算法实时生成信号，需要随时间收集和处理数据。例如，考虑基于最后三个五秒间隔的时间序列动量的交易策略（参见[第四章](ch04.html#vectorized_backtesting)）。需要收集Tick数据，然后对其进行重新采样，并根据重新采样后的数据集计算动量。随着时间的推移，持续进行增量更新。["动量在线算法"](#py_online_algorithm)
+    提供了一个Python脚本，实现了如前所述的动量策略，作为一个在线算法。从技术上讲，除了处理套接字通信之外，还有两个主要部分。首先是Tick数据的检索和存储：
 - en: '[PRE7]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO6-1)'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO6-1)'
 - en: Instantiates an empty `pandas` `DataFrame` to collect the tick data.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化一个空的`pandas` `DataFrame`以收集Tick数据。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO6-2)'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO6-2)'
 - en: Defines the number of time intervals for the momentum calculation.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义用于动量计算的时间间隔数。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO6-3)'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO6-3)'
 - en: Specifies the (initial) minimum length for the signal generation to be triggered.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定触发信号生成的（初始）最小长度。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO6-4)'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO6-4)'
 - en: The retrieval of the tick data via the socket connection.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过套接字连接检索tick数据。
 - en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO6-5)'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO6-5)'
 - en: A timestamp is generated for the data retrieval.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 为数据检索生成一个时间戳。
 - en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO6-6)'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO6-6)'
 - en: The string-based message is split into the symbol and the numerical value (still
     a `str` object here).
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 将基于字符串的消息分割为符号和数值（此处仍然是一个`str`对象）。
 - en: '[![7](assets/7.png)](#co_working_with_real_time_data_and_sockets_CO6-7)'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_working_with_real_time_data_and_sockets_CO6-7)'
 - en: This line of code first generates a temporary `DataFrame` object with the new
     data and then appends it to the existing `DataFrame` object.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 这行代码首先生成一个临时的`DataFrame`对象，然后将其附加到现有的`DataFrame`对象中。
 - en: 'Second is the resampling and processing of the data, as shown in the following
     Python code. This happens based on the tick data collected up to a certain point
     in time. During this step, log returns are calculated based on the resampled data
     and the momentum is derived. The sign of the momentum defines the positioning
     to be taken in the financial instrument:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二步是数据重新采样和处理，如下所示的Python代码。这基于截至某一时间点收集的tick数据进行。在此步骤中，基于重新采样的数据计算对数收益率，并推导出动量。动量的符号定义了在金融工具中应采取的定位：
 - en: '[PRE8]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO7-1)'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO7-1)'
 - en: The tick data is resampled to a five-second interval, taking the last available
     tick value as the relevant one.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: tick数据被重新采样为五秒间隔，取最后一个可用的tick值作为相关值。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO7-2)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO7-2)'
 - en: This calculates the log returns over the five-second intervals.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 这计算了五秒间隔内的对数收益率。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO7-3)'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO7-3)'
 - en: This increases the minimum length of the resampled `DataFrame` object by one.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 增加重新采样后的`DataFrame`对象的最小长度一行。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO7-4)'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO7-4)'
 - en: The momentum and, based on its sign, the positioning are derived given the log
     returns from three resampled time intervals.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据从三个重新采样的时间间隔得到的对数收益率，推导出动量及其定位。
 - en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO7-5)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO7-5)'
 - en: This prints the final five rows of the resampled `DataFrame` object.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印重新采样后的`DataFrame`对象的最后五行。
 - en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO7-6)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO7-6)'
 - en: A momentum value of `1.0` means a long market position. In production, the first
     signal or a change in the signal then triggers certain actions, like placing an
     order with the broker. Note that the second but last value of the `momentum` column
     is used since the last value is based at this stage on incomplete data for the
     relevant (not yet finished) time interval. Technically, this is due to using the
     `pandas` `.resample()` method with the `label='right'` parametrization.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 动量值为`1.0`表示持有多头市场仓位。在实际应用中，第一个信号或信号的变化将触发特定的操作，例如向经纪人下达订单。请注意，`momentum`列的倒数第二个值被使用，因为最后一个值基于尚未完成的相关时间间隔的不完整数据。技术上，这是由于使用`pandas`的`.resample()`方法，并带有`label='right'`参数设置。
 - en: '[![7](assets/7.png)](#co_working_with_real_time_data_and_sockets_CO7-7)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_working_with_real_time_data_and_sockets_CO7-7)'
 - en: Similarly, a momentum value of `-1.0` implies a short market position and potentially
     certain actions that might be triggered, such as a sell order with a broker. Again,
     the second but last value from the `momentum` column is used.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，动量值为`-1.0`意味着持有空头市场仓位，并可能触发某些操作，例如向经纪人下达卖出订单。同样，`momentum`列的倒数第二个值被使用。
 - en: When the script is executed, it takes some time, depending on the very parameters
     chosen, until there is enough (resampled) data available to generate the first
     signal.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 当脚本执行时，根据所选择的参数，需要一定时间，直到有足够的（重新采样的）数据生成第一个信号为止。
 - en: 'Here is an intermediate example output of the online trading algorithm script:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是在线交易算法脚本的中间示例输出：
 - en: '[PRE9]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: It is a good exercise to implement, based on the presented tick client script,
     both an SMA-based strategy and a mean-reversion strategy as an online algorithm.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据所呈现的Tick客户端脚本，实施基于SMA的策略和均值回归策略作为在线算法是一个很好的练习。
 - en: Visualizing Streaming Data with Plotly
+  id: totrans-132
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用Plotly可视化流数据
 - en: 'The visualization of streaming data in real time is generally a demanding task.
     Fortunately, there are quite a few technologies and Python packages available
     nowadays that significantly simplify such a task. In what follows, we will work
@@ -561,82 +847,127 @@
     along, the `plotly` package needs to be installed. Also, several Jupyter Lab extensions
     need to be installed when working with Jupyter Lab. The following command should
     be executed on the terminal:'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 实时流数据的可视化通常是一项具有挑战性的任务。幸运的是，如今有许多技术和Python包可以显著简化这样的任务。接下来，我们将使用[Plotly](http://plot.ly)，它既是一种技术，也是一种用于生成漂亮的交互式静态和流数据图的服务。为了跟进，需要安装`plotly`包。同时，在使用Jupyter
+    Lab时，还需安装几个Jupyter Lab扩展。应在终端上执行以下命令：
 - en: '[PRE10]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: The Basics
+  id: totrans-135
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 基础知识
 - en: 'Once the required packages and extension are installed, the generation of a
     streaming plot is quite efficient. The first step is the creation of a Plotly
     figure widget:'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦安装了所需的包和扩展，生成流式图表就非常高效。第一步是创建一个Plotly图表小部件：
 - en: '[PRE11]'
+  id: totrans-137
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO8-1)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO8-1)'
 - en: This imports the graphical objects from `plotly`.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将从`plotly`导入图形对象。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO8-2)'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO8-2)'
 - en: This instantiates a Plotly figure widget within the Jupyter Notebook.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 这在Jupyter Notebook中实例化了一个Plotly图表小部件。
 - en: 'The second step is to set up the socket communication with the sample tick
     data server, which needs to run on the same machine in a separate Python process.
     The incoming data is enriched by a timestamp and collected in `list` objects.
     These `list` objects in turn are used to update the `data` objects of the figure
     widget (see [Figure 7-1](#plotly_stream_01)):'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二步是设置与样本刻度数据服务器的套接字通信，该服务器需要在单独的Python进程中与相同机器上运行。传入的数据通过时间戳增强，并收集在`list`对象中。这些`list`对象反过来用于更新图表小部件的`data`对象（参见[图7-1](#plotly_stream_01)）：
 - en: '[PRE12]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO9-1)'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO9-1)'
 - en: '`list` object for the timestamps.'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '`list`对象用于时间戳。'
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO9-2)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO9-2)'
 - en: '`list` object for the real-time prices.'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '`list`对象用于实时价格。'
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO9-3)'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO9-3)'
 - en: Generates a timestamp and appends it.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成时间戳并附加它。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO9-5)'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO9-5)'
 - en: Updates the `data` object with the amended `x` (`times`) and `y` (`prices`)
     data sets.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用修改后的`x`（`times`）和`y`（`prices`）数据集更新`data`对象。
 - en: '![pfat 0701](assets/pfat_0701.png)'
+  id: totrans-152
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0701](assets/pfat_0701.png)'
 - en: Figure 7-1\. Plot of streaming price data, as retrieved in real time via socket
     connection
+  id: totrans-153
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-1。通过套接字连接实时检索的流价格数据的绘图
 - en: Three Real-Time Streams
+  id: totrans-154
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 三个实时流
 - en: 'A streaming plot with Plotly can have multiple graph objects. This comes in
     handy when, for instance, two simple moving averages (SMAs) shall be visualized
     in real time in addition to the price ticks. The following code instantiates again
@@ -644,93 +975,145 @@
     sample tick data server is collected in a `pandas` `DataFrame` object. The two
     SMAs are calculated after each update from the socket. The amended data sets are
     used to update the `data` object of the figure widget (see [Figure 7-2](#plotly_stream_02)):'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用Plotly进行流式图绘制时，可以有多个图形对象。例如，在实时可视化价格刻度之外，还可以方便地显示两个简单移动平均线（SMA）。以下代码再次实例化一个图表小部件，这次是带有三个`scatter`对象。从样本刻度数据服务器收集的刻度数据存储在`pandas`的`DataFrame`对象中。在每次来自套接字的更新后计算两个SMA。修改后的数据集用于更新图表小部件的`data`对象（参见[图7-2](#plotly_stream_02)）：
 - en: '[PRE13]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO10-1)'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO10-1)'
 - en: Collects the tick data in a `DataFrame` object.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 `DataFrame` 对象中收集 tick 数据。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO10-3)'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO10-3)'
 - en: Adds the two SMAs in separate columns to the `DataFrame` object.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 将两个简单移动平均线添加到 `DataFrame` 对象的单独列中。
 - en: Again, it is a good exercise to combine the plotting of streaming tick data
     and the two SMAs with the implementation of an online trading algorithm based
     on the two SMAs. In this case, resampling should be added to the implementation
     since such trading algorithms are hardly ever based on tick data but rather on
     bars of fixed length (five seconds, one minute, etc.).
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 再次，将实时 tick 数据的绘制与两个简单移动平均线的实现结合起来，实现基于这两个简单移动平均线的在线交易算法是一种很好的练习。在这种情况下，应添加重采样到实现中，因为这种交易算法很少基于
+    tick 数据，而是基于固定长度的条形图（五秒钟、一分钟等）。
 - en: '![pfat 0702](assets/pfat_0702.png)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0702](assets/pfat_0702.png)'
 - en: Figure 7-2\. Plot of streaming price data and two SMAs calculated in real time
+  id: totrans-163
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 7-2\. 实时计算的流式价格数据和两个简单移动平均线的图表
 - en: Three Sub-Plots for Three Streams
+  id: totrans-164
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 三个流的三个子图
 - en: 'As with conventional Plotly plots, streaming plots based on figure widgets
     can also have multiple sub-plots. The example that follows creates a streaming
     plot with three sub-plots. The first plots the real-time tick data. The second
     plots the log returns data. The third plots the time series momentum based on
     the log returns data. [Figure 7-3](#plotly_stream_03) shows a snapshot of the
     whole figure object:'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 与常规的 Plotly 图表一样，基于 figure 小部件的实时流图表也可以具有多个子图。接下来的示例创建一个具有三个子图的实时流图表。第一个子图绘制实时
+    tick 数据。第二个子图绘制对数收益数据。第三个子图基于对数收益数据绘制时间序列动量。[Figure 7-3](#plotly_stream_03) 展示了整个图形对象的快照：
 - en: '[PRE14]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO11-1)'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO11-1)'
 - en: Creates three sub-plots that share the x-axis.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建三个共享 x 轴的子图。
 - en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO11-2)'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO11-2)'
 - en: Creates the first sub-plot for the price data.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 为价格数据创建第一个子图。
 - en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO11-3)'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO11-3)'
 - en: Creates the second sub-plot for the log returns data.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 为对数收益数据创建第二个子图。
 - en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO11-4)'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO11-4)'
 - en: Creates the third sub-plot for the momentum data.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 为动量数据创建第三个子图。
 - en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO11-5)'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO11-5)'
 - en: Adjusts the height of the figure object.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整图形对象的高度。
 - en: '![pfat 0703](assets/pfat_0703.png)'
+  id: totrans-177
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0703](assets/pfat_0703.png)'
 - en: Figure 7-3\. Streaming price data, log returns, and momentum in different sub-plots
+  id: totrans-178
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 7-3\. 实时流价格数据、对数收益和动量在不同子图中
 - en: Streaming Data as Bars
+  id: totrans-179
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实时流数据作为条形图
 - en: 'Not all streaming data is best visualized as a time series (`Scatter` object).
     Some streaming data is better visualized as bars with changing height. [“Sample
     Data Server for Bar Plot”](#py_bars_server) contains a Python script that serves
@@ -739,22 +1122,34 @@
     a streaming bar plot (see [Figure 7-4](#plotly_stream_04)). In this context, the
     x data usually does not change. For the following code to work, the `BarsServer.py`
     script needs to be executed in a separate, local Python instance:'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 并非所有实时数据都最适合作为时间序列（`Scatter` 对象）进行可视化。某些实时数据最好通过高度变化的条形图进行可视化。[“条形图样本数据服务器”](#py_bars_server)
+    包含一个适用于基于条形图可视化的样本数据的 Python 脚本。单个数据集（消息）包含八个浮点数。以下 Python 代码生成一个实时条形图（参见 [Figure 7-4](#plotly_stream_04)）。在此情况下，x
+    数据通常不会改变。要使以下代码起作用，需要在单独的本地 Python 实例中执行 `BarsServer.py` 脚本：
 - en: '[PRE15]'
+  id: totrans-181
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '![pfat 0704](assets/pfat_0704.png)'
+  id: totrans-182
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0704](assets/pfat_0704.png)'
 - en: Figure 7-4\. Streaming data as bars with changing height
+  id: totrans-183
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 7-4\. 实时流数据作为高度变化的条形图
 - en: Conclusions
+  id: totrans-184
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: Nowadays, algorithmic trading has to deal with different types of streaming
     (real-time) data types. The most important type in this regard is tick data for
     financial instruments that is, in principle, generated and published around the
@@ -762,99 +1157,146 @@
     choice to deal with streaming data. A powerful and at the same time easy-to-use
     library in this regard is `ZeroMQ`, which is used in this chapter to create a
     simple tick data server that endlessly emits sample tick data.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 如今，算法交易必须处理不同类型的流数据。在这方面最重要的是金融工具的Tick数据，原则上是全天候生成和发布的。^([2](ch07.html#idm45785354874120))
+    套接字是处理流数据的技术工具首选。在这方面一个强大且易于使用的库是`ZeroMQ`，本章中使用它创建一个简单的Tick数据服务器，无休止地发出样本Tick数据。
 - en: Different tick data clients are introduced and explained to generate trading
     signals in real time based on online algorithms and to visualize the incoming
     tick data by streaming plots using Plotly. Plotly makes streaming visualization
     within a Jupyter Notebook an efficient affair, allowing for, among other things,
     multiple streams at the same time—both in a single plot or in different sub-plots.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 引入并解释了不同的Tick数据客户端，以基于在线算法生成实时交易信号，并使用Plotly通过流动图表可视化传入的Tick数据。Plotly使得在Jupyter
+    Notebook中进行流数据可视化变得高效，允许在单个图表或不同子图中进行多个流的显示。
 - en: Based on the topics covered in this chapter and the previous ones, you are now
     able to work with both *historical structured data* (for example, in the context
     of the backtesting of trading strategies) and *real-time streaming data* (for
     example, in the context of generating trading signals in real time). This represents
     a major milestone in the endeavor to build an automated, algorithmic trading operation.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据本章和前几章讨论的主题，您现在能够处理*历史结构化数据*（例如在交易策略回测的背景下）和*实时流数据*（例如在实时生成交易信号的背景下）。这代表着建立自动化算法交易操作的重要里程碑。
 - en: References and Further Resources
+  id: totrans-188
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考和进一步资源
 - en: The best starting point for a thorough overview of `ZeroMQ` is the [ZeroMQ home
     page](http://zeromq.org). The [Learning ZeroMQ with Python](https://bit.ly/zmq_pub_sub)
     tutorial page provides an overview of the `PUB-SUB` pattern based on the Python
     wrapper for the socket communication library.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 深入了解`ZeroMQ`的最佳起点是[ZeroMQ主页](http://zeromq.org)。[Learning ZeroMQ with Python](https://bit.ly/zmq_pub_sub)
+    教程页面提供了基于Python套接字通信库的PUB-SUB模式概述。
 - en: A good place to start working with Plotly is the [Plotly home page](http://plot.ly)
     and in particular the [Getting Started with Plotly page](https://oreil.ly/7ARrQ)
     for Python.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 开始使用Plotly的好地方是[Plotly主页](http://plot.ly)，特别是Python的[Getting Started with Plotly页面](https://oreil.ly/7ARrQ)。
 - en: Python Scripts
+  id: totrans-191
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Python脚本
 - en: This section presents Python scripts referenced and used in this chapter.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了本章引用和使用的Python脚本。
 - en: Sample Tick Data Server
+  id: totrans-193
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 样本Tick数据服务器
 - en: 'The following is a script that runs a sample tick data server based on `ZeroMQ`.
     It makes use of Monte Carlo simulation for the geometric Brownian motion:'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是一个基于`ZeroMQ`运行样本Tick数据服务器的脚本。它利用蒙特卡罗模拟实现几何布朗运动：
 - en: '[PRE16]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Tick Data Client
+  id: totrans-196
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Tick数据客户端
 - en: 'The following is a script that runs a tick data client based on `ZeroMQ`. It
     connects to the tick data server from [“Sample Tick Data Server”](#py_tick_server):'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是一个基于`ZeroMQ`运行Tick数据客户端的脚本。它连接到来自[“样本Tick数据服务器”](#py_tick_server)的Tick数据服务器：
 - en: '[PRE17]'
+  id: totrans-198
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Momentum Online Algorithm
+  id: totrans-199
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 动量在线算法
 - en: 'The following is a script that implements a trading strategy based on time
     series momentum as an online algorithm. It connects to the tick data server from
     [“Sample Tick Data Server”](#py_tick_server):'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是一个脚本，实现基于时间序列动量的交易策略作为在线算法。它连接到来自[“样本Tick数据服务器”](#py_tick_server)的Tick数据服务器：
 - en: '[PRE18]'
+  id: totrans-201
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: Sample Data Server for Bar Plot
+  id: totrans-202
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 条形图样本数据服务器
 - en: 'The following is a Python script that generates sample data for a streaming
     bar plot:'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是一个生成流动条形图样本数据的Python脚本：
 - en: '[PRE19]'
+  id: totrans-204
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: ^([1](ch07.html#idm45785358164968-marker)) When speaking of *simultaneously*
     or *at the same time*, this is meant in a theoretical, idealized sense. In practical
     applications, different distances between the sending and receiving sockets, network
     speeds, and other factors affect the exact retrieval time per subscriber socket.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch07.html#idm45785358164968-marker)) 当提到*同时*或*同时进行*时，这是在理论上和理想化的意义上说的。在实际应用中，发送和接收套接字之间的不同距离、网络速度和其他因素影响每个订阅套接字的确切检索时间。
 - en: ^([2](ch07.html#idm45785354874120-marker)) Not all markets are open 24 hours,
     7 days per week, and for sure not all financial instruments are traded around
     the clock. However, cryptocurrency markets, for example, for Bitcoin, indeed operate
     around the clock, constantly creating new data that needs to be digested in real-time
     by players active in these markets.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch07.html#idm45785354874120-marker)) 并非所有市场都是全天候、全周7天开放的，当然，也并非所有金融工具都是全天候交易的。然而，例如比特币等加密货币市场的确是全天候运营的，不断产生新数据，需要由参与这些市场的活跃参与者实时消化。

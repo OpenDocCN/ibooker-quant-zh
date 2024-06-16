@@ -1,53 +1,74 @@
 - en: Chapter 6\. Building Classes for Event-Based Backtesting
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第6章。为事件驱动的回测构建类
 - en: The actual tragedies of life bear no relation to one’s preconceived ideas. In
     the event, one is always bewildered by their simplicity, their grandeur of design,
     and by that element of the bizarre which seems inherent in them.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 生活的实际悲剧与一个人的预设观念毫无关系。在事件中，人们总是被它们的简单性、设计的宏伟以及似乎固有的奇异因素所困惑。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Jean Cocteau
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 让·科克托
 - en: 'On the one hand, *vectorized backtesting* with `NumPy` and `pandas` is generally
     convenient and efficient to implement due to the concise code, and it is fast
     to execute due to these packages being optimized for such operations. However,
     the approach cannot cope with all types of trading strategies nor with all phenomena
     that the trading reality presents an algorithmic trader with. When it comes to
     vectorized backtesting, potential shortcomings of the approach are the following:'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 一方面，*NumPy* 和 *pandas* 的*向量化回测*通常因为简洁的代码而便于实现，并且由于这些包针对这类操作进行了优化，执行速度快。然而，这种方法无法处理所有类型的交易策略，也无法处理交易现实中算法交易员面临的所有现象。在向量化回测方面，该方法的潜在缺点包括：
 - en: Look-ahead bias
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 展望偏差
 - en: Vectorized backtesting is based on the complete data set available and does
     not take into account that new data arrives incrementally.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化回测基于可用的完整数据集，并且不考虑新数据的逐步到达。
 - en: Simplification
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 简化
 - en: For example, fixed transaction costs cannot be modeled by vectorization, which
     is mainly based on relative returns. Also, fixed amounts per trade or the non-divisibility
     of single financial instruments (for example, a share of a stock) cannot be modeled
     properly.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，固定交易成本不能通过向量化进行建模，后者主要基于相对收益。此外，每笔交易的固定金额或单个金融工具的不可分割性（例如股票的一部分）也不能得到适当的建模。
 - en: Non-recursiveness
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 非递归性
 - en: Algorithms, embodying trading strategies, might take recurse to state variables
     over time, like profit and loss up to a certain point in time or similar path-dependent
     statistics. Vectorization cannot cope with such features.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法，体现交易策略，可能随时间推移而对状态变量进行递归，比如截至某一时间点的盈亏或类似的路径相关统计数据。向量化不能处理这样的特性。
 - en: 'On the other hand, *event-based backtesting* allows one to address these issues
     by a more realistic approach to model trading realities. On a basic level, an
     *event* is characterized by the arrival of new data. Backtesting a trading strategy
@@ -55,357 +76,553 @@
     price for the Apple stock. It can also be a change in an interest rate, or the
     hitting of a stop loss level. Advantages of the event-based backtesting approach
     generally are the following:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，*事件驱动的回测*允许通过更现实的方法来模拟交易现实。从基本层面上看，*事件*的特征是新数据的到达。根据每日结束数据回测苹果公司股票的交易策略，事件可能是苹果股票的新收盘价。它也可以是利率变化，或触及止损水平。事件驱动回测方法的优点通常包括：
 - en: Incremental approach
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 增量方法
 - en: As in the trading reality, backtesting takes place on the premise that new data
     arrives incrementally, tick-by-tick and quote-by-quote.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 与交易现实一样，回测是在新数据逐步到达的前提下进行的，每一次变动和报价。
 - en: Realistic modeling
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 真实的建模
 - en: One has complete freedom to model those processes that are triggered by a new
     and specific event.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个完全自由的模型，这些过程是由新的和具体的事件触发的。
 - en: Path dependency
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 路径依赖性
 - en: It is straightforward to keep track of conditional, recursive, or otherwise
     path-dependent statistics, such as the maximum or minimum price seen so far, and
     to include them in the trading algorithm.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 跟踪条件、递归或其他路径相关的统计数据非常简单，比如迄今为止见过的最高或最低价格，并将它们包含在交易算法中。
 - en: Reusability
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 可重用性
 - en: Backtesting different types of trading strategies requires a similar base functionality
     that can be implemented and unified through object-oriented programming.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 回测不同类型的交易策略需要类似的基础功能，可以通过面向对象编程实现和统一。
 - en: Close to trading
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 靠近交易
 - en: Certain elements of an event-based backtesting system can sometimes also be
     used for the automated implementation of the trading strategy.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 事件驱动的回测系统的某些元素有时也可以用于自动实施交易策略。
 - en: In what follows, a new event is generally identified by a *bar*, which represents
     one unit of new data. For example, events can be *one-minute bars* for an intraday
     trading strategy or *one-day bars* for a trading strategy based on daily closing
     prices.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的内容中，一个新事件通常由一个 *条形图* 标识，它代表新数据的一个单位。例如，事件可以是用于日内交易策略的 *一分钟条形图* 或基于每日收盘价格的交易策略的
+    *一天条形图*。
 - en: The chapter is organized as follows. [“Backtesting Base Class”](#base_class)
     presents a base class for the event-based backtesting of trading strategies. [“Long-Only
     Backtesting Class”](#long_only) and [“Long-Short Backtesting Class”](#long_short)
     make use of the base class to implement long-only and long-short backtesting classes,
     respectively.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的组织如下。[“回测基础类”](#base_class) 提供了一个用于基于事件的交易策略回测的基础类。[“仅多头回测类”](#long_only)
+    和 [“多空头回测类”](#long_short) 则利用基类实现了分别用于仅多头和多空头回测的类。
 - en: The goals of this chapter are to understand event-based modeling, to create
     classes that allow a more realistic backtesting, and to have a foundational backtesting
     infrastructure available as a starting point for further enhancements and refinements.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的目标是理解基于事件的建模，创建允许更现实的回测的类，并提供一个基础的回测基础设施，作为进一步增强和改进的起点。
 - en: Backtesting Base Class
+  id: totrans-25
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 回测基础类
 - en: 'When it comes to building the infrastructure—in the form of a Python class—for
     event-based backtesting, several requirements must be met:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 当建立基础设施——以Python类的形式——用于基于事件的回测时，必须满足几个要求：
 - en: Retrieving and preparing data
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索和准备数据
 - en: The base class shall take care of the data retrieval and possibly the preparation
     for the backtesting itself. To keep the discussion focused, end-of-day (EOD) data
     as read from a CSV file is the type of data the base class shall allow for.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 基类将负责数据检索，可能还包括为回测本身做准备。为了讨论的聚焦，基类应允许以CSV文件读取的每日结束数据作为数据类型。
 - en: Helper and convenience functions
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 帮助和便利函数
 - en: It shall provide a couple of helper and convenience functions that make backtesting
     easier. Examples are functions for plotting data, printing out state variables,
     or returning date and price information for a given bar.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 它应该提供一些帮助和便利函数，使得回测更加容易。例如，用于绘制数据的函数、打印状态变量或返回给定条形图的日期和价格信息的函数等。
 - en: Placing orders
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 下订单
 - en: The base class shall cover the placing of basic buy and sell orders. For simplicity,
     only market buy and sell orders are modeled.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 基类应涵盖基本买入和卖出订单的下达。为简化起见，仅建模市价买入和卖出订单。
 - en: Closing out positions
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 平仓持仓
 - en: At the end of any backtesting, any market positions need to be closed out. The
     base class shall take care of this final trade.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 在任何回测结束时，需要平掉所有市场持仓。基类将负责这最后的交易。
 - en: If the base class meets these requirements, respective classes to backtest strategies
     based on simple moving averages (SMAs), momentum, or mean reversion (see [Chapter 4](ch04.html#vectorized_backtesting)),
     as well as on machine learning-based prediction (see [Chapter 5](ch05.html#machine_learning)),
     can be built upon it. [“Backtesting Base Class”](#py_base_class) presents an implementation
     of such a base class called `BacktestBase`. The following is a walk through the
     single methods of this class to get an overview of its design.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果基类满足这些要求，则可以在此基础上构建基于简单移动平均线（SMA）、动量或均值回归（见[第四章](ch04.html#vectorized_backtesting)）、以及基于机器学习预测（见[第五章](ch05.html#machine_learning)）的策略回测类。[“回测基础类”](#py_base_class)
+    展示了一个名为 `BacktestBase` 的此类基础类的实现。以下是该类的单个方法的概述。
 - en: 'With regard to the special method `__main__`, there are only a few noteworthy
     things. First, the initial amount available is stored twice, both in a private
     attribute `_amount` that is kept constant and in a regular attribute `amount`
     that represents the running balance. The default assumption is that there are
     no transaction costs:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于特殊方法 `__main__`，只有几件值得注意的事情。首先，可用初始金额存储两次，分别在一个私有属性 `_amount` 中保持不变，以及在一个表示流动余额的常规属性
+    `amount` 中。默认假设是没有交易成本的：
 - en: '[PRE0]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-1)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-1)'
 - en: Stores the initial amount in a private attribute.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储初始金额在一个私有属性中。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-2)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-2)'
 - en: Sets the starting cash balance value.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置起始现金余额值。
 - en: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-3)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-3)'
 - en: Defines fixed transaction costs per trade.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义每笔交易的固定交易成本。
 - en: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-4)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-4)'
 - en: Defines proportional transaction costs per trade.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义每笔交易的比例交易成本。
 - en: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-5)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-5)'
 - en: Units of the instrument (for example, number of shares) in the portfolio initially.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始时，投资组合中工具的单位（例如股票数量）。
 - en: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-6)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-6)'
 - en: Sets the initial position to market neutral.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 将初始仓位设置为市场中性。
 - en: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-7)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-7)'
 - en: Sets the initial number of trades to zero.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 将初始交易数量设置为零。
 - en: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-8)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO1-8)'
 - en: Sets `self.verbose` to `True` to get full output.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`self.verbose`设置为`True`以获得完整输出。
 - en: 'During initialization, the `get_data` method is called, which retrieves EOD
     data from a CSV file for the provided symbol and the given time interval. It also
     calculates the log returns. The Python code that follows has been used extensively
     in Chapters [4](ch04.html#vectorized_backtesting) and [5](ch05.html#machine_learning).
     Therefore, it does not need to be explained in detail here:'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 在初始化期间，调用`get_data`方法，该方法从CSV文件中获取提供的符号和给定时间间隔的EOD数据。它还计算对数收益率。随后的Python代码在第[4](ch04.html#vectorized_backtesting)和第[5](ch05.html#machine_learning)章节中广泛使用，因此这里不需要详细解释：
 - en: '[PRE1]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'The `.plot_data()` method is just a simple helper method to plot the (adjusted
     close) values for the provided symbol:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.plot_data()`方法只是一个简单的辅助方法，用于绘制提供的符号（调整后的收盘）值的图表：'
 - en: '[PRE2]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'A method that gets frequently called is `.get_date_price()`. For a given `bar`,
     it returns the date and price information:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个经常被调用的方法是`.get_date_price()`。对于给定的`bar`，它返回日期和价格信息：
 - en: '[PRE3]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '`.print_balance()` prints out the current cash balance given a certain bar,
     while `.print_net_wealth()` does the same for the net wealth (= current balance
     plus value of trading position):'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.print_balance()`在给定的某个`bar`中打印出当前现金余额，而`.print_net_wealth()`则对净财富（=当前余额加上交易仓位的价值）做相同操作：'
 - en: '[PRE4]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'Two core methods are `.place_buy_order()` and `.place_sell_order()`. They allow
     the emulated buying and selling of units of a financial instrument. First is the
     `.place_buy_order()` method, which is commented on in detail:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个核心方法是`.place_buy_order()`和`.place_sell_order()`。它们允许模拟买卖金融工具的单位。首先是`.place_buy_order()`方法，详细注释如下：
 - en: '[PRE5]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-1)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-1)'
 - en: The date and price information for the given `bar` is retrieved.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索给定`bar`的日期和价格信息。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-2)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-2)'
 - en: If no value for `units` is given…
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果未提供`units`的值…
 - en: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-3)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-3)'
 - en: …the number of `units` is calculated given the value for `amount`. (Note that
     one needs to be given.) The calculation does not include transaction costs.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: …给定`amount`的值，计算`units`的数量。（注意需要给定一个值。）此计算不包括交易成本。
 - en: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-4)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-4)'
 - en: The current cash balance is reduced by the cash outlays for the units of the
     instrument to be bought *plus* the proportional and fixed transaction costs. Note
     that it is not checked whether there is enough liquidity available or not.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前现金余额减去要购买的工具单位的现金支出*加上*比例和固定的交易成本。请注意，没有检查是否有足够的流动性可用。
 - en: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-5)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-5)'
 - en: The value of `self.units` is increased by the number of units bought.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '`self.units`的值增加了买入的单位数。'
 - en: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-6)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-6)'
 - en: This increases the counter for the number of trades by one.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将交易数量的计数器增加一。
 - en: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-7)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-7)'
 - en: If `self.verbose` is `True`…
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果`self.verbose`为`True`…
 - en: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-8)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-8)'
 - en: …print out information about trade execution…
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: …打印有关交易执行的信息…
 - en: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-9)'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-9)'
 - en: …the current cash balance…
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: …当前的现金余额…
 - en: '[![10](assets/10.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-10)'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO2-10)'
 - en: …and the current net wealth.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: …和当前的净财富。
 - en: 'Second, the `.place_sell_order()` method, which has only two minor adjustments
     compared to the `.place_buy_order()` method:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，`.place_sell_order()`方法与`.place_buy_order()`方法相比仅有两个小调整：
 - en: '[PRE6]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO3-1)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO3-1)'
 - en: The current cash balance is increased by the proceeds of the sale *minus* transactions
     costs.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前现金余额增加了销售收入*减去*交易成本。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO3-2)'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO3-2)'
 - en: The value of `self.units` is decreased by the number of units sold.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '`self.units`的值减少了卖出的单位数。'
 - en: 'No matter what kind of trading strategy is backtested, the position at the
     end of the backtesting period needs to be closed out. The code in the `BacktestBase`
     class assumes that the position is not liquidated but rather accounted for with
     its asset value to calculate and print the performance figures:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论回测什么类型的交易策略，回测期末的头寸都需要平仓。`BacktestBase`类中的代码假设头寸没有清算，而是用其资产价值来计算和打印性能数据：
 - en: '[PRE7]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO4-1)'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO4-1)'
 - en: No transaction costs are subtracted at the end.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后没有减去交易成本。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO4-2)'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO4-2)'
 - en: The final balance consists of the current cash balance plus the value of the
     trading position.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终余额包括当前现金余额加上交易头寸的价值。
 - en: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO4-3)'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO4-3)'
 - en: This calculates the net performance in percent.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 这计算出百分比的净表现。
 - en: 'The final part of the Python script is the `__main__` section, which gets executed
     when the file is run as a script:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: Python脚本的最后部分是`__main__`部分，当文件作为脚本运行时执行：
 - en: '[PRE8]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'It instantiates an object based on the `BacktestBase` class. This leads automatically
     to the data retrieval for the symbol provided. [Figure 6-1](#bt_plot_1) shows
     the resulting plot. The following output shows the meta information for the respective
     `DataFrame` object and the five most recent data rows:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 它基于`BacktestBase`类实例化一个对象。这自动导致检索提供的符号的数据。[图 6-1](#bt_plot_1)显示出结果图。以下输出显示了相应`DataFrame`对象的元信息和最近的五行数据：
 - en: '[PRE9]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '![pfat 0601](assets/pfat_0601.png)'
+  id: totrans-102
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0601](assets/pfat_0601.png)'
 - en: Figure 6-1\. Plot of data as retrieved for `symbol` by the `BacktestBase` class
+  id: totrans-103
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图6-1\. 由`BacktestBase`类检索的`symbol`数据绘图
 - en: The two subsequent sections present classes to backtest long-only and long-short
     trading strategies. Since these classes rely on the base class presented in this
     section, the implementation of the backtesting routines is rather concise.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个后续章节介绍了用于回测仅多头和多空交易策略的类。由于这些类依赖于本节中介绍的基础类，因此回测例程的实现相当简洁。
 - en: Using object-oriented programming allows one to build a basic backtesting infrastructure
     in the form of a Python class. Standard functionality needed during the backtesting
     of different kinds of algorithmic trading strategies is made available by such
     a class in a non-redundant, easy-to-maintain fashion. It is also straightforward
     to enhance the base class to provide more features by default that might benefit
     a multitude of other classes built on top of it.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用面向对象编程可以通过Python类的形式构建基本的回测基础设施。这种类提供了在不冗余、易于维护的方式下回测不同类型算法交易策略所需的标准功能。同时，通过简单的方式增强基础类以提供更多默认功能，这些功能可能有益于其他构建在其上的多个类。
 - en: Long-Only Backtesting Class
+  id: totrans-106
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 仅多头回测类
 - en: Certain investor preferences or regulations might prohibit short selling as
     part of a trading strategy. As a consequence, a trader or portfolio manager is
     only allowed to enter long positions or to park capital in the form of cash or
@@ -413,109 +630,171 @@
     shows the code of a backtesting class for long-only strategies called `BacktestLongOnly`.
     Since it relies on and inherits from the `BacktestBase` class, the code to implement
     the three strategies based on SMAs, momentum, and mean reversion is rather concise.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 某些投资者偏好或法规可能禁止作为交易策略的卖空。因此，交易员或投资组合经理只允许进入多头头寸或以现金或类似低风险资产（如货币市场账户）形式投放资本。[“仅多头回测类”](#py_long_only)展示了名为`BacktestLongOnly`的仅多头策略回测类的代码。由于它依赖于并继承自`BacktestBase`类，因此基于SMA、动量和均值回归实现的三种策略的代码相当简洁。
 - en: 'The method `.run_mean_reversion_strategy()` implements the backtesting procedure
     for the mean reversion-based strategy. This method is commented on in detail,
     since it might be a bit trickier from an implementation standpoint. The basic
     insights, however, easily carry over to the methods implementing the other two
     strategies:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 方法`.run_mean_reversion_strategy()`实现基于均值回归策略的回测过程。这个方法有详细的注释，因为从实现的角度来看可能有点棘手。然而，这些基本的见解很容易推广到实现其他两种策略的方法上：
 - en: '[PRE10]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-1)'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-1)'
 - en: At the beginning, this method prints out an overview of the major parameters
     for the backtesting.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 在开始时，此方法输出回测的主要参数概述。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-2)'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-2)'
 - en: The position is set to market neutral, which is done here for more clarity and
     should be the case anyway.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 该位置设置为市场中性，在这里更清晰地说明，而且无论如何都应该是这种情况。
 - en: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-4)'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-4)'
 - en: The current cash balance is reset to the initial amount in case another backtest
     run has overwritten the value.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果另一个回测运行覆盖了该值，则当前现金余额将重置为初始金额。
 - en: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-5)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-5)'
 - en: This calculates the SMA values needed for the strategy implementation.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 这计算了策略实施所需的SMA值。
 - en: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-6)'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-6)'
 - en: The start value `SMA` ensures that there are SMA values available to start implementing
     and backtesting the strategy.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 起始值`SMA`确保有足够的SMA值可用于实施和回测策略。
 - en: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-7)'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-7)'
 - en: The condition checks whether the position is market neutral.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件检查当前位置是否为市场中性。
 - en: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-8)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-8)'
 - en: If the position is market neutral, it is checked whether the current price is
     low enough relative to the SMA to trigger a buy order and to go long.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果仓位是市场中性的，就检查当前价格是否相对于SMA低到足以触发买入订单并持有多头。
 - en: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-9)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-9)'
 - en: This executes the buy order in the amount of the current cash balance.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将以当前现金余额的金额执行买单。
 - en: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-10)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-10)'
 - en: The market position is set to long.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场仓位设置为多头。
 - en: '[![10](assets/10.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-11)'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-11)'
 - en: The condition checks whether the position is long the market.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查条件是否为多头市场位置。
 - en: '[![11](assets/11.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-12)'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![11](assets/11.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-12)'
 - en: If that is the case, it is checked whether the current price has returned to
     the SMA level or above.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果是这种情况，则检查当前价格是否已回到或高于SMA水平。
 - en: '[![12](assets/12.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-13)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![12](assets/12.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-13)'
 - en: In such a case, a sell order is placed for all units of the financial instrument.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，为所有金融工具单位下达卖单。
 - en: '[![13](assets/13.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-14)'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![13](assets/13.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-14)'
 - en: The market position is set to neutral again.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场仓位再次设置为中性。
 - en: '[![14](assets/14.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-15)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![14](assets/14.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO5-15)'
 - en: At the end of the backtesting period, the market position gets closed out if
     one is open.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 在回测期结束时，如果有未平仓位，市场仓位将被关闭。
 - en: 'Executing the Python script in [“Long-Only Backtesting Class”](#py_long_only)
     yields backtesting results, as shown in the following. The examples illustrate
     the influence of fixed and proportional transaction costs. First, they eat into
@@ -525,11 +804,15 @@
     strategy significantly outperforms the SMA-based strategy. With transaction costs,
     the SMA-based strategy outperforms the momentum strategy since it relies on fewer
     trades:'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“仅多头回测类”](#py_long_only)中执行Python脚本将产生回测结果，如下所示。这些示例说明了固定和比例交易成本的影响。首先，它们通常会降低整体表现。无论如何，考虑交易成本都会降低表现。其次，它们突显了一定策略随时间触发的交易数量的重要性。没有交易成本时，动量策略明显优于基于SMA的策略。而有了交易成本，基于SMA的策略优于动量策略，因为它依赖较少的交易：
 - en: '[PRE11]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[Chapter 5](ch05.html#machine_learning) emphasizes that there are two sides
     of the performance coin: the hit ratio for the correct prediction of the market
     direction and the market timing (that is, when exactly the prediction is correct).
@@ -539,79 +822,123 @@
     over another strategy with no or low transaction costs. Among other things, this
     often makes the case for low-cost passive investment strategies based, for example,
     on exchange-traded funds (ETFs).'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第5章](ch05.html#machine_learning)强调了表现币的两面：正确预测市场方向的命中率和市场定时（即准确预测的时间）。这里显示的结果说明了甚至有一个“第三面”：策略触发的交易数量。要求更高频率交易的策略必须承担更高的交易成本，这很容易吞噬掉声称相对于其他没有或低交易成本策略的表现。其中，这经常为基于低成本的被动投资策略（例如，基于交易所交易基金（ETF）的策略）提供支持。'
 - en: Long-Short Backtesting Class
+  id: totrans-141
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 多空回测类
 - en: '[“Long-Short Backtesting Class”](#py_long_short) presents the `BacktestLongShort`
     class, which also inherits from the `BacktestBase` class. In addition to implementing
     the respective methods for the backtesting of the different strategies, it implements
     two additional methods to go long and short, respectively. Only the `.go_long()`
     method is commented on in detail, since the `.go_short()` method does exactly
     the same in the opposite direction:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“多空回测课程”](#py_long_short)介绍了`BacktestLongShort`类，它也继承自`BacktestBase`类。除了实现不同策略的回测方法外，它还分别实现了两种额外的方法来进行多头和空头操作。仅详细介绍了`.go_long()`方法，因为`.go_short()`方法在相反方向上执行完全相同的操作：'
 - en: '[PRE12]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-1)'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-1)'
 - en: In addition to `bar`, the methods expect either a number for the units of the
     traded instrument or a currency amount.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了`bar`，这些方法还期望交易工具的单位数或货币金额的数字。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-2)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-2)'
 - en: In the `.go_long()` case, it is first checked whether there is a short position.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`.go_long()`情况下，首先检查是否有空头头寸。
 - en: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-3)'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-3)'
 - en: If so, this short position gets closed first.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果是这样，这个短头寸首先被关闭。
 - en: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-4)'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-4)'
 - en: It is then checked whether `units` is given…
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后检查是否给出了`units`…
 - en: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-5)'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-5)'
 - en: …which triggers a buy order accordingly.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: …相应地触发买入订单。
 - en: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-6)'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-6)'
 - en: If `amount` is given, there can be two cases.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果给定了`amount`，可能会有两种情况。
 - en: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-7)'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-7)'
 - en: First, the value is `all`, which translates into…
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，`all`的值被翻译成…
 - en: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-8)'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-8)'
 - en: …all the available cash in the current cash balance.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: …当前现金余额中所有可用的现金。
 - en: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-9)'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO6-9)'
 - en: Second, the value is a number that is then simply taken to place the respective
     buy order. Note that it is not checked whether there is enough liquidity or not.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，该值是一个数字，然后直接用来下相应的买入订单。请注意，没有检查是否有足够的流动性。
 - en: To keep the implementation concise throughout, there are many simplifications
     in the Python classes that transfer responsibility to the user. For example, the
     classes do not take care of whether there is enough liquidity or not to execute
@@ -620,106 +947,168 @@
     certain methods expect that at least one of two parameters (either `units` or
     `amount`) is specified. There is no code that catches the case where both are
     not set. This is a technical simplification.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了在整个实现中保持简洁，Python类中有许多简化，这些简化将责任转移给用户。例如，这些类不关心是否有足够的流动性来执行交易。这是经济简化，因为理论上，可以假设算法交易者拥有足够甚至无限的信贷。另一个例子是，某些方法期望至少指定两个参数中的一个（`units`或`amount`）。没有代码捕捉两者都未设置的情况。这是技术上的简化。
 - en: 'The following presents the core loop from the `.run_mean_reversion_strategy()`
     method of the `BacktestLongShort` class. Again, the mean-reversion strategy is
     picked since the implementation is a bit more involved. For instance, it is the
     only strategy that also leads to intermediate market neutral positions. This necessitates
     more checks compared to the other two strategies, as seen in [“Long-Short Backtesting
     Class”](#py_long_short):'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下展示了`BacktestLongShort`类的`.run_mean_reversion_strategy()`方法中的核心循环。再次选择均值回归策略，因为实现稍微复杂一些。例如，这是唯一会导致中间市场中性位置的策略。这要求与其他两种策略相比需要更多的检查，如在[“长-短回测类”](#py_long_short)中所见：
 - en: '[PRE13]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-1)'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-1)'
 - en: The first top-level condition checks whether the position is market neutral.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个顶层条件检查头寸是否市场中性。
 - en: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-2)'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-2)'
 - en: If this is true, it is then checked whether the current price is low enough
     relative to the SMA.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果是这样，然后检查当前价格是否相对于SMA足够低。
 - en: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-3)'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-3)'
 - en: In such a case, the `.go_long()` method is called…
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，调用`.go_long()`方法…
 - en: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-4)'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-4)'
 - en: …and the market position is set to long.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: …并且市场位置设置为长。
 - en: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-5)'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-5)'
 - en: If the current price is high enough relative to the SMA, the `.go_short()` method
     is called…
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果当前价格相对于SMA足够高，则调用`.go_short()`方法…
 - en: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-6)'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-6)'
 - en: …and the market position is set to short.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: …并且市场位置设置为短。
 - en: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-7)'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-7)'
 - en: The second top-level condition checks for a long market position.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个顶层条件检查长期市场位置。
 - en: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-8)'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-8)'
 - en: In such a case, it is further checked whether the current price is at or above
     the SMA level again.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，进一步检查当前价格是否再次达到或高于SMA水平。
 - en: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-9)'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-9)'
 - en: If so, the long position gets closed out by selling all units in the portfolio.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果是这样，长头寸通过出售投资组合中的所有单位来平仓。
 - en: '[![10](assets/10.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-10)'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-10)'
 - en: The market position is reset to neutral.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场位置被重置为中性。
 - en: '[![11](assets/11.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-11)'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![11](assets/11.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-11)'
 - en: Finally, the third top-level condition checks for a short position.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，第三个顶层条件检查空头位置。
 - en: '[![12](assets/12.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-12)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![12](assets/12.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-12)'
 - en: If the current price is at or below the SMA…
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果当前价格等于或低于SMA…
 - en: '[![13](assets/13.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-13)'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![13](assets/13.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-13)'
 - en: …a buy order for all units short is triggered to close out the short position.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: …触发所有空头单位的买入订单以平仓空头头寸。
 - en: '[![14](assets/14.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-14)'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![14](assets/14.png)](#co_building_classes_for___span_class__keep_together__event_based_backtesting__span__CO7-14)'
 - en: The market position is then reset to neutral.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后市场位置被重置为中性。
 - en: 'Executing the Python script in [“Long-Short Backtesting Class”](#py_long_short)
     yields performance results that shed further light on strategy characteristics.
     One might be inclined to assume that adding the flexibility to short a financial
@@ -729,11 +1118,15 @@
     are specific results only, they illustrate that it is risky in such a context
     to jump to conclusions too early and to not take into account limits for piling
     up debt:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“多头空头回测类”](#py_long_short)执行Python脚本后，可以得到进一步揭示策略特性的性能结果。人们可能倾向于认为添加对金融工具进行做空的灵活性会带来更好的结果。然而，现实表明这未必正确。所有策略在没有和在交易成本后表现都更差。有些配置甚至会累积净损失或负债。尽管这些仅是具体的结果，但它们说明在这样的背景下过早得出结论并不明智，并且不考虑积累债务的限制：
 - en: '[PRE14]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Situations where trading might eat up all the initial equity and might even
     lead to a position of debt arise, for example, in the context of trading contracts-for-difference
     (CFDs). These are highly leveraged products for which the trader only needs to
@@ -744,20 +1137,26 @@
     out and the trader must put down 5,000 USD more to cover the losses. This assumes
     that no margin stop outs are in place that would close the position as soon as
     the remaining equity drops to 0 USD.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，在交易差价合约（CFD）的背景下，可能会出现交易可能耗尽所有初始权益甚至导致负债的情况。这些是高度杠杆化的产品，交易者只需要作为初始保证金放下，比如说，头寸价值的5%（当杠杆是20时）。如果头寸价值变化了10%，交易者可能需要满足相应的追加保证金要求。对于100,000美元的多头头寸，需要5,000美元的权益。如果头寸下跌到90,000美元，权益被清零，交易者必须再支付5,000美元来弥补损失。这假设没有设立会在剩余权益降到0美元时关闭头寸的保证金止损。
 - en: Conclusions
+  id: totrans-196
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter presents classes for the event-based backtesting of trading strategies.
     Compared to vectorized backtesting, event-based backtesting makes intentional
     and heavy use of loops and iterations to be able to tackle every single new event
     (generally, the arrival of new data) individually. This allows for a more flexible
     approach that can, among other things, easily cope with fixed transaction costs
     or more complex strategies (and variations thereof).
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了用于事件驱动交易策略回测的类。与矢量化回测相比，事件驱动回测通过有意和大量使用循环和迭代来处理每个新事件（通常是新数据到来）可以单独处理。这种方法可以更灵活地应对固定交易成本或更复杂的策略（及其变体），等等。
 - en: '[“Backtesting Base Class”](#base_class) presents a base class with certain
     methods useful for the backtesting of a variety of trading strategies. [“Long-Only
     Backtesting Class”](#long_only) and [“Long-Short Backtesting Class”](#long_short)
@@ -766,101 +1165,147 @@
     implementations include all three strategies formally introduced in [Chapter 4](ch04.html#vectorized_backtesting).
     Taking the classes of this chapter as a starting point, enhancements and refinements
     are easily achieved.'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“回测基类”](#base_class)提供了一个基类，其中包含对各种交易策略进行回测的某些有用方法。[“仅多头回测类”](#long_only)和[“多头空头回测类”](#long_short)在此基础上构建，实现了允许对仅多头和多头空头交易策略进行回测的类。主要出于比较的原因，实现包括在[第四章](ch04.html#vectorized_backtesting)正式介绍的所有三种策略。通过本章的类作为起点，可以轻松实现增强和改进。'
 - en: References and Further Resources
+  id: totrans-199
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献和进一步资源
 - en: 'Previous chapters introduce the basic ideas and concepts with regard to the
     three trading strategies covered in this chapter. This chapter for the first time
     makes a more systemic use of Python classes and object-oriented programming (OOP).
     A good introduction to OOP with Python and Python’s data model is found in Ramalho
     (2021). A more concise introduction to OOP applied to finance is found in Hilpisch
     (2018, ch. 6):'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 前几章介绍了本章涵盖的三种交易策略的基本思想和概念。本章首次更系统地使用了Python类和面向对象编程（OOP）。关于Python和Python数据模型的OOP良好介绍可在Ramalho（2021）中找到。关于金融中应用OOP的更简明介绍见Hilpisch（2018年，第6章）：
 - en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance*.
     2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-201
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Hilpisch, Yves. 2018\. *Python金融：掌握数据驱动金融*. 第2版. Sebastopol：O’Reilly.
 - en: 'Ramalho, Luciano. 2021\. *Fluent Python: Clear, Concise, and Effective Programming*.
     2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Ramalho, Luciano. 2021\. *流畅的Python：清晰、简洁和高效的编程*. 第2版. Sebastopol：O’Reilly.
 - en: 'The Python ecosystem provides a number of optional packages that allow the
     backtesting of algorithmic trading strategies. Four of them are the following:'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: Python生态系统提供了许多可选的软件包，用于算法交易策略的回测。其中四个如下：
 - en: '[bt](http://pmorissette.github.io/bt/)'
+  id: totrans-204
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[bt](http://pmorissette.github.io/bt/)'
 - en: '[Backtrader](https://backtrader.com/)'
+  id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Backtrader](https://backtrader.com/)'
 - en: '[PyAlgoTrade](http://gbeced.github.io/pyalgotrade/)'
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[PyAlgoTrade](http://gbeced.github.io/pyalgotrade/)'
 - en: '[Zipline](https://github.com/quantopian/zipline)'
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Zipline](https://github.com/quantopian/zipline)'
 - en: '`Zipline`, for example, powers the popular [Quantopian](http://quantopian.com)
     platform for the backtesting of algorithmic trading strategies but can also be
     installed and used locally.'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，`Zipline`支持用于算法交易策略回测的流行[Quantopian](http://quantopian.com)平台，但也可以在本地安装和使用。
 - en: Although these packages might allow for a more thorough backtesting of algorithmic
     trading strategies than the rather simple classes presented in this chapter, the
     main goal of this book is to empower the reader and algorithmic trader to implement
     Python code in a self-contained fashion. Even if standard packages are later used
     to do the actual backtesting, a good understanding of the different approaches
     and their mechanics is beneficial, if not required.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管这些软件包可能允许比本章介绍的简单类更彻底地回测算法交易策略，但本书的主要目标是使读者和算法交易者能够自主实现Python代码。即使以后使用标准软件包进行实际回测，对不同方法及其机制的良好理解也是有益的，如果不是必需的话。
 - en: Python Scripts
+  id: totrans-210
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Python脚本
 - en: This section presents Python scripts referenced and used in this chapter.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了本章中引用和使用的Python脚本。
 - en: Backtesting Base Class
+  id: totrans-212
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 回测基类
 - en: 'The following Python code contains the base class for event-based backtesting:'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码包含了基于事件的回测的基类：
 - en: '[PRE15]'
+  id: totrans-214
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: Long-Only Backtesting Class
+  id: totrans-215
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 仅多头回测类
 - en: 'The following presents Python code with a class for the event-based backtesting
     of *long-only* strategies, with implementations for strategies based on *SMAs*,
     *momentum*, and *mean reversion*:'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下介绍了Python代码，其中包含了基于*仅多头*策略的事件驱动回测类，实现了基于*简单移动平均线(SMAs)*、*动量*和*均值回归*的策略：
 - en: '[PRE16]'
+  id: totrans-217
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Long-Short Backtesting Class
+  id: totrans-218
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 多空回测类
 - en: 'The following Python code contains a class for the event-based backtesting
     of *long-short* strategies, with implementations for strategies based on *SMAs*,
     *momentum*, and *mean reversion*:'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码包含了基于事件的*多空*策略的回测基类，实现了基于*简单移动平均线(SMAs)*、*动量*和*均值回归*的策略：
 - en: '[PRE17]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'

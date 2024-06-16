@@ -1,21 +1,28 @@
 - en: Chapter 10\. Automating Trading Operations
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第10章 自动化交易操作
 - en: People worry that computers will get too smart and take over the world, but
     the real problem is that they’re too stupid and they’ve already taken over the
     world.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 人们担心计算机会变得太聪明并接管世界，但实际问题是它们太愚蠢，而它们已经接管了世界。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Pedro Domingos
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Pedro Domingos
 - en: “Now what?” you might think. The trading platform that allows one to retrieve
     historical data and streaming data is available. It allows one to place buy and
     sell orders and to check the account status. A number of different methods have
@@ -26,8 +33,10 @@
     in this context. The chapter assumes that a single automated, algorithmic trading
     strategy is to be deployed. This simplifies, for example, aspects like capital
     and risk management.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: “现在怎么办？”你可能会想。能够检索历史数据和流数据的交易平台已经可用。它允许下单买卖，并检查账户状态。本书介绍了多种方法来通过预测市场价格走向来制定算法交易策略。你可能会问，“毕竟，如何将这些组合在一起以自动化方式工作？”这不能以一般性回答。然而，本章讨论了在这一背景下重要的几个主题。本章假设要部署单一的自动化算法交易策略。这简化了资本和风险管理等方面的处理。
 - en: The chapter covers the following topics. [“Capital Management”](#auto_capital)
     discusses the *Kelly criterion*. Depending on the strategy characteristics and
     the trading capital available, the Kelly criterion helps with sizing the trades.
@@ -39,8 +48,10 @@
     strategy for automated trading, it needs to be translated into an online algorithm
     that works with incoming streaming data in real time. [“Online Algorithm”](#auto_online)
     covers the transformation of an *offline* algorithm into an *online* algorithm.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖以下主题。[“资本管理”](#auto_capital)讨论*Kelly准则*。根据策略特征和可用的交易资本，Kelly准则有助于确定交易规模。要对算法交易策略获得信心，需要对其进行全面的回测，考虑其性能和风险特征。[“基于ML的交易策略”](#auto_strat)对一个基于机器学习（ML）分类算法的示例策略进行回测，正如在[“交易策略”](ch01.html#trading_strategies)中介绍的那样。要将算法交易策略部署到自动化交易中，需要将其转化为一个能够实时处理流入数据的在线算法。[“在线算法”](#auto_online)讨论将*离线*算法转化为*在线*算法的过程。
 - en: '[“Infrastructure and Deployment”](#auto_infra_deploy) then sets out to make
     sure that the automated, algorithmic trading strategy runs robustly and reliably
     in the cloud. Not all topics of relevance can be covered in detail, but *cloud
@@ -53,12 +64,16 @@
     [“Visual Step-by-Step Overview”](#viz_summary), which provides a visual summary
     of the core steps for the automated deployment of algorithmic trading strategies
     in the cloud.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“基础设施和部署”](#auto_infra_deploy)致力于确保自动化算法交易策略在云中稳健可靠地运行。并不能详细涵盖所有相关主题，但从可用性、性能和安全性的角度看，*云部署*似乎是唯一可行的选择。[“日志记录和监控”](#auto_logg_monit)涵盖了日志记录和监控。日志记录对于分析部署自动化交易策略过程中的历史和某些事件至关重要。通过在[第7章](ch07.html#realtime_sockets)介绍的套接字通信进行监控，允许远程实时观察事件。本章以[“视觉逐步概述”](#viz_summary)结束，提供了云中自动部署算法交易策略核心步骤的视觉概述。'
 - en: Capital Management
+  id: totrans-7
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 资本管理
 - en: A central question in algorithmic trading is how much capital to deploy to a
     given algorithmic trading strategy given the total available capital. The answer
     to this question depends on the main goal one is trying to achieve by algorithmic
@@ -68,50 +83,76 @@
     Rotando and Thorp (1992). Simply speaking, the Kelly criterion allows for an explicit
     calculation of the fraction of the available capital a trader should deploy to
     a strategy, given its statistical return characteristics.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法交易中的一个核心问题是在总可用资金的基础上，要为给定的算法交易策略投入多少资金。这个问题的答案取决于一个人通过算法交易试图实现的主要目标。大多数个人和金融机构都会同意*最大化长期财富*是一个不错的候选目标。这就是爱德华·索普在推导出用于投资的*Kelly准则*时所考虑的，正如Rotando和Thorp（1992年）所述。简单来说，Kelly准则允许对一个交易员应该将多少资金投入到一种策略中进行明确的计算，考虑到了其统计回报特征。
 - en: Kelly Criterion in Binomial Setting
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 二项式设定中的Kelly准则
 - en: 'The common way of introducing the theory of the Kelly criterion to investing
     is on the basis of a coin tossing game or, more generally, a binomial setting
     (only two outcomes are possible). This section follows that path. Assume a gambler
     is playing a coin tossing game against an infinitely rich bank or casino. Assume
     further that the probability for heads is some value <math alttext="p"><mi>p</mi></math>
     for which the following holds:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 引入Kelly准则到投资的常见方法是基于一个抛硬币游戏或者更一般地，一个二项式设置（只有两种可能结果）。本节遵循这条路径。假设一个赌徒正在与一个资金无限的银行或赌场玩抛硬币游戏。进一步假设正面的概率是一些值
+    <math alttext="p"><mi>p</mi></math>，对于这个值有以下成立：
 - en: <math alttext="one-half less-than p less-than 1" display="block"><mrow><mfrac><mn>1</mn>
     <mn>2</mn></mfrac> <mo><</mo> <mi>p</mi> <mo><</mo> <mn>1</mn></mrow></math>
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="one-half less-than p less-than 1" display="block"><mrow><mfrac><mn>1</mn>
+    <mn>2</mn></mfrac> <mo><</mo> <mi>p</mi> <mo><</mo> <mn>1</mn></mrow></math>
 - en: 'Probability for tails is defined by the following:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 尾部概率由以下公式定义：
 - en: <math alttext="q equals 1 minus p less-than one-half" display="block"><mrow><mi>q</mi>
     <mo>=</mo> <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo><</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="q equals 1 minus p less-than one-half" display="block"><mrow><mi>q</mi>
+    <mo>=</mo> <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo><</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
 - en: The gambler can place bets <math alttext="b greater-than 0"><mrow><mi>b</mi>
     <mo>></mo> <mn>0</mn></mrow></math> of arbitrary size, whereby the gambler wins
     the same amount if right and loses it all if wrong. Given the assumptions about
     the probabilities, the gambler would of course want to bet on heads.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 赌徒可以下任意大小的赌注 <math alttext="b 大于 0"><mrow><mi>b</mi> <mo>></mo> <mn>0</mn></mrow></math>，如果正确则赢得相同金额，如果错误则全部输掉。鉴于对概率的假设，赌徒当然想要押注于正面。
 - en: 'Therefore, the expected value for this betting game <math alttext="upper B"><mi>B</mi></math>
     (that is, the random variable representing this game) in a one-shot setting is
     as follows:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，这个赌博游戏在一次性设置中的预期价值 <math alttext="upper B"><mi>B</mi></math>（即代表这个游戏的随机变量）如下：
 - en: <math alttext="bold upper E left-parenthesis upper B right-parenthesis equals
     p dot b minus q dot b equals left-parenthesis p minus q right-parenthesis dot
     b greater-than 0" display="block"><mrow><mi>𝐄</mi> <mo>(</mo> <mi>B</mi> <mo>)</mo>
     <mo>=</mo> <mi>p</mi> <mo>·</mo> <mi>b</mi> <mo>-</mo> <mi>q</mi> <mo>·</mo> <mi>b</mi>
     <mo>=</mo> <mo>(</mo> <mi>p</mi> <mo>-</mo> <mi>q</mi> <mo>)</mo> <mo>·</mo> <mi>b</mi>
     <mo>></mo> <mn>0</mn></mrow></math>
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="bold upper E left-parenthesis upper B right-parenthesis equals
+    p dot b minus q dot b equals left-parenthesis p minus q right-parenthesis dot
+    b greater-than 0" display="block"><mrow><mi>𝐄</mi> <mo>(</mo> <mi>B</mi> <mo>)</mo>
+    <mo>=</mo> <mi>p</mi> <mo>·</mo> <mi>b</mi> <mo>-</mo> <mi>q</mi> <mo>·</mo> <mi>b</mi>
+    <mo>=</mo> <mo>(</mo> <mi>p</mi> <mo>-</mo> <mi>q</mi> <mo>)</mo> <mo>·</mo> <mi>b</mi>
+    <mo>></mo> <mn>0</mn></mrow></math>
 - en: 'A risk-neutral gambler with unlimited funds would like to bet as large an amount
     as possible since this would maximize the expected payoff. However, trading in
     financial markets is not a one-shot game in general. It is a repeated game. Therefore,
@@ -125,8 +166,17 @@
     1"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>-</mo> <msub><mi>b</mi> <mn>1</mn></msub></mrow></math>
     . The expected value for a gamble that is repeated <math alttext="n"><mi>n</mi></math>
     times then is as follows:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个风险中性的赌徒希望押注尽可能多的资金，因为这样可以最大化预期收益。然而，在金融市场上交易通常不是一次性的游戏。它是一个重复的游戏。因此，假设 <math
+    alttext="b 下标 i"><msub><mi>b</mi> <mi>i</mi></msub></math>表示在第 <math alttext="i"><mi>i</mi></math>
+    天押注的金额，<math alttext="c 0"><msub><mi>c</mi> <mn>0</mn></msub></math>表示初始资本。第一天结束时的资本
+    <math alttext="c 1"><msub><mi>c</mi> <mn>1</mn></msub></math> 取决于当天的押注成功情况，可能是
+    <math alttext="c 0 plus b 1"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo>
+    <msub><mi>b</mi> <mn>1</mn></msub></mrow></math> 或者 <math alttext="c 0 minus b
+    1"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>-</mo> <msub><mi>b</mi> <mn>1</mn></msub></mrow></math>。那么，一个赌局重复
+    <math alttext="n"><mi>n</mi></math> 次的预期值如下：
 - en: <math alttext="bold upper E left-parenthesis upper B Superscript n Baseline
     right-parenthesis equals c 0 plus sigma-summation Underscript i equals 1 Overscript
     n Endscripts left-parenthesis p minus q right-parenthesis dot b Subscript i" display="block"><mrow><mi>𝐄</mi>
@@ -134,8 +184,16 @@
     <msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
     <mi>n</mi></munderover> <mrow><mo>(</mo> <mi>p</mi> <mo>-</mo> <mi>q</mi> <mo>)</mo></mrow>
     <mo>·</mo> <msub><mi>b</mi> <mi>i</mi></msub></mrow></math>
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="bold upper E left-parenthesis upper B Superscript n Baseline
+    right-parenthesis equals c 0 plus sigma-summation Underscript i equals 1 Overscript
+    n Endscripts left-parenthesis p minus q right-parenthesis dot b Subscript i" display="block"><mrow><mi>𝐄</mi>
+    <mrow><mo>(</mo> <msup><mi>B</mi> <mi>n</mi></msup> <mo>)</mo></mrow> <mo>=</mo>
+    <msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></munderover> <mrow><mo>(</mo> <mi>p</mi> <mo>-</mo> <mi>q</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <msub><mi>b</mi> <mi>i</mi></msub></mrow></math>
 - en: In classical economic theory, with risk-neutral, expected utility-maximizing
     agents, a gambler would try to maximize the preceding expression. It is easily
     seen that it is maximized by betting all available funds, <math alttext="b Subscript
@@ -145,8 +203,12 @@
     will wipe out all available funds and will lead to ruin (unless unlimited borrowing
     is possible). Therefore, this strategy does not lead to a maximization of long-term
     wealth.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 在经典经济理论中，对于风险中性、期望效用最大化的代理人来说，赌徒会试图最大化上述表达式。很容易看出，通过下注所有可用资金 <math alttext="b
+    Subscript i Baseline equals c Subscript i minus 1"><mrow><msub><mi>b</mi> <mi>i</mi></msub>
+    <mo>=</mo> <msub><mi>c</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math>，就像在一次性场景中一样，可以实现最大化。然而，这反过来意味着单次损失将清空所有可用资金，并导致破产（除非可以无限借贷）。因此，这种策略并不能导致长期财富的最大化。
 - en: 'While betting the maximum capital available might lead to sudden ruin, betting
     nothing at all avoids any kind of loss but does not benefit from the advantageous
     gamble either. This is where the Kelly criterion comes into play since it derives
@@ -158,20 +220,36 @@
     rounds of betting and where <math alttext="t"><mi>t</mi></math> stands for the
     number of tails. With these definitions, the available capital after <math alttext="n"><mi>n</mi></math>
     rounds is the following:'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管下最大赌注会导致突然破产，不下赌注则避免了任何形式的损失，但也无法从有利的赌博中受益。这就是凯利准则的作用所在，因为它确定了每轮下注时可用资本的*最优比例*
+    <math alttext="f Superscript asterisk"><msup><mi>f</mi> <mo>*</mo></msup></math>。假设
+    <math alttext="n equals h plus t"><mrow><mi>n</mi> <mo>=</mo> <mi>h</mi> <mo>+</mo>
+    <mi>t</mi></mrow></math>，其中 <math alttext="h"><mi>h</mi></math> 表示在 <math alttext="n"><mi>n</mi></math>
+    轮下注期间观察到的正面数量，而 <math alttext="t"><mi>t</mi></math> 表示反面数量。基于这些定义，经过 <math alttext="n"><mi>n</mi></math>
+    轮下注后的可用资本如下所示：
 - en: <math alttext="c Subscript n Baseline equals c 0 dot left-parenthesis 1 plus
     f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus f right-parenthesis
     Superscript t" display="block"><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mo>=</mo>
     <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
     <mi>h</mi></msup> <mo>·</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
     <mi>t</mi></msup></mrow></math>
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="c Subscript n Baseline equals c 0 dot left-parenthesis 1 plus
+    f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus f right-parenthesis
+    Superscript t" display="block"><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mo>=</mo>
+    <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>h</mi></msup> <mo>·</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>t</mi></msup></mrow></math>
 - en: 'In such a context, long-term wealth maximization boils down to maximizing the
     average geometric growth rate per bet which is given as follows:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这样的背景下，长期财富最大化归结为最大化每次下注的平均几何增长率，如下所示：
 - en: <math alttext="StartLayout 1st Row 1st Column r Superscript g 2nd Column equals
     log left-parenthesis StartFraction c Subscript n Baseline Over c 0 EndFraction
     right-parenthesis Superscript 1 slash n Baseline 2nd Row 1st Column Blank 2nd
@@ -202,8 +280,39 @@
     <mo form="prefix">log</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo></mrow>
     <mo>+</mo> <mfrac><mi>t</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo> <mrow><mo>(</mo>
     <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column r Superscript g 2nd Column equals
+    log left-parenthesis StartFraction c Subscript n Baseline Over c 0 EndFraction
+    right-parenthesis Superscript 1 slash n Baseline 2nd Row 1st Column Blank 2nd
+    Column equals log left-parenthesis StartFraction c 0 dot left-parenthesis 1 plus
+    f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus f right-parenthesis
+    Superscript t Baseline Over c 0 EndFraction right-parenthesis Superscript 1 slash
+    n Baseline 3rd Row 1st Column Blank 2nd Column equals log left-parenthesis left-parenthesis
+    1 plus f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus
+    f right-parenthesis Superscript t Baseline right-parenthesis Superscript 1 slash
+    n Baseline 4th Row 1st Column Blank 2nd Column equals StartFraction h Over n EndFraction
+    log left-parenthesis 1 plus f right-parenthesis plus StartFraction t Over n EndFraction
+    log left-parenthesis 1 minus f right-parenthesis EndLayout" display="block"><mtable
+    displaystyle="true"><mtr><mtd columnalign="right"><msup><mi>r</mi> <mi>g</mi></msup></mtd>
+    <mtd columnalign="left"><mrow><mo>=</mo> <mo form="prefix">log</mo> <msup><mfenced
+    close=")" open="(" separators=""><mfrac><msub><mi>c</mi> <mi>n</mi></msub> <msub><mi>c</mi>
+    <mn>0</mn></msub></mfrac></mfenced> <mrow><mn>1</mn><mo>/</mo><mi>n</mi></mrow></msup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mo form="prefix">log</mo> <msup><mfenced
+    close=")" open="(" separators=""><mfrac><mrow><msub><mi>c</mi> <mn>0</mn></msub>
+    <mo>·</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>h</mi></msup> <mo>·</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>t</mi></msup></mrow> <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced>
+    <mrow><mn>1</mn><mo>/</mo><mi>n</mi></mrow></msup></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mo>=</mo> <mo form="prefix">log</mo> <msup><mfenced
+    close=")" open="(" separators=""><msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>h</mi></msup> <mo>·</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>t</mi></msup></mfenced> <mrow><mn>1</mn><mo>/</mo><mi>n</mi></mrow></msup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mi>h</mi> <mi>n</mi></mfrac>
+    <mo form="prefix">log</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo></mrow>
+    <mo>+</mo> <mfrac><mi>t</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
 - en: 'The problem then formally is to maximize the *expected* average rate of growth
     by choosing <math alttext="f"><mi>f</mi></math> optimally. With <math alttext="bold
     upper E left-parenthesis h right-parenthesis equals n dot p"><mrow><mi>𝐄</mi>
@@ -211,8 +320,15 @@
     and <math alttext="bold upper E left-parenthesis t right-parenthesis equals n
     dot q"><mrow><mi>𝐄</mi> <mo>(</mo> <mi>t</mi> <mo>)</mo> <mo>=</mo> <mi>n</mi>
     <mo>·</mo> <mi>q</mi></mrow></math> , one gets:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，问题的正式表述是通过选择最优的 <math alttext="f"><mi>f</mi></math> 来最大化*预期*的平均增长率。使用 <math
+    alttext="bold upper E left-parenthesis h right-parenthesis equals n dot p"><mrow><mi>𝐄</mi>
+    <mo>(</mo> <mi>h</mi> <mo>)</mo> <mo>=</mo> <mi>n</mi> <mo>·</mo> <mi>p</mi></mrow></math>
+    和 <math alttext="bold upper E left-parenthesis t right-parenthesis equals n dot
+    q"><mrow><mi>𝐄</mi> <mo>(</mo> <mi>t</mi> <mo>)</mo> <mo>=</mo> <mi>n</mi> <mo>·</mo>
+    <mi>q</mi></mrow></math>，可以得到：
 - en: <math alttext="StartLayout 1st Row 1st Column bold upper E left-parenthesis
     r Superscript g Baseline right-parenthesis 2nd Column equals bold upper E left-parenthesis
     StartFraction h Over n EndFraction log left-parenthesis 1 plus f right-parenthesis
@@ -237,13 +353,41 @@
     <mo>)</mo> <mo>+</mo> <mi>q</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn>
     <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>≡</mo>
     <mi>G</mi> <mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mtd></mtr></mtable></math>
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column bold upper E left-parenthesis
+    r Superscript g Baseline right-parenthesis 2nd Column equals bold upper E left-parenthesis
+    StartFraction h Over n EndFraction log left-parenthesis 1 plus f right-parenthesis
+    plus StartFraction t Over n EndFraction log left-parenthesis 1 minus f right-parenthesis
+    right-parenthesis 2nd Row 1st Column Blank 2nd Column equals bold upper E left-parenthesis
+    p log left-parenthesis 1 plus f right-parenthesis plus q log left-parenthesis
+    1 minus f right-parenthesis right-parenthesis 3rd Row 1st Column Blank 2nd Column
+    equals p log left-parenthesis 1 plus f right-parenthesis plus q log left-parenthesis
+    1 minus f right-parenthesis 4th Row 1st Column Blank 2nd Column identical-to upper
+    G left-parenthesis f right-parenthesis EndLayout" display="block"><mtable displaystyle="true"><mtr><mtd
+    columnalign="right"><mrow><mi>𝐄</mi> <mo>(</mo> <msup><mi>r</mi> <mi>g</mi></msup>
+    <mo>)</mo></mrow></mtd> <mtd columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mfenced
+    close=")" open="(" separators=""><mfrac><mi>h</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>+</mo>
+    <mfrac><mi>t</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mfenced></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mo>(</mo> <mi>p</mi>
+    <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo>
+    <mo>+</mo> <mi>q</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>f</mi> <mo>)</mo> <mo>)</mo></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>=</mo>
+    <mi>p</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi>
+    <mo>)</mo> <mo>+</mo> <mi>q</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn>
+    <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>≡</mo>
+    <mi>G</mi> <mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mtd></mtr></mtable></math>
 - en: 'One can now maximize the term by choosing the optimal fraction <math alttext="f
     Superscript asterisk"><msup><mi>f</mi> <mo>*</mo></msup></math> according to the
     first order condition. The first derivative is given by the following:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在可以通过根据一阶条件选择最优比例 <math alttext="f Superscript asterisk"><msup><mi>f</mi> <mo>*</mo></msup></math>
+    来最大化该项。第一导数如下所示：
 - en: <math alttext="StartLayout 1st Row 1st Column upper G prime left-parenthesis
     f right-parenthesis 2nd Column equals StartFraction p Over 1 plus f EndFraction
     minus StartFraction q Over 1 minus f EndFraction 2nd Row 1st Column Blank 2nd
@@ -259,19 +403,44 @@
     <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow></mfrac></mrow></mtd></mtr>
     <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mrow><mi>p</mi><mo>-</mo><mi>q</mi><mo>-</mo><mi>f</mi></mrow>
     <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow></mfrac></mrow></mtd></mtr></mtable></math>
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column upper G prime left-parenthesis
+    f right-parenthesis 2nd Column equals StartFraction p Over 1 plus f EndFraction
+    minus StartFraction q Over 1 minus f EndFraction 2nd Row 1st Column Blank 2nd
+    Column equals StartFraction p minus p f minus q minus q f Over left-parenthesis
+    1 plus f right-parenthesis left-parenthesis 1 minus f right-parenthesis EndFraction
+    3rd Row 1st Column Blank 2nd Column equals StartFraction p minus q minus f Over
+    left-parenthesis 1 plus f right-parenthesis left-parenthesis 1 minus f right-parenthesis
+    EndFraction EndLayout" display="block"><mtable displaystyle="true"><mtr><mtd columnalign="right"><mrow><msup><mi>G</mi>
+    <mo>'</mo></msup> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd> <mtd
+    columnalign="left"><mrow><mo>=</mo> <mfrac><mi>p</mi> <mrow><mn>1</mn><mo>+</mo><mi>f</mi></mrow></mfrac>
+    <mo>-</mo> <mfrac><mi>q</mi> <mrow><mn>1</mn><mo>-</mo><mi>f</mi></mrow></mfrac></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mrow><mi>p</mi><mo>-</mo><mi>p</mi><mi>f</mi><mo>-</mo><mi>q</mi><mo>-</mo><mi>q</mi><mi>f</mi></mrow>
+    <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow></mfrac></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mrow><mi>p</mi><mo>-</mo><mi>q</mi><mo>-</mo><mi>f</mi></mrow>
+    <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow></mfrac></mrow></mtd></mtr></mtable></math>
 - en: 'From the first order condition, one gets the following:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据一阶条件，得到如下结果：
 - en: <math alttext="upper G prime left-parenthesis f right-parenthesis ModifyingAbove
     equals With factorial 0 right double arrow f Superscript asterisk Baseline equals
     p minus q" display="block"><mrow><msup><mi>G</mi> <mo>'</mo></msup> <mrow><mo>(</mo>
     <mi>f</mi> <mo>)</mo></mrow> <mover accent="true"><mo>=</mo> <mo>!</mo></mover>
     <mn>0</mn> <mo>⇒</mo> <msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo> <mi>p</mi>
     <mo>-</mo> <mi>q</mi></mrow></math>
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper G prime left-parenthesis f right-parenthesis ModifyingAbove
+    equals With factorial 0 right double arrow f Superscript asterisk Baseline equals
+    p minus q" display="block"><mrow><msup><mi>G</mi> <mo>'</mo></msup> <mrow><mo>(</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mover accent="true"><mo>=</mo> <mo>!</mo></mover>
+    <mn>0</mn> <mo>⇒</mo> <msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo> <mi>p</mi>
+    <mo>-</mo> <mi>q</mi></mrow></math>
 - en: If one trusts this to be the maximum (and not the minimum), this result implies
     that it is optimal to invest a fraction <math alttext="f Superscript asterisk
     Baseline equals p minus q"><mrow><msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo>
@@ -280,133 +449,220 @@
     one has <math alttext="f Superscript asterisk Baseline equals"><mrow><msup><mi>f</mi>
     <mo>*</mo></msup> <mo>=</mo></mrow></math> 0.55 - 0.45 = 0.1, or that the optimal
     fraction is 10%.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果相信这是最大值（而不是最小值），这个结果意味着在每轮投注中投资一部分 <math alttext="f Superscript asterisk Baseline
+    equals p minus q"><mrow><msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo> <mi>p</mi>
+    <mo>-</mo> <mi>q</mi></mrow></math> 是最优的。例如，如果 <math alttext="p equals"><mrow><mi>p</mi>
+    <mo>=</mo></mrow></math> 0.55，则 <math alttext="f Superscript asterisk Baseline
+    equals"><mrow><msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo></mrow></math> 0.55
+    - 0.45 = 0.1，或者最优部分是10%。
 - en: 'The following Python code formalizes these concepts and results through simulation.
     First, some imports and configurations:'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的Python代码通过模拟形式化了这些概念和结果。首先，一些导入和配置：
 - en: '[PRE0]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'The idea is to simulate, for example, 50 series with 100 coin tosses per series.
     The Python code for this is straightforward:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个想法是模拟，例如，每个序列进行50次投掷。这个Python代码很简单：
 - en: '[PRE1]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO1-1)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO1-1)'
 - en: Fixes the probability for heads.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 设定正面的概率。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO1-2)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO1-2)'
 - en: Calculates the optimal fraction according to the Kelly criterion.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据凯利准则计算最优部分。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO1-4)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO1-4)'
 - en: The number of series to be simulated.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 要模拟的序列数。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO1-5)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO1-5)'
 - en: The number of trials per series.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个序列的试验次数。
 - en: 'The major part is the Python function `run_simulation()`, which achieves the
     simulation according to the preceding assumptions. [Figure 10-1](#auto_plot_01)
     shows the simulation results:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 主要部分是Python函数`run_simulation()`，它根据前述假设进行模拟。[图10-1](#auto_plot_01)展示了模拟结果：
 - en: '[PRE2]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO2-1)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO2-1)'
 - en: Instantiates an `ndarray` object to store the simulation results.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化一个`ndarray`对象来存储模拟结果。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO2-2)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO2-2)'
 - en: Initializes the starting capital with 100.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 将初始资本设定为100。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO2-3)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO2-3)'
 - en: Outer loop for the series simulations.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 外部循环处理序列模拟。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO2-4)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO2-4)'
 - en: Inner loop for the series itself.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 内部循环处理序列本身。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO2-5)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO2-5)'
 - en: Simulates the tossing of a coin.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 模拟抛硬币。
 - en: '[![6](assets/6.png)](#co_automating_trading_operations_CO2-6)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_automating_trading_operations_CO2-6)'
 - en: If `1` or heads…
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果是`1`或正面…
 - en: '[![7](assets/7.png)](#co_automating_trading_operations_CO2-7)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_automating_trading_operations_CO2-7)'
 - en: …then add the win to the capital.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: …则将赢利加入资本。
 - en: '[![8](assets/8.png)](#co_automating_trading_operations_CO2-8)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_automating_trading_operations_CO2-8)'
 - en: If `0` or tails…
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果是`0`或反面…
 - en: '[![9](assets/9.png)](#co_automating_trading_operations_CO2-9)'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_automating_trading_operations_CO2-9)'
 - en: …subtract the loss from the capital.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: …从资本中扣除损失。
 - en: '[![10](assets/10.png)](#co_automating_trading_operations_CO2-10)'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_automating_trading_operations_CO2-10)'
 - en: This runs the simulation.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将运行模拟。
 - en: '[![11](assets/11.png)](#co_automating_trading_operations_CO2-11)'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![11](assets/11.png)](#co_automating_trading_operations_CO2-11)'
 - en: Plots all 50 series.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制所有50个序列。
 - en: '[![12](assets/12.png)](#co_automating_trading_operations_CO2-12)'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![12](assets/12.png)](#co_automating_trading_operations_CO2-12)'
 - en: Plots the average over all 50 series.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制所有50个序列的平均值。
 - en: '![pfat 1001](assets/pfat_1001.png)'
+  id: totrans-69
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1001](assets/pfat_1001.png)'
 - en: Figure 10-1\. 50 simulated series with 100 trials each (red line = average)
+  id: totrans-70
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-1\. 每个有100次试验的50个模拟序列（红线=平均值）
 - en: 'The following code repeats the simulation for different values of <math alttext="f"><mi>f</mi></math>
     . As shown in [Figure 10-2](#auto_plot_02), a lower fraction leads to a lower
     growth rate on average. Higher values might lead both to a higher average capital
@@ -414,50 +670,77 @@
     0.25) or lead to a much lower average capital ( <math alttext="f equals"><mrow><mi>f</mi>
     <mo>=</mo></mrow></math> 0.5]). In both cases where the fraction <math alttext="f"><mi>f</mi></math>
     is higher, the volatility increases considerably:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码重复了不同<math alttext="f"><mi>f</mi></math>值的模拟。如图[10-2](#auto_plot_02)所示，较低的分数通常导致平均增长率较低。较高的值可能导致模拟结束时的平均资本较高（
+    <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math> 0.25），或者导致平均资本大幅降低（
+    <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math> 0.5）。在分数较高的两种情况下，波动性显著增加：
 - en: '[PRE3]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO3-1)'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO3-1)'
 - en: Simulation with <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
     0.05.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用<math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math> 0.05进行模拟。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO3-2)'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO3-2)'
 - en: Simulation with <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
     0.25.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用<math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math> 0.25进行模拟。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO3-3)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO3-3)'
 - en: Simulation with <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
     0.5.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用<math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math> 0.5进行模拟。
 - en: '![pfat 1002](assets/pfat_1002.png)'
+  id: totrans-79
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1002](assets/pfat_1002.png)'
 - en: Figure 10-2\. Average capital over time for different values of <math alttext="f"><mi>f</mi></math>
+  id: totrans-80
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-2。不同<math alttext="f"><mi>f</mi></math>值的时间平均资本。
 - en: Kelly Criterion for Stocks and Indices
+  id: totrans-81
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 股票和指数的凯利准则
 - en: 'Assume now a stock market setting in which the relevant stock (index) can take
     on only two values after a period of one year from today, given its known value
     today. The setting is again binomial but this time a bit closer on the modeling
     side to stock market realities.^([1](ch10.html#idm45785342245112)) Specifically,
     assume the following holds true:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在假设股票市场设置中，相关股票（指数）在今天之后的一年内只能采取两个值，根据其今天已知的值。再次，该设置是二项式的，但这次在建模方面更接近股市实际情况。^([1](ch10.html#idm45785342245112))
+    具体假设如下：
 - en: <math alttext="upper P left-parenthesis r Superscript upper S Baseline equals
     mu plus sigma right-parenthesis equals upper P left-parenthesis r Superscript
     upper S Baseline equals mu minus sigma right-parenthesis equals one-half" display="block"><mrow><mi>P</mi>
@@ -465,8 +748,16 @@
     <mi>μ</mi> <mo>+</mo> <mi>σ</mi></mfenced> <mo>=</mo> <mi>P</mi> <mfenced close=")"
     open="(" separators=""><msup><mi>r</mi> <mi>S</mi></msup> <mo>=</mo> <mi>μ</mi>
     <mo>-</mo> <mi>σ</mi></mfenced> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper P left-parenthesis r Superscript upper S Baseline equals
+    mu plus sigma right-parenthesis equals upper P left-parenthesis r Superscript
+    upper S Baseline equals mu minus sigma right-parenthesis equals one-half" display="block"><mrow><mi>P</mi>
+    <mfenced close=")" open="(" separators=""><msup><mi>r</mi> <mi>S</mi></msup> <mo>=</mo>
+    <mi>μ</mi> <mo>+</mo> <mi>σ</mi></mfenced> <mo>=</mo> <mi>P</mi> <mfenced close=")"
+    open="(" separators=""><msup><mi>r</mi> <mi>S</mi></msup> <mo>=</mo> <mi>μ</mi>
+    <mo>-</mo> <mi>σ</mi></mfenced> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
 - en: 'Here, <math alttext="bold upper E left-parenthesis r Superscript upper S Baseline
     right-parenthesis equals mu greater-than 0"><mrow><mi>𝐄</mi> <mo>(</mo> <msup><mi>r</mi>
     <mi>S</mi></msup> <mo>)</mo> <mo>=</mo> <mi>μ</mi> <mo>></mo> <mn>0</mn></mrow></math>
@@ -475,8 +766,15 @@
     deviation of returns (volatility). In a one-period setting, one gets the following
     for the available capital after one year (with <math alttext="c 0"><msub><mi>c</mi>
     <mn>0</mn></msub></math> and <math alttext="f"><mi>f</mi></math> defined as before):'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，<math alttext="bold upper E left-parenthesis r Superscript upper S Baseline
+    right-parenthesis equals mu greater-than 0"><mrow><mi>𝐄</mi> <mo>(</mo> <msup><mi>r</mi>
+    <mi>S</mi></msup> <mo>)</mo> <mo>=</mo> <mi>μ</mi> <mo>></mo> <mn>0</mn></mrow></math>
+    是股票一年期预期收益，<math alttext="sigma greater-than 0"><mrow><mi>σ</mi> <mo>></mo> <mn>0</mn></mrow></math>
+    是收益的标准偏差（波动性）。在一个期间的设定中，一年后的可用资本如下（其中<math alttext="c 0"><msub><mi>c</mi> <mn>0</mn></msub></math>和<math
+    alttext="f"><mi>f</mi></math>如前所定义）：
 - en: <math alttext="c left-parenthesis f right-parenthesis equals c 0 dot left-parenthesis
     1 plus left-parenthesis 1 minus f right-parenthesis dot r plus f dot r Superscript
     upper S Baseline right-parenthesis" display="block"><mrow><mi>c</mi> <mrow><mo>(</mo>
@@ -484,26 +782,45 @@
     <mfenced close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo>
     <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mi>r</mi> <mo>+</mo>
     <mi>f</mi> <mo>·</mo> <msup><mi>r</mi> <mi>S</mi></msup></mfenced></mrow></math>
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="c left-parenthesis f right-parenthesis equals c 0 dot left-parenthesis
+    1 plus left-parenthesis 1 minus f right-parenthesis dot r plus f dot r Superscript
+    upper S Baseline right-parenthesis" display="block"><mrow><mi>c</mi> <mrow><mo>(</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo>
+    <mfenced close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mi>r</mi> <mo>+</mo>
+    <mi>f</mi> <mo>·</mo> <msup><mi>r</mi> <mi>S</mi></msup></mfenced></mrow></math>
 - en: 'Here, <math alttext="r"><mi>r</mi></math> is the constant short rate earned
     on cash not invested in the stock. Maximizing the geometric growth rate means
     maximizing the term:'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，<math alttext="r"><mi>r</mi></math> 是未投资于股票的现金所赚的固定短期利率。最大化几何增长率意味着最大化该术语：
 - en: <math alttext="upper G left-parenthesis f right-parenthesis equals bold upper
     E left-parenthesis log StartFraction c left-parenthesis f right-parenthesis Over
     c 0 EndFraction right-parenthesis" display="block"><mrow><mi>G</mi> <mrow><mo>(</mo>
     <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="("
     separators=""><mo form="prefix">log</mo> <mfrac><mrow><mi>c</mi><mo>(</mo><mi>f</mi><mo>)</mo></mrow>
     <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced></mrow></math>
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper G left-parenthesis f right-parenthesis equals bold upper
+    E left-parenthesis log StartFraction c left-parenthesis f right-parenthesis Over
+    c 0 EndFraction right-parenthesis" display="block"><mrow><mi>G</mi> <mrow><mo>(</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="("
+    separators=""><mo form="prefix">log</mo> <mfrac><mrow><mi>c</mi><mo>(</mo><mi>f</mi><mo>)</mo></mrow>
+    <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced></mrow></math>
 - en: 'Assume now that there are <math alttext="n"><mi>n</mi></math> relevant trading
     days in the year so that for each such trading day <math alttext="i"><mi>i</mi></math>
     the following holds true:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在假设一年中有<math alttext="n"><mi>n</mi></math>个相关的交易日，以便对每个这样的交易日<math alttext="i"><mi>i</mi></math>，以下情况成立：
 - en: <math alttext="upper P left-parenthesis r Subscript i Superscript upper S Baseline
     equals StartFraction mu Over n EndFraction plus StartFraction sigma Over StartRoot
     n EndRoot EndFraction right-parenthesis equals upper P left-parenthesis r Subscript
@@ -516,13 +833,28 @@
     <mi>S</mi></msubsup> <mo>=</mo> <mfrac><mi>μ</mi> <mi>n</mi></mfrac> <mo>-</mo>
     <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced> <mo>=</mo> <mfrac><mn>1</mn>
     <mn>2</mn></mfrac></mrow></math>
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper P left-parenthesis r Subscript i Superscript upper S Baseline
+    equals StartFraction mu Over n EndFraction plus StartFraction sigma Over StartRoot
+    n EndRoot EndFraction right-parenthesis equals upper P left-parenthesis r Subscript
+    i Superscript upper S Baseline equals StartFraction mu Over n EndFraction minus
+    StartFraction sigma Over StartRoot n EndRoot EndFraction right-parenthesis equals
+    one-half" display="block"><mrow><mi>P</mi> <mfenced close=")" open="(" separators=""><msubsup><mi>r</mi>
+    <mi>i</mi> <mi>S</mi></msubsup> <mo>=</mo> <mfrac><mi>μ</mi> <mi>n</mi></mfrac>
+    <mo>+</mo> <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced> <mo>=</mo>
+    <mi>P</mi> <mfenced close=")" open="(" separators=""><msubsup><mi>r</mi> <mi>i</mi>
+    <mi>S</mi></msubsup> <mo>=</mo> <mfrac><mi>μ</mi> <mi>n</mi></mfrac> <mo>-</mo>
+    <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced> <mo>=</mo> <mfrac><mn>1</mn>
+    <mn>2</mn></mfrac></mrow></math>
 - en: 'Note that volatility scales with the square root of the number of trading days.
     Under these assumptions, the daily values scale up to the yearly ones from before
     and one gets the following:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意波动性随着交易日数的平方根而增加。在这些假设下，日常价值从之前的年度价值扩展到以下内容：
 - en: <math alttext="c Subscript n Baseline left-parenthesis f right-parenthesis equals
     c 0 dot product Underscript i equals 1 Overscript n Endscripts left-parenthesis
     1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction r Over n
@@ -533,12 +865,25 @@
     open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo>
     <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac> <mo>+</mo>
     <mi>f</mi> <mo>·</mo> <msubsup><mi>r</mi> <mi>i</mi> <mi>S</mi></msubsup></mfenced></mrow></math>
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="c Subscript n Baseline left-parenthesis f right-parenthesis equals
+    c 0 dot product Underscript i equals 1 Overscript n Endscripts left-parenthesis
+    1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction r Over n
+    EndFraction plus f dot r Subscript i Superscript upper S Baseline right-parenthesis"
+    display="block"><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mrow><mo>(</mo> <mi>f</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo> <munderover><mo>∏</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></munderover> <mfenced close=")"
+    open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac> <mo>+</mo>
+    <mi>f</mi> <mo>·</mo> <msubsup><mi>r</mi> <mi>i</mi> <mi>S</mi></msubsup></mfenced></mrow></math>
 - en: 'One now has to maximize the following quantity to achieve maximum long-term
     wealth when investing in the stock:'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资股票时，为了实现长期财富最大化，现在必须最大化以下数量：
 - en: <math alttext="StartLayout 1st Row 1st Column upper G Subscript n Baseline left-parenthesis
     f right-parenthesis 2nd Column equals bold upper E left-parenthesis log StartFraction
     c Subscript n Baseline left-parenthesis f right-parenthesis Over c 0 EndFraction
@@ -587,12 +932,63 @@
     <mi>n</mi></mfrac><mo>+</mo><mi>f</mi><mo>·</mo><mfrac><mi>μ</mi> <mi>n</mi></mfrac></mfenced>
     <mn>2</mn></msup> <mo>-</mo> <mfrac><mrow><msup><mi>f</mi> <mn>2</mn></msup> <msup><mi>σ</mi>
     <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mfenced></mrow></mtd></mtr></mtable></math>
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column upper G Subscript n Baseline left-parenthesis
+    f right-parenthesis 2nd Column equals bold upper E left-parenthesis log StartFraction
+    c Subscript n Baseline left-parenthesis f right-parenthesis Over c 0 EndFraction
+    right-parenthesis 2nd Row 1st Column Blank 2nd Column equals bold upper E left-parenthesis
+    sigma-summation Underscript i equals 1 Overscript n Endscripts log left-parenthesis
+    1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction r Over n
+    EndFraction plus f dot r Subscript i Superscript upper S Baseline right-parenthesis
+    right-parenthesis 3rd Row 1st Column Blank 2nd Column equals one-half sigma-summation
+    Underscript i equals 1 Overscript n Endscripts log left-parenthesis 1 plus left-parenthesis
+    1 minus f right-parenthesis dot StartFraction r Over n EndFraction plus f dot
+    left-parenthesis StartFraction mu Over n EndFraction plus StartFraction sigma
+    Over StartRoot n EndRoot EndFraction right-parenthesis right-parenthesis 4th Row
+    1st Column Blank 2nd Column plus log left-parenthesis 1 plus left-parenthesis
+    1 minus f right-parenthesis dot StartFraction r Over n EndFraction plus f dot
+    left-parenthesis StartFraction mu Over n EndFraction minus StartFraction sigma
+    Over StartRoot n EndRoot EndFraction right-parenthesis right-parenthesis 5th Row
+    1st Column Blank 2nd Column equals StartFraction n Over 2 EndFraction log left-parenthesis
+    left-parenthesis 1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction
+    r Over n EndFraction plus f dot StartFraction mu Over n EndFraction right-parenthesis
+    squared minus StartFraction f squared sigma squared Over n EndFraction right-parenthesis
+    EndLayout" display="block"><mtable displaystyle="true"><mtr><mtd columnalign="right"><mrow><msub><mi>G</mi>
+    <mi>n</mi></msub> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd> <mtd
+    columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="(" separators=""><mo
+    form="prefix">log</mo> <mfrac><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mrow><mo>(</mo><mi>f</mi><mo>)</mo></mrow></mrow>
+    <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="(" separators=""><munderover><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></munderover> <mo form="prefix">log</mo>
+    <mfenced close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi>
+    <mi>n</mi></mfrac> <mo>+</mo> <mi>f</mi> <mo>·</mo> <msubsup><mi>r</mi> <mi>i</mi>
+    <mi>S</mi></msubsup></mfenced></mfenced></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>=</mo>
+    <mfrac><mn>1</mn> <mn>2</mn></mfrac> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></munderover> <mo form="prefix">log</mo> <mfenced close=")" open="("
+    separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>f</mi>
+    <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac> <mo>+</mo> <mi>f</mi>
+    <mo>·</mo> <mfenced close=")" open="(" separators=""><mfrac><mi>μ</mi> <mi>n</mi></mfrac>
+    <mo>+</mo> <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mfenced></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>+</mo> <mo form="prefix">log</mo> <mfenced
+    close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn>
+    <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac>
+    <mo>+</mo> <mi>f</mi> <mo>·</mo> <mfenced close=")" open="(" separators=""><mfrac><mi>μ</mi>
+    <mi>n</mi></mfrac> <mo>-</mo> <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mfenced></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mi>n</mi> <mn>2</mn></mfrac>
+    <mo form="prefix">log</mo> <mfenced close=")" open="(" separators=""><msup><mfenced
+    close=")" open="(" separators=""><mn>1</mn><mo>+</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow><mo>·</mo><mfrac><mi>r</mi>
+    <mi>n</mi></mfrac><mo>+</mo><mi>f</mi><mo>·</mo><mfrac><mi>μ</mi> <mi>n</mi></mfrac></mfenced>
+    <mn>2</mn></msup> <mo>-</mo> <mfrac><mrow><msup><mi>f</mi> <mn>2</mn></msup> <msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mfenced></mrow></mtd></mtr></mtable></math>
 - en: 'Using a [Taylor series expansion](https://oreil.ly/xX4tA), one finally arrives
     at the following:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用[Taylor级数展开](https://oreil.ly/xX4tA)，最终得出以下结果：
 - en: <math alttext="upper G Subscript n Baseline left-parenthesis f right-parenthesis
     equals r plus left-parenthesis mu minus r right-parenthesis dot f minus StartFraction
     sigma squared Over 2 EndFraction dot f squared plus script upper O left-parenthesis
@@ -602,12 +998,24 @@
     <mo>·</mo> <mi>f</mi> <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac>
     <mo>·</mo> <msup><mi>f</mi> <mn>2</mn></msup> <mo>+</mo> <mi>𝒪</mi> <mfenced close=")"
     open="(" separators=""><mfrac><mn>1</mn> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mrow></math>
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper G Subscript n Baseline left-parenthesis f right-parenthesis
+    equals r plus left-parenthesis mu minus r right-parenthesis dot f minus StartFraction
+    sigma squared Over 2 EndFraction dot f squared plus script upper O left-parenthesis
+    StartFraction 1 Over StartRoot n EndRoot EndFraction right-parenthesis" display="block"><mrow><msub><mi>G</mi>
+    <mi>n</mi></msub> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>r</mi>
+    <mo>+</mo> <mrow><mo>(</mo> <mi>μ</mi> <mo>-</mo> <mi>r</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <mi>f</mi> <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac>
+    <mo>·</mo> <msup><mi>f</mi> <mn>2</mn></msup> <mo>+</mo> <mi>𝒪</mi> <mfenced close=")"
+    open="(" separators=""><mfrac><mn>1</mn> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mrow></math>
 - en: 'Or for infinitely many trading points in time (that is, for continuous trading),
     one arrives at the following:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者对于无限多的交易时间点（即连续交易），最终得出以下结果：
 - en: <math alttext="upper G Subscript normal infinity Baseline left-parenthesis f
     right-parenthesis equals r plus left-parenthesis mu minus r right-parenthesis
     dot f minus StartFraction sigma squared Over 2 EndFraction dot f squared" display="block"><mrow><msub><mi>G</mi>
@@ -615,72 +1023,116 @@
     <mo>+</mo> <mrow><mo>(</mo> <mi>μ</mi> <mo>-</mo> <mi>r</mi> <mo>)</mo></mrow>
     <mo>·</mo> <mi>f</mi> <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac>
     <mo>·</mo> <msup><mi>f</mi> <mn>2</mn></msup></mrow></math>
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper G Subscript normal infinity Baseline left-parenthesis f
+    right-parenthesis equals r plus left-parenthesis mu minus r right-parenthesis
+    dot f minus StartFraction sigma squared Over 2 EndFraction dot f squared" display="block"><mrow><msub><mi>G</mi>
+    <mi>∞</mi></msub> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>r</mi>
+    <mo>+</mo> <mrow><mo>(</mo> <mi>μ</mi> <mo>-</mo> <mi>r</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <mi>f</mi> <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac>
+    <mo>·</mo> <msup><mi>f</mi> <mn>2</mn></msup></mrow></math>
 - en: 'The optimal fraction <math alttext="f Superscript asterisk"><msup><mi>f</mi>
     <mo>*</mo></msup></math> then is given through the first order condition by the
     following expression:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，通过以下表达式通过一阶条件确定最优分数 <math alttext="f Superscript asterisk"><msup><mi>f</mi>
+    <mo>*</mo></msup></math> ：
 - en: <math alttext="f Superscript asterisk Baseline equals StartFraction mu minus
     r Over sigma squared EndFraction" display="block"><mrow><msup><mi>f</mi> <mo>*</mo></msup>
     <mo>=</mo> <mfrac><mrow><mi>μ</mi><mo>-</mo><mi>r</mi></mrow> <msup><mi>σ</mi>
     <mn>2</mn></msup></mfrac></mrow></math>
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="f Superscript asterisk Baseline equals StartFraction mu minus
+    r Over sigma squared EndFraction" display="block"><mrow><msup><mi>f</mi> <mo>*</mo></msup>
+    <mo>=</mo> <mfrac><mrow><mi>μ</mi><mo>-</mo><mi>r</mi></mrow> <msup><mi>σ</mi>
+    <mn>2</mn></msup></mfrac></mrow></math>
 - en: This represents the expected excess return of the stock over the risk-free rate
     divided by the variance of the returns. This expression looks similar to the Sharpe
     ratio but is different.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 这代表了股票预期超过无风险利率的回报率与回报率方差的比值。这个表达式看起来类似于夏普比率，但有所不同。
 - en: 'A real-world example shall illustrate the application of the preceding formula
     and its role in leveraging equity deployed to trading strategies. The trading
     strategy under consideration is simply a *passive long position in the S&P 500
     index*. To this end, base data is quickly retrieved and required statistics are
     easily derived:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个实际案例将说明前述公式的应用及其在交易策略中杠杆化的作用。考虑的交易策略简单地是*标准普尔500指数的被动长期持仓*。为此，基础数据迅速获取，并且所需的统计数据很容易衍生：
 - en: '[PRE4]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: The statistical properties of the S&P 500 index over the period covered suggest
     an optimal fraction of about 4.5 to be invested in the long position in the index.
     In other words, for every dollar available, 4.5 dollars shall be invested, implying
     a *leverage ratio* of 4.5 in accordance with the optimal Kelly fraction or, in
     this case, the optimal Kelly *factor*.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 在涵盖期间内，标准普尔500指数的统计特性建议将约4.5的最优分数投资于指数的长期持仓中。换句话说，对于每可用美元，将投资4.5美元，这意味着根据最优凯利分数或在这种情况下最优的凯利*因子*，杠杆率为4.5。
 - en: 'Everything being equal, the Kelly criterion implies a higher leverage when
     the expected return is higher and the volatility (variance) is lower:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 其他条件相等时，凯利准则意味着在预期回报较高且波动性（方差）较低时，杠杆率更高：
 - en: '[PRE5]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO4-1)'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO4-1)'
 - en: Calculates the annualized return.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算年化回报。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO4-3)'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO4-3)'
 - en: Calculates the annualized volatility.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算年化波动率。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO4-5)'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO4-5)'
 - en: Sets the risk-free rate to 0 (for simplicity).
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 将无风险利率设置为0（简化起见）。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO4-6)'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO4-6)'
 - en: Calculates the optimal Kelly fraction to be invested in the strategy.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算要投资于策略的最优凯利分数。
 - en: 'The following Python code simulates the application of the Kelly criterion
     and the optimal leverage ratio. For simplicity and comparison reasons, the initial
     equity is set to 1 while the initially invested total capital is set to <math
@@ -690,99 +1142,158 @@
     to the available equity. After a loss, the capital is reduced; after a profit,
     the capital is increased. The evolution of the equity position compared to the
     index itself is shown in [Figure 10-3](#auto_plot_03):'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码模拟了凯利准则及最优杠杆比率的应用。为了简化和比较的原因，初始资本设置为1，而初始投资总资本设置为<math alttext="1
+    dot f Superscript asterisk"><mrow><mn>1</mn> <mo>·</mo> <msup><mi>f</mi> <mo>*</mo></msup></mrow></math>
+    。根据策略部署的资本表现，每日调整可用权益来调整总资本。亏损后，资本减少；盈利后，资本增加。相对于指数本身，权益位置的演变显示在[图 10-3](#auto_plot_03)中：
 - en: '[PRE6]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO5-1)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO5-1)'
 - en: Generates a new column for `equity` and sets the initial value to 1.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成一个名为`equity`的新列，并将初始值设为1。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO5-2)'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO5-2)'
 - en: Generates a new column for `capital` and sets the initial value to <math alttext="1
     dot f Superscript asterisk"><mrow><mn>1</mn> <mo>·</mo> <msup><mi>f</mi> <mo>*</mo></msup></mrow></math>
     .
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成一个名为`capital`的新列，并将初始值设为<math alttext="1 dot f Superscript asterisk"><mrow><mn>1</mn>
+    <mo>·</mo> <msup><mi>f</mi> <mo>*</mo></msup></mrow></math> 。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO5-3)'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO5-3)'
 - en: Picks the right `DatetimeIndex` value for the previous values.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择前值的正确 `DatetimeIndex` 值。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO5-4)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO5-4)'
 - en: Calculates the new capital position given the return.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据回报计算新的资本位置。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO5-5)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO5-5)'
 - en: Adjusts the equity value according to the capital position performance.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据资本位置的表现调整权益价值。
 - en: '[![6](assets/6.png)](#co_automating_trading_operations_CO5-6)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_automating_trading_operations_CO5-6)'
 - en: Adjusts the capital position given the new equity position and the fixed leverage
     ratio.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据新的权益位置和固定杠杆比例调整资本位置。
 - en: '[![7](assets/7.png)](#co_automating_trading_operations_CO5-7)'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_automating_trading_operations_CO5-7)'
 - en: Simulates the Kelly criterion based strategy for half of <math alttext="f"><mi>f</mi></math>
     …
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 模拟基于 Kelly 准则的策略，针对一半的<math alttext="f"><mi>f</mi></math>…
 - en: '[![8](assets/8.png)](#co_automating_trading_operations_CO5-8)'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_automating_trading_operations_CO5-8)'
 - en: …for two thirds of <math alttext="f"><mi>f</mi></math> …
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: …三分之二的<math alttext="f"><mi>f</mi></math> …
 - en: '[![9](assets/9.png)](#co_automating_trading_operations_CO5-9)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_automating_trading_operations_CO5-9)'
 - en: …and <math alttext="f"><mi>f</mi></math> itself.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: …和<math alttext="f"><mi>f</mi></math> 本身。
 - en: '![pfat 1003](assets/pfat_1003.png)'
+  id: totrans-134
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1003](assets/pfat_1003.png)'
 - en: Figure 10-3\. Gross performance of S&P 500 compared to equity position given
     different values of <math alttext="f"><mi>f</mi></math>
+  id: totrans-135
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-3\. S&P 500 的总表现与给定不同<math alttext="f"><mi>f</mi></math>值的权益位置的比较
 - en: 'As [Figure 10-3](#auto_plot_03) illustrates, applying the optimal Kelly leverage
     leads to a rather erratic evolution of the equity position (high volatility),
     which is intuitively plausible, given the leverage ratio of 4.59\. One would expect
     the volatility of the equity position to increase with increasing leverage. Therefore,
     practitioners often do not use “full Kelly” (4.6), but rather “half Kelly” (2.3).
     In the current example, this is reduced to:'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 如[图 10-3](#auto_plot_03) 所示，应用最优 Kelly 杠杆导致权益位置的演变相当不稳定（高波动性），这在直觉上是合理的，考虑到杠杆比率为
+    4.59\. 预计随着杠杆增加，权益位置的波动性会增加。因此，从业者通常不使用“全凯利”（4.6），而是使用“半凯利”（2.3）。在当前示例中，这被减少到：
 - en: <math alttext="one-half dot f Superscript asterisk Baseline almost-equals 2.3"
     display="block"><mrow><mfrac><mn>1</mn> <mn>2</mn></mfrac> <mo>•</mo> <msup><mi>f</mi>
     <mo>*</mo></msup> <mo>≈</mo> <mn>2.3</mn></mrow></math>
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="one-half dot f Superscript asterisk Baseline almost-equals 2.3"
+    display="block"><mrow><mfrac><mn>1</mn> <mn>2</mn></mfrac> <mo>•</mo> <msup><mi>f</mi>
+    <mo>*</mo></msup> <mo>≈</mo> <mn>2.3</mn></mrow></math>
 - en: Against this background, [Figure 10-3](#auto_plot_03) also shows the evolution
     of the equity position for values lower than “full Kelly.” The risk indeed reduces
     with lower values of latexmath:[$f$].
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此背景下，[图 10-3](#auto_plot_03) 还展示了对“全凯利”低于的值的权益位置的演变。“全凯利”的风险确实随着 latexmath:[$f$]
+    的降低而减少。
 - en: ML-Based Trading Strategy
+  id: totrans-139
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于 ML 的交易策略
 - en: '[Chapter 8](ch08.html#trading_oanda) introduces the Oanda trading platform,
     its RESTful API and the Python wrapper package `tpqoa`. This section combines
     an ML-based approach for predicting the direction of market price movements with
@@ -792,122 +1303,197 @@
     It also adds, compared to the plain vectorized backtesting approach introduced
     in [Chapter 4](ch04.html#vectorized_backtesting), a more in-depth analysis of
     the risk characteristics of the trading strategy tested.'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第 8 章](ch08.html#trading_oanda) 介绍了 Oanda 交易平台，其 RESTful API 和 Python 封装包
+    `tpqoa`。本节将基于 Oanda v20 RESTful API 的历史数据，结合基于 ML 的方法来预测市场价格走势，以测试 EUR/USD 货币对的算法交易策略。它使用向量化回测，并考虑了买卖价差作为比例交易成本。与[第
+    4 章](ch04.html#vectorized_backtesting)介绍的普通向量化回测方法相比，它还对所测试的交易策略的风险特征进行了更深入的分析。'
 - en: Vectorized Backtesting
+  id: totrans-141
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 向量化回测
 - en: 'The backtest is based on intraday data, more specifically on bars of 10 minutes
     in length. The following code connects to the Oanda v20 API and retrieves 10-minute
     bar data for one week. [Figure 10-4](#auto_plot_04) visualizes the mid close prices
     over the period for which data is retrieved:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 回测基于日内数据，更具体地说是 10 分钟长的条形图。以下代码连接到 Oanda v20 API 并检索一周的 10 分钟条形图数据。[图 10-4](#auto_plot_04)
+    可视化了所检索数据的时间段内的中间收盘价格：
 - en: '[PRE7]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO6-1)'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO6-1)'
 - en: Connects to the API and retrieves the data.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 连接到 API 并检索数据。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO6-4)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO6-4)'
 - en: Specifies the average bid-ask spread.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定平均买卖价差。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO6-5)'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO6-5)'
 - en: Calculates the mean closing price for the data set.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算数据集的平均收盘价。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO6-6)'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO6-6)'
 - en: Calculates the average proportional transactions costs given the average spread
     and the average mid closing price.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算给定平均差价和平均中间收盘价的平均比例交易成本。
 - en: '![pfat 1004](assets/pfat_1004.png)'
+  id: totrans-152
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1004](assets/pfat_1004.png)'
 - en: Figure 10-4\. EUR/USD exchange rate (10-minute bars)
+  id: totrans-153
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-4\. 欧元/美元汇率（10分钟柱状图）
 - en: 'The ML-based strategy uses a number of time series features, such as the log
     return and the minimum and the maximum of the closing price. In addition, the
     features data is lagged. In other words, the ML algorithm shall learn from historical
     patterns as embodied by the lagged features data:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于ML的策略使用了多个时间序列特征，如对数收益率以及收盘价的最小值和最大值。此外，特征数据是滞后的。换句话说，ML算法将从历史模式中学习，这些模式由滞后特征数据体现：
 - en: '[PRE8]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO7-1)'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO7-1)'
 - en: Specifies the window length for certain features.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定某些特征的窗口长度。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO7-2)'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO7-2)'
 - en: Calculates the log returns from the closing prices.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算收盘价的对数收益率。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO7-3)'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO7-3)'
 - en: Calculates the rolling volatility.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动波动率。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO7-4)'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO7-4)'
 - en: Derives the time series momentum as the mean of the recent log returns.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 将时间序列动量定义为最近对数收益率的平均值。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO7-5)'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO7-5)'
 - en: Calculates the simple moving average.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算简单移动平均线。
 - en: '[![6](assets/6.png)](#co_automating_trading_operations_CO7-6)'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_automating_trading_operations_CO7-6)'
 - en: Calculates the rolling maximum value.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动最大值。
 - en: '[![7](assets/7.png)](#co_automating_trading_operations_CO7-7)'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_automating_trading_operations_CO7-7)'
 - en: Calculates the rolling minimum value.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算滚动最小值。
 - en: '[![8](assets/8.png)](#co_automating_trading_operations_CO7-8)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_automating_trading_operations_CO7-8)'
 - en: Adds the lagged features data to the `DataFrame` object.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 将滞后特征数据添加到`DataFrame`对象中。
 - en: '[![9](assets/9.png)](#co_automating_trading_operations_CO7-11)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_automating_trading_operations_CO7-11)'
 - en: Defines the labels data as the market direction (`+1` or *up* and `-1` or *down*).
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 将标签数据定义为市场方向（`+1`或*上涨*和`-1`或*下跌*）。
 - en: '[![10](assets/10.png)](#co_automating_trading_operations_CO7-12)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_automating_trading_operations_CO7-12)'
 - en: Shows a small sub-set from the resulting lagged features data.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示结果滞后特征数据的一个小子集。
 - en: Given the features and label data, different supervised learning algorithms
     could now be applied. In what follows, a so-called *AdaBoost algorithm* for classification
     is used from the `scikit-learn` ML package (see [`AdaBoostClassifier`](https://oreil.ly/WIANy)).
@@ -916,8 +1502,10 @@
     prone to overfitting (see [“Data Snooping and Overfitting”](ch04.html#data_snooping)).
     As the base classifier, a *decision tree classification algorithm* from `scikit-learn`
     is used (see [`DecisionTreeClassifier`](https://oreil.ly/wb-wh)).
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 针对特征和标签数据，现在可以应用不同的监督学习算法。接下来，使用`scikit-learn` ML包中的所谓*AdaBoost算法*进行分类（参见[`AdaBoostClassifier`](https://oreil.ly/WIANy)）。在分类的背景下，增强的概念是使用基分类器的*集成*，以得到一个更优的预测器，理论上不太容易过拟合（参见[“数据窥探和过拟合”](ch04.html#data_snooping)）。作为基分类器，使用了`scikit-learn`中的*决策树分类算法*（参见[`DecisionTreeClassifier`](https://oreil.ly/wb-wh)）。
 - en: 'The code trains and tests the algorithmic trading strategy based on a sequential
     train-test split. The accuracy scores of the model for the training and test data
     are both significantly above 50%. Instead of accuracy scores, one would also speak
@@ -925,69 +1513,109 @@
     is, the number of winning trades compared to all trades). Since the hit ratio
     is significantly greater than 50%, this might indicate—in the context of the Kelly
     criterion—a statistical edge compared to a random walk setting:'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 该代码根据顺序训练-测试分割来训练和测试算法交易策略。模型在训练和测试数据上的准确率分数均显著高于50%。除了准确率分数外，也可以在金融交易的背景下讨论交易策略的*命中率*（即获胜交易数与所有交易数的比例）。由于命中率显著高于50%，这可能表明——根据凯利准则的背景——相对于随机行走设置，存在统计优势：
 - en: '[PRE9]'
+  id: totrans-178
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO8-1)'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO9-1)'
 - en: Specifies major parameters for the ML algorithm (see the references for the
     model classes provided previously).
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定机器学习算法的主要参数（请参阅之前提供的模型类的参考资料）。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO8-6)'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO8-6)'
 - en: Instantiates the base classification algorithm (decision tree).
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化基础分类算法（决策树）。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO8-7)'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO9-3)'
 - en: Instantiates the AdaBoost classification algorithm.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化AdaBoost分类算法。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO8-8)'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO8-8)'
 - en: Applies Gaussian normalization to the *training* features data set.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 对*训练*特征数据集应用高斯归一化。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO8-10)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO8-10)'
 - en: Fits the model based on the training data set.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据训练数据集拟合模型。
 - en: '[![6](assets/6.png)](#co_automating_trading_operations_CO8-11)'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_automating_trading_operations_CO8-11)'
 - en: Shows the accuracy of the predictions from the trained model *in-sample* (training
     data set).
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示来自训练模型的*样本内*预测准确率（训练数据集）。
 - en: '[![7](assets/7.png)](#co_automating_trading_operations_CO8-12)'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_automating_trading_operations_CO8-12)'
 - en: Applies Gaussian normalization to the *testing* features data set (using the
     parameters from the training features data set).
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 对*测试*特征数据集应用高斯归一化（使用训练特征数据集的参数）。
 - en: '[![8](assets/8.png)](#co_automating_trading_operations_CO8-14)'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_automating_trading_operations_CO8-14)'
 - en: Generates the predictions for the test data set.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成测试数据集的预测。
 - en: '[![9](assets/9.png)](#co_automating_trading_operations_CO8-15)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_automating_trading_operations_CO8-15)'
 - en: Shows the accuracy of the predictions from the trained model *out-of-sample*
     (test data set).
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示来自训练模型的*样本外*预测准确率。
 - en: 'It is well known that the hit ratio is only one side of the coin of success
     in financial trading. The other side comprises, among other things, getting the
     important trades right, as well as the transactions costs implied by the trading
@@ -997,39 +1625,60 @@
     on the average bid-ask spread. [Figure 10-5](#auto_plot_05) compares the performance
     of the algorithmic trading strategy (without and with proportional transaction
     costs) to the performance of the passive benchmark investment:'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 众所周知，命中率只是金融交易成功的一方面。另一方面包括正确把握重要交易和交易策略隐含的交易成本等因素。^([2](ch10.html#idm45785339950712))
+    为此，只有正式的矢量化回测方法才能评估交易策略的质量。以下代码考虑了基于平均买卖价差的比例交易成本。[图 10-5](#auto_plot_05) 比较了算法交易策略（无交易成本和有比例交易成本）与被动基准投资的表现：
 - en: '[PRE10]'
+  id: totrans-198
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO9-1)'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO9-1)'
 - en: Derives the log returns for the ML-based algorithmic trading strategy.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 推导基于机器学习的算法交易策略的对数收益率。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO9-2)'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO9-2)'
 - en: Calculates the number of trades implied by the trading strategy based on changes
     in the position.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据持仓变动计算交易策略涉及的交易次数。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO9-3)'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO9-3)'
 - en: Whenever a trade takes place, the proportional transaction costs are subtracted
     from the strategy’s log return on that day.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 每次交易发生时，从该日策略的对数收益中扣除比例交易成本。
 - en: '![pfat 1005](assets/pfat_1005.png)'
+  id: totrans-205
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1005](assets/pfat_1005.png)'
 - en: Figure 10-5\. Gross performance of EUR/USD exchange rate and algorithmic trading
     strategy (before and after transaction costs)
+  id: totrans-206
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-5\. EUR/USD汇率和算法交易策略的总体表现（扣除交易成本前后）
 - en: Vectorized backtesting has its limits with regard to how close to market realities
     strategies can be tested. For example, it does not allow one to include fixed
     transaction costs per trade directly. One could, as an approximation, take a multiple
@@ -1038,89 +1687,135 @@
     precise in general. If a higher degree of precision is required, other approaches,
     such as *event-based backtesting* (see [Chapter 6](ch06.html#event_based_backtesting))
     with explicit loops over every bar of the price data, need to be applied.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 矢量化回测在测试策略接近市场实际情况方面存在局限性。例如，它不允许直接包括每笔交易的固定交易成本。可以作为一种近似，通过取平均位置大小的平均比例交易成本的倍数来间接考虑固定交易成本。然而，这一方法通常不够精确。如果需要更高精度，需要采用其他方法，比如*基于事件的回测*（见[第
+    6 章](ch06.html#event_based_backtesting)） ，通过对价格数据的每个条形图进行显式循环。
 - en: Optimal Leverage
+  id: totrans-208
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 最佳杠杆
 - en: 'Equipped with the trading strategy’s log returns data, the mean and variance
     values can be calculated in order to derive the optimal leverage according to
     the Kelly criterion. The code that follows scales the numbers to annualized values,
     although this does not change the optimal leverage values according to the Kelly
     criterion since the mean return and the variance scale with the same factor:'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 配备交易策略的对数收益数据，可以计算均值和方差值，以便根据凯利准则确定最佳杠杆。接下来的代码将这些数字缩放为年化值，尽管这不会改变根据凯利准则的最佳杠杆值，因为均值回报和方差随着同一因子缩放：
 - en: '[PRE11]'
+  id: totrans-210
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO10-1)'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO10-1)'
 - en: Annualized mean returns.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 年化平均回报。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO10-2)'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO10-2)'
 - en: Annualized variances.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 年化方差。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO10-3)'
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO10-3)'
 - en: Annualized volatilities.
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 年化波动率。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO10-4)'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO10-4)'
 - en: Optimal leverage according to the Kelly criterion (“full Kelly”).
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据凯利准则确定的最佳杠杆（“全凯利”）。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO10-5)'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO10-5)'
 - en: Optimal leverage according to the Kelly criterion (“half Kelly”).
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据凯利准则（“半凯利”）确定的最佳杠杆。
 - en: 'Using the “half Kelly” criterion, the optimal leverage for the trading strategy
     is above 50\. With a number of brokers, such as Oanda, and certain financial instruments,
     such as foreign exchange pairs and contracts for difference (CFDs), such leverage
     ratios are feasible, even for retail traders. [Figure 10-6](#auto_plot_06) shows,
     in comparison, the performance of the trading strategy with transaction costs
     for different leverage values:'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用“半凯利”准则，交易策略的最佳杠杆在50以上。对于一些经纪商，如Oanda，以及某些金融工具，如外汇对和差价合约（CFDs），即使对于零售交易者，这样的杠杆比率也是可行的。[图
+    10-6](#auto_plot_06)显示了带有交易成本的不同杠杆值下交易策略的表现比较：
 - en: '[PRE12]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO11-1)'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO11-1)'
 - en: Scales the strategy returns for different leverage values.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 缩放不同杠杆值的策略回报。
 - en: '![pfat 1006](assets/pfat_1006.png)'
+  id: totrans-225
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1006](assets/pfat_1006.png)'
 - en: Figure 10-6\. Gross performance of the algorithmic trading strategy for different
     leverage values
+  id: totrans-226
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-6\. 算法交易策略在不同杠杆值下的总体表现
 - en: Leverage increases risks associated with trading strategies significantly. Traders
     should read the risk disclaimers and regulations carefully. A positive backtesting
     performance is also no guarantee whatsoever for future performances. All results
     shown are illustrative only and are meant to demonstrate the application of programming
     and analytics approaches. In some jurisdictions, such as in Germany, leverage
     ratios are capped for retail traders based on different groups of financial instruments.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 杠杆增加了与交易策略相关的风险。交易者应仔细阅读风险声明和监管规定。积极的回测表现也不能保证未来的表现。所有展示的结果仅用于说明编程和分析方法的应用。在某些司法管辖区，如德国，零售交易者的杠杆比例根据不同的金融工具组别进行限制。
 - en: Risk Analysis
+  id: totrans-228
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 风险分析
 - en: 'Since leverage increases the risk associated with a certain trading strategy
     considerably, a more in-depth risk analysis seems in order. The risk analysis
     that follows assumes a leverage ratio of 30\. First, the maximum drawdown and
@@ -1131,162 +1826,256 @@
     an initial position size of 100,000 EUR for a leverage ratio of 30\. It also assumes
     that there are no adjustments with regard to the equity over time, no matter what
     the performance is:'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于杠杆显著增加了与某一交易策略相关的风险，因此需要进行更深入的风险分析。随后的风险分析假设杠杆比率为30。首先，将计算最大回撤和最长回撤期。*最大回撤*是最近高点后的最大损失（低点）。因此，*最长回撤期*是交易策略需要恢复到最近高点的最长时间。分析假设初始股本位置为3,333欧元，导致杠杆比率为30的初始头寸大小为100,000欧元。还假设无论绩效如何，股本随时间不会调整：
 - en: '[PRE13]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO12-1)'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO12-1)'
 - en: The initial equity.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始股权。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO12-2)'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO12-2)'
 - en: The relevant log returns time series…
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 相关的对数收益时间序列…
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO12-3)'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO12-3)'
 - en: …scaled by the initial equity.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: …按初始股权缩放。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO12-4)'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO12-4)'
 - en: The cumulative maximum values over time.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 随时间的累计最大值。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO12-5)'
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO12-5)'
 - en: The drawdown values over time.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 随时间变化的回撤数值。
 - en: '[![6](assets/6.png)](#co_automating_trading_operations_CO12-6)'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_automating_trading_operations_CO12-6)'
 - en: The maximum drawdown value.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 最大回撤值。
 - en: '[![7](assets/7.png)](#co_automating_trading_operations_CO12-7)'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_automating_trading_operations_CO12-7)'
 - en: The point in time when it happens.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 发生时的时间点。
 - en: 'Technically, a new high is characterized by a drawdown value of 0\. The drawdown
     period is the time between two such highs. [Figure 10-7](#auto_plot_07) visualizes
     both the maximum drawdown and the drawdown periods:'
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 技术上，新高点的特征是回撤值为0。回撤期是两个这样的高点之间的时间。[图10-7](#auto_plot_07)可视化了最大回撤和回撤期：
 - en: '[PRE14]'
+  id: totrans-246
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO13-1)'
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO13-1)'
 - en: Identifies highs for which the drawdown must be 0.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定需要将回撤降为0的高点。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO13-2)'
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO13-2)'
 - en: Calculates the `timedelta` values between all highs.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算所有高点之间的`timedelta`值。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO13-4)'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO13-4)'
 - en: The longest drawdown period in *seconds*…
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: '*秒*为单位的最长回撤期…'
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO13-6)'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO13-6)'
 - en: …transformed to *hours*.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: …转换为*小时*。
 - en: Another important risk measure is *value-at-risk* (VaR). It is quoted as a currency
     amount and represents the maximum loss to be expected given both a certain time
     horizon and a confidence level.
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个重要的风险度量是*风险价值*（VaR）。它以货币金额表示，代表在特定时间段和置信水平下可能发生的最大损失。
 - en: '![pfat 1007](assets/pfat_1007.png)'
+  id: totrans-256
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1007](assets/pfat_1007.png)'
 - en: Figure 10-7\. Maximum drawdown (vertical line) and drawdown periods (horizontal
     lines)
+  id: totrans-257
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-7。最大回撤（垂直线）和回撤期（水平线）
 - en: 'The following code derives VaR values based on the log returns of the equity
     position for the leveraged trading strategy over time for different confidence
     levels. The time interval is fixed to the bar length of ten minutes:'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码根据杠杆交易策略的股本位置的对数收益随时间的不同置信水平推导VaR值。时间间隔固定为十分钟的条长度：
 - en: '[PRE15]'
+  id: totrans-259
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO14-1)'
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO14-1)'
 - en: Defines the percentile values to be used.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定要使用的百分位值。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO14-2)'
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO14-2)'
 - en: Calculates the VaR values given the percentile values.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据百分位值计算VaR值。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO14-3)'
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO14-3)'
 - en: Translates the percentile values into confidence levels and the VaR values (negative
     values) to positive values for printing.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 将百分位值转换为置信水平，将VaR值（负值）转换为正值以供打印。
 - en: 'Finally, the following code calculates the VaR values for a time horizon of
     *one hour* by resampling the original `DataFrame` object. In effect, the VaR values
     are increased for all confidence levels:'
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，以下代码通过对原始`DataFrame`对象重新采样来计算*一小时*时间范围内的VaR值。实际上，所有置信水平的VaR值都会增加：
 - en: '[PRE16]'
+  id: totrans-267
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO15-1)'
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO15-1)'
 - en: Resamples the data from 10-minute to 1-hour bars.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据从10分钟重新采样为1小时的条形图。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO15-2)'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO15-2)'
 - en: Calculates the VaR values given the percentile values.
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据百分位值计算VaR值。
 - en: Persisting the Model Object
+  id: totrans-272
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 持久化模型对象
 - en: Once the algorithmic trading strategy is accepted based on the backtesting,
     leveraging, and risk analysis results, the model object and other relevant algorithm
     components might be persisted for later use in deployment. It embodies now the
     ML-based trading strategy or the trading algorithm.
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦基于回测、杠杆和风险分析结果接受了算法交易策略，模型对象和其他相关的算法组件可能会被持久化以备后续部署使用。它现在体现了基于机器学习的交易策略或交易算法。
 - en: '[PRE17]'
+  id: totrans-274
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Online Algorithm
+  id: totrans-275
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 在线算法
 - en: The trading algorithm tested so far is an *offline algorithm*. Such algorithms
     use a complete data set to solve a problem at hand. The problem has been to train
     an AdaBoost classification algorithm based on a decision tree as the base classifier,
@@ -1295,214 +2084,329 @@
     piece by piece as it arrives to predict the direction of the market movement for
     the next time interval (bar). This section makes use of the persisted model object
     from the previous section and embeds it into a streaming data context.
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止测试的交易算法是*离线算法*。这类算法使用完整的数据集来解决手头的问题。问题在于训练一个基于决策树作为基础分类器的AdaBoost分类算法，多个不同的时间序列特征和方向性标签数据。实际上，在金融市场上部署交易算法时，它必须逐步消耗数据，以预测下一个时间间隔（条）市场运动方向。本节利用前一节的持久化模型对象，并将其嵌入到流数据环境中。
 - en: 'The code that transforms the *offline* trading algorithm into an *online* trading
     algorithm mainly addresses the following issues:'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: 将*离线*交易算法转化为*在线*交易算法的代码主要解决以下问题：
 - en: Tick data
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: Tick数据
 - en: Tick data arrives in real time and is to be processed in real time, such as
     to be collected in a `DataFrame` object.
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: Tick数据以实时方式到达并需要实时处理，例如被收集到一个`DataFrame`对象中。
 - en: Resampling
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新采样
 - en: The tick data is to be resampled to the appropriate bar length given the trading
     algorithm. For illustration, a shorter bar length is used for resampling than
     for the training and backtesting.
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: Tick数据将根据交易算法重新采样到适当的条形长度。为了说明，重新采样时使用的条形长度比训练和回测时使用的条形长度短。
 - en: Prediction
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测
 - en: The trading algorithm generates a prediction for the direction of the market
     movement over the relevant time interval that by nature lies in the future.
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易算法为未来的时间间隔内市场运动方向生成预测。
 - en: Orders
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 订单
 - en: Given the current position and the prediction (“signal”) generated by the algorithm,
     an order is placed or the position is kept unchanged.
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据当前位置和算法生成的预测（“信号”），下订单或保持位置不变。
 - en: '[Chapter 8](ch08.html#trading_oanda), and in particular [“Working with Streaming
     Data”](ch08.html#oanda_streaming), shows how to retrieve tick data from the Oanda
     API in real time. The basic approach is to redefine the `.on_success()` method
     of the `tpqoa.tpqoa` class to implement the trading logic.'
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第8章](ch08.html#trading_oanda)，特别是[“使用流数据”](ch08.html#oanda_streaming)，展示了如何实时从Oanda
+    API获取Tick数据。基本方法是重新定义`tpqoa.tpqoa`类的`.on_success()`方法以实现交易逻辑。'
 - en: 'First, the persisted trading algorithm is loaded; it represents the trading
     logic to be followed. It consists of the trained model itself and the parameters
     for the normalization of the features data, which are integral parts of the algorithm:'
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先加载持久化的交易算法；它代表了要遵循的交易逻辑。它由训练好的模型本身和用于特征数据归一化的参数组成，这些都是算法的整体部分：
 - en: '[PRE18]'
+  id: totrans-288
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'In the following code, the new class `MLTrader`, which inherits from `tpqoa.tpqoa`
     and which, via the `.on_success()` and additional helper methods, transforms the
     trading algorithm into a real-time context. It is the transformation of the *offline
     algorithm* to a so-called *online algorithm*:'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，新类`MLTrader`继承自`tpqoa.tpqoa`，通过`.on_success()`和额外的辅助方法，将交易算法转换为实时环境。这是将*离线算法*转换为所谓的*在线算法*的过程：
 - en: '[PRE19]'
+  id: totrans-290
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO16-1)'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO16-1)'
 - en: The trained AdaBoost model object and the normalization parameters.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 已训练的AdaBoost模型对象和标准化参数。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO16-4)'
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO16-4)'
 - en: The number of units traded.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易单位数。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO16-5)'
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO16-5)'
 - en: The initial, neutral position.
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始的中性位置。
 - en: '[![4](assets/4.png)](#co_automating_trading_operations_CO16-6)'
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_automating_trading_operations_CO16-6)'
 - en: The bar length on which the algorithm is implemented.
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 实施算法的条形图长度。
 - en: '[![5](assets/5.png)](#co_automating_trading_operations_CO16-7)'
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_automating_trading_operations_CO16-7)'
 - en: The length of the window for selected features.
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 选定功能的窗口长度。
 - en: '[![6](assets/6.png)](#co_automating_trading_operations_CO16-8)'
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_automating_trading_operations_CO16-8)'
 - en: The number of lags (must be in line with algorithm training).
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 滞后数目（必须与算法训练一致）。
 - en: '[![7](assets/7.png)](#co_automating_trading_operations_CO16-9)'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_automating_trading_operations_CO16-9)'
 - en: The method that generates the lagged features data.
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成滞后特征数据的方法。
 - en: '[![8](assets/8.png)](#co_automating_trading_operations_CO16-10)'
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_automating_trading_operations_CO16-10)'
 - en: The redefined method that embodies the trading logic.
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 具体化体现交易逻辑的重新定义方法。
 - en: '[![9](assets/9.png)](#co_automating_trading_operations_CO16-11)'
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_automating_trading_operations_CO16-11)'
 - en: Check for a long signal and long trade.
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查长信号和长交易。
 - en: '[![10](assets/10.png)](#co_automating_trading_operations_CO16-12)'
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_automating_trading_operations_CO16-12)'
 - en: Check for a short signal and short trade.
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查短信号和短交易。
 - en: 'With the new class `MLTrader`, automated trading is made simple. A few lines
     of code are enough in an interactive context. The parameters are set such that
     the first order is placed after a short while. In reality, however, all parameters
     must, of course, be in line with original ones from the research and backtesting
     phase. They could, for example, also be persisted on disk and be read with the
     algorithm:'
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用新的类`MLTrader`，自动交易变得简单。在交互式环境中只需几行代码即可。参数设置使得第一个订单在短时间后被下达。然而，在实际中，所有参数当然必须与研究和回测阶段的原始参数保持一致。例如，它们也可以持久化在磁盘上，并且可以通过算法读取：
 - en: '[PRE20]'
+  id: totrans-312
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](assets/1.png)](#co_automating_trading_operations_CO17-1)'
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_automating_trading_operations_CO17-1)'
 - en: Instantiates the trading object.
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化交易对象。
 - en: '[![2](assets/2.png)](#co_automating_trading_operations_CO17-2)'
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_automating_trading_operations_CO17-2)'
 - en: Starts the streaming, data processing, and trading.
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 开始流式处理、数据处理和交易。
 - en: '[![3](assets/3.png)](#co_automating_trading_operations_CO17-3)'
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_automating_trading_operations_CO17-3)'
 - en: Closes out the final open position.
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 结束最后一个开放位置。
 - en: 'The preceding code generates an output similar to the following:'
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述代码生成类似以下输出：
 - en: '[PRE21]'
+  id: totrans-320
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: Infrastructure and Deployment
+  id: totrans-321
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基础设施和部署
 - en: 'Deploying an automated algorithmic trading strategy with real funds requires
     an appropriate infrastructure. Among other things, the infrastructure should satisfy
     the following:'
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用真实资金部署自动化算法交易策略需要适当的基础设施。基础设施应满足以下要求之一：
 - en: Reliability
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
+  zh: 可靠性
 - en: The infrastructure on which to deploy an algorithmic trading strategy should
     allow for high availability (for example, 99.9% or higher) and should otherwise
     take care of reliability (automatic backups, redundancy of drives and web connections,
     and so on).
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: 部署算法交易策略的基础设施应确保高可用性（例如，99.9%或更高），并应确保可靠性（自动备份、磁盘冗余和网络连接冗余等）。
 - en: Performance
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 性能
 - en: Depending on the amount of data being processed and the computational demand
     the algorithms generate, the infrastructure must have enough CPU cores, working
     memory (RAM), and storage (SSD). In addition, the web connections should be fast
     enough.
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据处理数据量和算法生成的计算需求，基础设施必须具备足够的CPU核心、工作内存（RAM）和存储（SSD）。此外，网络连接速度也应足够快。
 - en: Security
+  id: totrans-327
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全性
 - en: The operating system and the applications that run on it should be protected
     by strong passwords, as well as SSL encryption and hard drive encryption. The
     hardware should be protected from fire, water, and unauthorized physical access.
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
+  zh: 操作系统及其上运行的应用程序应受到强密码、SSL 加密和硬盘加密的保护。硬件应受到防火、防水和未经授权的物理访问的保护。
 - en: Basically, these requirements can only be fulfilled by renting an appropriate
     infrastructure from a professional data center or a cloud provider. Own investments
     in the physical infrastructure to satisfy the aforementioned requirements can
     in general only be justified by the bigger, or even the biggest, players in the
     financial markets.
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 基本上，这些要求只能通过向专业数据中心或云提供商租用适当的基础设施来实现。通常情况下，只有金融市场中更大、甚至最大的参与者才能通过在物理基础设施上进行自有投资来满足上述要求。
 - en: From a development and testing point of view, even the smallest Droplet (cloud
     instance) from DigitalOcean ([*http://digitalocean.com*](http://digitalocean.com))
     is enough to get started. At the time of writing, such a Droplet costs 5 USD per
     month and is billed by the hour, created within minutes, and destroyed within
     seconds.^([3](ch10.html#idm45785334066856))
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 从开发和测试的角度来看，即使是 DigitalOcean 的最小 Droplet（云实例）也足以开始使用。在撰写本文时，这样一个 Droplet 每月的成本是
+    5 美元，并按小时计费，可以在几分钟内创建，并在几秒钟内销毁^([3](ch10.html#idm45785334066856))。
 - en: How to set up a Droplet with DigitalOcean is explained in detail in [Chapter 2](ch02.html#python_environment)
     (specifically in [“Using Cloud Instances”](ch02.html#cloud_instance)), with Bash
     scripts that can be adjusted to reflect individual requirements regarding Python
     packages, for example.
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 如何使用 DigitalOcean 设置 Droplet 在[第二章](ch02.html#python_environment)中详细解释（具体在[“使用云实例”](ch02.html#cloud_instance)），使用可以调整以反映个人对
+    Python 包的要求的 Bash 脚本。
 - en: Although the development and testing of automated algorithmic trading strategies
     is possible from a local computer (desktop, notebook, or similar), it is not appropriate
     for the deployment of automated strategies trading real money. A simple loss of
@@ -1510,12 +2414,17 @@
     leaving, for example, unintended open positions in the portfolio. As another example,
     it would cause one to miss out on real-time tick data and end up with corrupted
     data sets, potentially leading to wrong signals and unintended trades and positions.
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管可以从本地计算机（台式机、笔记本电脑或类似设备）进行自动化算法交易策略的开发和测试，但这并不适用于部署用于交易真实资金的自动化策略。简单的网络连接中断或短暂的停电可能会导致整个算法崩溃，例如，在投资组合中留下意外的未平仓头寸。另一个例子是，这将导致错过实时的
+    tick 数据，并最终得到损坏的数据集，可能导致错误的信号和意外的交易和头寸。
 - en: Logging and Monitoring
+  id: totrans-333
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 记录和监控
 - en: Assume now that the automated algorithmic trading strategy is to be deployed
     on a remote server (virtual cloud instance or dedicated server). Further assume
     that all required Python packages have been installed (see [“Using Cloud Instances”](ch02.html#cloud_instance))
@@ -1523,8 +2432,11 @@
     server](https://oreil.ly/cnBHE)). What else needs to be considered from the algorithmic
     traders’ point of view if they do not want to sit all day in front of the screen
     being logged in to the server?
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设现在自动化算法交易策略要部署在远程服务器上（虚拟云实例或专用服务器）。进一步假设所有必需的 Python 包已经安装好（参见[“使用云实例”](ch02.html#cloud_instance)）并且，例如，`Jupyter
+    Lab` 正在安全运行（参见[运行笔记本服务器](https://oreil.ly/cnBHE)）。从算法交易员的角度考虑，如果他们不想整天坐在屏幕前登录到服务器上，还需要考虑什么？
 - en: 'This section addresses two important topics in this regard: *logging* and *real-time
     monitoring*. Logging persists information and events on disk for later inspection.
     It is standard practice in software application development and deployment. However,
@@ -1534,8 +2446,10 @@
     real-time stream of important financial aspects can be created that can then be
     retrieved and processed on a local computer, even if the deployment happens in
     the cloud.'
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一节涉及两个重要主题：*日志记录*和*实时监控*。日志记录将信息和事件持久化到磁盘以供以后检查。这是软件应用开发和部署的标准做法。然而，在这里可能更侧重于金融方面，记录重要的财务数据和事件信息以供以后检查和分析。实时监控也是如此，利用套接字通信。通过套接字，可以创建重要财务方面的持续实时流，然后可以在本地计算机上检索和处理，即使部署在云端也可以。
 - en: '[“Automated Trading Strategy”](#auto_script) presents a Python script implementing
     all these aspects and making use of the code from [“Online Algorithm”](#auto_online).
     The script brings the code in a shape that allows, for example, the *deployment*
@@ -1545,23 +2459,31 @@
     for socket communication. In combination with the short script from [“Strategy
     Monitoring”](#auto_monitor), this allows for a remote real-time monitoring of
     the activity on a remote server.^([4](ch10.html#idm45785334006200))'
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“自动交易策略”](#auto_script)介绍了一个Python脚本，实现了所有这些方面，并利用了来自[“在线算法”](#auto_online)的代码。该脚本将代码整理成一种形式，例如*部署*算法交易策略——基于持久化的算法对象——到远程服务器上。它还基于自定义函数增加了*日志记录和监控*功能，其中包括使用`ZeroMQ`（参见[*http://zeromq.org*](http://zeromq.org)）进行套接字通信。结合来自[“策略监控”](#auto_monitor)的简短脚本，这允许对远程服务器上的活动进行远程实时监控。^([4](ch10.html#idm45785334006200))'
 - en: 'When the script from [“Automated Trading Strategy”](#auto_script) is executed,
     either locally or remotely, the output that is logged and sent via the socket
     looks as follows:'
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: 当执行[“自动交易策略”](#auto_script)的脚本时，无论是本地还是远程执行，记录并通过套接字发送的输出如下所示：
 - en: '[PRE22]'
+  id: totrans-338
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: Running the script from [“Strategy Monitoring”](#auto_monitor) locally then
     allows for the real-time retrieval and processing of such information. Of course,
     it is easy to adjust the logging and streaming data to one’s own requirements.^([5](ch10.html#idm45785336429992))
     Furthermore, the trading script and the whole logic can be adjusted to include
     such elements as stop losses or take profit targets programmatically.
+  id: totrans-339
   prefs: []
   type: TYPE_NORMAL
+  zh: 从[“策略监控”](#auto_monitor)本地运行脚本，然后允许实时检索和处理这类信息。当然，可以轻松调整日志记录和流数据以符合个人需求。^([5](ch10.html#idm45785336429992))此外，交易脚本和整体逻辑可以进行调整，以编程方式包括止损或止盈目标等元素。
 - en: Trading currency pairs and/or CFDs is associated with a number of financial
     risks. Implementing an algorithmic trading strategy for such instruments automatically
     leads to a number of additional risks. Among them are flaws in the trading and/or
@@ -1571,138 +2493,205 @@
     one should make sure that all associated market, execution, operational, technical,
     and other risks have been identified, evaluated, and properly addressed. The code
     presented in this chapter is only for technical illustration purposes.
+  id: totrans-340
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易货币对和/或差价合约伴随着多种财务风险。为这些工具实施算法交易策略自动导致许多额外的风险。其中包括交易和/或执行逻辑中的缺陷，以及技术风险，包括与套接字通信相关的问题，延迟的检索，甚至在部署过程中丢失Tick数据。因此，在以自动化方式部署交易策略之前，应确保已识别、评估和适当处理所有相关的市场、执行、操作、技术和其他风险。本章介绍的代码仅用于技术说明目的。
 - en: Visual Step-by-Step Overview
+  id: totrans-341
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 视觉逐步概述
 - en: This final section provides a step-by-step overview in screenshots. While the
     previous sections are based on the FXCM trading platform, the visual overview
     is based on the Oanda trading platform.
+  id: totrans-342
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一节通过截图提供了逐步概述。虽然前几节基于FXCM交易平台，但视觉概述基于Oanda交易平台。
 - en: Configuring Oanda Account
+  id: totrans-343
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 配置Oanda账户
 - en: The first step is to set up an account with Oanda (or any other trading platform
     to this end) and to set the correct leverage ratio for the account according to
     the Kelly criterion and as shown in [Figure 10-8](#auto_00).
+  id: totrans-344
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一步是在Oanda（或其他交易平台）上设置账户，并根据凯利准则设置正确的杠杆比率，如[图 10-8](#auto_00)所示。
 - en: '![pfat 1008](assets/pfat_1008.png)'
+  id: totrans-345
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1008](assets/pfat_1008.png)'
 - en: Figure 10-8\. Setting leverage on Oanda
+  id: totrans-346
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-8\. 在 Oanda 上设置杠杆
 - en: Setting Up the Hardware
+  id: totrans-347
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 设置硬件
 - en: The second step is to create a DigitalOcean droplet, as shown in [Figure 10-9](#auto_01).
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二步是创建DigitalOcean droplet，如[图 10-9](#auto_01)所示。
 - en: '![pfat 1009](assets/pfat_1009.png)'
+  id: totrans-349
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1009](assets/pfat_1009.png)'
 - en: Figure 10-9\. DigitalOcean droplet
+  id: totrans-350
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-9\. DigitalOcean droplet
 - en: Setting Up the Python Environment
+  id: totrans-351
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 设置 Python 环境
 - en: The third step is to put all the software on the droplet (see [Figure 10-10](#auto_02))
     in order to set up the infrastructure. When it all works fine, you can create
     a new Jupyter Notebook and start your interactive Python session (see [Figure 10-11](#auto_03)).
+  id: totrans-352
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三步是将所有软件放在 droplet 上（参见[图 10-10](#auto_02)），以建立基础设施。当一切正常运行时，您可以创建一个新的 Jupyter
+    Notebook 并开始交互式Python会话（参见[图 10-11](#auto_03)）。
 - en: '![pfat 1010](assets/pfat_1010.png)'
+  id: totrans-353
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1010](assets/pfat_1010.png)'
 - en: Figure 10-10\. Installing Python and packages
+  id: totrans-354
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-10\. 安装 Python 和相关包
 - en: '![pfat 1011](assets/pfat_1011.png)'
+  id: totrans-355
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1011](assets/pfat_1011.png)'
 - en: Figure 10-11\. Testing Jupyter Lab
+  id: totrans-356
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-11\. 测试 Jupyter Lab
 - en: Uploading the Code
+  id: totrans-357
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 上传代码
 - en: The fourth step is to upload the Python scripts for automated trading and real-time
     monitoring, as shown in [Figure 10-12](#auto_04). The configuration file with
     the account credentials also needs to be uploaded.
+  id: totrans-358
   prefs: []
   type: TYPE_NORMAL
+  zh: 第四步是上传用于自动化交易和实时监控的Python脚本，如[图 10-12](#auto_04)所示。还需上传包含账户凭证的配置文件。
 - en: '![pfat 1012](assets/pfat_1012.png)'
+  id: totrans-359
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1012](assets/pfat_1012.png)'
 - en: Figure 10-12\. Uploading Python code files
+  id: totrans-360
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-12\. 上传 Python 代码文件
 - en: Running the Code
+  id: totrans-361
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 运行代码
 - en: The fifth step is to run the Python script for automated trading, as shown in
     [Figure 10-13](#auto_05). [Figure 10-14](#auto_06) shows a trade that the Python
     script has initiated.
+  id: totrans-362
   prefs: []
   type: TYPE_NORMAL
+  zh: 第五步是运行Python脚本进行自动化交易，如[图 10-13](#auto_05)所示。[图 10-14](#auto_06)展示了Python脚本启动的交易。
 - en: '![pfat 1013](assets/pfat_1013.png)'
+  id: totrans-363
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1013](assets/pfat_1013.png)'
 - en: Figure 10-13\. Running the Python script
+  id: totrans-364
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-13\. 运行 Python 脚本
 - en: '![pfat 1014](assets/pfat_1014.png)'
+  id: totrans-365
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1014](assets/pfat_1014.png)'
 - en: Figure 10-14\. A trade initiated by the Python script
+  id: totrans-366
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-14\. Python 脚本发起的交易
 - en: Real-Time Monitoring
+  id: totrans-367
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实时监控
 - en: The final step is to run the monitoring script locally (provided you have set
     the correct IP in the local script), as seen in [Figure 10-15](#auto_07). In practice,
     this means that you can monitor locally in real time what exactly is happening
     on your cloud instance.
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一步是在本地运行监控脚本（假设您在本地脚本中设置了正确的IP），如[图 10-15](#auto_07)所示。实际上，这意味着您可以实时在本地监控云实例上正在发生的情况。
 - en: '![pfat 1015](assets/pfat_1015.png)'
+  id: totrans-369
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 1015](assets/pfat_1015.png)'
 - en: Figure 10-15\. Local real-time monitoring via socket
+  id: totrans-370
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-15\. 通过 socket 进行本地实时监控
 - en: Conclusions
+  id: totrans-371
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter is about the deployment of an algorithmic trading strategy in automated
     fashion, based on a classification algorithm from machine learning to predict
     the direction of market movements. It addresses such important topics as capital
     management (based on the Kelly criterion), vectorized backtesting for performance
     and risk, the transformation of offline to online trading algorithms, an appropriate
     infrastructure for deployment, and logging and monitoring during deployment.
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了基于机器学习分类算法部署算法交易策略的自动化方式，涵盖了资本管理（基于凯利准则）、基于向量化的性能和风险回测、将离线交易算法转化为在线的方式、适当的部署基础设施以及部署过程中的日志记录和监控。
 - en: The topic of this chapter is complex and requires a broad skill set from the
     algorithmic trading practitioner. On the other hand, having RESTful APIs for algorithmic
     trading available, such as the one from Oanda, simplifies the automation task
@@ -1710,76 +2699,116 @@
     of the Python wrapper package `tpqoa` for tick data retrieval and order placement.
     Around this core, elements to mitigate operational and technical risks should
     be added as far as appropriate and possible.
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章主题复杂，需要算法交易从业者广泛的技能集。另一方面，有 RESTful API 可用于算法交易，例如来自 Oanda 的 API，显著简化了自动化任务，因为核心部分主要是利用
+    Python 封装包 `tpqoa` 的能力进行 tick 数据检索和订单下达。在这个核心周围，应根据适当和可能性加入减少操作和技术风险的元素。
 - en: References and Further Resources
+  id: totrans-374
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献和进一步资源
 - en: 'Papers cited in this chapter:'
+  id: totrans-375
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的论文：
 - en: 'Rotando, Louis, and Edward Thorp. 1992\. “The Kelly Criterion and the Stock
     Market.” *The American Mathematical Monthly* 99 (10): 922-931.'
+  id: totrans-376
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Rotando, Louis, and Edward Thorp. 1992\. “The Kelly Criterion and the Stock
+    Market.” *The American Mathematical Monthly* 99 (10): 922-931。'
 - en: Hung, Jane. 2010\. “Betting with the Kelly Criterion.” [*http://bit.ly/betting_with_kelly*](http://bit.ly/betting_with_kelly).
+  id: totrans-377
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Hung, Jane. 2010\. “Betting with the Kelly Criterion.” [*http://bit.ly/betting_with_kelly*](http://bit.ly/betting_with_kelly)。
 - en: Python Script
+  id: totrans-378
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Python 脚本
 - en: This section contains Python scripts used in this chapter.
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节包含本章中使用的 Python 脚本。
 - en: Automated Trading Strategy
+  id: totrans-380
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 自动化交易策略
 - en: 'The following Python script contains the code for the automated deployment
     of the ML-based trading strategy, as discussed and backtested in this chapter:'
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的 Python 脚本包含了基于机器学习的交易策略的自动化部署代码，正如本章中所讨论和回测的那样：
 - en: '[PRE23]'
+  id: totrans-382
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: Strategy Monitoring
+  id: totrans-383
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 策略监控
 - en: The following Python script contains code to remotely monitor the execution
     of the Python script from [“Automated Trading Strategy”](#auto_script).
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的 Python 脚本包含了远程监控从[“自动化交易策略”](#auto_script)中执行的 Python 脚本的代码。
 - en: '[PRE24]'
+  id: totrans-385
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: ^([1](ch10.html#idm45785342245112-marker)) The exposition follows Hung (2010).
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch10.html#idm45785342245112-marker)) 本文遵循了 Hung (2010) 的阐述。
 - en: ^([2](ch10.html#idm45785339950712-marker)) It is a stylized empirical fact that
     it is of paramount importance for the investment and trading performance to get
     the largest market movements right (that is, the biggest winner *and* loser movements).
     This aspect is neatly illustrated in [Figure 10-5](#auto_plot_05), which shows
     that the trading strategy gets a large downwards movement in the underlying instrument
     correct, leading to a larger jump for the trading strategy.
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch10.html#idm45785339950712-marker)) 重要的经验事实是，对于投资和交易表现来说，准确捕捉市场上的最大波动至关重要（即最大的赢家*和*输家波动）。这一方面在[图 10-5](#auto_plot_05)中得到了清晰的说明，图示了交易策略准确捕捉基础工具的大幅下跌运动，从而导致交易策略跳跃较大。
 - en: ^([3](ch10.html#idm45785334066856-marker)) Use the link [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up)
     to get a 10 USD bonus on DigitalOcean when signing up for a new account.
+  id: totrans-388
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch10.html#idm45785334066856-marker)) 使用链接[*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up)注册
+    DigitalOcean 新账户时，可获得 10 美元的奖金。
 - en: ^([4](ch10.html#idm45785334006200-marker)) The logging approach used here is
     pretty simple in the form of a simple text file. It is easy to change the logging
     and persisting of, say, the relevant financial data in the form of a database
     or appropriate binary storage formats, such as `HDF5` (see [Chapter 3](ch03.html#financial_data)).
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch10.html#idm45785334006200-marker)) 这里使用的日志记录方法非常简单，以简单文本文件的形式。可以轻松地更改日志记录和持久化，比如将相关的金融数据以数据库或适当的二进制存储格式（如`HDF5`）的形式存储（参见[第 3
+    章](ch03.html#financial_data)）。
 - en: ^([5](ch10.html#idm45785336429992-marker)) Note that the socket communication,
     as implemented in the two scripts, is not encrypted and is sending plain text
     over the web, which might represent a security risk in production.
+  id: totrans-390
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([5](ch10.html#idm45785336429992-marker)) 请注意，如同两个脚本中实现的那样，套接字通信未加密，通过网络发送明文，这可能在生产环境中代表着安全风险。

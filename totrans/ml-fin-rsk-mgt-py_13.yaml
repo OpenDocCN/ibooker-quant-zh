@@ -1,20 +1,27 @@
 - en: Chapter 10\. Synthetic Data Generation and The Hidden Markov Model in Finance
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第10章。在金融领域中，合成数据生成和隐马尔可夫模型
 - en: 'The data does not have to be rooted in the real world to have value: it can
     be fabricated and slotted in where some is missing or hard to get hold of.'
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 数据不一定要根植于真实世界才具有价值：它可以被制造出来，并且可以填补或难以获取的空白。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Ahuja (2020)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Ahuja (2020)
 - en: 'Synthetic data generation has been gaining attention in finance due to rising
     concerns about confidentiality and increasing data requirements. So, instead of
     working with real data, why not feed your model with synthetic data as long as
@@ -25,44 +32,59 @@
     synthetic data and HMM? Well, we can generate synthetic data from HMM—and this
     is one of the aims of this chapter. The other aim is to introduce these two important
     topics, as they are often used in machine learning.'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于对保密性和数据需求增加的关注，合成数据生成在金融领域越来越受到关注。因此，为什么不使用合成数据来代替真实数据，只要它模拟了所需的统计特性呢？听起来很吸引人，不是吗？合成数据生成是本章的一部分；另一部分专注于另一个不被重视但相当重要和有趣的主题：隐马尔可夫模型（HMM）。你可能想问：合成数据和HMM之间的共同点是什么？嗯，我们可以从HMM生成合成数据——这是本章的一个目标。另一个目标是介绍这两个重要主题，因为它们经常在机器学习中使用。
 - en: Synthetic Data Generation
+  id: totrans-5
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 合成数据生成
 - en: The confidentiality, sensitivity, and cost of financial data greatly restricts
     its usage. This, in turn, hinders the progress and dissemination of useful knowledge
     in finance. Synthetic data addresses these drawbacks and helps researchers and
     practitioners conduct their analyses and disseminate the results.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融数据的保密性、敏感性和成本极大地限制了其使用。这反过来阻碍了金融领域有用知识的进展和传播。合成数据解决了这些缺点，并帮助研究人员和从业者进行分析并传播结果。
 - en: 'Synthetic data is data generated from a process by which it mimics the statistical
     properties of the real data. Even though there is a belief that data must be modeled
     in its original form, generating synthetic data from real data is not the only
     way we can create it (Patki, Wedge, and Veeramachaneni 2016). Rather, there are
     three ways we can generate synthetic data:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 合成数据是通过模仿真实数据的统计特性生成的数据。尽管有一种观念认为数据必须以其原始形式建模，但是从真实数据生成合成数据并不是唯一的创建方式（Patki,
+    Wedge, 和 Veeramachaneni, 2016）。实际上，我们可以通过三种方式生成合成数据：
 - en: Synthetic data can be generated from the *real data*. The workflow of this process
     starts with getting real data, and continues with modeling to unveil the distribution
     of the data, and as a last step synthetic data is sampled from this existing model.
+  id: totrans-8
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 合成数据可以从*真实数据*中生成。这个过程的工作流程从获取真实数据开始，然后进行建模以揭示数据的分布，最后从这个现有模型中抽取合成数据。
 - en: Synthetic data can be obtained from a *model or knowledge*. Generally speaking,
     this type of synthetic data generation can be applied either by using an existing
     model or knowledge of the researcher.
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 合成数据可以通过*模型或知识*获得。一般来说，这种类型的合成数据生成可以通过使用现有的模型或研究人员的知识来应用。
 - en: A *hybrid* process includes the previous two steps, because sometimes only a
     part of the data becomes available and this part of the real data is used to generate
     synthetic data and the other part of the synthetic data can be obtained from a
     model.
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*混合*过程包括前两个步骤，因为有时只有一部分数据变得可用，这部分真实数据用于生成合成数据，合成数据的另一部分可以从模型中获得。'
 - en: We will soon see how we can apply these techniques to generate synthetic data.
     By its nature, the synthetic data generation process has an uncompromising trade-off
     between privacy and utility. To be exact, synthetic data generation from real
@@ -70,100 +92,145 @@
     data generation depends greatly on the deidentification and aggregation of real
     public data. The utility of synthetic data generation is dependent upon successful
     modeling or the expertise of the analyst.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们很快将看到如何应用这些技术来生成合成数据。根据其性质，合成数据生成过程在隐私和实用性之间有着不可妥协的权衡。确切地说，从未公开的真实数据生成合成数据会产生高实用性。然而，合成数据生成的实用性在很大程度上取决于真实公共数据的去识别和聚合。合成数据生成的实用性取决于成功的建模或分析师的专业知识。
 - en: The privacy-utility trade-off in the context of data-generating processes is
     illustrated in [Figure 10-1](#synt_sch).
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 在数据生成过程中，隐私-效用权衡是数据生成过程的上下文。这在[图10-1](#synt_sch)中有所体现。
 - en: '![synt_sch](assets/mlfr_1001.png)'
+  id: totrans-13
   prefs: []
   type: TYPE_IMG
+  zh: '![synt_sch](assets/mlfr_1001.png)'
 - en: Figure 10-1\. Privacy-utility trade-off
+  id: totrans-14
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-1\. 隐私-效用权衡
 - en: Evaluation of the Synthetic Data
+  id: totrans-15
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 合成数据的评估
 - en: 'As you can imagine, various tools can be applied to measure the effectiveness
     of the synthetic data; however, we will restrict our attention to four commonly
     embraced methods: KL-divergence, distinguishable, ROC curve, and comparing the
     main statistics such as mean, median, etc. As KL-divergence and ROC were discussed
     in Chapters [8](ch08.html#chapter_8) and [6](ch06.html#chapter_6), respectively,
     we will skip over those and start with the distinguishable method.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您可以想象的那样，有各种工具可以用来衡量合成数据的有效性；然而，我们将把注意力限制在四种常用的方法上：KL散度，可区分性，ROC曲线，以及比较主要统计数据，如均值、中位数等。由于KL散度和ROC曲线分别在第[8](ch08.html#chapter_8)章和第[6](ch06.html#chapter_6)章中已讨论过，我们将跳过这些内容，直接开始介绍可区分性方法。
 - en: '*Distinguishable*, as its name implies, tries to distinguish between real and
     synthetic records by assigning 1 if they are real and 0 if not using a classification
     model that distinguishes between real and synthetic data. If the output is closer
     to 1, it predicts that the record is real, otherwise it predicts it is synthetic
     data using a *propensity score* (El Emam 2020).'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '*可区分性*，顾名思义，试图通过使用一个分类模型来区分真实和合成记录，如果是真实数据则分配为1，否则为0。如果输出接近1，则预测记录为真实数据，否则预测为合成数据，使用*倾向得分*（El
+    Emam 2020）。'
 - en: The other method is easy yet powerful, and is based on comparing the main statistics
     of the real and synthetic data. Given the model employed, the mean (or other statistic)
     of the real data and the synthetic data can be compared to get a sense of the
     extent to which the synthetic data mimics the real data.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种方法简单而强大，基于比较真实数据和合成数据的主要统计数据。根据所采用的模型，可以比较真实数据和合成数据的均值（或其他统计数据），以了解合成数据模仿真实数据的程度。
 - en: 'Let’s discuss the advantages and disadvantages of synthetic data generation:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们讨论一下合成数据生成的优缺点：
 - en: Advantages
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 优点
 - en: Increased availability of data
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据的可用性增加
 - en: Synthetic data generation equips us with a strong tool by which we can overcome
     the difficulty of accessing real data, which can be costly and proprietary.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 合成数据生成使我们具备了一个强大的工具，可以克服获取真实数据的困难，这可能既昂贵又专有。
 - en: Improved analytical skill
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 改善分析技能
 - en: Synthetic data as a good proxy of the real data can be used in various analytical
     processes, and this, in turn, improves our understanding of a specific topic.
     Besides, synthetic data can be used for labeling, paving the way for highly accurate
     analyses.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为真实数据的良好代理，合成数据可以在各种分析过程中使用，从而提升我们对特定主题的理解。此外，合成数据可以用于标记，为高度准确的分析铺平道路。
 - en: Handling common statistical problems
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理常见的统计问题
 - en: Synthetic data generation can mitigate the problems arising from real data.
     Real data may come with issues—such as missing values, outliers, and so on—that
     badly affect the performance of the model. Synthetics data provides a tool to
     cope with these statistical problems so that we might end up with improved modeling
     performance.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 合成数据生成可以减轻由真实数据引起的问题。真实数据可能存在问题，如缺失值、异常值等，这些问题会严重影响模型的性能。合成数据为处理这些统计问题提供了一个工具，因此我们可能会获得改善的建模性能。
 - en: Disadvantages
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 缺点
 - en: Inability to preserve confidentiality
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 无法保护机密性
 - en: Due to cyberattacks, synthetic data might turn out to be a source of private-information
     leakage. For instance, the credentials of customers can be obtained by reverse
     engineering.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于网络攻击，合成数据可能成为私人信息泄露的来源。例如，客户的凭证可以通过反向工程获得。
 - en: Quality concerns
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 质量关注
 - en: 'There are two important things that need to be taken into account during the
     synthetic data generation process: the researcher’s ability and the characteristics
     of data. These two points determine the quality process of synthetic data generation.
     If these points are lacking, it is likely to expect low-quality synthetic data.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 在合成数据生成过程中需要考虑两个重要因素：研究人员的能力和数据的特性。这两点决定了合成数据生成的质量过程。如果这些因素缺乏，合成数据的质量可能会较低。
 - en: Generating Synthetic Data
+  id: totrans-32
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 生成合成数据
 - en: 'Let’s start off with generating synthetic data first from real data, and then
     from a model. We will use real data from `fetch_california_housing` to generate
     synthetic data, and we will also use the CTGAN library (`CTGANSynthesizer`) in
@@ -171,48 +238,76 @@
     fidelity to the original data based on generative adversarial networks (GANs).
     In generating synthetic data, the number of training steps is controlled by `epoch`
     parameter, which enables us to obtain synthetic data in a short period of time:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先从真实数据生成合成数据，然后从模型中生成。我们将使用`fetch_california_housing`的真实数据生成合成数据，同时在此过程中使用CTGAN库（`CTGANSynthesizer`）。CTGAN库基于生成对抗网络（GANs），使我们能够生成与原始数据高度相似的合成数据。在生成合成数据时，训练步骤的数量由`epoch`参数控制，这使我们能够在短时间内获得合成数据：
 - en: '[PRE0]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-1)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-1)'
 - en: Importing the `fetch_california_housing` data from `sklearn`
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`sklearn`中的`fetch_california_housing`数据
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-2)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-2)'
 - en: Generating independent and dependent variables from `fetch_california_​housing`
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`fetch_california_housing`生成自变量和因变量
 - en: '[![3](assets/3.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-3)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-3)'
 - en: Stacking two arrays using the stack function
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`stack`函数堆叠两个数组
 - en: '[![4](assets/4.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-4)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-4)'
 - en: Importing `CTGANSynthesizer` for synthetic data generation
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`CTGANSynthesizer`用于生成合成数据
 - en: '[![5](assets/5.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-5)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-5)'
 - en: Initializing the synthetic data generation process from `CTGANSynthesizer` with
     an `epoch` of 10
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`epoch`为10初始化从`CTGANSynthesizer`生成合成数据的过程
 - en: '[![6](assets/6.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-6)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO1-6)'
 - en: Generating the sample
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成样本
 - en: 'After generating the synthetic data, the similarity of the synthetic data can
     be checked by descriptive statistics. As always, descriptive statistics is handy,
     but we have another tool, the `evaluate` package from the Synthetic Data Vault
@@ -222,63 +317,97 @@
     visualized (in the resulting Figures [10-2](#eval_synt1) and [10-3](#eval_synt2))
     and compared with the real data so we can fully understand whether the synthetic
     data is a good representation of the real data or not:'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成合成数据后，可以通过描述性统计检查合成数据的相似性。描述性统计一直非常方便，但我们还有另一个工具，来自Synthetic Data Vault（SDV）的`evaluate`包。此函数的输出将是一个介于0和1之间的数字，表示两个表的相似程度，0表示最差，1表示最佳。此外，生成过程的结果可以被可视化（在生成的图表[10-2](#eval_synt1)和[10-3](#eval_synt2)中），并与真实数据进行比较，以便充分理解合成数据是否很好地代表了真实数据：
 - en: '[PRE1]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-1)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-1)'
 - en: Importing the `evaluate` package for assessing the similarity of synthetic and
     real data
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`evaluate`包以评估合成和真实数据的相似性
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-2)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-2)'
 - en: Running the `evaluate` package on our real and synthetic data
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行`evaluate`包对我们的真实数据和合成数据进行评估
 - en: '[![3](assets/3.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-3)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-3)'
 - en: Importing `TableEvaluator` for visual inspection of the similarities between
     synthetic and real data
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`TableEvaluator`以视觉检查合成数据和真实数据之间的相似性
 - en: '[![4](assets/4.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-4)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-4)'
 - en: Running `TableEvaluator` with real and synthetic data
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用真实数据和合成数据运行`TableEvaluator`
 - en: '[![5](assets/5.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-5)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO2-5)'
 - en: Conducting visual analysis with `visual_evaluation` package
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`visual_evaluation`包进行视觉分析
 - en: '![eval_synt1](assets/mlfr_1002.png)'
+  id: totrans-59
   prefs: []
   type: TYPE_IMG
+  zh: '![评估合成1](assets/mlfr_1002.png)'
 - en: Figure 10-2\. Evaluation of synthetic data generation-1
+  id: totrans-60
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-2. 合成数据生成的评估-1
 - en: '![eval_synt2](assets/mlfr_1003.png)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
+  zh: '![评估合成2](assets/mlfr_1003.png)'
 - en: Figure 10-3\. Evaluation of synthetic data generation-2
+  id: totrans-62
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-3. 合成数据生成的评估-2
 - en: Figures [10-2](#eval_synt1) and [10-3](#eval_synt2) allow us to visually compare
     the performance of the real and synthetic data using the mean, standard deviation,
     and heatmaps. Even though `evaluation` has many different tools, it is worth restricting
     our attention to these for now.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 图[10-2](#评估合成1)和[10-3](#评估合成2)允许我们通过均值、标准偏差和热图直观比较真实数据和合成数据的性能。尽管`evaluation`有许多不同的工具，但现在值得我们把注意力集中在这些工具上。
 - en: 'As can you see, it is not hard to generate synthetic data from real data. Let’s
     now walk through a process by which we can generate synthetic data based on a
     model. I will use `sklearn`, the Swiss knife library for ML applications, both
@@ -286,95 +415,147 @@
     synthetic data for running a regression model. Likewise, `make_classification`
     generates synthetic data for the purpose of running a classification model. The
     following code also generates [Figure 10-4](#regression_noise):'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如你所见，从真实数据生成合成数据并不难。现在让我们走一遍根据模型生成合成数据的过程。我将使用`sklearn`，这是一个用于机器学习应用的瑞士军刀库，既可以用于分类模型也可以用于回归模型。`make_regression`对于生成回归模型的合成数据非常有用。同样，`make_classification`生成用于运行分类模型的合成数据。以下代码还生成了[Figure 10-4](#回归噪声)：
 - en: '[PRE2]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO3-1)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO3-1)'
 - en: Importing the `make_regression` package
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`make_regression`包
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO3-2)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO3-2)'
 - en: Generating synthetic data for regression with 1000 samples, 3 features, and
     the standard deviation of the noise
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 用 1000 个样本、3 个特征和噪声的标准偏差生成回归的合成数据
 - en: '[Figure 10-4](#regression_noise) shows the effects of varying noise on synthetic
     data generation. As expected, as the standard deviation goes up, the `noise` parameter
     gets bigger and bigger.'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 10-4](#回归噪声)显示了在生成合成数据时变化噪声的效果。正如预期的那样，随着标准偏差的增加，`noise`参数会越来越大。'
 - en: '![regression_noise](assets/mlfr_1004.png)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![回归噪声](assets/mlfr_1004.png)'
 - en: Figure 10-4\. Synthetic data generation with different noises
+  id: totrans-72
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-4. 使用不同噪声生成合成数据
 - en: 'How about generating synthetic data for classification? Well, it does sound
     easy. We will follow a very similar process as regression. This time, we’ll use
     the `make_classification` package. After generating synthetic data, the effect
     of different numbers of classes will be observed via scatter plot ([Figure 10-5](#classification_class)):'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么为分类生成合成数据如何呢？听起来很容易。我们将按照与回归非常相似的过程。这次，我们将使用`make_classification`包。在生成合成数据之后，将通过散点图观察不同类别数量的影响（[Figure 10-5](#classification_class)）：
 - en: '[PRE3]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO4-1)'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO4-1)'
 - en: Importing `make_classification` package
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`make_classification`包
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO4-2)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO4-2)'
 - en: Generating synthetic data for classification with 100 samples, 4 features, and
     4 informative features
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 用 100 个样本、4 个特征和 4 个信息特征生成分类的合成数据
 - en: '[Figure 10-5](#classification_class) shows us the effect of having different
     classes on the synthetic data generation; in this case, synthetic data was generated
     with classes 2 to 5.'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 10-5](#classification_class) 展示了在合成数据生成中具有不同类别的效果；在这种情况下，使用类别 2 到 5
+    生成了合成数据。'
 - en: '![classification_class](assets/mlfr_1005.png)'
+  id: totrans-80
   prefs: []
   type: TYPE_IMG
+  zh: '![classification_class](assets/mlfr_1005.png)'
 - en: Figure 10-5\. Synthetic data generation with different classes
+  id: totrans-81
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-5\. 使用不同类别生成合成数据
 - en: 'It is also possible to generate synthetic data from unsupervised learning.
     `make_blobs` is a package that can be used for this purpose. So we will generate
     synthetic data and eyeball the effect of different numbers of clusters on the
     synthetic data and produce [Figure 10-6](#synthetic_cluster):'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 从无监督学习中生成合成数据也是可能的。`make_blobs` 是一个可用于此目的的包。因此，我们将生成合成数据，并观察不同聚类数对合成数据的影响，并生成
+    [Figure 10-6](#synthetic_cluster)：
 - en: '[PRE4]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO5-1)'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO5-1)'
 - en: Importing the `make_blobs` package from `sklearn`
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 从 `sklearn` 导入 `make_blobs` 包
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO5-2)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO5-2)'
 - en: Generating synthetic data with 100 samples, 2 centers, and 2 features
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成具有 100 个样本、2 个中心和 2 个特征的合成数据
 - en: '[Figure 10-6](#synthetic_cluster) shows how the synthetic data looks with varying
     clusters.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 10-6](#synthetic_cluster) 显示了具有不同聚类的合成数据的外观。'
 - en: Up until now, we have learned how to generate synthetic data using real data
     and models, using both supervised learning (regression and classification) and
     unsupervised learning. From this point on, we will explore the HMM and how to
@@ -385,42 +566,60 @@
     and take it into account in investment strategies. In the end, we will be able
     to compare the effectiveness of factor-investing based on the three-factor Fama-French
     model with HMM using the Sharpe ratio.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们已经学习了如何使用真实数据和模型生成合成数据，同时使用监督学习（回归和分类）和无监督学习。从现在开始，我们将探索 HMM 并学习如何使用它。从财务角度来看，我们将通过因子投资来完成这项任务。因子投资并不是一个新话题，但在著名的法马-弗伦奇三因子模型（法马和弗伦奇，1993年）之后，它变得越来越吸引人。我们将看到
+    HMM 对识别经济中不同状态的影响，并在投资策略中加以考虑。最后，我们将能够通过夏普比率比较基于法马-弗伦奇三因子模型和 HMM 的因子投资的效果。
 - en: '![synthetic_cluster](assets/mlfr_1006.png)'
+  id: totrans-90
   prefs: []
   type: TYPE_IMG
+  zh: '![synthetic_cluster](assets/mlfr_1006.png)'
 - en: Figure 10-6\. Synthetic data generation with different noises
+  id: totrans-91
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-6\. 使用不同噪声生成合成数据
 - en: A Brief Introduction to the Hidden Markov Model
+  id: totrans-92
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 隐马尔可夫模型简介
 - en: HMM gives us a probability distribution over sequential data, which is modeled
     by a Markov process with hidden states. HMM enables us to estimate probability
     transition from one state to another.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: HMM 给出了我们对顺序数据的概率分布，这是由隐藏状态的马尔可夫过程建模的。HMM 使我们能够估计从一个状态到另一个状态的概率转移。
 - en: To illustrate, let us consider the stock market, in which stocks go up, go down,
     or stay constant. Pick a random state—say, going up. The next state would be either
     going up, going down, or staying constant. In this context, the state is thought
     to be a *hidden* state because we do not know with certainty which state will
     prevail next in the market.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明，让我们考虑股市，其中股票上涨、下跌或保持不变。随机选择一个状态——比如上涨。下一个状态可能是上涨、下跌或保持不变。在这种情况下，状态被认为是一个*隐藏*状态，因为我们不能确定市场下一个状态将是什么。
 - en: 'In general, there are two fundamental assumptions that HMM makes: first, that
     all observations are solely dependent on the current state and are conditionally
     independent of other variables, and second, that the transition probabilities
     are homogenous and depend only on the current hidden state (Wang, Lin, and Mikhelson
     2020).'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体上，HMM 有两个基本假设：第一，所有观察值仅依赖于当前状态，并且在条件上独立于其他变量；第二，转移概率是均匀的，并且仅依赖于当前隐藏状态（Wang,
+    Lin 和 Mikhelson，2020年）。
 - en: Fama-French Three-Factor Model Versus HMM
+  id: totrans-96
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 法马-弗伦奇三因子模型与 HMM
 - en: The model proposed by Fama and French (1993) paved the way for further studies
     expanding on CAPM. The model suggests brand-new explanatory variables to account
     for the changes in stock returns. The three factors in this model are market risk
@@ -428,143 +627,217 @@
     <mi>R</mi> <mi>m</mi> <mo>-</mo> <mi>R</mi> <mi>f</mi> <mo>)</mo></mrow></math>
     , small minus big (SMB), and high minus low (HML). Let’s briefly discuss these
     factors, as we will use them in the model below.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 法玛和法rench（1993）提出的模型为扩展CAPM的进一步研究铺平了道路。该模型提出全新的解释变量来解释股票回报的变化。该模型的三个因子包括市场风险<math
+    alttext="left-parenthesis upper R m minus upper R f right-parenthesis"><mrow><mo>(</mo>
+    <mi>R</mi> <mi>m</mi> <mo>-</mo> <mi>R</mi> <mi>f</mi> <mo>)</mo></mrow></math>，小市值与大市值之间的差异（SMB）和高市值与低市值之间的差异（HML）。我们将在下文简要讨论这些因子，因为我们将在模型中使用它们。
 - en: <math alttext="left-parenthesis upper R m minus upper R f right-parenthesis"><mrow><mo>(</mo>
     <mi>R</mi> <mi>m</mi> <mo>-</mo> <mi>R</mi> <mi>f</mi> <mo>)</mo></mrow></math>
     is basically the return of a market portfolio minus the risk-free rate, which
     is a hypothetical rate proxied by government-issued T-bills or similar assets.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="left-parenthesis upper R m minus upper R f right-parenthesis"><mrow><mo>(</mo>
+    <mi>R</mi> <mi>m</mi> <mo>-</mo> <mi>R</mi> <mi>f</mi> <mo>)</mo></mrow></math>基本上是市场投资组合的回报减去无风险利率，这是一个由政府发行的T票或类似资产代理的假设利率。
 - en: SMB is a proxy for size effect. Size effect is an important variable used to
     explain several phenomenon in corporate finance. It is represented by different
     variables like logarithm of total assets. Fama-French takes size effect into account
     by calculating between returns of small-cap companies and big-cap companies.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: SMB是大小效应的代理。大小效应是用来解释公司财务中的几个现象的重要变量。它通过不同的变量如总资产的对数来表示。法玛-法rench通过计算小市值公司和大市值公司之间的回报来考虑大小效应。
 - en: The third factor is HML, which represents the spread in returns between companies
     with high book-to-market and companies with low book-to-market, comparing a company’s
     book value to its market value.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三个因子是HML，它代表高账面市值比和低账面市值比之间的回报差异，比较公司的账面价值与市场价值。
 - en: Empirical studies suggest that smaller SMB, higher HML, and smaller <math alttext="left-parenthesis
     upper R m minus upper R f right-parenthesis"><mrow><mo>(</mo> <mi>R</mi> <mi>m</mi>
     <mo>-</mo> <mi>R</mi> <mi>f</mi> <mo>)</mo></mrow></math> boosts stock returns.
     Theoretically speaking, identifying states before running the Fama-French three-factor
     model would boost the performance of the model. To see if this is the case with
     real data, let us run the factor investment model with or without the HMM.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 实证研究表明，较小的SMB，较高的HML以及较小的<math alttext="left-parenthesis upper R m minus upper
+    R f right-parenthesis"><mrow><mo>(</mo> <mi>R</mi> <mi>m</mi> <mo>-</mo> <mi>R</mi>
+    <mi>f</mi> <mo>)</mo></mrow></math>会提升股票回报率。从理论上讲，在运行法玛-法rench三因子模型之前识别状态将提升模型的性能。为了验证这一点在真实数据中是否成立，让我们运行包含或不包含HMM的因子投资模型。
 - en: 'The data is compiled from the [Kenneth R. French data library](https://oreil.ly/m5ShJ).
     As can be seen in the following, the variables included in the data are: `Date`,
     `Mkt-RF`, `SMB`, `HML`, and `RF`. It turns out all the variables are numerical
     aside from the date as expected. To save some time processing the model, the data
     has been trimmed to start from 2000-01-03:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据来自[肯尼斯·法rench数据库](https://oreil.ly/m5ShJ)。如下所示，包含在数据中的变量有：`Date`、`Mkt-RF`、`SMB`、`HML`和`RF`。结果显示，所有变量都是数值型的，除了如预期的日期。为了节省处理模型的时间，数据已经被修剪到从2000-01-03开始：
 - en: '[PRE5]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Well, we have obtained the variables explaining the dynamic behind the stock
     return, but which stock return is it? It is supposed to be a return representing
     general well-being of the economy. A potential candidate for this kind of variable
     is the S&P 500 exchange-traded fund (ETF).
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，我们已经得到了解释股票回报背后动态的变量，但是这是哪一种股票回报？它应该是代表经济总体状况的回报。这种类型变量的一个潜在候选者是标普500交易所交易基金（ETF）。
 - en: Note
+  id: totrans-105
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 请注意
 - en: 'ETF is a special type of investment fund and exchange-traded product that tracks
     industry, commodities, and so on. SPDR S&P 500 ETF (SPY) is a very well-known
     example tracking the S&P 500 Index. Some other ETFs are:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: ETF是一种特殊类型的投资基金和交易所交易产品，跟踪行业、商品等。SPDR标普500 ETF（SPY）是一个非常著名的例子，跟踪标普500指数。一些其他的ETF包括：
 - en: Vanguard Total International Stock ETF (VXUS)
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 全球前2000名ETF股票（VXUS）
 - en: Energy Select Sector SPDR Fund (XLE)
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 能源选择部门SPDR基金（XLE）
 - en: iShares Edge MSCI Min Vol USA ETF (USMV)
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: iShares Edge MSCI Min Vol USA ETF（USMV）
 - en: iShares Morningstar Large-Cap ETF (JKD)
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: iShares晨星大型市值ETF（JKD）
 - en: 'We’ll collect the daily closing SPY price from 2000-01-03 to 2021-04-30 to
     match the period we’re examining. After accessing the data, `ff_trim` and `SP_ETF`
     are merged so that we end up with the data including return and volatility on
     which the hidden states are determined:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将从2000-01-03到2021-04-30收集每日的 SPY 收盘价，以匹配我们研究的时期。获取数据后，我们将 `ff_trim` 和 `SP_ETF`
+    合并，这样就得到了包括返回率和波动率的数据，隐藏状态也是在这些数据上确定的：
 - en: '[PRE6]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO6-1)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO6-1)'
 - en: Calculating return of the SPY
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算 SPY 的收益率
 - en: 'It is assumed that there are three states in the economy: up, down, and constant.
     With this in mind, we run the HMM with full covariance, indicating independent
     components and a number of iterations (`n_iter`) of 100\. The following code block
     shows how we can apply Gaussian HMM and predict the hidden state:'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设经济有三种状态：上升、下降和恒定。在此基础上，我们使用完全协方差运行HMM，表示独立组件，并进行了100次迭代（`n_iter`）。以下代码块展示了如何应用高斯HMM并预测隐藏状态：
 - en: '[PRE7]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO7-1)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO7-1)'
 - en: Fitting the Gaussian HMM with return data
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用返回数据拟合高斯HMM
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO7-2)'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO7-2)'
 - en: Given the return data, predicting the hidden states
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定返回数据，预测隐藏状态
 - en: After predicting the hidden states, return data is concatenated with the hidden
     state so that we are able to see which return belongs to which state.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 在预测隐藏状态之后，返回数据与隐藏状态连接，这样我们就能看到哪个返回值属于哪个状态。
 - en: 'Let’s now examine the result we obtained after running our Gaussian HMM analysis.
     In the following code block, we compute the mean and standard deviations of different
     states. Also, covariance, initial probability, and transition matrix are estimated:'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们检查运行高斯HMM分析后得到的结果。在以下代码块中，我们计算了不同状态的均值和标准差，还估计了协方差、初始概率和转移矩阵：
 - en: '[PRE8]'
+  id: totrans-123
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: The number of observations per state is given in [Table 10-1](#hmm_states).
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个状态的观察数量见 [Table 10-1](#hmm_states)。
 - en: Table 10-1\. Observations per state
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 10-1\. 每个状态的观察结果
 - en: '| State | Number of observations | Return means | Covariances |'
+  id: totrans-126
   prefs: []
   type: TYPE_TB
+  zh: '| 状态 | 观察次数 | 收益均值 | 协方差 |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-127
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| 0 | 3014 | 0.0010 | 3.8482e-05 |'
+  id: totrans-128
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 3014 | 0.0010 | 3.8482e-05 |'
 - en: '| 1 | 2092 | -0.0023 | 1.2643e-05 |'
+  id: totrans-129
   prefs: []
   type: TYPE_TB
+  zh: '| 1 | 2092 | -0.0023 | 1.2643e-05 |'
 - en: '| 2 | 258 | -0.0003 | 1.8256e-05 |'
+  id: totrans-130
   prefs: []
   type: TYPE_TB
+  zh: '| 2 | 258 | -0.0003 | 1.8256e-05 |'
 - en: 'We assume that the economy has three states, but this assumption rests on theory.
     However, if we want to make sure, there is a strong and convenient tool that can
     be applied: *Elbow Analysis*. After running Gaussian HMM, we obtain the likelihood
@@ -572,91 +845,138 @@
     becomes relatively stagnant—this is the point at which we can stop the analysis.
     Given the following result (along with the resultant [Figure 10-7](#optimum_cluster_hmm)),
     it turns out that three components is a good choice:'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们假设经济有三种状态，但这一假设基于理论。然而，如果我们要确保，有一个强大且方便的工具可以应用：*Elbow Analysis*。在运行高斯HMM后，我们得到了似然结果，如果没有改进的空间——即，似然值变得相对稳定——这就是我们可以停止分析的时刻。根据以下结果（连同相应的
+    [Figure 10-7](#optimum_cluster_hmm)），三个组件是一个不错的选择：
 - en: '[PRE9]'
+  id: totrans-132
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO8-1)'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO8-1)'
 - en: Creating ten clusters based on Gaussian HMM via list comprehension
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于高斯HMM通过列表推导创建十个聚类
 - en: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO8-2)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO8-2)'
 - en: Calculating log-likelihood given the number of components
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据组件数量计算对数似然
 - en: '[Figure 10-7](#optimum_cluster_hmm) shows the likelihood values per state.
     It is readily observable that after the third component, the curve becomes flatter.'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 10-7](#optimum_cluster_hmm) 显示了每个状态的似然值。很容易观察到，在第三个组件之后，曲线变得更加平坦。'
 - en: '![optimum_cluster_hmm](assets/mlfr_1007.png)'
+  id: totrans-138
   prefs: []
   type: TYPE_IMG
+  zh: '![optimum_cluster_hmm](assets/mlfr_1007.png)'
 - en: Figure 10-7\. Gaussian HMM scree plot
+  id: totrans-139
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-7\. 高斯HMM谱图
 - en: 'Let us now visualize the states that we have obtained via Gaussian HMM and
     produce [Figure 10-8](#HMM_Regime_plot):'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们可视化通过高斯HMM获得的状态，并生成[图10-8](#HMM_Regime_plot)：
 - en: '[PRE10]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '![HMM_Regime_plot](assets/mlfr_1008.png)'
+  id: totrans-142
   prefs: []
   type: TYPE_IMG
+  zh: '![HMM_Regime_plot](assets/mlfr_1008.png)'
 - en: Figure 10-8\. Gaussian HMM states
+  id: totrans-143
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-8\. 高斯HMM状态
 - en: '[Figure 10-8](#HMM_Regime_plot) shows the behavior of the hidden states, and
     as expected, the distributions of these states are entirely different from each
     other, highlighting the importance of identifying the states.'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图10-8](#HMM_Regime_plot)展示了隐藏状态的行为，正如预期的那样，这些状态的分布与彼此完全不同，突显了识别状态的重要性。'
 - en: 'Given the states, the SPY returns differ, which is something that we expect.
     After all these preparations, we can move forward and run the Fama-Frech three-factor
     model with and without Gaussian HMM. The Sharpe ratio, which we’ll calculate after
     modeling, will tell us which is the better risk-adjusted return. Analysis with
     Gaussian HMM reveals a Sharpe ratio of nearly 0.0981:'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于所得状态，SPY的回报率不同，这是我们预期的。在所有这些准备工作之后，我们可以继续并使用和不使用高斯HMM运行法玛-弗雷奇三因子模型。建模后，我们将计算夏普比率，以确定哪一个具有更好的风险调整回报。使用高斯HMM进行的分析显示了接近0.0981的夏普比率：
 - en: '[PRE11]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO9-1)'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_synthetic_data_generation_and___span_class__keep_together__the_hidden_markov_model_in_finance__span__CO9-1)'
 - en: Adjustment based on transition matrix
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于转移矩阵的调整
 - en: 'The traditional way to run Fama-Frech three-factor model is to apply linear
     regression and the following code block does that. After running linear regression,
     we can make predictions and then calculate the Sharpe ratio. We’ll see that linear
     regression produces a lower Sharpe ratio (0.0589) compared to one with Gaussian
     HMM:'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行法玛-弗雷奇三因子模型的传统方法是应用线性回归，以下代码块就是这样做的。在运行线性回归之后，我们可以进行预测，然后计算夏普比率。我们会发现，与高斯HMM相比，线性回归产生了较低的夏普比率（0.0589）：
 - en: '[PRE12]'
+  id: totrans-150
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: This result suggests that Gaussian HMM delivers better risk-adjusted returns,
     making it useful in portfolio allocation, among other analyses.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一结果表明，高斯HMM提供了更好的风险调整回报，使其在资产配置等分析中非常有用。
 - en: 'The following analysis tries to show what happens if the states of the index
     return need to be predicted based on the unseen data that can be used for backtesting
     for future analysis:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下分析试图展示如果基于未见数据预测指数回报的状态，可以用于未来分析的回测情况：
 - en: '[PRE13]'
+  id: totrans-153
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'As we have discussed, HMM provides a helpful and strong way for further expanding
     our analysis to get more reliable and accurate results. Before concluding this
     chapter, it is worthwhile to show the synthetic data generation process using
@@ -666,79 +986,116 @@
     run Gaussian HMM and apply a random sampling procedure to end up with a desired
     number of observations, which is 1,000 in our case. The following code results
     in Figures [10-9](#HMM_syn_hist) and [10-10](#HMM_syn_line):'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们讨论过的，HMM为我们进一步扩展分析提供了有力的方式，以获取更可靠和准确的结果。在结束本章之前，展示使用高斯HMM生成合成数据的过程是值得的。为此，我们首先应定义我们的初始参数。这些参数是：初始概率（`startprob`）、转移矩阵（`transmat`）、均值（`means`）和协方差（`covars`）。定义了参数之后，我们可以运行高斯HMM，并应用随机抽样过程，以得到我们需要的观测数，本例中为1,000。以下代码生成了图表[10-9](#HMM_syn_hist)和[10-10](#HMM_syn_line)：
 - en: '[PRE14]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: The distribution and line plot based on the synthetic data can be seen in Figures
     [10-9](#HMM_syn_hist) and [10-10](#HMM_syn_line). As we have a large enough sample
     size coming out of our Gaussian HMM, we observe normally distributed data.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于合成数据的分布和线性图可见于图表[10-9](#HMM_syn_hist)和[10-10](#HMM_syn_line)。由于我们从高斯HMM中得到了足够大的样本量，我们观察到数据呈正态分布。
 - en: '![HMM_syn_hist](assets/mlfr_1009.png)'
+  id: totrans-157
   prefs: []
   type: TYPE_IMG
+  zh: '![HMM_syn_hist](assets/mlfr_1009.png)'
 - en: Figure 10-9\. Gaussian HMM synthetic data histogram
+  id: totrans-158
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-9\. 高斯HMM合成数据直方图
 - en: '![HMM_syn_line](assets/mlfr_1010.png)'
+  id: totrans-159
   prefs: []
   type: TYPE_IMG
+  zh: '![HMM_syn_line](assets/mlfr_1010.png)'
 - en: Figure 10-10\. Gaussian HMM synthetic data line plot
+  id: totrans-160
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-10\. 高斯HMM合成数据线性图
 - en: Conclusion
+  id: totrans-161
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this final chapter, we discussed two relatively new yet promising topics.
     Synthetic data generation enables us to conduct analysis in the absence of real
     data or in the case of breaching confidentiality, so it can be life-saver for
     a practitioner in these situations. In the second part of this chapter, we looked
     at Gaussian HMM and its usefulness in financial analysis and then used Gaussian
     HMM to generate synthetic data.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一最后一章中，我们讨论了两个相对新颖但颇具前景的主题。合成数据生成使我们能够在没有真实数据或违反保密情况下进行分析，因此对于从业者在这些情况下是一个救命稻草。在本章的第二部分，我们研究了高斯HMM及其在金融分析中的有用性，然后使用高斯HMM生成了合成数据。
 - en: We saw how Gaussian HMM helps us obtain better results in portfolio allocations,
     but it is worth noting that this is not the only area in which we can apply HMM.
     Rather, there are many different areas where researchers take advantage of this
     method, and it’s a safe bet that more are to come.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们看到高斯HMM如何帮助我们在投资组合配置中获得更好的结果，但值得注意的是，这并不是我们可以应用HMM的唯一领域。相反，研究人员利用这种方法的领域还有许多，可以肯定的是将会有更多的应用出现。
 - en: References
+  id: totrans-164
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考资料
 - en: 'Articles and books cited in this chapter:'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的文章和书籍：
 - en: Ahuja, Ankana. 2020\. “The promise of synthetic data”. *Financial Times*. [*https://oreil.ly/qphEN*](https://oreil.ly/qphEN).
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Ahuja, Ankana. 2020\. “合成数据的前景”。 *《金融时报》*。 [*https://oreil.ly/qphEN*](https://oreil.ly/qphEN).
 - en: 'El Emam, Khaled, Lucy Mosquera, and Richard Hoptroff. 2020\. *Practical Synthetic
     Data Generation: Balancing Privacy and the Broad Availability of Data*. Sebastopol:
     O’Reilly.'
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'El Emam, Khaled, Lucy Mosquera, 和 Richard Hoptroff. 2020\. *实用的合成数据生成：平衡隐私与数据广泛可用性*。
+    Sebastopol: O’Reilly.'
 - en: 'Fama, Eugene F., and Kenneth R. French. 1993\. “Common Risk Factors in the
     Returns on Stocks and Bonds.” *Journal of Financial Economics* 33 (3): 56.'
+  id: totrans-168
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Fama, Eugene F., 和 Kenneth R. French. 1993\. “股票和债券收益的共同风险因素。” *《金融经济学杂志》*
+    33 (3): 56.'
 - en: Patki, Neha, Roy Wedge, and Kalyan Veeramachaneni. 2016\. “The Synthetic Data
     Vault.” In the 2016 IEEE International Conference on Data Science and Advanced
     Analytics (DSAA), 399-410.
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Patki, Neha, Roy Wedge, 和 Kalyan Veeramachaneni. 2016\. “合成数据保险库。” 在2016年IEEE国际数据科学与高级分析会议（DSAA）中，399-410页.
 - en: 'Wang, Matthew, Yi-Hong Lin, and Ilya Mikhelson. 2020\. “Regime-Switching Factor
     Investing with Hidden Markov Models.” *Journal of Risk and Financial Management*
     13 (12): 311.'
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Wang, Matthew, Yi-Hong Lin, 和 Ilya Mikhelson. 2020\. “隐马尔可夫模型的制度切换因子投资。” *《风险与金融管理杂志》*
+    13 (12): 311.'

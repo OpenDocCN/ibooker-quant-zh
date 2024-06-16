@@ -1,36 +1,48 @@
 - en: Chapter 3\. Three-State Economy
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第三章\. 三态经济
 - en: The model is said to be *complete* if every contingent claim can be generated
     by some trading strategy. Otherwise, the model is said to be *incomplete*.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 如果每一个条件性索赔都可以通过某种交易策略生成，则模型被称为*完全*的。否则，模型被称为*不完全*的。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Stanley Pliska (1997)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Stanley Pliska (1997)
 - en: Assume that an individual views the outcome of any investment in probabilistic
     terms; that is, he thinks of the possible results in terms of some probability
     distribution. In assessing the desirability of a particular investment, however,
     he is willing to act on the basis of only two parameters of this distribution—its
     expected value and standard deviation.
+  id: totrans-4
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 假设个人将任何投资的结果视为概率术语来看待；也就是说，他认为可能的结果可以用某种概率分布来描述。然而，在评估特定投资的可取性时，他只愿意基于该分布的两个参数行动——其期望值和标准偏差。
 - en: ''
+  id: totrans-5
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: William Sharpe (1964)
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: William Sharpe (1964)
 - en: The previous chapter is based on the most simple model economy, in which the
     notion of uncertainty in finance can be analyzed. This chapter enriches the two-state
     economy by just a single additional state while keeping the number of traded financial
@@ -42,55 +54,83 @@
     builds on the mean-variance portfolio analysis and adds equilibrium arguments
     to derive prices for financial assets in mean-volatility space even if they are
     not replicable.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 前一章是基于最简单模型经济的，其中可以分析金融不确定性的概念。本章通过增加一个额外状态而使得二态经济稍微丰富化，同时保持交易的金融资产数量恒定为两个。在这种略微丰富的*静态三态经济*中，讨论了市场不完全性和鞍点测度的不确定性概念。介绍了超复制和近似复制方法以应对不完全性及其对条件性索赔定价的影响。本章还介绍了资本资产定价模型（CAPM），该模型基于均值-方差组合分析，并增加了均衡论点，以推导金融资产在均值-波动率空间中的价格，即使它们无法复制。
 - en: 'This chapter mainly covers the following topics from finance, mathematics,
     and Python programming:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章主要涵盖了金融、数学和Python编程中以下几个主题：
 - en: '| Finance | Mathematics | Python |'
+  id: totrans-9
   prefs: []
   type: TYPE_TB
+  zh: '| 金融 | 数学 | Python |'
 - en: '| --- | --- | --- |'
+  id: totrans-10
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| Uncertainty | Probability space | `ndarray` |'
+  id: totrans-11
   prefs: []
   type: TYPE_TB
+  zh: '| 不确定性 | 概率空间 | `ndarray` |'
 - en: '| Financial assets | Vectors, matrices | `ndarray` |'
+  id: totrans-12
   prefs: []
   type: TYPE_TB
+  zh: '| 金融资产 | 向量，矩阵 | `ndarray` |'
 - en: '| Attainable contingent claims | Span of vectors, basis of vector space | `ndarray`
     |'
+  id: totrans-13
   prefs: []
   type: TYPE_TB
+  zh: '| 可达到的条件性索赔 | 向量的跨度，向量空间的基 | `ndarray` |'
 - en: '| Martingale pricing, arbitrage | Sets of probability measures, expectation
     | `ndarray, np.dot` |'
+  id: totrans-14
   prefs: []
   type: TYPE_TB
+  zh: '| 鞍点定价，套利 | 概率测度集合，期望值 | `ndarray, np.dot` |'
 - en: '| Super-replication | Minimization, constraints | `scipy.optimize.minimize,
     dict, lambda` |'
+  id: totrans-15
   prefs: []
   type: TYPE_TB
+  zh: '| 超复制 | 最小化，约束 | `scipy.optimize.minimize, dict, lambda` |'
 - en: '| Approximate replication | Mean squared error, OLS regression | `np.linalg.lstsq`
     |'
+  id: totrans-16
   prefs: []
   type: TYPE_TB
+  zh: '| 近似复制 | 均方误差，OLS回归 | `np.linalg.lstsq` |'
 - en: '| Capital market line | Expectation, standard deviation | `NumPy` |'
+  id: totrans-17
   prefs: []
   type: TYPE_TB
+  zh: '| 资本市场线 | 期望值，标准偏差 | `NumPy` |'
 - en: '| Capital Asset Pricing Model | Correlation, covariance | `NumPy` |'
+  id: totrans-18
   prefs: []
   type: TYPE_TB
+  zh: '| 资本资产定价模型 | 相关性，协方差 | `NumPy` |'
 - en: If not explicitly stated otherwise, the assumptions and notions of the two-state
     economy from the previous chapter carry over to the three-state economy discussed
     in this chapter.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果没有明确说明，前一章节的二态经济的假设和概念可以延续到本章讨论的三态经济中。
 - en: Uncertainty
+  id: totrans-20
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 不确定性
 - en: 'Two *points in time* are relevant, today, <math alttext="t equals 0"><mrow><mi>t</mi>
     <mo>=</mo> <mn>0</mn></mrow></math> , and one year from today in the future, <math
     alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math> . Let
@@ -100,8 +140,15 @@
     u comma m comma d EndSet"><mrow><mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>m</mi> <mo>,</mo>
     <mi>d</mi> <mo>}</mo></mrow></math> represent the three different states of the
     economy possible in one year. The *power set* over the state space is given as:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两个*时间点*是相关的，即今天，<math alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math>，和未来一年后的时间点，<math
+    alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math>。让*状态空间*由<math
+    alttext="normal upper Omega equals StartSet u comma m comma d EndSet"><mrow><mi>Ω</mi>
+    <mo>=</mo> <mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>m</mi> <mo>,</mo> <mi>d</mi> <mo>}</mo></mrow></math>给定。<math
+    alttext="StartSet u comma m comma d EndSet"><mrow><mo>{</mo> <mi>u</mi> <mo>,</mo>
+    <mi>m</mi> <mo>,</mo> <mi>d</mi> <mo>}</mo></mrow></math>代表经济可能出现的三种不同状态。*幂集*在状态空间上给出为：
 - en: <math alttext="normal script upper P left-parenthesis normal upper Omega right-parenthesis
     equals StartSet normal empty-set comma StartSet u EndSet comma StartSet m EndSet
     comma StartSet d EndSet comma StartSet u comma m EndSet comma StartSet u comma
@@ -112,8 +159,19 @@
     <mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>m</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>u</mi>
     <mo>,</mo> <mi>d</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>m</mi> <mo>,</mo> <mi>d</mi>
     <mo>}</mo> <mo>,</mo> <mi>Ω</mi></mfenced></mrow></math>
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="normal script upper P left-parenthesis normal upper Omega right-parenthesis
+    equals StartSet normal empty-set comma StartSet u EndSet comma StartSet m EndSet
+    comma StartSet d EndSet comma StartSet u comma m EndSet comma StartSet u comma
+    d EndSet comma StartSet m comma d EndSet comma normal upper Omega EndSet" display="block"><mrow><mi>℘</mi>
+    <mrow><mo>(</mo> <mi>Ω</mi> <mo>)</mo></mrow> <mo>=</mo> <mfenced separators=""
+    open="{" close="}"><mi>∅</mi> <mo>,</mo> <mo>{</mo> <mi>u</mi> <mo>}</mo> <mo>,</mo>
+    <mo>{</mo> <mi>m</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>d</mi> <mo>}</mo> <mo>,</mo>
+    <mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>m</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>u</mi>
+    <mo>,</mo> <mi>d</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>m</mi> <mo>,</mo> <mi>d</mi>
+    <mo>}</mo> <mo>,</mo> <mi>Ω</mi></mfenced></mrow></math>
 - en: The probability measure <math alttext="upper P"><mi>P</mi></math> is defined
     on the power set, and it is assumed that <math alttext="upper P left-parenthesis
     omega right-parenthesis equals one-third comma omega element-of normal upper Omega"><mrow><mi>P</mi>
@@ -123,12 +181,23 @@
     upper P left-parenthesis normal upper Omega right-parenthesis comma upper P right-parenthesis"><mrow><mo>(</mo>
     <mi>Ω</mi> <mo>,</mo> <mi>℘</mi> <mo>(</mo> <mi>Ω</mi> <mo>)</mo> <mo>,</mo> <mi>P</mi>
     <mo>)</mo></mrow></math> represents *uncertainty* in the model economy.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 概率度量<math alttext="upper P"><mi>P</mi></math>定义在幂集上，并假设<math alttext="upper
+    P left-parenthesis omega right-parenthesis equals one-third comma omega element-of
+    normal upper Omega"><mrow><mi>P</mi> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mn>1</mn> <mn>3</mn></mfrac> <mo>,</mo> <mi>ω</mi> <mo>∈</mo>
+    <mi>Ω</mi></mrow></math>。由此产生的*概率空间*<math alttext="left-parenthesis normal upper
+    Omega comma normal script upper P left-parenthesis normal upper Omega right-parenthesis
+    comma upper P right-parenthesis"><mrow><mo>(</mo> <mi>Ω</mi> <mo>,</mo> <mi>℘</mi>
+    <mo>(</mo> <mi>Ω</mi> <mo>)</mo> <mo>,</mo> <mi>P</mi> <mo>)</mo></mrow></math>代表模型经济中的*不确定性*。
 - en: Financial Assets
+  id: totrans-24
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 金融资产
 - en: There are two financial assets traded in the model economy. The first is a *risk-less
     bond* <math alttext="upper B equals left-parenthesis upper B 0 comma upper B 1
     right-parenthesis"><mrow><mi>B</mi> <mo>=</mo> <mo>(</mo> <msub><mi>B</mi> <mn>0</mn></msub>
@@ -139,8 +208,18 @@
     <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><mn>11</mn><mo>,</mo><mn>11</mn><mo>,</mo><mn>11</mn><mo>)</mo></mrow>
     <mi>T</mi></msup></mrow></math> . The risk-less interest rate accordingly is <math
     alttext="i equals"><mrow><mi>i</mi> <mo>=</mo></mrow></math> 0.1.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型经济中有两种金融资产交易。第一种是*无风险债券*<math alttext="upper B equals left-parenthesis upper
+    B 0 comma upper B 1 right-parenthesis"><mrow><mi>B</mi> <mo>=</mo> <mo>(</mo>
+    <msub><mi>B</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></math>，其中<math alttext="upper B 0 equals 10"><mrow><msub><mi>B</mi>
+    <mn>0</mn></msub> <mo>=</mo> <mn>10</mn></mrow></math>，<math alttext="upper B
+    1 equals left-parenthesis 11 comma 11 comma 11 right-parenthesis Superscript upper
+    T"><mrow><msub><mi>B</mi> <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><mn>11</mn><mo>,</mo><mn>11</mn><mo>,</mo><mn>11</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math>。因此，无风险利率为<math alttext="i equals"><mrow><mi>i</mi>
+    <mo>=</mo></mrow></math> 0.1。
 - en: 'The second is a *risky stock*, <math alttext="upper S equals left-parenthesis
     upper S 0 comma left-parenthesis upper S 1 Superscript u Baseline comma upper
     S 1 Superscript m Baseline comma upper S 1 Superscript d Baseline right-parenthesis
@@ -151,19 +230,39 @@
     <mo>)</mo></mrow> <mi>T</mi></msup></mfenced></mrow></math> , with <math alttext="upper
     S 0 equals 10"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>=</mo> <mn>10</mn></mrow></math>
     and:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '第二个是*风险股票*，<math alttext="upper S equals left-parenthesis upper S 0 comma left-parenthesis
+    upper S 1 Superscript u Baseline comma upper S 1 Superscript m Baseline comma
+    upper S 1 Superscript d Baseline right-parenthesis Superscript upper T Baseline
+    right-parenthesis"><mrow><mi>S</mi> <mo>=</mo> <mfenced separators="" open="("
+    close=")"><msub><mi>S</mi> <mn>0</mn></msub> <mo>,</mo> <msup><mrow><mo>(</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup>
+    <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>)</mo></mrow>
+    <mi>T</mi></msup></mfenced></mrow></math> ，其中 <math alttext="upper S 0 equals
+    10"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>=</mo> <mn>10</mn></mrow></math>
+    和:'
 - en: <math alttext="upper S 1 equals Start 3 By 1 Matrix 1st Row  20 2nd Row  10
     3rd Row  5 EndMatrix" display="block"><mrow><msub><mi>S</mi> <mn>1</mn></msub>
     <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mn>20</mn></mtd></mtr>
     <mtr><mtd><mn>10</mn></mtd></mtr> <mtr><mtd><mn>5</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S 1 equals Start 3 By 1 Matrix 1st Row  20 2nd Row  10
+    3rd Row  5 EndMatrix" display="block"><mrow><msub><mi>S</mi> <mn>1</mn></msub>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mn>20</mn></mtd></mtr>
+    <mtr><mtd><mn>10</mn></mtd></mtr> <mtr><mtd><mn>5</mn></mtd></mtr></mtable></mfenced></mrow></math>
 - en: 'Define the market payoff matrix <math alttext="script upper M element-of double-struck
     upper R Superscript 3 times 2"><mrow><mi>ℳ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow></msup></mrow></math>
     by:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义市场支付矩阵 <math alttext="script upper M element-of double-struck upper R Superscript
+    3 times 2"><mrow><mi>ℳ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow></msup></mrow></math>
+    如下：
 - en: <math alttext="script upper M identical-to Start 3 By 2 Matrix 1st Row 1st Column
     upper B 1 2nd Column upper S 1 Superscript u Baseline 2nd Row 1st Column upper
     B 1 2nd Column upper S 1 Superscript m Baseline 3rd Row 1st Column upper B 1 2nd
@@ -177,12 +276,28 @@
     <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced open="("
     close=")"><mtable><mtr><mtd><mn>11</mn></mtd> <mtd><mn>20</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd>
     <mtd><mn>10</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd> <mtd><mn>5</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="script upper M identical-to Start 3 By 2 Matrix 1st Row 1st Column
+    upper B 1 2nd Column upper S 1 Superscript u Baseline 2nd Row 1st Column upper
+    B 1 2nd Column upper S 1 Superscript m Baseline 3rd Row 1st Column upper B 1 2nd
+    Column upper S 1 Superscript d Baseline EndMatrix equals Start 3 By 2 Matrix 1st
+    Row 1st Column 11 2nd Column 20 2nd Row 1st Column 11 2nd Column 10 3rd Row 1st
+    Column 11 2nd Column 5 EndMatrix" display="block"><mrow><mi>ℳ</mi> <mo>≡</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd>
+    <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>11</mn></mtd> <mtd><mn>20</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd>
+    <mtd><mn>10</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd> <mtd><mn>5</mn></mtd></mtr></mtable></mfenced></mrow></math>
 - en: Attainable Contingent Claims
+  id: totrans-30
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 可达可实现索赔
 - en: The *span* of the traded financial assets is also called the *set of attainable
     contingent claims* <math alttext="double-struck upper A"><mi>𝔸</mi></math> . A
     contingent claim <math alttext="upper C 1 colon normal upper Omega right-arrow
@@ -195,25 +310,48 @@
     <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>ℳ</mi>
     <mo>·</mo> <mi>ϕ</mi> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
     . Therefore
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易的金融资产的*跨度*也被称为*可达可实现索赔集合* <math alttext="double-struck upper A"><mi>𝔸</mi></math>
+    。一个可实现的索赔 <math alttext="upper C 1 colon normal upper Omega right-arrow double-struck
+    upper R Subscript 0 Baseline"><mrow><msub><mi>C</mi> <mn>1</mn></msub> <mo>:</mo>
+    <mi>Ω</mi> <mo>→</mo> <msub><mi>ℝ</mi> <mrow><mo>≥</mo><mn>0</mn></mrow></msub></mrow></math>
+    是指其支付可以表示为交易资产的支付向量的线性组合。换句话说，存在一个投资组合 <math alttext="phi"><mi>ϕ</mi></math> 使得
+    <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals script
+    upper M dot phi equals upper C 1"><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>=</mo>
+    <msub><mi>C</mi> <mn>1</mn></msub></mrow></math> 。因此
 - en: <math alttext="double-struck upper A equals StartSet script upper M dot phi
     comma phi element-of double-struck upper R squared EndSet" display="block"><mrow><mi>𝔸</mi>
     <mo>=</mo> <mfenced separators="" open="{" close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi>
     <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mfenced></mrow></math>
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="double-struck upper A equals StartSet script upper M dot phi
+    comma phi element-of double-struck upper R squared EndSet" display="block"><mrow><mi>𝔸</mi>
+    <mo>=</mo> <mfenced separators="" open="{" close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi>
+    <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mfenced></mrow></math>
 - en: if there are no constraints on the portfolio positions, or
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果投资组合头寸没有限制，或者
 - en: <math mode="display"><mrow><mi>𝔸</mi> <mo>=</mo> <mfenced separators="" open="{"
     close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msubsup><mi>ℝ</mi>
     <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mfenced></mrow></math>
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: <math mode="display"><mrow><mi>𝔸</mi> <mo>=</mo> <mfenced separators="" open="{"
+    close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msubsup><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mfenced></mrow></math>
 - en: if short selling is prohibited.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果禁止做空。
 - en: 'It is easy to verify that the payoff vectors of the two financial assets are
     linearly independent. However, there are only two such vectors and three different
     states. It is known by standard results from linear algebra that a basis for the
@@ -222,8 +360,12 @@
     contingent claim is replicable by a portfolio of the traded financial assets.
     An example is, for instance, the *first Arrow-Debreu security*. The system of
     linear equations for the replication is:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 很容易验证两种金融资产的支付向量是线性独立的。然而，只有两个这样的向量和三种不同的状态。 根据线性代数的标准结果，需要一个矢量空间 <math alttext="double-struck
+    upper R cubed"><msup><mi>ℝ</mi> <mn>3</mn></msup></math> 的基础由三个线性无关的向量组成。换句话说，并非每一个可达索赔都能通过交易的金融资产的投资组合复制。
+    一个例子是，例如，*第一个Arrow-Debreu安全性*。 复制的线性方程组是：
 - en: <math alttext="StartLayout Enlarged left-brace 1st Row  b dot 11 plus s dot
     20 equals 1 2nd Row  b dot 11 plus s dot 10 equals 0 3rd Row  b dot 11 plus s
     dot 5 equals 0 EndLayout" display="block"><mfenced separators="" open="{" close=""><mtable><mtr><mtd
@@ -232,16 +374,30 @@
     <mo>·</mo> <mn>11</mn> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mn>10</mn> <mo>=</mo>
     <mn>0</mn></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo>
     <mn>11</mn> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mn>5</mn> <mo>=</mo> <mn>0</mn></mrow></mtd></mtr></mtable></mfenced></math>
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout Enlarged left-brace 1st Row  b dot 11 plus s dot
+    20 equals 1 2nd Row  b dot 11 plus s dot 10 equals 0 3rd Row  b dot 11 plus s
+    dot 5 equals 0 EndLayout" display="block"><mfenced separators="" open="{" close=""><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <mn>11</mn> <mo>+</mo> <mi>s</mi>
+    <mo>·</mo> <mn>20</mn> <mo>=</mo> <mn>1</mn></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>b</mi>
+    <mo>·</mo> <mn>11</mn> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mn>10</mn> <mo>=</mo>
+    <mn>0</mn></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo>
+    <mn>11</mn> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mn>5</mn> <mo>=</mo> <mn>0</mn></mrow></mtd></mtr></mtable></mfenced></math>
 - en: Subtracting the second equation from the first gives <math alttext="s equals
     one-tenth"><mrow><mi>s</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>10</mn></mfrac></mrow></math>
     . Subtracting the third equation from the first gives <math alttext="s equals
     one-fifteenth"><mrow><mi>s</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>15</mn></mfrac></mrow></math>
     , which is obviously a contradiction to the first result. Therefore, there is
     no solution to this replication problem.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 从第一个方程式减去第二个方程式得到 <math alttext="s equals one-tenth"><mrow><mi>s</mi> <mo>=</mo>
+    <mfrac><mn>1</mn> <mn>10</mn></mfrac></mrow></math> 。从第一个方程式减去第三个方程式得到 <math alttext="s
+    equals one-fifteenth"><mrow><mi>s</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>15</mn></mfrac></mrow></math>
+    ，显然与第一个结果矛盾。因此，这个复制问题没有解决方案。
 - en: 'Using Python, the set of attainable contingent claims can be visualized in
     three dimensions. The approach is based on Monte Carlo simulation for the portfolio
     composition. For simplicity, the simulation allows only for positive portfolio
@@ -254,71 +410,117 @@
     ). The modeling of uncertainty is along the lines of the Python code introduced
     in [Chapter 2](ch02_split_000.xhtml#two_state_economy) with the necessary adjustments
     for three possible future states of the economy:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用Python，可以在三维空间中可视化可达的条件索赔集合。该方法基于蒙特卡洛模拟进行投资组合。为简单起见，模拟仅允许在0到1之间的正面投资组合位置。[图 3-1](#incom_01)
+    图形显示了结果，并说明这两个向量只能跨越三维空间的二维区域。如果市场是完整的，模拟的支付向量将填充一个立方体（金融资产将跨越 <math alttext="double-struck
+    upper R cubed"><msup><mi>ℝ</mi> <mn>3</mn></msup></math> ），而不仅仅是一个矩形区域（跨越 <math
+    alttext="double-struck upper R squared"><msup><mi>ℝ</mi> <mn>2</mn></msup></math>
+    ）。不确定性建模沿用了 [第 2 章](ch02_split_000.xhtml#two_state_economy) 中介绍的Python代码，针对经济三种可能的未来状态进行了必要的调整：
 - en: '[PRE0]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO1-1)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO1-1)'
 - en: Number of portfolios to be simulated.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要模拟的投资组合数量。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO1-2)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO1-2)'
 - en: The random position in the bond with some examples—all position values are between
     0 and 1.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 在债券中的随机位置，这里列出了一些示例—所有位置值都介于0到1之间。
 - en: '[![3](Images/3.png)](#co_three_state_economy_CO1-4)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_three_state_economy_CO1-4)'
 - en: The random position in the stock.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 在股票中的随机位置。
 - en: '[![4](Images/4.png)](#co_three_state_economy_CO1-5)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_three_state_economy_CO1-5)'
 - en: A `list` comprehension that calculates the resulting payoff vectors from the
     random portfolio compositions.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个 `list` 推导式，用于计算随机组合投资组合的结果支付向量。
 - en: '[![5](Images/5.png)](#co_three_state_economy_CO1-8)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_three_state_economy_CO1-8)'
 - en: The basic plotting subpackage of `matplotlib`.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`matplotlib` 的基本绘图子包。'
 - en: '[![6](Images/6.png)](#co_three_state_economy_CO1-9)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_three_state_economy_CO1-9)'
 - en: Three-dimensional plotting capabilities.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 三维绘图能力。
 - en: '[![7](Images/7.png)](#co_three_state_economy_CO1-10)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_three_state_economy_CO1-10)'
 - en: An empty canvas is created.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个空画布。
 - en: '[![8](Images/8.png)](#co_three_state_economy_CO1-11)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_three_state_economy_CO1-11)'
 - en: A subplot for a three-dimensional object is added.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加一个三维对象的子图。
 - en: '[![9](Images/9.png)](#co_three_state_economy_CO1-12)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_three_state_economy_CO1-12)'
 - en: The payoff vectors are visualized as a red dot each.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 将支付向量可视化为每个红点。
 - en: Market Incompleteness
+  id: totrans-59
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 市场不完备性
 - en: While in a complete model economy *every* contingent claim is attainable, only
     a *small subset* of contingent claims is generally attainable in an incomplete
     market. In that sense, changing from a complete to an incomplete model economy
@@ -326,43 +528,67 @@
     relies on the attainability of a contingent claim. What about pricing, then, when
     replication fails? These and other questions in this context are answered in the
     remainder of the chapter.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 在完整模型经济中，*每一个*条件索赔都是可达的，但在不完全市场中，通常只有*小部分*条件索赔是可达的。在这个意义上，从完全模型经济转变为不完全模型经济具有巨大的后果。复制定价，正如
+    [第 2 章](ch02_split_000.xhtml#two_state_economy) 中介绍的那样，依赖于条件索赔的可达性。那么，当复制失败时如何定价？在本章的其余部分回答了这些问题及其他相关问题。
 - en: '![ftwp 0301](Images/ftwp_0301.png)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
+  zh: '![ftwp 0301](Images/ftwp_0301.png)'
 - en: Figure 3-1\. Random portfolio payoff vectors visualized in three dimensions
+  id: totrans-62
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图3-1。在三维中可视化的随机投资组合收益向量
 - en: Martingale Pricing
+  id: totrans-63
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '**马丁格尔定价**'
 - en: The importance of martingale measures is clear from the First Fundamental Theorem
     of Asset Pricing (1FTAP) and the Second Fundamental Theorem of Asset Pricing (2FTAP).
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 从资产定价的第一基本定理（1FTAP）和第二基本定理（2FTAP）清楚地可以看出马丁格尔测度的重要性。
 - en: Martingale Measures
+  id: totrans-65
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '**马丁格尔测度**'
 - en: 'Any probability measure makes the discounted bond price process a martingale.
     What about the stock price process? The defining equation for a martingale measure
     <math><mrow><mi>Q</mi><mo>:</mo><mi>℘</mi><mrow><mo>(</mo><mi>Ω</mi><mo>)</mo></mrow><mo>→</mo><msub><mi>ℝ</mi>
     <mrow><mn>≥0</mn></mrow></msub></mrow></math> is:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何概率测度都使得折现债券价格过程成为马丁格尔过程。那么股票价格过程呢？马丁格尔测度<math><mrow><mi>Q</mi><mo>:</mo><mi>℘</mi><mrow><mo>(</mo><mi>Ω</mi><mo>)</mo></mrow><mo>→</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math>的定义方程是：
 - en: <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis equals
     bold upper E Superscript upper Q Baseline left-parenthesis upper S 1 right-parenthesis"
     display="block"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo>
     <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo> <msup><mi>𝐄</mi>
     <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis equals
+    bold upper E Superscript upper Q Baseline left-parenthesis upper S 1 right-parenthesis"
+    display="block"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo> <msup><mi>𝐄</mi>
+    <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
 - en: or
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者
 - en: <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis equals
     q Superscript u Baseline dot upper S 1 Superscript u Baseline plus q Superscript
     m Baseline dot upper S 1 Superscript m Baseline plus q Superscript d Baseline
@@ -372,8 +598,18 @@
     <mi>u</mi></msubsup> <mo>+</mo> <msup><mi>q</mi> <mi>m</mi></msup> <mo>·</mo>
     <msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup> <mo>+</mo> <msup><mi>q</mi>
     <mi>d</mi></msup> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis equals
+    q Superscript u Baseline dot upper S 1 Superscript u Baseline plus q Superscript
+    m Baseline dot upper S 1 Superscript m Baseline plus q Superscript d Baseline
+    dot upper S 1 Superscript d" display="block"><mrow><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <msup><mi>q</mi> <mi>u</mi></msup> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn>
+    <mi>u</mi></msubsup> <mo>+</mo> <msup><mi>q</mi> <mi>m</mi></msup> <mo>·</mo>
+    <msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup> <mo>+</mo> <msup><mi>q</mi>
+    <mi>d</mi></msup> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
 - en: 'with <math alttext="q Superscript omega Baseline identical-to upper Q left-parenthesis
     omega right-parenthesis comma omega element-of normal upper Omega"><mrow><msup><mi>q</mi>
     <mi>ω</mi></msup> <mo>≡</mo> <mi>Q</mi> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow>
@@ -382,8 +618,16 @@
     minus q Superscript m"><mrow><msup><mi>q</mi> <mi>d</mi></msup> <mo>=</mo> <mn>1</mn>
     <mo>-</mo> <msup><mi>q</mi> <mi>u</mi></msup> <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></math>
     :'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 与<math alttext="q Superscript omega Baseline identical-to upper Q left-parenthesis
+    omega right-parenthesis comma omega element-of normal upper Omega"><mrow><msup><mi>q</mi>
+    <mi>ω</mi></msup> <mo>≡</mo> <mi>Q</mi> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow>
+    <mo>,</mo> <mi>ω</mi> <mo>∈</mo> <mi>Ω</mi></mrow></math> 。用数字和<math alttext="q
+    Superscript d Baseline equals 1 minus q Superscript u Baseline minus q Superscript
+    m"><mrow><msup><mi>q</mi> <mi>d</mi></msup> <mo>=</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi>
+    <mi>u</mi></msup> <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></math>表示：
 - en: <math alttext="StartLayout 1st Row 1st Column 11 2nd Column equals 3rd Column
     q Superscript u Baseline dot 20 plus q Superscript m Baseline dot 10 plus left-parenthesis
     1 minus q Superscript u Baseline minus q Superscript m Baseline right-parenthesis
@@ -396,22 +640,46 @@
     <mo>·</mo> <mn>5</mn></mrow></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi>
     <mi>m</mi></msup></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><msup><mi>q</mi>
     <mi>u</mi></msup></mrow> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column 11 2nd Column equals 3rd Column
+    q Superscript u Baseline dot 20 plus q Superscript m Baseline dot 10 plus left-parenthesis
+    1 minus q Superscript u Baseline minus q Superscript m Baseline right-parenthesis
+    dot 5 2nd Row 1st Column q Superscript m Baseline 2nd Column equals 3rd Column
+    StartFraction 6 minus 15 dot q Superscript u Baseline Over 5 EndFraction EndLayout"
+    display="block"><mtable><mtr><mtd><mn>11</mn></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><msup><mi>q</mi>
+    <mi>u</mi></msup> <mo>·</mo> <mn>20</mn> <mo>+</mo> <msup><mi>q</mi> <mi>m</mi></msup>
+    <mo>·</mo> <mn>10</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi>
+    <mi>u</mi></msup> <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup> <mo>)</mo></mrow>
+    <mo>·</mo> <mn>5</mn></mrow></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi>
+    <mi>m</mi></msup></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><msup><mi>q</mi>
+    <mi>u</mi></msup></mrow> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
 - en: Recalling the properties of a probability measure, it must hold (binding condition)
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 回顾概率测度的性质，必须成立（约束条件）
 - en: <math alttext="StartLayout 1st Row 1st Column 6 minus 15 dot q Superscript u
     2nd Column greater-than-or-equal-to 3rd Column 0 2nd Row 1st Column q Superscript
     u Baseline 2nd Column less-than-or-equal-to 3rd Column two-fifths EndLayout" display="block"><mtable><mtr><mtd><mrow><mn>6</mn>
     <mo>-</mo> <mn>15</mn> <mo>·</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
     <mtd><mo>≥</mo></mtd> <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi>
     <mi>u</mi></msup></mrow></mtd> <mtd><mo>≤</mo></mtd> <mtd><mfrac><mn>2</mn> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column 6 minus 15 dot q Superscript u
+    2nd Column greater-than-or-equal-to 3rd Column 0 2nd Row 1st Column q Superscript
+    u Baseline 2nd Column less-than-or-equal-to 3rd Column two-fifths EndLayout" display="block"><mtable><mtr><mtd><mrow><mn>6</mn>
+    <mo>-</mo> <mn>15</mn> <mo>·</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
+    <mtd><mo>≥</mo></mtd> <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi>
+    <mi>u</mi></msup></mrow></mtd> <mtd><mo>≤</mo></mtd> <mtd><mfrac><mn>2</mn> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
 - en: and (nonbinding condition)
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 和（非约束条件）
 - en: <math alttext="StartLayout 1st Row 1st Column StartFraction 6 minus 15 dot q
     Superscript u Baseline Over 5 EndFraction 2nd Column less-than-or-equal-to 3rd
     Column 1 2nd Row 1st Column q Superscript u Baseline 2nd Column greater-than-or-equal-to
@@ -419,11 +687,21 @@
     <mi>u</mi></msup></mrow> <mn>5</mn></mfrac></mtd> <mtd><mo>≤</mo></mtd> <mtd><mn>1</mn></mtd></mtr>
     <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd> <mtd><mo>≥</mo></mtd>
     <mtd><mfrac><mn>1</mn> <mn>15</mn></mfrac></mtd></mtr></mtable></math>
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column StartFraction 6 minus 15 dot q
+    Superscript u Baseline Over 5 EndFraction 2nd Column less-than-or-equal-to 3rd
+    Column 1 2nd Row 1st Column q Superscript u Baseline 2nd Column greater-than-or-equal-to
+    3rd Column one-fifteenth EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><msup><mi>q</mi>
+    <mi>u</mi></msup></mrow> <mn>5</mn></mfrac></mtd> <mtd><mo>≤</mo></mtd> <mtd><mn>1</mn></mtd></mtr>
+    <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd> <mtd><mo>≥</mo></mtd>
+    <mtd><mfrac><mn>1</mn> <mn>15</mn></mfrac></mtd></mtr></mtable></math>
 - en: as well as (binding condition)
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 以及（约束条件）
 - en: <math alttext="StartLayout 1st Row 1st Column q Superscript d Baseline equals
     1 minus q Superscript u Baseline minus q Superscript m Baseline 2nd Column greater-than-or-equal-to
     3rd Column 0 2nd Row 1st Column q Superscript u Baseline 2nd Column greater-than-or-equal-to
@@ -432,11 +710,22 @@
     <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></mtd> <mtd><mo>≥</mo></mtd>
     <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
     <mtd><mo>≥</mo></mtd> <mtd><mfrac><mn>1</mn> <mn>10</mn></mfrac></mtd></mtr></mtable></math>
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column q Superscript d Baseline equals
+    1 minus q Superscript u Baseline minus q Superscript m Baseline 2nd Column greater-than-or-equal-to
+    3rd Column 0 2nd Row 1st Column q Superscript u Baseline 2nd Column greater-than-or-equal-to
+    3rd Column one-tenth EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>q</mi>
+    <mi>d</mi></msup> <mo>=</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi> <mi>u</mi></msup>
+    <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></mtd> <mtd><mo>≥</mo></mtd>
+    <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
+    <mtd><mo>≥</mo></mtd> <mtd><mfrac><mn>1</mn> <mn>10</mn></mfrac></mtd></mtr></mtable></math>
 - en: and (nonbinding condition)
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 和（非约束条件）
 - en: <math alttext="StartLayout 1st Row 1st Column q Superscript d Baseline equals
     1 minus q Superscript u Baseline minus q Superscript m Baseline 2nd Column less-than-or-equal-to
     3rd Column 1 2nd Row 1st Column q Superscript u Baseline 2nd Column less-than-or-equal-to
@@ -445,15 +734,28 @@
     <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></mtd> <mtd><mo>≤</mo></mtd>
     <mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
     <mtd><mo>≤</mo></mtd> <mtd><mfrac><mn>3</mn> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column q Superscript d Baseline equals
+    1 minus q Superscript u Baseline minus q Superscript m Baseline 2nd Column less-than-or-equal-to
+    3rd Column 1 2nd Row 1st Column q Superscript u Baseline 2nd Column less-than-or-equal-to
+    3rd Column three-fifths EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>q</mi>
+    <mi>d</mi></msup> <mo>=</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi> <mi>u</mi></msup>
+    <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></mtd> <mtd><mo>≤</mo></mtd>
+    <mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
+    <mtd><mo>≤</mo></mtd> <mtd><mfrac><mn>3</mn> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
 - en: 'Therefore, there are infinitely many probability measures that make the discounted
     stock price process a martingale. Setting <math alttext="q identical-to q Superscript
     u"><mrow><mi>q</mi> <mo>≡</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></math>
     , the set of all martingale measures <math alttext="double-struck upper Q"><mi>ℚ</mi></math>
     consistent with the market model is:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，存在无穷多个概率测度使得折现股票价格过程成为马丁格尔过程。设置<math alttext="q identical-to q Superscript
+    u"><mrow><mi>q</mi> <mo>≡</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></math>，与市场模型一致的所有马丁格尔测度<math
+    alttext="double-struck upper Q"><mi>ℚ</mi></math>的集合是：
 - en: <math alttext="double-struck upper Q equals StartSet Start 3 By 1 Matrix 1st
     Row  q 2nd Row  StartFraction 6 minus 15 dot q Over 5 EndFraction 3rd Row  1 minus
     q minus StartFraction 6 minus 15 dot q Over 5 EndFraction EndMatrix comma one-tenth
@@ -464,12 +766,26 @@
     <mo>-</mo> <mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mi>q</mi></mrow>
     <mn>5</mn></mfrac></mrow></mtd></mtr></mtable></mfenced> <mo>,</mo> <mfrac><mn>1</mn>
     <mn>10</mn></mfrac> <mo>≤</mo> <mi>q</mi> <mo>≤</mo> <mfrac><mn>2</mn> <mn>5</mn></mfrac></mfenced></mrow></math>
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="double-struck upper Q equals StartSet Start 3 By 1 Matrix 1st
+    Row  q 2nd Row  StartFraction 6 minus 15 dot q Over 5 EndFraction 3rd Row  1 minus
+    q minus StartFraction 6 minus 15 dot q Over 5 EndFraction EndMatrix comma one-tenth
+    less-than-or-equal-to q less-than-or-equal-to two-fifths EndSet" display="block"><mrow><mi>ℚ</mi>
+    <mo>=</mo> <mfenced separators="" open="{" close="}"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>q</mi></mtd></mtr>
+    <mtr><mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mi>q</mi></mrow>
+    <mn>5</mn></mfrac></mtd></mtr> <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>q</mi>
+    <mo>-</mo> <mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mi>q</mi></mrow>
+    <mn>5</mn></mfrac></mrow></mtd></mtr></mtable></mfenced> <mo>,</mo> <mfrac><mn>1</mn>
+    <mn>10</mn></mfrac> <mo>≤</mo> <mi>q</mi> <mo>≤</mo> <mfrac><mn>2</mn> <mn>5</mn></mfrac></mfenced></mrow></math>
 - en: As an example, take <math alttext="q equals three-tenths"><mrow><mi>q</mi> <mo>=</mo>
     <mfrac><mn>3</mn> <mn>10</mn></mfrac></mrow></math> . It follows
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 举例来说，取<math alttext="q equals three-tenths"><mrow><mi>q</mi> <mo>=</mo> <mfrac><mn>3</mn>
+    <mn>10</mn></mfrac></mrow></math>。结果是
 - en: <math alttext="upper Q left-parenthesis q equals three-tenths right-parenthesis
     equals Start 3 By 1 Matrix 1st Row  three-tenths 2nd Row  StartFraction 6 minus
     15 dot three-tenths Over 5 EndFraction 3rd Row  1 minus three-tenths minus three-tenths
@@ -484,47 +800,84 @@
     open="(" close=")"><mtable><mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr>
     <mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr> <mtr><mtd><mfrac><mn>4</mn>
     <mn>10</mn></mfrac></mtd></mtr></mtable></mfenced></mrow></math>
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper Q left-parenthesis q equals three-tenths right-parenthesis
+    equals Start 3 By 1 Matrix 1st Row  three-tenths 2nd Row  StartFraction 6 minus
+    15 dot three-tenths Over 5 EndFraction 3rd Row  1 minus three-tenths minus three-tenths
+    EndMatrix equals Start 3 By 1 Matrix 1st Row  three-tenths 2nd Row  three-tenths
+    3rd Row  four-tenths EndMatrix" display="block"><mrow><mi>Q</mi> <mfenced separators=""
+    open="(" close=")"><mi>q</mi> <mo>=</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac></mfenced>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr>
+    <mtr><mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mfrac><mn>3</mn>
+    <mn>10</mn></mfrac></mrow> <mn>5</mn></mfrac></mtd></mtr> <mtr><mtd><mrow><mn>1</mn>
+    <mo>-</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>-</mo> <mfrac><mn>3</mn>
+    <mn>10</mn></mfrac></mrow></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced
+    open="(" close=")"><mtable><mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr>
+    <mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr> <mtr><mtd><mfrac><mn>4</mn>
+    <mn>10</mn></mfrac></mtd></mtr></mtable></mfenced></mrow></math>
 - en: and
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 和
 - en: <math alttext="three-tenths dot 20 plus three-tenths dot 10 plus four-tenths
     dot 5 equals 11" display="block"><mrow><mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>·</mo>
     <mn>20</mn> <mo>+</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>·</mo> <mn>10</mn>
     <mo>+</mo> <mfrac><mn>4</mn> <mn>10</mn></mfrac> <mo>·</mo> <mn>5</mn> <mo>=</mo>
     <mn>11</mn></mrow></math>
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="three-tenths dot 20 plus three-tenths dot 10 plus four-tenths
+    dot 5 equals 11" display="block"><mrow><mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>·</mo>
+    <mn>20</mn> <mo>+</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>·</mo> <mn>10</mn>
+    <mo>+</mo> <mfrac><mn>4</mn> <mn>10</mn></mfrac> <mo>·</mo> <mn>5</mn> <mo>=</mo>
+    <mn>11</mn></mrow></math>
 - en: as desired for the stock price process.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为股票价格过程的期望。
 - en: 'With the specifications from before, the calculation in Python is as follows:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据之前的规范，Python中的计算如下所示：
 - en: '[PRE1]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: According to the 2FTAP, the market model is *incomplete* since there is more
     than one martingale measure consistent with the market model.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据第二基本定理，市场模型是*不完全的*，因为有不止一个与市场模型一致的马丁格尔测度。
 - en: Martingale Measures in Incomplete Markets
+  id: totrans-90
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 不完全市场中的马丁格尔测度
 - en: Complete market models are characterized by a unique martingale measure. By
     contrast, incomplete market models usually allow for an infinite number of martingale
     measures consistent with the model economy. It should be clear that this has significant
     consequences for the pricing of contingent claims since different martingale measures
     will lead to different values of contingent claims that are all consistent with
     the absence of arbitrage.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 完全市场模型的特征是具有唯一的马丁格尔测度。相比之下，不完全市场模型通常允许与模型经济一致的无穷多个马丁格尔测度。这对于衍生品的定价具有重要的后果，因为不同的马丁格尔测度将导致衍生品的不同价值，这些价值都与无套利的存在一致。
 - en: Risk-Neutral Pricing
+  id: totrans-92
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 风险中性定价
 - en: 'What implications does an infinite number of market consistent martingale measures
     have when it comes to the arbitrage pricing of contingent claims? First, for those
     contingent claims that are attainable, <math alttext="double-struck upper A"><mi>𝔸</mi></math>
@@ -536,8 +889,11 @@
     if <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals upper
     C 1"><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow>
     <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math> .'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 无限数量的市场一致鞅测度对套期权定价的影响是什么？首先，对于那些可达到的套期权，**𝔸**，套利定价类似于完全市场设置：复制投资组合的价值等于要复制的套期权的价格
+    — 否则存在套利机会。形式上，如果**V₀(ϕ)**等于**C₀**，则**C₀**等于**V₀(ϕ)**。
 - en: 'For those contingent claims that are not attainable, <math alttext="upper C
     1 element-of double-struck upper A overbar equals double-struck upper R cubed
     minus double-struck upper A"><mrow><msub><mi>C</mi> <mn>1</mn></msub> <mo>∈</mo>
@@ -547,8 +903,10 @@
     u"><msup><mi>γ</mi> <mi>u</mi></msup></math> . It is not replicable as shown previously
     and therefore belongs to the set <math alttext="double-struck upper A overbar"><mover
     accent="true"><mi>𝔸</mi> <mo>¯</mo></mover></math> . Its martingale price is:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于那些不可达到的套期权，如果**C₁ ∈ 𝔸̅ = ℝ³ \ 𝔸**，答案并不简单。假设第一个Arrow-Debreu证券**γᵘ**。正如之前所示，它不能被复制，因此属于集合**𝔸̅**。它的鞅价格是：
 - en: <math alttext="gamma 0 Superscript u Baseline left-parenthesis q right-parenthesis
     equals StartFraction 1 Over 1 plus i EndFraction dot double-struck upper E Superscript
     upper Q Baseline left-parenthesis left-parenthesis 1 comma 0 comma 0 right-parenthesis
@@ -559,21 +917,36 @@
     close=")"><msup><mrow><mo>(</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>)</mo></mrow>
     <mi>T</mi></msup></mfenced> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
     <mo>·</mo> <mi>q</mi></mrow></math>
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="gamma 0 Superscript u Baseline left-parenthesis q right-parenthesis
+    equals StartFraction 1 Over 1 plus i EndFraction dot double-struck upper E Superscript
+    upper Q Baseline left-parenthesis left-parenthesis 1 comma 0 comma 0 right-parenthesis
+    Superscript upper T Baseline right-parenthesis equals StartFraction 1 Over 1 plus
+    i EndFraction dot q" display="block"><mrow><msubsup><mi>γ</mi> <mn>0</mn> <mi>u</mi></msubsup>
+    <mrow><mo>(</mo> <mi>q</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <msup><mi>𝔼</mi> <mi>Q</mi></msup> <mfenced separators="" open="("
+    close=")"><msup><mrow><mo>(</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mfenced> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <mi>q</mi></mrow></math>
 - en: The quantity <math alttext="gamma 0 Superscript omega"><msubsup><mi>γ</mi> <mn>0</mn>
     <mi>ω</mi></msubsup></math> is often called the *state price* for one unit of
     currency in state <math alttext="omega element-of normal upper Omega"><mrow><mi>ω</mi>
     <mo>∈</mo> <mi>Ω</mi></mrow></math> . It is simply the discounted martingale probability
     for this state.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 数量**γ₀ᵘᵦ**通常称为在状态**ω ∈ Ω**中一单位货币的*状态价格*。它简单地是该状态的折现鞅概率。
 - en: 'In the model economy, <math alttext="one-tenth less-than-or-equal-to q less-than-or-equal-to
     two-fifths"><mrow><mfrac><mn>1</mn> <mn>10</mn></mfrac> <mo>≤</mo> <mi>q</mi>
     <mo>≤</mo> <mfrac><mn>2</mn> <mn>5</mn></mfrac></mrow></math> must hold, therefore
     the martingale price—the price avoiding arbitrage opportunities—lies in the interval:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 在模型经济中，必须保持**1/10 ≤ q ≤ 2/5**，因此避免套利机会的鞅价格位于区间内：
 - en: <math alttext="StartFraction 10 Over 11 EndFraction dot one-tenth equals one-eleventh
     less-than-or-equal-to gamma 0 Superscript u Baseline less-than-or-equal-to StartFraction
     10 Over 11 EndFraction dot two-fifths equals four-elevenths" display="block"><mrow><mfrac><mn>10</mn>
@@ -581,19 +954,31 @@
     <mfrac><mn>1</mn> <mn>11</mn></mfrac> <mo>≤</mo> <msubsup><mi>γ</mi> <mn>0</mn>
     <mi>u</mi></msubsup> <mo>≤</mo> <mfrac><mn>10</mn> <mn>11</mn></mfrac> <mo>·</mo>
     <mfrac><mn>2</mn> <mn>5</mn></mfrac> <mo>=</mo> <mfrac><mn>4</mn> <mn>11</mn></mfrac></mrow></math>
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartFraction 10 Over 11 EndFraction dot one-tenth equals one-eleventh
+    less-than-or-equal-to gamma 0 Superscript u Baseline less-than-or-equal-to StartFraction
+    10 Over 11 EndFraction dot two-fifths equals four-elevenths" display="block"><mrow><mfrac><mn>10</mn>
+    <mn>11</mn></mfrac> <mo>·</mo> <mfrac><mn>1</mn> <mn>10</mn></mfrac> <mo>=</mo>
+    <mfrac><mn>1</mn> <mn>11</mn></mfrac> <mo>≤</mo> <msubsup><mi>γ</mi> <mn>0</mn>
+    <mi>u</mi></msubsup> <mo>≤</mo> <mfrac><mn>10</mn> <mn>11</mn></mfrac> <mo>·</mo>
+    <mfrac><mn>2</mn> <mn>5</mn></mfrac> <mo>=</mo> <mfrac><mn>4</mn> <mn>11</mn></mfrac></mrow></math>
 - en: In words, every price between <math alttext="one-eleventh"><mfrac><mn>1</mn>
     <mn>11</mn></mfrac></math> and <math alttext="four-elevenths"><mfrac><mn>4</mn>
     <mn>11</mn></mfrac></math> for the first Arrow-Debreu security is consistent with
     the absence of arbitrage, given the assumptions for the model economy. Calculations
     for other contingent claims that are not attainable lead to similar results.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 简言之，对于第一个Arrow-Debreu证券，介于**1/11**和**4/11**之间的每个价格都与消除套利的假设一致。对于不可达到的其他套期权的计算导致类似的结果。
 - en: Super-Replication
+  id: totrans-100
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 超复制
 - en: 'Replication is important not only in a *pricing* context. It is also an approach
     to *hedge risk* resulting from an uncertain contingent claim payoff. Consider
     an arbitrary attainable contingent claim. Selling short the replication portfolio
@@ -603,8 +988,12 @@
     if the portfolio <math alttext="phi Superscript asterisk"><msup><mi>ϕ</mi> <mo>*</mo></msup></math>
     replicates contingent claim <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math>
     , then:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 复制不仅在*定价*背景下很重要。它还是处理由于不确定权利要求支付而导致的风险的方法。考虑一个任意可达到的权利要求。除了持有权利要求之外，还可以卖空复制组合，以消除任何来自未来支付不确定性的风险。这是因为权利要求和复制组合的支付完美地互相抵消。形式上，如果组合
+    <math alttext="phi Superscript asterisk"><msup><mi>ϕ</mi> <mo>*</mo></msup></math>
+    复制权利要求 <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math> ，则
 - en: <math alttext="upper C 1 minus upper V 1 left-parenthesis phi Superscript asterisk
     Baseline right-parenthesis equals upper C 1 minus script upper M dot phi Superscript
     asterisk Baseline equals 0" display="block"><mrow><msub><mi>C</mi> <mn>1</mn></msub>
@@ -612,8 +1001,16 @@
     <mo>*</mo></msup> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub>
     <mo>-</mo> <mi>ℳ</mi> <mo>·</mo> <msup><mi>ϕ</mi> <mo>*</mo></msup> <mo>=</mo>
     <mn>0</mn></mrow></math>
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper C 1 minus upper V 1 left-parenthesis phi Superscript asterisk
+    Baseline right-parenthesis equals upper C 1 minus script upper M dot phi Superscript
+    asterisk Baseline equals 0" display="block"><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>-</mo> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <msup><mi>ϕ</mi>
+    <mo>*</mo></msup> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>-</mo> <mi>ℳ</mi> <mo>·</mo> <msup><mi>ϕ</mi> <mo>*</mo></msup> <mo>=</mo>
+    <mn>0</mn></mrow></math>
 - en: For a contingent claim that is not attainable, such a perfect hedge is not available.
     However, one can always compose a portfolio that *super-replicates* the payoff
     of such a contingent claim. A portfolio <math alttext="phi"><mi>ϕ</mi></math>
@@ -623,23 +1020,40 @@
     left-parenthesis phi right-parenthesis greater-than-or-equal-to upper C 1"><mrow><msub><mi>V</mi>
     <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≥</mo> <msub><mi>C</mi>
     <mn>1</mn></msub></mrow></math> .
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于不可达到的权利要求，这样一个完美的对冲是不可用的。但是，总是可以构造一个组合来*超复制*这样一个权利要求的支付。一个组合 <math alttext="phi"><mi>ϕ</mi></math>
+    超复制一个权利要求 <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math>
+    ，如果它在经济的每一个未来状态下的支付都大于或等于权利要求的支付 <math alttext="upper V 1 left-parenthesis phi
+    right-parenthesis greater-than-or-equal-to upper C 1"><mrow><msub><mi>V</mi> <mn>1</mn></msub>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≥</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
+    。
 - en: 'Consider again the first Arrow-Debreu security <math alttext="gamma Superscript
     u"><msup><mi>γ</mi> <mi>u</mi></msup></math> , which is not attainable. The payoff
     can be super-replicated, for example, by a portfolio containing the risk-less
     bond only:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 再次考虑第一个 Arrow-Debreu 证券 <math alttext="gamma Superscript u"><msup><mi>γ</mi>
+    <mi>u</mi></msup></math> ，它是不可达到的。例如，可以通过仅包含无风险债券的组合来超复制其支付：
 - en: <math alttext="phi equals left-parenthesis StartFraction 1 Over upper B 1 EndFraction
     comma 0 right-parenthesis Superscript upper T" display="block"><mrow><mi>ϕ</mi>
     <mo>=</mo> <msup><mfenced separators="" open="(" close=")"><mfrac><mn>1</mn> <msub><mi>B</mi>
     <mn>1</mn></msub></mfrac> <mo>,</mo><mn>0</mn></mfenced> <mi>T</mi></msup></mrow></math>
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="phi equals left-parenthesis StartFraction 1 Over upper B 1 EndFraction
+    comma 0 right-parenthesis Superscript upper T" display="block"><mrow><mi>ϕ</mi>
+    <mo>=</mo> <msup><mfenced separators="" open="(" close=")"><mfrac><mn>1</mn> <msub><mi>B</mi>
+    <mn>1</mn></msub></mfrac> <mo>,</mo><mn>0</mn></mfenced> <mi>T</mi></msup></mrow></math>
 - en: The resulting payoff is
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果的支付是
 - en: <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals StartFraction
     1 Over upper B 1 EndFraction dot Start 3 By 1 Matrix 1st Row  upper B 1 2nd Row  upper
     B 1 3rd Row  upper B 1 EndMatrix equals Start 3 By 1 Matrix 1st Row  1 2nd Row  1
@@ -654,18 +1068,37 @@
     close=")"><mtable><mtr><mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd></mtr>
     <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced> <mo>=</mo> <msub><mi>C</mi>
     <mn>1</mn></msub></mrow></math>
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals StartFraction
+    1 Over upper B 1 EndFraction dot Start 3 By 1 Matrix 1st Row  upper B 1 2nd Row  upper
+    B 1 3rd Row  upper B 1 EndMatrix equals Start 3 By 1 Matrix 1st Row  1 2nd Row  1
+    3rd Row  1 EndMatrix greater-than-or-equal-to Start 3 By 1 Matrix 1st Row  1 2nd
+    Row  0 3rd Row  0 EndMatrix equals upper C 1" display="block"><mrow><msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn>
+    <msub><mi>B</mi> <mn>1</mn></msub></mfrac> <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd></mtr> <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd></mtr></mtable></mfenced> <mo>=</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mn>1</mn></mtd></mtr>
+    <mtr><mtd><mn>1</mn></mtd></mtr></mtable></mfenced> <mo>≥</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd></mtr>
+    <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced> <mo>=</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub></mrow></math>
 - en: where the <math alttext="greater-than-or-equal-to"><mo>≥</mo></math> sign is
     to be understood element-wise. Although this satisfies the definition of super-replication,
     it might not be the best choice in terms of the costs to set up the super-replication
     portfolio. Therefore, a *cost minimization* argument is introduced in general.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="greater-than-or-equal-to"><mo>≥</mo></math> 符号是逐元理解的。虽然这满足超复制的定义，但在设置超复制组合的成本方面可能不是最佳选择。因此，一般引入了*成本最小化*的论证。
 - en: 'The *super-replication problem* for a contingent claim <math alttext="upper
     C 1"><msub><mi>C</mi> <mn>1</mn></msub></math> at *minimal costs* is:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个权利要求 <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math> 的*最小成本*超复制问题是：
 - en: <math alttext="StartLayout 1st Row  min Underscript phi Endscripts upper V 0
     left-parenthesis phi right-parenthesis 2nd Row  s period t period upper V 1 left-parenthesis
     phi right-parenthesis greater-than-or-equal-to upper C 1 EndLayout" display="block"><mtable><mtr><mtd><mrow><munder><mo
@@ -673,11 +1106,21 @@
     <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></mtd></mtr>
     <mtr><mtd><mrow><mtext>s.t.</mtext> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
     <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≥</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></mtd></mtr></mtable></math>
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  min Underscript phi Endscripts upper V 0
+    left-parenthesis phi right-parenthesis 2nd Row  s period t period upper V 1 left-parenthesis
+    phi right-parenthesis greater-than-or-equal-to upper C 1 EndLayout" display="block"><mtable><mtr><mtd><mrow><munder><mo
+    movablelimits="true" form="prefix">min</mo> <mi>ϕ</mi></munder> <msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mtext>s.t.</mtext> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≥</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></mtd></mtr></mtable></math>
 - en: or
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者
 - en: <math alttext="StartLayout 1st Row  min Underscript b comma s Endscripts b dot
     upper B 0 plus s dot upper S 0 2nd Row  s period t period StartLayout Enlarged
     left-brace 1st Row  b dot upper B 1 plus s dot upper S 1 Superscript u Baseline
@@ -698,80 +1141,143 @@
     <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
     <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
     <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mtd></mtr></mtable></mfenced></mrow></mtd></mtr></mtable></math>
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  min Underscript b comma s Endscripts b dot
+    upper B 0 plus s dot upper S 0 2nd Row  s period t period StartLayout Enlarged
+    left-brace 1st Row  b dot upper B 1 plus s dot upper S 1 Superscript u Baseline
+    greater-than-or-equal-to upper C 1 Superscript u Baseline 2nd Row  b dot upper
+    B 1 plus s dot upper S 1 Superscript m Baseline greater-than-or-equal-to upper
+    C 1 Superscript m Baseline 3rd Row  b dot upper B 1 plus s dot upper S 1 Superscript
+    d Baseline greater-than-or-equal-to upper C 1 Superscript d EndLayout EndLayout"
+    display="block"><mtable><mtr><mtd><mrow><munder><mo movablelimits="true" form="prefix">min</mo>
+    <mrow><mi>b</mi><mo>,</mo><mi>s</mi></mrow></munder> <mi>b</mi> <mo>·</mo> <msub><mi>B</mi>
+    <mn>0</mn></msub> <mo>+</mo> <mi>s</mi> <mo>·</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mtext>s.t.</mtext> <mfenced separators="" open="{" close=""><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup>
+    <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>m</mi></msubsup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mtd></mtr></mtable></mfenced></mrow></mtd></mtr></mtable></math>
 - en: 'Such minimization problems can be modeled and solved straightforwardly in Python
     when using the [`SciPy`](http://scipy.org) package. The following code starts
     by calculating the costs for the inefficient super-replication portfolio using
     the bond only. It proceeds by defining a value function for a portfolio. It also
     illustrates that alternative portfolio compositions can indeed be more cost efficient:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用 [`SciPy`](http://scipy.org) 包时，这种最小化问题可以在 Python 中直接建模和求解。以下代码首先计算了仅使用债券的低效超复制组合的成本。然后定义了一个组合的价值函数。它还说明了替代的组合构成确实可以更加成本有效：
 - en: '[PRE2]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO2-1)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO2-1)'
 - en: The payoff of the contingent claim (first Arrow-Debreu security).
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 权利要求的支付（第一个 Arrow-Debreu 证券）。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO2-2)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO2-2)'
 - en: The portfolio with the bond only checked for the super-replication characteristic.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅包含债券的组合已经检查了超复制特性。
 - en: '[![3](Images/3.png)](#co_three_state_economy_CO2-3)'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_three_state_economy_CO2-3)'
 - en: The costs to set up this portfolio.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置这个组合的成本。
 - en: '[![4](Images/4.png)](#co_three_state_economy_CO2-4)'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_three_state_economy_CO2-4)'
 - en: A function to calculate the value of a portfolio `phi` today, `t=0`, or in one
     year, `t=1`.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个用于计算投资组合`phi`在今天（`t=0`）或一年后（`t=1`）价值的函数。
 - en: '[![5](Images/5.png)](#co_three_state_economy_CO2-5)'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_three_state_economy_CO2-5)'
 - en: Another guess for a super-replicating portfolio.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个用于超复制投资组合的猜测。
 - en: '[![6](Images/6.png)](#co_three_state_economy_CO2-6)'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_three_state_economy_CO2-6)'
 - en: The cost to set it up, which is lower than with the bond only.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置它的成本，比仅使用债券要低。
 - en: '[![7](Images/7.png)](#co_three_state_economy_CO2-7)'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_three_state_economy_CO2-7)'
 - en: And the resulting value (payoff) in one year, which super-replicates the first
     Arrow-Debreu security.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 和一年后的结果值（回报），它超复制了第一个阿罗-德布鲁证券。
 - en: 'The second part of the code implements the *minimization program* based on
     the previous inequality constraints in vectorized fashion. The cost optimal super-replication
     portfolio is much cheaper than the one using the bond only or the already more
     efficient portfolio including the bond and the stock:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码的第二部分以向量化的方式实现基于先前不等式约束的*最小化程序*。成本最优的超复制投资组合比仅使用债券或已经更有效的包括债券和股票的投资组合要便宜得多：
 - en: '[PRE3]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO3-1)'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO3-1)'
 - en: Imports the `minimize` function from `scipy.optimize`.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`scipy.optimize`中导入`minimize`函数。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO3-2)'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO3-2)'
 - en: Defines the inequality constraints in vectorized fashion based on a `lambda`
     (or anonymous) function; the function <math alttext="lamda"><mi>λ</mi></math>
     modeled here is <math alttext="lamda left-parenthesis phi right-parenthesis equals
@@ -781,58 +1287,96 @@
     , for which the inequality constraint <math alttext="lamda left-parenthesis phi
     right-parenthesis greater-than-or-equal-to 0"><mrow><mi>λ</mi> <mo>(</mo> <mi>ϕ</mi>
     <mo>)</mo> <mo>≥</mo> <mn>0</mn></mrow></math> must hold.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 以向量化方式定义基于`lambda`（或匿名）函数的不等式约束；这里建模的函数<math alttext="lamda"><mi>λ</mi></math>为<math
+    alttext="lamda left-parenthesis phi right-parenthesis equals upper V 1 left-parenthesis
+    phi right-parenthesis minus upper C 1"><mrow><mi>λ</mi> <mrow><mo>(</mo> <mi>ϕ</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>-</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>，对应的不等式约束<math
+    alttext="lamda left-parenthesis phi right-parenthesis greater-than-or-equal-to
+    0"><mrow><mi>λ</mi> <mo>(</mo> <mi>ϕ</mi> <mo>)</mo> <mo>≥</mo> <mn>0</mn></mrow></math>必须成立。
 - en: '[![3](Images/3.png)](#co_three_state_economy_CO3-3)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_three_state_economy_CO3-3)'
 - en: The function to be minimized also as a `lambda` function.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 要最小化的函数也是一个`lambda`函数。
 - en: '[![4](Images/4.png)](#co_three_state_economy_CO3-4)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_three_state_economy_CO3-4)'
 - en: An initial guess for the optimal solution (not too important here).
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 最优解的初始猜测（这里不太重要）。
 - en: '[![5](Images/5.png)](#co_three_state_economy_CO3-5)'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_three_state_economy_CO3-5)'
 - en: The method to be used for the minimization, here Sequential Least Squares Programming
     (`SLSQP`).
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于最小化的方法，在这里是顺序最小二乘编程（`SLSQP`）。
 - en: '[![6](Images/6.png)](#co_three_state_economy_CO3-6)'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_three_state_economy_CO3-6)'
 - en: The constraints for the minimization problem as defined before.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 之前定义的最小化问题的约束。
 - en: '[![7](Images/7.png)](#co_three_state_economy_CO3-7)'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_three_state_economy_CO3-7)'
 - en: The complete results dictionary from the minimization, with the optimal parameters
     under `x` and the minimal function value under `fun`.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 从最小化中获得的完整结果字典，最优参数在`x`下，最小函数值在`fun`下。
 - en: '[![8](Images/8.png)](#co_three_state_economy_CO3-8)'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_three_state_economy_CO3-8)'
 - en: The value of the optimal super-replicating portfolio today.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天最优超复制投资组合的价值。
 - en: '[![9](Images/9.png)](#co_three_state_economy_CO3-9)'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_three_state_economy_CO3-9)'
 - en: The future uncertain value of the optimal super-replicating portfolio; the optimal
     portfolio that sells short the bond and goes long the stock exactly replicates
     the relevant payoff in two states and only super-replicates in the middle state.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 未来最优超复制投资组合的不确定价值；卖空债券并买入股票的最优投资组合在两种状态下恰好复制相关的回报，并且在中间状态下仅超复制。
 - en: Approximate Replication
+  id: totrans-149
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 近似复制
 - en: 'Super-replication assumes a somewhat extreme situation: the payoff of the contingent
     claim to be super-replicated must be reached or exceeded in any given state under
     any circumstances. Such a situation is seen in practice, for instance, when a
@@ -840,22 +1384,32 @@
     often translates in the real world into something like “With a probability of
     99.9%.”—its future liabilities and obligations (contingent claims). However, this
     might not be an economically sensible or even viable option in many cases.'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 超复制假设了一种有些极端的情况：有条件索赔的回报必须在任何情况下达到或超过。在实践中可以看到这种情况，例如，当寿险公司投资以满足在所有情况下（这通常在现实世界中转化为“以99.9%的概率”）其未来的债务和义务（有条件索赔）。然而，在许多情况下，这可能不是一个经济上合理或甚至可行的选择。
 - en: This is where *approximation* comes into play. The idea is to replicate the
     payoff of a contingent claim *as well as possible* given an objective function.
     The problem then becomes minimizing the *replication error* given the traded financial
     assets.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是*近似*发挥作用的地方。其思想是在给定一个客观函数的情况下尽可能地复制一个有条件索赔的回报。然后，问题就变成了在给定交易金融资产的情况下最小化*复制误差*。
 - en: 'A possible candidate for the objective or error function is the *mean squared
     error* (MSE). Let <math alttext="upper V 1 left-parenthesis phi right-parenthesis"><mrow><msub><mi>V</mi>
     <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></math>
     be the value vector given a replication portfolio <math alttext="phi"><mi>ϕ</mi></math>
     . The MSE for a contingent claim <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math>
     given the portfolio <math alttext="phi"><mi>ϕ</mi></math> is:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个可能作为客观函数或误差函数的候选是*均方误差*（MSE）。设 <math alttext="upper V 1 left-parenthesis phi
+    right-parenthesis"><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi>
+    <mo>)</mo></mrow></mrow></math> 为在给定复制投资组合 <math alttext="phi"><mi>ϕ</mi></math>
+    的情况下的值向量。对于给定投资组合 <math alttext="phi"><mi>ϕ</mi></math> 的有条件索赔 <math alttext="upper
+    C 1"><msub><mi>C</mi> <mn>1</mn></msub></math>，MSE 是：
 - en: <math alttext="upper M upper S upper E left-parenthesis upper V 1 left-parenthesis
     phi right-parenthesis minus upper C 1 right-parenthesis equals StartFraction 1
     Over bar normal upper Omega bar EndFraction sigma-summation Underscript omega
@@ -868,115 +1422,191 @@
     <munder><mo>∑</mo> <mrow><mi>ω</mi><mo>∈</mo><mi>Ω</mi></mrow></munder> <msup><mrow><mo>(</mo><msubsup><mi>V</mi>
     <mn>1</mn> <mi>ω</mi></msubsup> <mrow><mo>(</mo><mi>ϕ</mi><mo>)</mo></mrow><mo>-</mo><msubsup><mi>C</mi>
     <mn>1</mn> <mi>ω</mi></msubsup> <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper M upper S upper E left-parenthesis upper V 1 left-parenthesis
+    phi right-parenthesis minus upper C 1 right-parenthesis equals StartFraction 1
+    Over bar normal upper Omega bar EndFraction sigma-summation Underscript omega
+    element-of normal upper Omega Endscripts left-parenthesis upper V 1 Superscript
+    omega Baseline left-parenthesis phi right-parenthesis minus upper C 1 Superscript
+    omega Baseline right-parenthesis squared" display="block"><mrow><mi>M</mi> <mi>S</mi>
+    <mi>E</mi> <mrow><mo>(</mo> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>-</mo> <msub><mi>C</mi> <mn>1</mn></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mn>1</mn> <mrow><mo>|</mo><mi>Ω</mi><mo>|</mo></mrow></mfrac>
+    <munder><mo>∑</mo> <mrow><mi>ω</mi><mo>∈</mo><mi>Ω</mi></mrow></munder> <msup><mrow><mo>(</mo><msubsup><mi>V</mi>
+    <mn>1</mn> <mi>ω</mi></msubsup> <mrow><mo>(</mo><mi>ϕ</mi><mo>)</mo></mrow><mo>-</mo><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>ω</mi></msubsup> <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
 - en: 'This is the quantity to be minimized. For an attainable contingent claim, the
     MSE is zero. The problem itself in matrix form is:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是要最小化的量。对于可达到的有条件索赔，MSE 为零。问题本身以矩阵形式是：
 - en: <math alttext="min Underscript phi Endscripts upper M upper S upper E left-parenthesis
     script upper M dot phi minus upper C 1 right-parenthesis" display="block"><mrow><munder><mo
     movablelimits="true" form="prefix">min</mo> <mi>ϕ</mi></munder> <mi>M</mi> <mi>S</mi>
     <mi>E</mi> <mrow><mo>(</mo> <mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>-</mo> <msub><mi>C</mi>
     <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="min Underscript phi Endscripts upper M upper S upper E left-parenthesis
+    script upper M dot phi minus upper C 1 right-parenthesis" display="block"><mrow><munder><mo
+    movablelimits="true" form="prefix">min</mo> <mi>ϕ</mi></munder> <mi>M</mi> <mi>S</mi>
+    <mi>E</mi> <mrow><mo>(</mo> <mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>-</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
 - en: In linear algebra, this is a problem that falls in the category of *ordinary
     least-squares regression* (OLS regression) problems. The previous problem is the
     special case of a *linear* OLS regression problem.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 在线性代数中，这是一种属于*普通最小二乘回归*（OLS 回归）问题的问题。前一个问题是*线性*OLS 回归问题的特例。
 - en: '`NumPy` provides the function `np.linalg.lstsq` that solves problems of this
     kind in a standardized and efficient manner:'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '`NumPy` 提供了函数 `np.linalg.lstsq`，以标准化和高效的方式解决这类问题：'
 - en: '[PRE4]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO4-1)'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO4-1)'
 - en: The future price matrix of the two traded financial assets.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个交易金融资产的未来价格矩阵。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO4-3)'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO4-3)'
 - en: This solves the linear OLS regression problem by minimizing the MSE.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过最小化 MSE 来解决线性 OLS 回归问题。
 - en: '[![3](Images/3.png)](#co_three_state_economy_CO4-4)'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_three_state_economy_CO4-4)'
 - en: The optimal portfolio positions, that is, the solution to the problem.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 最优投资组合位置，即问题的解决方案。
 - en: '[![4](Images/4.png)](#co_three_state_economy_CO4-5)'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_three_state_economy_CO4-5)'
 - en: The MSE obtained from the optimization procedure (minimal mean squared replication
     error).
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 来自优化过程的 MSE（最小均方复制误差）。
 - en: '[![5](Images/5.png)](#co_three_state_economy_CO4-6)'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_three_state_economy_CO4-6)'
 - en: Rank of matrix <math alttext="upper M"><mi>M</mi></math> …
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 矩阵 <math alttext="upper M"><mi>M</mi></math> 的秩…
 - en: '[![6](Images/6.png)](#co_three_state_economy_CO4-7)'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_three_state_economy_CO4-7)'
 - en: …and its singular values.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '...及其奇异值。'
 - en: '[![7](Images/7.png)](#co_three_state_economy_CO4-8)'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_three_state_economy_CO4-8)'
 - en: The value of the approximate portfolio (lower than the value of the cost-minimizing
     portfolio).
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 近似投资组合的价值（低于成本最小化投资组合的价值）。
 - en: '[![8](Images/8.png)](#co_three_state_economy_CO4-9)'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_three_state_economy_CO4-9)'
 - en: The payoff of the approximation portfolio.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 近似复制的回报。
 - en: '[![9](Images/9.png)](#co_three_state_economy_CO4-10)'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_three_state_economy_CO4-10)'
 - en: The vector with the replication errors.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 复制误差的向量。
 - en: '[![10](Images/10.png)](#co_three_state_economy_CO4-11)'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](Images/10.png)](#co_three_state_economy_CO4-11)'
 - en: The MSE from the approximate replication.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 来自近似复制的 MSE。
 - en: Approximate replication might not be applicable in all circumstances. But an
     investor or financial manager with discretion in their decisions can decide that
     an approximation is simply good enough. Such a decision could be made, for example,
     in cases in which super-replication might be considered to be too costly.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 在所有情况下，近似复制可能并非适用。但是，有自主决策权的投资者或财务经理可以决定，近似值已经足够好。例如，在可能被认为是超级复制成本过高的情况下，可以做出这样的决定。
 - en: Capital Market Line
+  id: totrans-180
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 资本市场线
 - en: Assume a mean-variance or, rather, mean-volatility context. In what follows,
     the risky stock is interpreted as the *market portfolio*. One can think of the
     market portfolio in terms of a broad stock index—in the spirit of the S&P 500
     stock index.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设是均值-方差或者更确切地说是均值-波动率的背景。在接下来的内容中，风险股票被解释为*市场组合*。人们可以将市场组合看作是广泛的股票指数，如标准普尔500股票指数。
 - en: 'As before, agents can compose portfolios that consist of the bond and the market
     portfolio. The rate of return for the bond—the risk-less interest rate—is <math
     alttext="i equals"><mrow><mi>i</mi> <mo>=</mo></mrow></math> 0.1, and the volatility
     is 0\. The expected rate of return for the market portfolio is:'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如以前一样，代理人可以组成由债券和市场组合组成的投资组合。债券的回报率—无风险利率—是 <math alttext="i equals"><mrow><mi>i</mi>
+    <mo>=</mo></mrow></math> 0.1，波动率为0。市场组合的预期回报率为：
 - en: <math alttext="mu Subscript upper S Baseline equals StartFraction bold upper
     E Superscript upper P Baseline left-parenthesis upper S 1 right-parenthesis Over
     upper S 0 EndFraction minus 1 equals seven-sixths minus 1 equals one-sixth" display="block"><mrow><msub><mi>μ</mi>
@@ -984,11 +1614,21 @@
     <mn>1</mn></msub> <mo>)</mo></mrow></mrow> <msub><mi>S</mi> <mn>0</mn></msub></mfrac>
     <mo>-</mo> <mn>1</mn> <mo>=</mo> <mfrac><mn>7</mn> <mn>6</mn></mfrac> <mo>-</mo>
     <mn>1</mn> <mo>=</mo> <mfrac><mn>1</mn> <mn>6</mn></mfrac></mrow></math>
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="mu Subscript upper S Baseline equals StartFraction bold upper
+    E Superscript upper P Baseline left-parenthesis upper S 1 right-parenthesis Over
+    upper S 0 EndFraction minus 1 equals seven-sixths minus 1 equals one-sixth" display="block"><mrow><msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow> <msub><mi>S</mi> <mn>0</mn></msub></mfrac>
+    <mo>-</mo> <mn>1</mn> <mo>=</mo> <mfrac><mn>7</mn> <mn>6</mn></mfrac> <mo>-</mo>
+    <mn>1</mn> <mo>=</mo> <mfrac><mn>1</mn> <mn>6</mn></mfrac></mrow></math>
 - en: 'Its volatility is:'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 它的波动性为：
 - en: <math alttext="sigma Subscript upper S Baseline equals StartRoot bold upper
     E Superscript upper P Baseline left-parenthesis left-parenthesis StartFraction
     upper S 1 minus upper S 0 Over upper S 0 EndFraction minus mu Subscript upper
@@ -998,32 +1638,56 @@
     <mn>1</mn></msub> <mo>-</mo><msub><mi>S</mi> <mn>0</mn></msub></mrow> <msub><mi>S</mi>
     <mn>0</mn></msub></mfrac> <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub></mfenced>
     <mn>2</mn></msup></mfenced></mrow></msqrt></mrow></math>
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma Subscript upper S Baseline equals StartRoot bold upper
+    E Superscript upper P Baseline left-parenthesis left-parenthesis StartFraction
+    upper S 1 minus upper S 0 Over upper S 0 EndFraction minus mu Subscript upper
+    S Baseline right-parenthesis squared right-parenthesis EndRoot" display="block"><mrow><msub><mi>σ</mi>
+    <mi>S</mi></msub> <mo>=</mo> <msqrt><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mfenced
+    separators="" open="(" close=")"><msup><mfenced separators="" open="(" close=")"><mfrac><mrow><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>-</mo><msub><mi>S</mi> <mn>0</mn></msub></mrow> <msub><mi>S</mi>
+    <mn>0</mn></msub></mfrac> <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub></mfenced>
+    <mn>2</mn></msup></mfenced></mrow></msqrt></mrow></math>
 - en: 'Quick calculations in Python give the corresponding numerical values:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Python中进行快速计算，可以得到相应的数值：
 - en: '[PRE5]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO5-1)'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO5-1)'
 - en: The expected return of the market portfolio.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场组合的预期回报。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO5-3)'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO5-3)'
 - en: The volatility of the returns of the market portfolio.^([1](ch03.xhtml#idm44853701345560))
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场组合回报的波动率。^([1](ch03.xhtml#idm44853701345560))
 - en: Feasible mean values for a normalized portfolio with total weight of 1 or 100%
     consisting of the bond and the market portfolio without short selling range from
     0 to about 0.166\. Regarding the volatility, values between 0 and about 0.623
     are possible.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有总权重为1或100%的归一化投资组合的可行均值为债券和市场组合，而没有卖空，从0到约0.166。就波动性而言，可能的值介于0到约0.623之间。
 - en: 'Allowing for short selling, [Figure 3-2](#incom_02) shows the *capital market
     line* (CML) resulting from different portfolio compositions. Because short selling
     of the bond is allowed, risk-return combinations on the upper line (with positive
@@ -1032,74 +1696,118 @@
     resulting from short positions in the market portfolio, have lower expected rates
     of return at the same risk as those that have a corresponding long position in
     the market portfolio:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑到可以进行卖空，[图 3-2](#incom_02) 显示出由不同的投资组合组成的*资本市场线*（CML）。因为允许对债券进行卖空，可以在上升线（具有正斜率）上实现风险和回报的组合，这通常被称为*资本市场线*。下降线（具有负斜率）原则上无关紧要，因为这些投资组合源于市场组合的空头头寸，在相同的风险下具有较低的预期回报，这是该图表的组成部分：
 - en: '[PRE6]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO6-1)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO6-1)'
 - en: The market portfolio position takes on values between –200% and 200%.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场组合的仓位取值范围在–200%到200%之间。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO6-2)'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO6-2)'
 - en: The bond portfolio position fills up to 100% total portfolio weight.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 债券组合的仓位填满了100%的总投资组合权重。
 - en: '[![3](Images/3.png)](#co_three_state_economy_CO6-3)'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_three_state_economy_CO6-3)'
 - en: The risk-less interest rate.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 无风险利率。
 - en: '[![4](Images/4.png)](#co_three_state_economy_CO6-4)'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_three_state_economy_CO6-4)'
 - en: The resulting expected rates of return for the portfolio.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资组合的预期回报。
 - en: '[![5](Images/5.png)](#co_three_state_economy_CO6-5)'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_three_state_economy_CO6-5)'
 - en: The resulting volatility values for the portfolio.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资组合的预期波动率值。
 - en: '[![6](Images/6.png)](#co_three_state_economy_CO6-6)'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_three_state_economy_CO6-6)'
 - en: Plots the CML for short as well as long positions in the market portfolio.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制市场组合的短头寸和多头寸的CML。
 - en: '![ftwp 0302](Images/ftwp_0302.png)'
+  id: totrans-207
   prefs: []
   type: TYPE_IMG
+  zh: '![ftwp 0302](Images/ftwp_0302.png)'
 - en: Figure 3-2\. Capital market line (upper, increasing part)
+  id: totrans-208
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-2\. 资本市场线（上升部分）
 - en: 'The equation describing the (upper, increasing part of the) CML is:'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 描述（上升部分的）CML 的方程式为：
 - en: <math alttext="mu equals i plus StartFraction mu Subscript upper S Baseline
     minus i Over sigma Subscript upper S Baseline EndFraction dot sigma" display="block"><mrow><mi>μ</mi>
     <mo>=</mo> <mi>i</mi> <mo>+</mo> <mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub>
     <mo>-</mo><mi>i</mi></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac> <mo>·</mo>
     <mi>σ</mi></mrow></math>
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="mu equals i plus StartFraction mu Subscript upper S Baseline
+    minus i Over sigma Subscript upper S Baseline EndFraction dot sigma" display="block"><mrow><mi>μ</mi>
+    <mo>=</mo> <mi>i</mi> <mo>+</mo> <mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub>
+    <mo>-</mo><mi>i</mi></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac> <mo>·</mo>
+    <mi>σ</mi></mrow></math>
 - en: Capital Asset Pricing Model
+  id: totrans-211
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 资本资产定价模型
 - en: The *Capital Asset Pricing Model* (CAPM) as pioneered by Sharpe (1964) is an
     equilibrium pricing model that mainly relates the expected rate of return of an
     arbitrary financial asset or portfolio and its volatility with the market portfolio’s
     expected rate of return and volatility.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: '*资本资产定价模型*（CAPM），由Sharpe（1964年）首创，是一个均衡定价模型，主要是关联任意金融资产或投资组合的预期收益率及其波动性与市场组合的预期收益率和波动性。'
 - en: 'To this end, the *correlation* between the rates of return of a financial asset
     and the market portfolio is of importance. In addition to the market portfolio,
     consider another risky financial asset with price process <math alttext="upper
@@ -1107,8 +1815,14 @@
     <mo>=</mo> <mo>(</mo> <msub><mi>T</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>T</mi>
     <mn>1</mn></msub> <mo>)</mo></mrow></math> . The correlation <math alttext="rho"><mi>ρ</mi></math>
     is defined by:'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，金融资产的收益率与市场组合的相关性是重要的。除了市场组合外，考虑另一个风险金融资产，其价格过程为<math alttext="upper T equals
+    left-parenthesis upper T 0 comma upper T 1 right-parenthesis"><mrow><mi>T</mi>
+    <mo>=</mo> <mo>(</mo> <msub><mi>T</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>T</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></math> 。相关性<math alttext="rho"><mi>ρ</mi></math>
+    的定义为：
 - en: <math alttext="rho Subscript upper S upper T Baseline equals StartFraction bold
     upper E Superscript upper P Baseline left-parenthesis left-parenthesis r 1 Superscript
     upper S Baseline minus mu Subscript upper S Baseline right-parenthesis dot left-parenthesis
@@ -1120,8 +1834,20 @@
     <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub> <mo>)</mo></mrow><mo>·</mo><mrow><mo>(</mo><msubsup><mi>r</mi>
     <mn>1</mn> <mi>T</mi></msubsup> <mo>-</mo><msub><mi>μ</mi> <mi>T</mi></msub> <mo>)</mo></mrow></mfenced></mrow>
     <mrow><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo><msub><mi>σ</mi> <mi>T</mi></msub></mrow></mfrac></mrow></math>
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="rho Subscript upper S upper T Baseline equals StartFraction bold
+    upper E Superscript upper P Baseline left-parenthesis left-parenthesis r 1 Superscript
+    upper S Baseline minus mu Subscript upper S Baseline right-parenthesis dot left-parenthesis
+    r 1 Superscript upper T Baseline minus mu Subscript upper T Baseline right-parenthesis
+    right-parenthesis Over sigma Subscript upper S Baseline dot sigma Subscript upper
+    T Baseline EndFraction" display="block"><mrow><msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mfenced separators=""
+    open="(" close=")"><mrow><mo>(</mo><msubsup><mi>r</mi> <mn>1</mn> <mi>S</mi></msubsup>
+    <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub> <mo>)</mo></mrow><mo>·</mo><mrow><mo>(</mo><msubsup><mi>r</mi>
+    <mn>1</mn> <mi>T</mi></msubsup> <mo>-</mo><msub><mi>μ</mi> <mi>T</mi></msub> <mo>)</mo></mrow></mfenced></mrow>
+    <mrow><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo><msub><mi>σ</mi> <mi>T</mi></msub></mrow></mfrac></mrow></math>
 - en: with <math alttext="negative 1 less-than-or-equal-to rho Subscript upper S upper
     T Baseline less-than-or-equal-to 1"><mrow><mo>-</mo> <mn>1</mn> <mo>≤</mo> <msub><mi>ρ</mi>
     <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>≤</mo> <mn>1</mn></mrow></math> .
@@ -1135,14 +1861,23 @@
     just the rates of return of the market portfolio scaled by the weight of the market
     portfolio. Uncertainty in this case arises from the market portfolio part only
     such that any variation in risk is due to the market portfolio weight variation.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果相关性为<math alttext="negative 1 less-than-or-equal-to rho Subscript upper S
+    upper T Baseline less-than-or-equal-to 1"><mrow><mo>-</mo> <mn>1</mn> <mo>≤</mo>
+    <msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>≤</mo> <mn>1</mn></mrow></math>
+    ，那么两个金融资产有同向移动的趋势。如果是负的，则金融资产有相反方向的移动趋势。在完美正相关的特殊情况下，<math alttext="rho Subscript
+    upper S upper T Baseline equals 1"><mrow><msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>=</mo> <mn>1</mn></mrow></math> ，两个金融资产始终同向移动。例如，对于位于CML上的投资组合，其回报率仅仅是市场组合回报率按市场组合权重缩放的回报率。在这种情况下，不确定性仅仅来自市场组合部分，因此任何风险的变化都是由市场组合权重变化引起的。
 - en: 'Consider the case of a financial asset <math alttext="upper T"><mi>T</mi></math>
     , which is part of the market portfolio and for which the correlation with the
     market portfolio shall not be perfect. For such a financial asset, the expected
     rate of return is given by:'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑一个金融资产<math alttext="upper T"><mi>T</mi></math>的情况，它是市场组合的一部分，并且其与市场组合的相关性不会是完美的。对于这样的金融资产，预期收益率由以下给出：
 - en: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
     equals 3rd Column i plus StartFraction left-parenthesis mu Subscript upper S Baseline
     minus i right-parenthesis dot rho Subscript upper S upper T Baseline Over sigma
@@ -1160,14 +1895,34 @@
     <mo>·</mo><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo><msub><mi>σ</mi> <mi>T</mi></msub></mrow>
     <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo>
     <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
+    equals 3rd Column i plus StartFraction left-parenthesis mu Subscript upper S Baseline
+    minus i right-parenthesis dot rho Subscript upper S upper T Baseline Over sigma
+    Subscript upper S Baseline EndFraction dot sigma Subscript upper T 2nd Row 1st
+    Column Blank 2nd Column equals 3rd Column i plus StartFraction rho Subscript upper
+    S upper T Baseline dot sigma Subscript upper S Baseline dot sigma Subscript upper
+    T Baseline Over sigma Subscript upper S Superscript 2 Baseline EndFraction dot
+    left-parenthesis mu Subscript upper S Baseline minus i right-parenthesis EndLayout"
+    display="block"><mtable><mtr><mtd><msub><mi>μ</mi> <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mfrac><mrow><mrow><mo>(</mo><msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>-</mo><mi>i</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>ρ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac>
+    <mo>·</mo> <msub><mi>σ</mi> <mi>T</mi></msub></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mfrac><mrow><msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>·</mo><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo><msub><mi>σ</mi> <mi>T</mi></msub></mrow>
+    <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo>
+    <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
 - en: It is easy to verify that the correlation between the market portfolio and the
     bond is zero such that the previous relationship gives the risk-less interest
     as the expected return if the financial asset <math alttext="upper T"><mi>T</mi></math>
     is the risk-less bond.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定证券组合和债券之间的相关性为零是容易的，以致于以前的关系给出了无风险利率，即财务资产<math alttext="upper T"><mi>T</mi></math>的预期回报。
 - en: The *covariance* between <math alttext="upper S 1"><msub><mi>S</mi> <mn>1</mn></msub></math>
     and <math alttext="upper T 1"><msub><mi>T</mi> <mn>1</mn></msub></math> is defined
     as <math alttext="sigma Subscript upper S upper T Baseline equals rho Subscript
@@ -1176,8 +1931,16 @@
     <msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>·</mo> <msub><mi>σ</mi>
     <mi>S</mi></msub> <mo>·</mo> <msub><mi>σ</mi> <mi>T</mi></msub></mrow></math>
     such that
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S 1"><msub><mi>S</mi> <mn>1</mn></msub></math> 和 <math
+    alttext="upper T 1"><msub><mi>T</mi> <mn>1</mn></msub></math> 之间的 *协方差* 定义为 <math
+    alttext="sigma Subscript upper S upper T Baseline equals rho Subscript upper S
+    upper T Baseline dot sigma Subscript upper S Baseline dot sigma Subscript upper
+    T"><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>=</mo>
+    <msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>·</mo> <msub><mi>σ</mi>
+    <mi>S</mi></msub> <mo>·</mo> <msub><mi>σ</mi> <mi>T</mi></msub></mrow></math>，如下所示
 - en: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
     equals 3rd Column i plus StartFraction sigma Subscript upper S upper T Baseline
     Over sigma Subscript upper S Superscript 2 Baseline EndFraction dot left-parenthesis
@@ -1190,18 +1953,39 @@
     <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
     <mtd><mrow><mi>i</mi> <mo>+</mo> <msub><mi>β</mi> <mi>T</mi></msub> <mo>·</mo>
     <mrow><mo>(</mo> <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
+    equals 3rd Column i plus StartFraction sigma Subscript upper S upper T Baseline
+    Over sigma Subscript upper S Superscript 2 Baseline EndFraction dot left-parenthesis
+    mu Subscript upper S Baseline minus i right-parenthesis 2nd Row 1st Column Blank
+    2nd Column equals 3rd Column i plus beta Subscript upper T Baseline dot left-parenthesis
+    mu Subscript upper S Baseline minus i right-parenthesis EndLayout" display="block"><mtable><mtr><mtd><msub><mi>μ</mi>
+    <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><mi>i</mi> <mo>+</mo>
+    <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
+    <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo> <msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <msub><mi>β</mi> <mi>T</mi></msub> <mo>·</mo>
+    <mrow><mo>(</mo> <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
 - en: with
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中
 - en: <math alttext="beta Subscript upper T Baseline identical-to StartFraction sigma
     Subscript upper S upper T Baseline Over sigma Subscript upper S Superscript 2
     Baseline EndFraction" display="block"><mrow><msub><mi>β</mi> <mi>T</mi></msub>
     <mo>≡</mo> <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
     <mi>S</mi> <mn>2</mn></msubsup></mfrac></mrow></math>
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="beta Subscript upper T Baseline identical-to StartFraction sigma
+    Subscript upper S upper T Baseline Over sigma Subscript upper S Superscript 2
+    Baseline EndFraction" display="block"><mrow><msub><mi>β</mi> <mi>T</mi></msub>
+    <mo>≡</mo> <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
+    <mi>S</mi> <mn>2</mn></msubsup></mfrac></mrow></math>
 - en: This gives the famous CAPM linear relationship between the expected rate of
     return of the market portfolio and the expected return of the financial asset
     <math alttext="upper T"><mi>T</mi></math> —or any other financial asset to this
@@ -1210,52 +1994,83 @@
     over the risk-less interest rate and the beta factor, which is the covariance
     between the two, scaled by the square of the market portfolio volatility (variance
     of returns).
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 这给出了著名的 CAPM 线性关系，即市场投资组合的预期收益率与金融资产 <math alttext="upper T"><mi>T</mi></math>
+    的预期回报之间的关系，或者任何其他金融资产。从这个意义上讲，CAPM 表明，任何金融资产的回报率仅由市场投资组合超过无风险利率的预期超额回报和贝塔因子决定，贝塔因子是两者之间的协方差，按市场投资组合波动率的平方（收益的方差）进行缩放。
 - en: 'For the CAPM, the CML is replaced by the *security market line* (SML), which
     is plotted in beta-return space as follows. A visualization is given in [Figure 3-3](#incom_03):'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于 CAPM，CML 被 *证券市场线*（SML）替代，在 beta-收益空间中绘制如下。图示在 [图 3-3](#incom_03) 中给出：
 - en: '[PRE7]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](Images/1.png)](#co_three_state_economy_CO7-1)'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_three_state_economy_CO7-1)'
 - en: Generates an `ndarray` object with the `beta` values.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成一个带有 `beta` 值的 `ndarray` 对象。
 - en: '[![2](Images/2.png)](#co_three_state_economy_CO7-2)'
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_three_state_economy_CO7-2)'
 - en: Calculates the expected returns `mu` according to the CAPM.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据 CAPM 计算预期收益 `mu`。
 - en: '[![3](Images/3.png)](#co_three_state_economy_CO7-3)'
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_three_state_economy_CO7-3)'
 - en: Plots the `beta-mu` combinations.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制 `beta-mu` 组合。
 - en: '[![4](Images/4.png)](#co_three_state_economy_CO7-4)'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_three_state_economy_CO7-4)'
 - en: Adjusts the limits for the `y` axis.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整 `y` 轴的限制。
 - en: '[![5](Images/5.png)](#co_three_state_economy_CO7-5)'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_three_state_economy_CO7-5)'
 - en: Plots the beta and expected return of the market portfolio.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制 beta 和市场投资组合的预期回报。
 - en: '![ftwp 0303](Images/ftwp_0303.png)'
+  id: totrans-236
   prefs: []
   type: TYPE_IMG
+  zh: '![ftwp 0303](Images/ftwp_0303.png)'
 - en: Figure 3-3\. Security market line
+  id: totrans-237
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-3\. 证券市场线
 - en: 'But why do the preceding relationships—and in particular the CAPM formula—hold
     true in the first place? To answer this question, consider a portfolio with normalized
     weight of 1 or 100% of which a proportion <math alttext="a"><mi>a</mi></math>
@@ -1263,19 +2078,33 @@
     remainder <math alttext="1 minus a"><mrow><mn>1</mn> <mo>-</mo> <mi>a</mi></mrow></math>
     is invested in the market portfolio. The expected rate of return of this portfolio
     is:'
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，为什么上述关系—特别是 CAPM 公式—首先成立？要回答这个问题，请考虑一个投资组合，其金融资产 <math alttext="upper T"><mi>T</mi></math>
+    的标准化权重为 1 或 100%，其中比例 <math alttext="a"><mi>a</mi></math> 投资于金融资产 <math alttext="upper
+    T"><mi>T</mi></math>，余下的 <math alttext="1 minus a"><mrow><mn>1</mn> <mo>-</mo>
+    <mi>a</mi></mrow></math> 投资于市场投资组合。这一投资组合的预期收益率为：
 - en: <math alttext="mu left-parenthesis a right-parenthesis equals a dot mu Subscript
     upper T Baseline plus left-parenthesis 1 minus a right-parenthesis dot mu Subscript
     upper S" display="block"><mrow><mi>μ</mi> <mrow><mo>(</mo> <mi>a</mi> <mo>)</mo></mrow>
     <mo>=</mo> <mi>a</mi> <mo>·</mo> <msub><mi>μ</mi> <mi>T</mi></msub> <mo>+</mo>
     <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>·</mo>
     <msub><mi>μ</mi> <mi>S</mi></msub></mrow></math>
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="mu left-parenthesis a right-parenthesis equals a dot mu Subscript
+    upper T Baseline plus left-parenthesis 1 minus a right-parenthesis dot mu Subscript
+    upper S" display="block"><mrow><mi>μ</mi> <mrow><mo>(</mo> <mi>a</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mi>a</mi> <mo>·</mo> <msub><mi>μ</mi> <mi>T</mi></msub> <mo>+</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>·</mo>
+    <msub><mi>μ</mi> <mi>S</mi></msub></mrow></math>
 - en: 'The volatility of the portfolio is (see Sharpe (1964)):'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资组合的波动率为（见 Sharpe (1964)）：
 - en: <math alttext="sigma left-parenthesis a right-parenthesis equals left-parenthesis
     a squared dot sigma Subscript upper T Superscript 2 Baseline plus left-parenthesis
     1 minus a right-parenthesis squared dot sigma Subscript upper S Superscript 2
@@ -1287,24 +2116,45 @@
     <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
     <mo>+</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>σ</mi>
     <mrow><mi>S</mi><mi>T</mi></mrow></msub></mfenced> <mfrac><mn>1</mn> <mn>2</mn></mfrac></msup></mrow></math>
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma left-parenthesis a right-parenthesis equals left-parenthesis
+    a squared dot sigma Subscript upper T Superscript 2 Baseline plus left-parenthesis
+    1 minus a right-parenthesis squared dot sigma Subscript upper S Superscript 2
+    Baseline plus 2 dot a dot left-parenthesis 1 minus a right-parenthesis dot sigma
+    Subscript upper S upper T Baseline right-parenthesis Superscript one-half" display="block"><mrow><mi>σ</mi>
+    <mrow><mo>(</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <msup><mfenced separators=""
+    open="(" close=")"><msup><mi>a</mi> <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi>
+    <mi>T</mi> <mn>2</mn></msubsup> <mo>+</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mfenced> <mfrac><mn>1</mn> <mn>2</mn></mfrac></msup></mrow></math>
 - en: 'The marginal change in the expected portfolio rate of return, given a marginal
     change in the allocation of the financial asset <math alttext="upper T"><mi>T</mi></math>
     , is determined by the following partial derivative:'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定金融资产 <math alttext="upper T"><mi>T</mi></math> 分配的边际变化，预期投资组合收益率的边际变化由以下偏导数确定：
 - en: <math alttext="StartFraction normal partial-differential mu Over normal partial-differential
     a EndFraction equals mu Subscript upper T Baseline minus mu Subscript upper S"
     display="block"><mrow><mfrac><mrow><mi>∂</mi><mi>μ</mi></mrow> <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac>
     <mo>=</mo> <msub><mi>μ</mi> <mi>T</mi></msub> <mo>-</mo> <msub><mi>μ</mi> <mi>S</mi></msub></mrow></math>
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartFraction normal partial-differential mu Over normal partial-differential
+    a EndFraction equals mu Subscript upper T Baseline minus mu Subscript upper S"
+    display="block"><mrow><mfrac><mrow><mi>∂</mi><mi>μ</mi></mrow> <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac>
+    <mo>=</mo> <msub><mi>μ</mi> <mi>T</mi></msub> <mo>-</mo> <msub><mi>μ</mi> <mi>S</mi></msub></mrow></math>
 - en: 'The marginal change in the portfolio volatility, given a marginal change in
     the allocation of the financial asset <math alttext="upper T"><mi>T</mi></math>
     , is determined by the following partial derivative:'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定金融资产 <math alttext="upper T"><mi>T</mi></math> 分配的边际变化，投资组合波动率的边际变化由以下偏导数确定：
 - en: <math alttext="StartFraction normal partial-differential sigma Over normal partial-differential
     a EndFraction equals StartFraction a dot sigma Subscript upper T Superscript 2
     Baseline minus sigma Subscript upper S Superscript 2 Baseline plus a dot sigma
@@ -1324,8 +2174,28 @@
     <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
     <mo>+</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>σ</mi>
     <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></msqrt></mfrac></mrow></math>
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartFraction normal partial-differential sigma Over normal partial-differential
+    a EndFraction equals StartFraction a dot sigma Subscript upper T Superscript 2
+    Baseline minus sigma Subscript upper S Superscript 2 Baseline plus a dot sigma
+    Subscript upper S Superscript 2 Baseline plus sigma Subscript upper S upper T
+    Baseline minus 2 dot a dot sigma Subscript upper S upper T Baseline Over StartRoot
+    a squared dot sigma Subscript upper T Superscript 2 Baseline plus left-parenthesis
+    1 minus a right-parenthesis squared dot sigma Subscript upper S Superscript 2
+    Baseline plus 2 dot a dot left-parenthesis 1 minus a right-parenthesis dot sigma
+    Subscript upper S upper T Baseline EndRoot EndFraction" display="block"><mrow><mfrac><mrow><mi>∂</mi><mi>σ</mi></mrow>
+    <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac> <mo>=</mo> <mfrac><mrow><mi>a</mi><mo>·</mo><msubsup><mi>σ</mi>
+    <mi>T</mi> <mn>2</mn></msubsup> <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><mi>a</mi><mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>-</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow> <msqrt><mrow><msup><mi>a</mi>
+    <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>T</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></msqrt></mfrac></mrow></math>
 - en: 'The basic insight of the CAPM as an *equilibrium model* is that the financial
     asset <math alttext="upper T"><mi>T</mi></math> is already part of the market
     portfolio. Therefore, <math alttext="a"><mi>a</mi></math> can only be interpreted
@@ -1335,8 +2205,13 @@
     expected portfolio rate of return remains unchanged, while the one for the portfolio
     volatility simplifies significantly when evaluated at the equilibrium point <math
     alttext="a equals 0"><mrow><mi>a</mi> <mo>=</mo> <mn>0</mn></mrow></math> :'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: CAPM作为*均衡模型*的基本见解是金融资产<math alttext="upper T"><mi>T</mi></math>已经是市场组合的一部分。因此，<math
+    alttext="a"><mi>a</mi></math>只能被解释为对金融资产的*超额需求*，在均衡状态下，当所有金融资产的超额需求都为零时，<math
+    alttext="a"><mi>a</mi></math>也必须等于零。因此，在均衡状态下，预期组合收益率的偏导数保持不变，而在均衡点<math alttext="a
+    equals 0"><mrow><mi>a</mi> <mo>=</mo> <mn>0</mn></mrow></math>评估时，组合波动率的偏导数显著简化：
 - en: <math alttext="StartLayout 1st Row 1st Column StartFraction normal partial-differential
     sigma Over normal partial-differential a EndFraction vertical-bar Subscript a
     equals 0 2nd Column equals 3rd Column one-half sigma Subscript upper S dot left-parenthesis
@@ -1359,11 +2234,36 @@
     <mtr><mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
     <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi>
     <mi>S</mi></msub></mfrac></mtd></mtr></mtable></math>
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column StartFraction normal partial-differential
+    sigma Over normal partial-differential a EndFraction vertical-bar Subscript a
+    equals 0 2nd Column equals 3rd Column one-half sigma Subscript upper S dot left-parenthesis
+    negative 2 dot sigma Subscript upper S Superscript 2 Baseline plus 2 dot sigma
+    Subscript upper S upper T Baseline right-parenthesis 2nd Row 1st Column Blank
+    2nd Column equals 3rd Column sigma Subscript upper S Baseline dot sigma Subscript
+    upper S upper T minus sigma Subscript upper S Baseline dot sigma Subscript upper
+    S Superscript 2 3rd Row 1st Column Blank 2nd Column equals 3rd Column StartFraction
+    sigma Subscript upper S upper T Baseline minus sigma Subscript upper S Superscript
+    2 Baseline Over sigma Subscript upper S Baseline EndFraction EndLayout" display="block"><mtable><mtr><mtd><msub><mfenced
+    separators="" open="" close="|"><mfrac><mrow><mi>∂</mi><mi>σ</mi></mrow> <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac></mfenced>
+    <mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow></msub></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mfrac><mn>1</mn> <mn>2</mn></mfrac> <msub><mi>σ</mi> <mi>S</mi></msub>
+    <mo>·</mo> <mfenced separators="" open="(" close=")"><mo>-</mo> <mn>2</mn> <mo>·</mo>
+    <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup> <mo>+</mo> <mn>2</mn> <mo>·</mo>
+    <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mfenced></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo>
+    <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>-</mo> <msub><mi>σ</mi>
+    <mi>S</mi></msub> <mo>·</mo> <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi>
+    <mi>S</mi></msub></mfrac></mtd></mtr></mtable></math>
 - en: 'The *risk-return trade-off* in market equilibrium therefore is:'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场均衡下的*风险-收益权衡*因此是：
 - en: <math alttext="StartLayout 1st Row 1st Column StartStartFraction StartFraction
     normal partial-differential mu Over normal partial-differential a EndFraction
     OverOver StartFraction normal partial-differential sigma Over normal partial-differential
@@ -1379,12 +2279,30 @@
     <mi>S</mi></msub></mrow> <mfrac><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
     <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi>
     <mi>S</mi></msub></mfrac></mfrac></mtd></mtr></mtable></math>
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column StartStartFraction StartFraction
+    normal partial-differential mu Over normal partial-differential a EndFraction
+    OverOver StartFraction normal partial-differential sigma Over normal partial-differential
+    a EndFraction EndEndFraction vertical-bar Subscript a equals 0 2nd Column equals
+    3rd Column StartStartFraction mu Subscript upper T Baseline minus mu Subscript
+    upper S Baseline OverOver StartFraction sigma Subscript upper S upper T Baseline
+    minus sigma Subscript upper S Superscript 2 Baseline Over sigma Subscript upper
+    S Baseline EndFraction EndEndFraction EndLayout" display="block"><mtable><mtr><mtd><msub><mfenced
+    separators="" open="" close="|"><mfrac><mfrac><mrow><mi>∂</mi><mi>μ</mi></mrow>
+    <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac> <mfrac><mrow><mi>∂</mi><mi>σ</mi></mrow>
+    <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac></mfrac></mfenced> <mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow></msub></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>μ</mi> <mi>T</mi></msub> <mo>-</mo><msub><mi>μ</mi>
+    <mi>S</mi></msub></mrow> <mfrac><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi>
+    <mi>S</mi></msub></mfrac></mfrac></mtd></mtr></mtable></math>
 - en: 'The final insight needed to derive the preceding *CAPM formula* is that in
     equilibrium, the previous term needs to be equal to the slope of the CML:'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 推导出前述*CAPM公式*所需的最终见解是，在均衡状态下，前述项需要等于CML的斜率：
 - en: <math alttext="StartLayout 1st Row 1st Column StartStartFraction mu Subscript
     upper T Baseline minus mu Subscript upper S Baseline OverOver StartFraction sigma
     Subscript upper S upper T Baseline minus sigma Subscript upper S Superscript 2
@@ -1408,58 +2326,114 @@
     <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
     <mtd><mrow><mi>i</mi> <mo>+</mo> <msub><mi>β</mi> <mi>T</mi></msub> <mo>·</mo>
     <mrow><mo>(</mo> <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column StartStartFraction mu Subscript
+    upper T Baseline minus mu Subscript upper S Baseline OverOver StartFraction sigma
+    Subscript upper S upper T Baseline minus sigma Subscript upper S Superscript 2
+    Baseline Over sigma Subscript upper S Baseline EndFraction EndEndFraction 2nd
+    Column equals 3rd Column StartFraction mu Subscript upper S Baseline minus i Over
+    sigma Subscript upper S Baseline EndFraction 2nd Row 1st Column mu Subscript upper
+    T Baseline 2nd Column equals 3rd Column i plus StartFraction sigma Subscript upper
+    S upper T Baseline Over sigma Subscript upper S Superscript 2 Baseline EndFraction
+    dot left-parenthesis mu Subscript upper S Baseline minus i right-parenthesis 3rd
+    Row 1st Column Blank 2nd Column equals 3rd Column i plus beta Subscript upper
+    T Baseline dot left-parenthesis mu Subscript upper S Baseline minus i right-parenthesis
+    EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><msub><mi>μ</mi> <mi>T</mi></msub>
+    <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub></mrow> <mfrac><mrow><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi>
+    <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac></mfrac></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo><mi>i</mi></mrow>
+    <msub><mi>σ</mi> <mi>S</mi></msub></mfrac></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo>
+    <msub><mi>μ</mi> <mi>T</mi></msub></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><mi>i</mi>
+    <mo>+</mo> <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
+    <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo> <msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <msub><mi>β</mi> <mi>T</mi></msub> <mo>·</mo>
+    <mrow><mo>(</mo> <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
 - en: How does the CAPM help in pricing a financial asset that is not replicable?
     Given the vector of uncertain prices in one year of a financial asset <math alttext="upper
     T 1"><msub><mi>T</mi> <mn>1</mn></msub></math> , the uncertain rates of return
     are
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: CAPM如何帮助定价不能复制的金融资产？鉴于一年后金融资产<math alttext="upper T 1"><msub><mi>T</mi> <mn>1</mn></msub></math>的不确定价格向量，不确定收益率为
 - en: <math alttext="r Superscript upper T Baseline equals StartFraction upper T 1
     minus upper T 0 Over upper T 0 EndFraction" display="block"><mrow><msup><mi>r</mi>
     <mi>T</mi></msup> <mo>=</mo> <mfrac><mrow><msub><mi>T</mi> <mn>1</mn></msub> <mo>-</mo><msub><mi>T</mi>
     <mn>0</mn></msub></mrow> <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mrow></math>
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="r Superscript upper T Baseline equals StartFraction upper T 1
+    minus upper T 0 Over upper T 0 EndFraction" display="block"><mrow><msup><mi>r</mi>
+    <mi>T</mi></msup> <mo>=</mo> <mfrac><mrow><msub><mi>T</mi> <mn>1</mn></msub> <mo>-</mo><msub><mi>T</mi>
+    <mn>0</mn></msub></mrow> <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mrow></math>
 - en: 'where <math alttext="upper T 0"><msub><mi>T</mi> <mn>0</mn></msub></math> is
     the equilibrium price today to be determined. The following relationship holds
     as well:'
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中<math alttext="upper T 0"><msub><mi>T</mi> <mn>0</mn></msub></math>是今天需要确定的均衡价格。以下关系也成立：
 - en: <math alttext="mu Subscript upper T Baseline equals StartFraction bold upper
     E Superscript upper P Baseline left-parenthesis upper T 1 right-parenthesis minus
     upper T 0 Over upper T 0 EndFraction" display="block"><mrow><msub><mi>μ</mi> <mi>T</mi></msub>
     <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi>
     <mn>1</mn></msub> <mo>)</mo></mrow><mo>-</mo><msub><mi>T</mi> <mn>0</mn></msub></mrow>
     <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mrow></math>
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="mu Subscript upper T Baseline equals StartFraction bold upper
+    E Superscript upper P Baseline left-parenthesis upper T 1 right-parenthesis minus
+    upper T 0 Over upper T 0 EndFraction" display="block"><mrow><msub><mi>μ</mi> <mi>T</mi></msub>
+    <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow><mo>-</mo><msub><mi>T</mi> <mn>0</mn></msub></mrow>
+    <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mrow></math>
 - en: Define now the *unit price of risk* as the excess return of the market portfolio
     per unit of variance by
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在将*单位风险价格*定义为市场组合每单位方差的超额回报
 - en: <math alttext="lamda equals StartFraction mu Subscript upper S Baseline minus
     i Over sigma Subscript upper S Superscript 2 Baseline EndFraction" display="block"><mrow><mi>λ</mi>
     <mo>=</mo> <mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo><mi>i</mi></mrow>
     <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mfrac></mrow></math>
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="lamda equals StartFraction mu Subscript upper S Baseline minus
+    i Over sigma Subscript upper S Superscript 2 Baseline EndFraction" display="block"><mrow><mi>λ</mi>
+    <mo>=</mo> <mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo><mi>i</mi></mrow>
+    <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mfrac></mrow></math>
 - en: such that according to the CAPM, one gets
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，根据CAPM，可以得出
 - en: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
     equals 3rd Column i plus lamda dot sigma Subscript upper S upper T EndLayout"
     display="block"><mtable><mtr><mtd><msub><mi>μ</mi> <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd>
     <mtd><mrow><mi>i</mi> <mo>+</mo> <mi>λ</mi> <mo>·</mo> <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mtd></mtr></mtable></math>
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
+    equals 3rd Column i plus lamda dot sigma Subscript upper S upper T EndLayout"
+    display="block"><mtable><mtr><mtd><msub><mi>μ</mi> <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mi>λ</mi> <mo>·</mo> <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mtd></mtr></mtable></math>
 - en: This shows that in equilibrium the expected rate of return of a financial asset
     is determined only by its covariance with the market portfolio. Equating this
     with the preceding term for the expected return of the financial asset <math alttext="upper
     T"><mi>T</mi></math> yields
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 这表明在均衡状态下，金融资产的预期收益率仅由其与市场组合的协方差决定。将其与金融资产<math alttext="upper T"><mi>T</mi></math>的预期收益率的前一项相等，得到
 - en: <math alttext="StartLayout 1st Row 1st Column StartFraction bold upper E Superscript
     upper P Baseline left-parenthesis upper T 1 right-parenthesis minus upper T 0
     Over upper T 0 EndFraction 2nd Column equals 3rd Column i plus lamda dot sigma
@@ -1474,23 +2448,44 @@
     <mtd><mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi>
     <mn>1</mn></msub> <mo>)</mo></mrow></mrow> <mrow><mn>1</mn><mo>+</mo><mi>i</mi><mo>+</mo><mi>λ</mi><mo>·</mo><msub><mi>σ</mi>
     <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable></math>
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column StartFraction bold upper E Superscript
+    upper P Baseline left-parenthesis upper T 1 right-parenthesis minus upper T 0
+    Over upper T 0 EndFraction 2nd Column equals 3rd Column i plus lamda dot sigma
+    Subscript upper S upper T 2nd Row 1st Column upper T 0 2nd Column equals 3rd Column
+    StartFraction bold upper E Superscript upper P Baseline left-parenthesis upper
+    T 1 right-parenthesis Over 1 plus i plus lamda dot sigma Subscript upper S upper
+    T Baseline EndFraction EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi> <mn>1</mn></msub> <mo>)</mo></mrow><mo>-</mo><msub><mi>T</mi>
+    <mn>0</mn></msub></mrow> <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mi>λ</mi> <mo>·</mo> <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mo>⇔</mo> <msub><mi>T</mi> <mn>0</mn></msub></mrow></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow> <mrow><mn>1</mn><mo>+</mo><mi>i</mi><mo>+</mo><mi>λ</mi><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable></math>
 - en: The denominator can be thought of as a *risk-adjusted discount factor*.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 分母也可以看作是*风险调整贴现因子*。
 - en: MVP, CAPM, and Market Completeness
+  id: totrans-263
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: MVP、CAPM和市场完备性
 - en: Both MVP and the CAPM rely on high-level statistics only, such as expectation,
     volatility, and covariance. When replicating contingent claims, for example, every
     single payoff in every possible future state plays an important role—with the
     demonstrated consequences resulting from market incompleteness. In MVP and CAPM
     contexts, it is (implicitly) assumed that investors only care about aggregate
     statistics and not really about every single state.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: MVP和CAPM都仅依赖于高级统计数据，如期望值、波动性和协方差。例如，当复制有条件权利时，每个可能未来状态中的每个支付都起重要作用—因市场不完备而导致的证明后果。在MVP和CAPM的背景下，假设投资者只关心总体统计数据而不是每个单独状态。
 - en: Consider the example of two financial assets with the same initial prices under
     an equal probability measure, one paying 20 currency units in one state and nothing
     in the others, and the other one paying 20 currency units in a different state
@@ -1499,19 +2494,25 @@
     over the other—independent of the fact that their aggregate statistics are the
     same. Focusing on risk and return is often a convenient simplification but not
     always an appropriate one.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑两个初始价格相同的金融资产的例子，在相等概率测度下，一个金融资产在一种状态下支付20货币单位，其他状态下不支付，另一个金融资产在另一种状态下支付与其他金融资产相同的20货币单位，其他状态下不支付。这两种金融资产具有相同的风险-收益特征。然而，一个代理可能强烈偏好其中一个，与它们的总体统计数据相同无关。专注于风险和收益通常是方便的简化，但并不总是适当的。
 - en: Conclusions
+  id: totrans-266
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: The major topic of this chapter is incomplete financial markets. Moving from
     a two-state model economy to one with three states and keeping the number of traded
     financial assets constant at two, immediately results in market incompleteness.
     This in turn implies that contingent claims are in general not perfectly replicable
     by portfolios composed of the risk-less bond and the risky stock.
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的主要内容是不完全的金融市场。从一个两状态模型经济转移到一个具有三状态的模型，并且保持交易金融资产的数量恒定为两个，立即导致市场不完全性。这反过来意味着条件性索赔通常不能通过由无风险债券和风险股票组成的投资组合完全复制。
 - en: However, payoffs of contingent claims can be super-replicated if they must be
     met or surpassed under all circumstances. While there are in general infinitely
     many such super-replication portfolios, it is generally required that the cost-minimizing
@@ -1520,33 +2521,47 @@
     replication problem is replaced by an optimization problem, according to which
     the mean squared error of the replication portfolio is minimized. Mathematically,
     this boils down to a linear OLS regression problem.
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，如果必须在所有情况下满足或超过，则可以对条件性索赔的回报进行超级复制。虽然一般情况下存在无限多个这样的超级复制投资组合，但通常要求选择成本最低的投资组合。如果有更多的灵活性，也可以近似地实现不可实现的条件性索赔的回报。在这种情况下，复制问题被替换为优化问题，根据该问题，复制投资组合的均方误差被最小化。从数学上讲，这归结为线性OLS回归问题。
 - en: The CAPM is based on equilibrium pricing arguments to derive expected rates
     of return and also prices for traded financial assets given their risk-return
     characteristics in the mean-volatility space. A central role is played by the
     correlation and the covariance of a financial asset with the market portfolio,
     which is assumed to contain the financial asset itself.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: CAPM 基于均衡定价论证来推导预期收益率，同时也给出了在平均-波动率空间中的交易金融资产的价格，考虑了它们的风险-回报特征。相关性和金融资产与市场组合的协方差起着核心作用，假定市场组合包含金融资产本身。
 - en: Further Resources
+  id: totrans-270
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 更多资源
 - en: 'Articles and books cited in this chapter:'
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的文章和书籍：
 - en: 'Pliska, Stanley. 1997\. *Introduction to Mathematical Finance.* Malden and
     Oxford: Blackwell Publishers.'
+  id: totrans-272
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Pliska, Stanley. 1997. *数学金融导论.* Malden 和 Oxford: Blackwell 出版社。'
 - en: 'Sharpe, William. 1964\. “Capital Asset Prices: A Theory of Market Equilibrium
     under Conditions of Risk.” *The Journal of Finance* 19 (3): 425–442.'
+  id: totrans-273
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Sharpe, William. 1964. “资本资产价格：在风险条件下市场均衡理论。” *财经杂志* 19 (3): 425–442。'
 - en: ^([1](ch03.xhtml#idm44853701345560-marker)) Note that this calculation for the
     volatility is only valid since an equal probability is assumed for the three states.
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch03.xhtml#idm44853701345560-marker)) 请注意，由于假设三种状态的等概率，因此这种波动性计算仅在这种情况下有效。

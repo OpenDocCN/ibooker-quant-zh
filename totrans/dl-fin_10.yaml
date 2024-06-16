@@ -1,4 +1,5 @@
 - en: Chapter 10\. Deep Reinforcement Learning for Time Series Prediction
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -11,6 +12,7 @@
     which assume independence between data points. However, time series data exhibits
     temporal dependencies and patterns, which may be effectively captured using reinforcement
     learning.'
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Reinforcement learning models for time series forecasting typically involve
@@ -19,19 +21,23 @@
     maximize cumulative rewards over time. The key challenge is finding an optimal
     balance between *exploration* (trying out new actions) and *exploitation* (using
     learned knowledge).
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
 - en: This chapter gives a basic overview of reinforcement learning and deep reinforcement
     learning with regard to predicting time series data.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
 - en: Intuition of Reinforcement Learning
+  id: totrans-4
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: Simplification is always the right path toward understanding more advanced details.
     So let’s look at reinforcement learning from a simple point of view before digging
     deeper.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: Reinforcement learning deals primarily with rewards and penalties. Imagine a
@@ -39,6 +45,7 @@
     Over time, that child will grow and will develop their experience so that they
     do good things and try to avoid doing bad things as much as possible (no one is
     perfect). Therefore, the learning is done through experience.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: From a time series perspective, the main idea is the same. Imagine training
@@ -48,67 +55,84 @@
     wants to maximize its rewards; therefore, over time it becomes better at predicting
     the next likely value, which is of course dependent on the quality and the signal-to-noise
     ratio of the analyzed time series.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: 'The term *reinforcement learning* comes from the fact that *positive reinforcement*
     is given to the algorithm when it makes right decisions and *negative reinforcement*
     is given when it makes bad decisions. The first three concepts you must know are
     states, actions, and rewards:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: States
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: The features at every time step. For example, at a certain time step, the current
     state of the market is its OHLC data and its volume data. In more familiar words,
     states are the explanatory variables.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: Actions
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: The decisions a trader may make at every time step. They generally involve buying,
     selling, or holding. In more familiar words, actions are the algorithms’ decisions
     when faced with certain states (a simple discretionary example of this would be
     a trader noticing an overvalued market and deciding to initiate a buy order).
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: Rewards
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
 - en: The results of correct actions. The simplest reward is the positive return.
     Note that a poorly designed reward function can lead to model issues such as a
     buy-and-hold strategy.^([1](ch10.html#id771))
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: '[Table 10-1](#table-10-1) shows the three main elements of reinforcement learning.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: Table 10-1\. A hypothetical decision table
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: '|   | Time | Open | High | Low | Close | &#124; | **Action** | **Reward** |'
+  id: totrans-17
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
+  id: totrans-18
   prefs: []
   type: TYPE_TB
 - en: '| **States** |   1 | 10 | 14 | 8 | 10 | &#124; | BUY |     0 |'
+  id: totrans-19
   prefs: []
   type: TYPE_TB
 - en: '| **States** |   2 | 10 | 15 | 6 | 13 | &#124; | BUY |     3 |'
+  id: totrans-20
   prefs: []
   type: TYPE_TB
 - en: '| **States** |   3 | 13 | 16 | 8 | 14 | &#124; | SELL |   –1 |'
+  id: totrans-21
   prefs: []
   type: TYPE_TB
 - en: '| **States** |   4 | 10 | 16 | 8 | 14 | &#124; | HOLD |     0 |'
+  id: totrans-22
   prefs: []
   type: TYPE_TB
 - en: States are the rows that go from the Time column to the Close column. Actions
     can be categorical, as you can see from the Action column, and Rewards can either
     be numerical (e.g., a positive or negative profit) or categorical (e.g., profit
     or loss label).
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
 - en: From the preceding list, it seems complicated to just design a system that looks
@@ -117,6 +141,7 @@
     provides feedback to the agent, indicating the immediate quality of its actions
     and guiding its learning process. Before we discuss reward functions in more detail,
     let’s look at what a state-action table is (also known as a Q-table).
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: A *Q-table*, short for *quality table*, is a data structure to store and update
@@ -125,15 +150,18 @@
     expected cumulative reward that an agent can achieve by taking action *a* in state
     *s* following a specific policy. The Q-table is therefore a table-like structure
     that maps each state-action pair to its corresponding Q-value.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: Initially, the Q-table is usually initialized with arbitrary values or set to
     zero. As the algorithm explores the environment (market) and receives rewards,
     it updates the Q-values in the table based on the observed rewards and the estimated
     future rewards. This process is typically done using an algorithm such as Q-learning.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: Note
+  id: totrans-27
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
@@ -142,11 +170,13 @@
     best actions to take in each state. By using the Q-table, the agent can make informed
     decisions and learn to maximize its cumulative rewards in the given environment.
     Remember, a reward can be a profit, Sharpe ratio, or any other performance metric.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: '*Q-learning* is a popular reinforcement learning algorithm that enables an
     agent to learn optimal actions by iteratively updating its action-value function,
     known as the *Bellman equation*, defined as follows:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper Q left-parenthesis s Subscript t Baseline comma a Subscript
@@ -160,8 +190,20 @@
     <mi>a</mi> <mi>x</mi> <mrow><mo>[</mo> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi>
     <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>a</mi>
     <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>]</mo></mrow></mrow></math>
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper Q left-parenthesis s Subscript t Baseline comma a Subscript
+    t Baseline right-parenthesis equals upper R left-parenthesis s Subscript t Baseline
+    comma a Subscript t Baseline right-parenthesis plus gamma m a x left-bracket upper
+    Q left-parenthesis s Subscript t plus 1 Baseline comma a Subscript t plus 1 Baseline
+    right-parenthesis right-bracket"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mi>R</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo>
+    <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>γ</mi> <mi>m</mi>
+    <mi>a</mi> <mi>x</mi> <mrow><mo>[</mo> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>a</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>]</mo></mrow></mrow></math>
 - en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s Subscript t Baseline
     comma a Subscript t Baseline right-parenthesis is the expected reward 2nd Row  upper
     R left-parenthesis s Subscript t Baseline comma a Subscript t Baseline right-parenthesis
@@ -175,54 +217,81 @@
     <mtext>is</mtext> <mtext>the</mtext> <mtext>learning</mtext> <mtext>rate</mtext>
     <mtext>(known</mtext> <mtext>as</mtext> <mi>g</mi> <mi>a</mi> <mi>m</mi> <mi>m</mi>
     <mi>a</mi> <mtext>)</mtext></mrow></mtd></mtr></mtable></math>
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s Subscript t Baseline
+    comma a Subscript t Baseline right-parenthesis is the expected reward 2nd Row  upper
+    R left-parenthesis s Subscript t Baseline comma a Subscript t Baseline right-parenthesis
+    is the reward table 3rd Row  gamma is the learning rate left-parenthesis known
+    as g a m m a right-parenthesis EndLayout"><mtable><mtr><mtd columnalign="left"><mrow><mi>Q</mi>
+    <mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub>
+    <mo>)</mo> <mtext>is</mtext> <mtext>the</mtext> <mtext>expected</mtext> <mtext>reward</mtext></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>R</mi> <mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo> <mtext>is</mtext> <mtext>the</mtext>
+    <mtext>reward</mtext> <mtext>table</mtext></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>γ</mi>
+    <mtext>is</mtext> <mtext>the</mtext> <mtext>learning</mtext> <mtext>rate</mtext>
+    <mtext>(known</mtext> <mtext>as</mtext> <mi>g</mi> <mi>a</mi> <mi>m</mi> <mi>m</mi>
+    <mi>a</mi> <mtext>)</mtext></mrow></mtd></mtr></mtable></math>
 - en: The larger the learning rate (γ), the more the algorithm takes into account
     the previous experiences. Notice that if γ is equal to zero, it would be synonymous
     to learning nothing as the second term will cancel itself out. As a simple example,
     consider [Table 10-2](#table-10-2).
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: Table 10-2\. R-table
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: '| Time (State) | Act (Action) | Wait (Action) |'
+  id: totrans-34
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- |'
+  id: totrans-35
   prefs: []
   type: TYPE_TB
 - en: '|        1 | 2 reward units | 0 reward units |'
+  id: totrans-36
   prefs: []
   type: TYPE_TB
 - en: '|        2 | 2 reward units | 0 reward units |'
+  id: totrans-37
   prefs: []
   type: TYPE_TB
 - en: '|        3 | 2 reward units | 0 reward units |'
+  id: totrans-38
   prefs: []
   type: TYPE_TB
 - en: '|        4 | 2 reward units | 0 reward units |'
+  id: totrans-39
   prefs: []
   type: TYPE_TB
 - en: '|        5 | 2 reward units | 4 reward units |'
+  id: totrans-40
   prefs: []
   type: TYPE_TB
 - en: 'The table describes the results of actions through time. At every time step,
     acting (doing something) will give a reward of 2, while waiting to act on the
     fifth time step will give a reward of 4\. This means that the agent can make one
     of the following choices:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: Act now and get 2 reward units.
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Wait before acting and get 4 reward units.
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Let’s assume γ = 0.80\. Using the Bellman equation and working backward will
     get you the following results:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s 1 comma a 1 right-parenthesis
@@ -252,82 +321,134 @@
     <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
     <mn>4</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>00</mn> <mo>)</mo></mrow> <mo>=</mo>
     <mn>3</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>20</mn></mrow></mtd></mtr></mtable></math>
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s 1 comma a 1 right-parenthesis
+    equals 0 plus 0.8 left-parenthesis 2.04 right-parenthesis equals 1.63 2nd Row  upper
+    Q left-parenthesis s 2 comma a 2 right-parenthesis equals 0 plus 0.8 left-parenthesis
+    2.56 right-parenthesis equals 2.04 3rd Row  upper Q left-parenthesis s 3 comma
+    a 3 right-parenthesis equals 0 plus 0.8 left-parenthesis 3.20 right-parenthesis
+    equals 2.56 4th Row  upper Q left-parenthesis s 4 comma a 4 right-parenthesis
+    equals 0 plus 0.8 left-parenthesis 4.00 right-parenthesis equals 3.20 EndLayout"><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>04</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>1</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>63</mn></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>2</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>56</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>04</mn></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>3</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>3</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>3</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>20</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>56</mn></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>4</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>4</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>4</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>00</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>3</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>20</mn></mrow></mtd></mtr></mtable></math>
 - en: '[Table 10-2](#table-10-2) may be updated to become [Table 10-3](#table-10-3)
     as follows.'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: Table 10-3\. Q-table
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: '| Time (State) | Act (Action) | Wait (Action) |'
+  id: totrans-48
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- |'
+  id: totrans-49
   prefs: []
   type: TYPE_TB
 - en: '|       1 | 2 reward units | 1.63 reward units |'
+  id: totrans-50
   prefs: []
   type: TYPE_TB
 - en: '|       2 | 2 reward units | 2.04 reward units |'
+  id: totrans-51
   prefs: []
   type: TYPE_TB
 - en: '|       3 | 2 reward units | 2.56 reward units |'
+  id: totrans-52
   prefs: []
   type: TYPE_TB
 - en: '|       4 | 2 reward units | 3.20 reward units |'
+  id: totrans-53
   prefs: []
   type: TYPE_TB
 - en: '|       5 | 2 reward units | 4.00 reward units |'
+  id: totrans-54
   prefs: []
   type: TYPE_TB
 - en: Therefore, the Q-table is continuously updated with the implied rewards to help
     maximize the final reward. To understand why the term *max* is in the Bellman
     equation, consider the example in [Table 10-4](#table-10-4).
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: Table 10-4\. R-table
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: '| Time (State) | Buy | Sell | Hold |'
+  id: totrans-57
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- | --- |'
+  id: totrans-58
   prefs: []
   type: TYPE_TB
 - en: '|       1 |  5 |  8 |  8 |'
+  id: totrans-59
   prefs: []
   type: TYPE_TB
 - en: '|       2 |  3 |  2 |  1 |'
+  id: totrans-60
   prefs: []
   type: TYPE_TB
 - en: '|       3 |  2 |  5 |  6 |'
+  id: totrans-61
   prefs: []
   type: TYPE_TB
 - en: Calculate the would-be value of *x* in a Q-table ([Table 10-5](#table-10-5))
     assuming a learning rate of 0.4.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: Table 10-5\. Q-table
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: '| Time (State) | Buy | Sell | Hold |'
+  id: totrans-64
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- | --- |'
+  id: totrans-65
   prefs: []
   type: TYPE_TB
 - en: '|      1 |  ?   |  ? |  ? |'
+  id: totrans-66
   prefs: []
   type: TYPE_TB
 - en: '|      2 |  ? |  x |  ? |'
+  id: totrans-67
   prefs: []
   type: TYPE_TB
 - en: '|      3 |  2 |  5 |  6 |'
+  id: totrans-68
   prefs: []
   type: TYPE_TB
 - en: 'Following the formula, you should get this result:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="x equals 2 plus 0.4 left-parenthesis m a x left-parenthesis 2
@@ -336,52 +457,73 @@
     <mn>4</mn> <mo>(</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>2</mn> <mo>,</mo>
     <mn>5</mn> <mo>,</mo> <mn>6</mn> <mo>)</mo> <mo>)</mo> <mo>=</mo> <mn>4</mn> <mo
     lspace="0%" rspace="0%">.</mo> <mn>4</mn></mrow></math>
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="x equals 2 plus 0.4 left-parenthesis m a x left-parenthesis 2
+    comma 5 comma 6 right-parenthesis right-parenthesis equals 4.4"><mrow><mi>x</mi>
+    <mo>=</mo> <mn>2</mn> <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo>
+    <mn>4</mn> <mo>(</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>2</mn> <mo>,</mo>
+    <mn>5</mn> <mo>,</mo> <mn>6</mn> <mo>)</mo> <mo>)</mo> <mo>=</mo> <mn>4</mn> <mo
+    lspace="0%" rspace="0%">.</mo> <mn>4</mn></mrow></math>
 - en: States (features) must be predictive in nature so that the reinforcement learning
     algorithm predicts the next value with an accuracy better than random. Examples
     of features can be the values of the relative strength index (RSI), moving averages,
     and lagged close prices.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: 'It is crucial to keep in mind that the inputs’ statistical preference remains
     the same, that is, stationary. This begs the question: how are moving averages
     used as inputs if they are not stationary? The simple answer is through the usual
     transformation, which is to take the percentage difference.'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: Note
+  id: totrans-73
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: It is possible to use fractional differencing to transform a nonstationary time
     series into a stationary one while retaining its memory.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以使用分数差分来将非平稳时间序列转换为平稳时间序列，同时保留其记忆。
 - en: A *policy* defines the behavior of an agent in an environment. It is a mapping
     from states to actions, indicating what action the agent should take in a given
     state. The policy essentially guides the agent’s decision-making process by specifying
     the action to be executed based on the observed state.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '*策略* 定义了智能体在环境中的行为。它是一个从状态到动作的映射，指示智能体在给定状态下应该采取什么动作。策略本质上通过指定基于观察到的状态应执行的动作来引导智能体的决策过程。'
 - en: The goal of reinforcement learning is to find an optimal policy that maximizes
     the agent’s long-term cumulative reward. This is typically achieved through a
     trial-and-error process, where the agent interacts with the environment, takes
     actions, receives rewards, and adjusts its policy based on the observed outcomes.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习的目标是找到最大化智能体长期累积奖励的最佳策略。这通常通过试错过程实现，智能体与环境互动，采取行动，获得奖励，并根据观察到的结果调整其策略。
 - en: The exploitation policy is generally faster than the exploration policy but
     may be more limited as it seeks a greater and immediate reward, while there may
     be a path afterward that leads to an even greater reward. Ideally, the best policy
     to take is a combination of both. But how do you determine this optimal mix? That
     question is answered by epsilon (ε).
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 开发策略通常比探索策略更快，但可能更受限，因为它寻求更大和即时的奖励，而在此之后可能有一条路径导致更大的奖励。理想情况下，最佳策略是两者的组合。但是你如何确定这种最佳混合？这个问题由
+    epsilon（ε）回答。
 - en: '*Epsilon* is a parameter used in exploration–exploitation trade-offs. It determines
     the probability with which an agent selects a random action (exploration) versus
     selecting the action with the highest estimated value (exploitation).'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Epsilon* 是用于探索和开发权衡的参数。它决定了智能体选择随机动作（探索）与选择估计值最高的动作（开发）的概率。'
 - en: Commonly used exploration strategies include epsilon-greedy and softmax. In
     *epsilon-greedy*, the agent selects the action with the highest estimated value
     with a probability of (1 – ε), and then it selects a random action with a probability
@@ -392,15 +534,23 @@
     stochasticity in the decision-making process. The temperature parameter associated
     with softmax determines the randomness in action selection, where a higher temperature
     leads to more exploration.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 常用的探索策略包括 epsilon-greedy 和 softmax。在 *epsilon-greedy* 中，智能体以概率 (1 – ε) 选择估计值最高的动作，然后以
+    ε 的概率选择随机动作。这允许智能体探索不同的动作，并有可能发现更好的策略。随着智能体逐渐学习，epsilon 值通常会逐渐衰减，以减少探索并更多地专注于开发[^2]。*Softmax*
+    动作选择考虑了估计的动作值，但在决策过程中引入了随机性。与 softmax 相关的温度参数决定了动作选择的随机性，温度越高，探索就越多。
 - en: Warning
+  id: totrans-80
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 警告
 - en: 'Do not mix up epsilon and gamma:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要混淆 epsilon 和 gamma：
 - en: '*Gamma* is a parameter that determines the importance of future rewards. It
     controls the extent to which the agent values immediate rewards compared to delayed
     rewards (hence, it is related to a delayed gratification issue). The value of
@@ -408,23 +558,30 @@
     agent considers future rewards more heavily, while a value closer to 0 gives less
     importance to future rewards. To understand this more, consider having another
     look at the Bellman equation.'
+  id: totrans-82
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Gamma* 是一个参数，它决定了未来奖励的重要性。它控制了智能体对即时奖励与延迟奖励的价值比重（因此，它与延迟满足问题相关）。Gamma 的值通常在
+    0 和 1 之间，数值越接近 1，智能体就越重视未来奖励，而数值越接近 0，就越不重视未来奖励。要更好地理解这一点，请再次查看贝尔曼方程。'
 - en: '*Epsilon* is a parameter used in exploration–exploitation trade-offs. It determines
     the probability with which an agent selects a random action (exploration) versus
     selecting the action with the highest estimated value (exploitation).'
+  id: totrans-83
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Epsilon* 是用于探索和开发权衡的参数。它决定了智能体选择随机动作（探索）与选择估计值最高的动作（开发）的概率。'
 - en: At this point, you may feel overwhelmed by the amount of new information presented,
     especially because it differs from what you have seen so far in the book. Before
     moving to the more complex deep reinforcement learning discussion, a quick summary
     of what you have seen in this chapter until now may be beneficial. Reinforcement
     learning is essentially giving the machine a task that it will then learn how
     to do on its own.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时，你可能会感到对所呈现的大量新信息感到不知所措，特别是因为它与你在本书中迄今所见的内容不同。在进入更复杂的深度强化学习讨论之前，快速总结一下本章至今所见的内容可能会有益。强化学习本质上是给机器一个任务，然后让它自己学会如何完成。
 - en: With time series analysis, states represent the current situation or condition
     of the environment at a particular time. An example of state is a technical indicator’s
     value. States are represented by Q-tables. Actions are self-explanatory and can
@@ -436,104 +593,144 @@
     will go through many iterations and variables through different policies to try
     to detect hidden patterns and optimize trading decision so that profitability
     is maximized. This is easier said than done (or coded).
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 在时间序列分析中，状态表示环境在特定时间的当前情况或状态。例如，技术指标的值就是一个状态的例子。状态由Q表表示。动作是不言自明的，可以是买入、卖出或持有（或者更复杂的组合，如减少权重和增加权重）。奖励是算法试图最大化的，可以是每笔交易的利润，夏普比率或任何性能评估指标。奖励也可以是惩罚，如交易次数或最大回撤（在这种情况下，你的目标是将其最小化）。强化学习算法将通过不同策略的多次迭代和变量来尝试检测隐藏的模式，并优化交易决策以最大化盈利。这说起来容易，实现起来难（或者编码起来难）。
 - en: 'One question is begging an answer: is using a Q-table to represent the different
     states of financial time series efficient? This question is answered in the next
     section.'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个问题迫切需要回答：使用Q表来表示金融时间序列的不同状态是否高效？这个问题将在下一节中回答。
 - en: Deep Reinforcement Learning
+  id: totrans-87
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 深度强化学习
 - en: '*Deep reinforcement learning* combines reinforcement learning techniques with
     deep learning architectures, particularly deep neural networks. It involves training
     agents to learn optimal behavior and make decisions by interacting with an environment,
     using deep neural networks to approximate value functions or policies.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '*深度强化学习* 将强化学习技术与深度学习架构，特别是深度神经网络结合在一起。它涉及训练代理程序通过与环境的互动来学习最优行为并做出决策，使用深度神经网络来逼近价值函数或策略。'
 - en: The main difference between a reinforcement learning algorithm and a deep reinforcement
     learning algorithm is that the former estimates Q-values using the Q-table, while
     the latter estimates Q-values using ANNs (see [Chapter 8](ch08.html#ch08) for
     details on artificial neural networks).
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习算法和深度强化学习算法的主要区别在于，前者使用Q表估计Q值，而后者使用人工神经网络来估计Q值（详见[第8章](ch08.html#ch08)关于人工神经网络的详细信息）。
 - en: Note
+  id: totrans-90
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: As a reminder, *artificial neural networks* (ANNs) are a type of computational
     model inspired by the structure and functioning of the human brain. A neural network
     consists of interconnected nodes organized into layers. The three main types of
     layers are the input layer, hidden layers, and the output layer. The input layer
     receives the initial data, which is then processed through the hidden layers,
     and finally, the output layer produces the network’s prediction.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为提醒，*人工神经网络*（ANNs）是一种受人脑结构和功能启发的计算模型。神经网络由连接的节点组成，组织成层。主要的层类型包括输入层、隐藏层和输出层。输入层接收初始数据，然后通过隐藏层处理，最后输出层产生网络的预测。
 - en: The main objective of this section is to understand and design a deep reinforcement
     learning algorithm with the aim of data prediction. Keep in mind that reinforcement
     learning is still not heavily applied since it suffers from a few issues (discussed
     at the end of this section) that need to be resolved before making it one of the
     main trading algorithms in quantitative finance.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节的主要目标是理解并设计一个深度强化学习算法，其目的是数据预测。请记住，强化学习由于一些问题（在本节末尾讨论），目前还没有广泛应用，需要在将其作为量化金融主要交易算法之前解决这些问题。
 - en: 'Therefore, deep reinforcement learning will have two main elements with important
     tasks:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，深度强化学习将有两个主要元素具有重要任务：
 - en: A deep neural network architecture to recognize patterns and approximate the
     best function that relates dependent and independent variables
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个深度神经网络架构来识别模式并逼近关联的因变量和自变量之间的最佳函数
 - en: A reinforcement learning architecture that allows the algorithm to learn by
     trial and error how to maximize a certain profit function
+  id: totrans-95
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 强化学习架构允许算法通过试错学习如何最大化某个利润函数
 - en: Let’s continue defining a few key concepts before putting things together. *Replay
     memory*, also known as *experience replay*, involves storing and reusing past
     experiences to enhance the learning process and improve the stability and efficiency
     of the training.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 在继续将各个关键概念定义清楚之前，让我们先介绍几个关键概念。*重放内存*，又称*经验重放*，涉及存储和重用过去的经验以增强学习过程并提高训练的稳定性和效率。
 - en: In deep reinforcement learning, an agent interacts with an environment, observes
     states, takes actions, and receives rewards. Each observation, action, reward,
     and resulting next state is considered an experience. The replay memory serves
     as a buffer that stores a collection of these experiences.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 在深度强化学习中，一个代理与环境互动，观察状态，采取行动并获得奖励。每次观察、行动、奖励和导致的下一个状态被视为一次经验。重放内存作为一个缓冲区，存储了这些经验的集合。
 - en: 'The replay memory has the following key features:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 重放内存具有以下关键特点：
 - en: Storage
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储
 - en: The replay memory is a data structure that can store a fixed number of experiences.
     Each experience typically consists of the current state, the action taken, the
     resulting reward, the next state, and a flag indicating whether the episode terminated.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 重放内存是一种可以存储固定数量经验的数据结构。每个经验通常包括当前状态、采取的行动、导致的奖励、下一个状态以及一个指示该情节是否终止的标志。
 - en: Sampling
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 抽样
 - en: During the training process, instead of using experiences immediately as they
     occur, the agent samples a batch of experiences from the replay memory. Randomly
     sampling experiences from a large pool of stored transitions helps in decorrelating
     the data and breaking the temporal dependencies that exist in consecutive experiences.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 在训练过程中，代理程序不是立即使用发生的经验，而是从重放内存中抽取一批经验。从存储的大量转换中随机抽取经验有助于解相关数据并打破连续经验中存在的时间依赖关系。
 - en: Batch learning
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 批量学习
 - en: The sampled batch of experiences is then used to update the agent’s neural network.
     By learning from a batch of experiences rather than individual experiences, the
     agent can make more efficient use of computation and improve the learning stability.
     Batch learning also allows for the application of optimization techniques, such
     as stochastic gradient descent, to update the network weights.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机抽取的一批经验随后用于更新代理的神经网络。通过批量学习而不是单个经验的学习，代理可以更有效地利用计算资源并改善学习稳定性。批量学习还允许应用优化技术，如随机梯度下降，来更新网络权重。
 - en: The replay memory provides several benefits to deep reinforcement learning algorithms.
     Among those benefits is experience reuse, as the agent can learn from a more diverse
     set of data, reducing the bias that can arise from sequential updates. Breaking
@@ -541,37 +738,51 @@
     in reinforcement learning can introduce correlations between consecutive experiences.
     Randomly sampling experiences from the replay memory helps break these correlations,
     making the learning process more stable.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 重放内存为深度强化学习算法提供了几个好处。这些好处包括经验复用，因为代理可以从更多样化的数据集中学习，减少顺序更新可能引起的偏差。打破相关性是另一个好处，因为在强化学习的经验收集过程中，顺序的性质可能会在连续的经验之间引入相关性。从重放内存中随机抽取经验有助于打破这些相关性，使学习过程更加稳定。
 - en: 'So far, we have discussed the following steps:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们已经讨论了以下步骤：
 - en: Defining and initializing the environment
+  id: totrans-107
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 定义和初始化环境
 - en: Designing the neural network architecture
+  id: totrans-108
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 设计神经网络架构
 - en: Designing the reinforcement learning architecture with experience replay to
     stabilize the learning process
+  id: totrans-109
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 设计带有经验重放的强化学习架构以稳定学习过程
 - en: Interacting with the environment and storing experiences until the learning
     process is done and predictions on new data are done
+  id: totrans-110
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 与环境交互并存储经验，直到学习过程完成并对新数据进行预测
 - en: One thing we have not discussed is how to reduce overestimations, which can
     be achieved by doubling down on the neural network architecture.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: The *Double Deep Q-Network* (DDQN) model is an extension of the original DQN
     architecture introduced by DeepMind in 2015\. The primary motivation behind DDQN
     is to address a known issue in the DQN algorithm called *overestimation bias*,
     which can lead to suboptimal action selection.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: In the original DQN, the action values (Q-values) for each state-action pair
@@ -580,6 +791,7 @@
     in the next state (take a look at [Table 10-5](#table-10-5)). This maximum Q-value
     can sometimes result in an overestimation of the true action values, leading to
     a suboptimal policy.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: 'The DDQN addresses this overestimation bias by utilizing two separate neural
@@ -592,13 +804,16 @@
     It helps stabilize the learning process and improve the convergence of the Q-network.
     The weights of the target network are not updated during training; instead, they
     are periodically updated to match the weights of the Q-network.'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: The key idea behind the DDQN is to decouple the selection of actions from the
     estimation of their values.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: Note
+  id: totrans-116
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
@@ -606,24 +821,29 @@
     This is done to avoid the issue of the same model being used to estimate the Q-value
     from the next state and then giving it to the Bellman equation to estimate the
     Q-value for the current state.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: 'So, to put these elements into an ordered sequence, here’s how the deep reinforcement
     learning architecture may look:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: The environment is initialized.
+  id: totrans-119
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The epsilon value is selected. Remember, epsilon is the exploration–exploitation
     trade-off parameter used to control the agent’s behavior during training.
+  id: totrans-120
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The current state is fetched. Remember, an example of the current state may
     be the OHLC data, the RSI, the standard deviation of the returns, or even the
     day of the week.
+  id: totrans-121
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -632,103 +852,127 @@
     from a choice panel of buy, sell, and hold). If it’s not the first step, then
     exploitation may be used to select the action. Exploitation is where the action
     is determined by the neural network model.
+  id: totrans-122
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The action is applied.
+  id: totrans-123
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The previous elements are stored in replay memory.
+  id: totrans-124
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The inputs and the target array are fetched and the Q-network is trained.
+  id: totrans-125
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: If the round is not over, repeat the process starting at step 3\. Otherwise,
     train the target network and repeat from step 1.
+  id: totrans-126
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: To illustrate the algorithm, let’s use it on the synthetic sine wave time series.
     Create the time series and then apply the deep reinforcement learning algorithm
     with the aim of predicting the future values.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: The full code can be found in the [GitHub repository](https://oreil.ly/5YGHI)
     (for replication purposes).
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
 - en: '[Figure 10-1](#figure-10-1) shows the test data (solid line) versus the predicted
     data (dashed line) using 1 epoch, 5 inputs (lagged values), a batch size of 64,
     and 1 hidden layer with 6 neurons.'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: '![](assets/dlff_1001.png)'
+  id: totrans-130
   prefs: []
   type: TYPE_IMG
 - en: Figure 10-1\. Test data versus predicted data using 1 epoch, 5 inputs, a batch
     size of 64, and 1 hidden layer with 6 neurons
+  id: totrans-131
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: '[Figure 10-2](#figure-10-2) shows the test data (solid line) versus the predicted
     data (dashed line) using 1 epoch, 5 inputs (lagged values), a batch size of 64,
     and 2 hidden layers with each having 6 neurons.'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: '![](assets/dlff_1002.png)'
+  id: totrans-133
   prefs: []
   type: TYPE_IMG
 - en: Figure 10-2\. Predicted values versus actual values using 1 epoch, 5 inputs,
     a batch size of 64, and 2 hidden layers with each having 6 neurons
+  id: totrans-134
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: '[Figure 10-3](#figure-10-3) shows the predictions using 10 epochs, 5 inputs
     (lagged values), a batch size of 32, and 2 hidden layers with each having 6 neurons.'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: '![](assets/dlff_1003.png)'
+  id: totrans-136
   prefs: []
   type: TYPE_IMG
 - en: Figure 10-3\. Predicted values versus actual values using 10 epochs, 5 inputs,
     a batch size of 32, and 2 hidden layers with each having 6 neurons
+  id: totrans-137
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: '[Figure 10-4](#figure-10-4) shows the predictions using 10 epochs, 5 inputs
     (lagged values), a batch size of 32, and 2 hidden layers with each having 24 neurons.'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: '![](assets/dlff_1004.png)'
+  id: totrans-139
   prefs: []
   type: TYPE_IMG
 - en: Figure 10-4\. Predicted values versus actual values using 10 epochs, 5 inputs,
     a batch size of 32, and 2 hidden layers with each having 24 neurons
+  id: totrans-140
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: '[Figure 10-5](#figure-10-5) shows the predictions using 10 epochs, 8 inputs
     (lagged values), a batch size of 32, and 2 hidden layers with each having 64 neurons.'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: '![](assets/dlff_1005.png)'
+  id: totrans-142
   prefs: []
   type: TYPE_IMG
 - en: Figure 10-5\. Predicted values versus actual values using 10 epochs, 8 inputs,
     a batch size of 32, and 2 hidden layers with each having 64 neurons
+  id: totrans-143
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: As you know, the more epochs, the better the fit—up to a certain point, where
     overfitting may start to become an issue. Fortunately, by now you know how to
     reduce that risk.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: Note
+  id: totrans-145
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
@@ -736,6 +980,7 @@
     be used with the algorithm. The choice of the sine wave time series is for illustrative
     purposes only, and you must use more sophisticated methods on more complex time
     series to be able to judge the algorithm.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: Reinforcement learning is easily overfit and is more likely to learn simple
@@ -745,12 +990,16 @@
     the reasoning behind their predictions. All of these issues are now a barrier
     to implementing a stable and profitable deep reinforcement learning algorithm
     for trading.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习容易过拟合，更容易学习简单的模式而不是隐藏且复杂的模式。此外，您现在应该意识到奖励函数设计的难度和特征选择的重要性。此外，这些模型通常被认为是神秘盒子，这使得解释其预测背后的推理变得困难。所有这些问题现在都成为实施稳定且盈利性强的深度强化学习算法用于交易的障碍。
 - en: Summary
+  id: totrans-148
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 总结
 - en: Reinforcement learning can be applied to time series prediction tasks, where
     the goal is to make predictions about future values based on historical data.
     In this approach, an agent interacts with an environment representing the time
@@ -758,16 +1007,20 @@
     to predict future values. The agent’s actions involve adjusting its internal model
     or parameters to make predictions. It uses reinforcement learning algorithms to
     learn from past experiences and improve its prediction accuracy over time.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习可以应用于时间序列预测任务，其目标是根据历史数据预测未来值。在这种方法中，代理与代表时间序列数据的环境互动。代理接收过去值的观察结果，并采取行动预测未来值。代理的行动涉及调整其内部模型或参数以进行预测。它使用强化学习算法从过去的经验中学习，并随着时间推移提高其预测准确性。
 - en: The agent receives rewards or penalties based on the accuracy of its predictions.
     Rewards can be designed to reflect the prediction error or the utility of the
     predictions for the specific application. Through a process of trial and error,
     the agent learns to associate certain patterns or features in the time series
     data with future outcomes. It learns to make predictions that maximize rewards
     and minimize errors.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理根据其预测的准确性接收奖励或惩罚。奖励可以设计成反映预测误差或预测对特定应用程序的效用。通过反复试验的过程，代理学会将时间序列数据中的某些模式或特征与未来结果联系起来。它学会了做出既能最大化奖励又能最小化误差的预测。
 - en: The reinforcement learning process involves a balance between exploration and
     exploitation. The agent explores different prediction strategies, trying to discover
     patterns and make accurate predictions. It also exploits its existing knowledge
@@ -776,19 +1029,27 @@
     reliable predictions. By continually receiving feedback and updating its prediction
     strategies, the agent adapts to changing patterns in the time series and improves
     its forecasting abilities.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习过程涉及在探索和利用之间取得平衡。代理探索不同的预测策略，试图发现模式并进行准确预测。它还利用其现有知识基础进行预测，根据迄今为止所学到的内容。强化学习用于时间序列预测的目标是训练代理以进行准确可靠的预测。通过不断接收反馈并更新其预测策略，代理适应时间序列中变化的模式并改进其预测能力。
 - en: '[Chapter 11](ch11.html#ch11) will show how to employ more deep learning techniques
     and applications.'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第 11 章](ch11.html#ch11) 将展示如何运用更多的深度学习技术和应用。'
 - en: ^([1](ch10.html#id771-marker)) A buy-and-hold strategy is a passive action whereby
     the trader or the algorithm initiates one buy order and holds it for a long time
     in an attempt to replicate the market’s return and minimize transaction costs
     incurred from excessive trading.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch10.html#id771-marker)) 买入并持有策略是一种被动行为，交易者或算法发起一笔买单，并长期持有以试图复制市场的回报，并最小化由于过度交易而产生的交易成本。
 - en: ^([2](ch10.html#id778-marker)) Keep epsilon decay in mind as it will be used
     as a variable in the code later.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch10.html#id778-marker)) 切记保持 epsilon 衰减，因为它将在稍后的代码中用作变量。

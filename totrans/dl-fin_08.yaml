@@ -1,43 +1,57 @@
 - en: Chapter 8\. Deep Learning for Time Series Prediction I
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第8章。时间序列预测的深度学习 I
 - en: '*Deep learning* is a slightly more complex and more detailed field than machine
     learning. Machine learning and deep learning both fall under the umbrella of data
     science. As you will see, deep learning is mostly about neural networks, a highly
     sophisticated and powerful algorithm that has enjoyed a lot of coverage and hype,
     and for good reason: it is very powerful and able to catch highly complex nonlinear
     relationships between different variables.'
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: '*深度学习*比机器学习稍微复杂和更详细一些。机器学习和深度学习都属于数据科学的范畴。正如你将看到的那样，深度学习主要是关于神经网络，这是一种高度复杂和强大的算法，因为它非常强大并且能够捕捉不同变量之间高度复杂的非线性关系。'
 - en: The aim of this chapter is to explain the functioning of neural networks before
     using them to predict financial time series in Python, just like you saw in [Chapter 7](ch07.html#ch07).
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的目的是在使用Python预测金融时间序列之前，解释神经网络的功能，就像您在[第7章](ch07.html#ch07)中看到的那样。
 - en: A Walk Through Neural Networks
+  id: totrans-3
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 逐步理解神经网络
 - en: '*Artificial neural networks* (ANNs) have their roots in the study of neurology,
     where researchers sought to comprehend how the human brain and its intricate network
     of interconnected neurons functioned. ANNs are designed to produce computational
     representations of biological neural network behavior.'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*人工神经网络*（ANNs）起源于神经科学的研究，研究人员试图理解人脑及其复杂的互联神经网络如何运作。人工神经网络旨在产生生物神经网络行为的计算表示。'
 - en: ANNs have been around since the 1940s, when academics first started looking
     into ways to build computational models based on the human brain. Logician Walter
     Pittsand neurophysiologist Warren McCulloch were among the early pioneers in this
     subject. They published the idea of a computational model based on simplified
     artificial neurons in a paper.^([1](ch08.html#id685))
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 自1940年代以来，人工神经网络（ANNs）就存在了，当时学者们首次开始探索基于人脑构建计算模型的方法。逻辑学家沃尔特·皮茨和神经生理学家沃伦·麦卡洛克是这一学科的早期先驱者之一。他们在一篇文章中发布了基于简化人工神经元的计算模型的概念。^([1](ch08.html#id685))
 - en: The development of artificial neural networks gained further momentum in the
     1950s and 1960s when researchers like Frank Rosenblatt worked on the *perceptron*,
     a type of artificial neuron that could learn from its inputs. Rosenblatt’s work
     paved the way for the development of single-layer neural networks capable of pattern
     recognition tasks.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 人工神经网络的发展在20世纪50年代和60年代进一步加速，当时像弗兰克·罗森布拉特这样的研究人员致力于*感知器*的研究，这是一种可以从其输入中学习的人工神经元类型。罗森布拉特的工作为单层神经网络的发展铺平了道路，这种网络能够进行模式识别任务。
 - en: With the creation of multilayer neural networks, also known as *deep neural
     networks*, and the introduction of more potent algorithms, artificial neural networks
     made significant strides in the 1980s and 1990s. This innovation made it possible
@@ -48,149 +62,216 @@
     contributions to the field by developing new learning algorithms and architectures
     for neural networks. His work on deep learning has been instrumental in the recent
     resurgence and success of artificial neural networks.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着多层神经网络（也称为*深度神经网络*）的创建以及更强大算法的引入，人工神经网络在1980年代和1990年代取得了显著进展。这一创新使神经网络能够学习层次化的数据表示，从而提高了它们在挑战性任务上的性能。尽管有多位研究者为人工神经网络的发展和进步做出了贡献，但一个有影响力的人物是杰弗里·辛顿。辛顿与他的合作者通过开发新的学习算法和神经网络结构，在该领域做出了显著贡献。他在深度学习方面的工作对人工神经网络的最近复兴和成功起到了重要作用。
 - en: 'An ANN consists of interconnected nodes, called artificial neurons, organized
     into layers. The layers are typically divided into three types:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 人工神经网络由相互连接的节点组成，称为人工神经元，组织成不同层。这些层通常分为三种类型：
 - en: Input layer
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入层
 - en: The input layer receives input data, which could be numerical, categorical,
     or even raw sensory data. Input layers are explanatory variables that are supposed
     to be predictive in nature.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入层接收输入数据，可以是数值、分类或者原始感官数据。输入层是解释变量，它们被认为具有预测性质。
 - en: Hidden layers
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 隐藏层
 - en: The hidden layers (one or more) process the input data through their interconnected
     neurons. Each neuron in a layer receives inputs, performs a computation (discussed
     later), and passes the output to the next layer.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 隐藏层（一个或多个）通过其相互连接的神经元处理输入数据。每个层中的神经元接收输入，执行计算（稍后讨论），并将输出传递到下一层。
 - en: Output layer
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出层
 - en: The output layer produces the final result or prediction based on the processed
     information from the hidden layers. The number of neurons in the output layer
     depends on the type of problem the network is designed to solve.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出层根据来自隐藏层的处理信息产生最终结果或预测。输出层中的神经元数量取决于网络设计的问题类型。
 - en: '[Figure 8-1](#figure-8-1) shows an illustration of an artificial neural network
     where the information flows from left to right. It begins with the two inputs
     being connected to the four hidden layers where calculation is done before outputting
     a weighted prediction in the output layer.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图8-1](#figure-8-1) 展示了人工神经网络的示意图，信息从左到右流动。它始于两个输入连接到四个隐藏层，在输出层输出加权预测之前进行计算。'
 - en: '![](assets/dlff_0801.png)'
+  id: totrans-16
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0801.png)'
 - en: Figure 8-1\. A simple illustration of an artificial neural network.
+  id: totrans-17
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-1\. 人工神经网络的简单示意图。
 - en: 'Each neuron in the ANN performs two main operations:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 人工神经网络中的每个神经元执行两个主要操作：
 - en: The neuron receives inputs from the previous layer or directly from the input
     data. Each input is multiplied by a weight value, which represents the strength
     or importance of that connection. The weighted inputs are then summed together.
+  id: totrans-19
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 神经元从上一层或直接从输入数据接收输入。每个输入乘以权重值，表示该连接的强度或重要性。加权输入然后求和。
 - en: After the weighted sum, an activation function (discussed in the next section)
     is applied to introduce nonlinearity into the output of the neuron. The activation
     function determines the neuron’s output value based on the summed inputs.
+  id: totrans-20
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 加权和之后，应用激活函数（下一节讨论）引入神经元输出的非线性。激活函数根据加权输入确定神经元的输出值。
 - en: During the training process, the ANN adjusts the weights of its connections
     to improve its performance. This is typically done through an iterative optimization
     algorithm, such as gradient descent, where the network’s performance is evaluated
     using a defined loss function. The algorithm computes the gradient of the loss
     function with respect to the network’s weights, allowing the weights to be updated
     in a way that minimizes the error.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 在训练过程中，人工神经网络调整其连接的权重以改善其性能。通常通过迭代优化算法（如梯度下降）完成这一过程，其中网络的性能使用定义的损失函数进行评估。算法计算损失函数相对于网络权重的梯度，允许以最小化误差的方式更新权重。
 - en: ANNs have the ability to learn and generalize from data, making them suitable
     for tasks like pattern recognition and regression. With the advancements in deep
     learning, ANNs with multiple hidden layers have shown exceptional performance
     on complex tasks, leveraging their ability to learn hierarchical representations
     and capture intricate patterns in the data.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '**人工神经网络（ANNs）**具有从数据中学习和泛化的能力，使它们适用于诸如模式识别和回归的任务。随着深度学习的进展，具有多个隐藏层的人工神经网络在复杂任务上表现出色，利用其学习分层表示和捕捉数据中复杂模式的能力。'
 - en: Note
+  id: totrans-23
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: It is worth noting that the process from inputs to outputs is referred to as
     *forward propagation*.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 值得注意的是，从输入到输出的过程称为*前向传播*。
 - en: Activation Functions
+  id: totrans-25
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 激活函数
 - en: '*Activation functions* in neural networks introduce nonlinearity to the output
     of a neuron, allowing neural networks to model complex relationships and learn
     from nonlinear data. They determine the output of a neuron based on the weighted
     sum of its inputs. Let’s discuss these activation functions in detail.'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 在神经网络中，*激活函数*引入非线性到神经元的输出中，使神经网络能够建模复杂关系并从非线性数据中学习。它们根据输入的加权和确定神经元的输出。让我们详细讨论这些激活函数。
 - en: 'The *sigmoid activation function* maps the input to a range between 0 and 1,
     making it suitable for binary classification problems or as a smooth approximation
     of a step function. The mathematical representation of the function is as follows:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Sigmoid激活函数*将输入映射到0到1的范围内，适用于二元分类问题或作为阶跃函数的平滑近似。函数的数学表示如下：'
 - en: <math alttext="upper S left-parenthesis x right-parenthesis equals StartFraction
     1 Over 1 plus e Superscript negative x Baseline EndFraction"><mrow><mi>S</mi>
     <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi>
     <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow></mfrac></mrow></math>
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S left-parenthesis x right-parenthesis equals StartFraction
+    1 Over 1 plus e Superscript negative x Baseline EndFraction"><mrow><mi>S</mi>
+    <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi>
+    <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow></mfrac></mrow></math>
 - en: '[Figure 8-2](#figure-8-2) shows the sigmoid function.'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图8-2](#figure-8-2) 展示了Sigmoid函数。'
 - en: '![](assets/dlff_0802.png)'
+  id: totrans-30
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0802.png)'
 - en: Figure 8-2\. Graph of the sigmoid function.
+  id: totrans-31
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-2\. Sigmoid函数的图形。
 - en: 'Among the advantages of the sigmoid activation function are the following:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: sigmoid激活函数的优点包括以下几点：
 - en: It is a smooth as well as differentiable function that facilitates gradient-based
     optimization algorithms.
+  id: totrans-33
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它是一个既平滑又可微的函数，有助于基于梯度的优化算法。
 - en: It squashes the input to a bounded range, which can be interpreted as a probability
     or confidence level.
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它将输入压缩到有界范围内，可以解释为概率或置信水平。
 - en: 'However, it has its limitations as well:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，它也有其局限性：
 - en: It suffers from the *vanishing gradient problem*, where gradients become very
     small for extreme input values. This can hinder the learning process.
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它存在*梯度消失问题*，即梯度在极端输入值下变得非常小。这可能会阻碍学习过程。
 - en: Outputs are not zero centered, making it less suitable for certain situations,
     such as optimizing weights using symmetric update rules like the gradient descent.
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输出不是零中心化的，这使得它在某些情况下不太适用，比如使用对称更新规则（如梯度下降）优化权重。
 - en: 'The next activation function is the *hyperbolic tangent function* (tanh), which
     you saw in [Chapter 4](ch04.html#ch04). The mathematical representation of the
     function is as follows:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来的激活函数是*双曲正切函数*（tanh），你在[第四章](ch04.html#ch04)中见过。该函数的数学表示如下：
 - en: <math alttext="t a n h left-parenthesis x right-parenthesis equals StartFraction
     e Superscript x Baseline minus e Superscript negative x Baseline Over e Superscript
     x Baseline plus e Superscript negative x Baseline EndFraction"><mrow><mi>t</mi>
@@ -198,166 +279,248 @@
     <mo>=</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><msup><mi>e</mi>
     <mi>x</mi></msup> <mo>-</mo><msup><mi>e</mi> <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow>
     <mrow><msup><mi>e</mi> <mi>x</mi></msup> <mo>+</mo><msup><mi>e</mi> <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow></mfrac></mstyle></mrow></math>
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="t a n h left-parenthesis x right-parenthesis equals StartFraction
+    e Superscript x Baseline minus e Superscript negative x Baseline Over e Superscript
+    x Baseline plus e Superscript negative x Baseline EndFraction"><mrow><mi>t</mi>
+    <mi>a</mi> <mi>n</mi> <mi>h</mi> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><msup><mi>e</mi>
+    <mi>x</mi></msup> <mo>-</mo><msup><mi>e</mi> <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow>
+    <mrow><msup><mi>e</mi> <mi>x</mi></msup> <mo>+</mo><msup><mi>e</mi> <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow></mfrac></mstyle></mrow></math>
 - en: 'Among the advantages of the hyperbolic tangent function are the following:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 双曲正切函数的优点包括以下几点：
 - en: It is similar to the sigmoid function but is zero centered, which helps alleviate
     the issue of asymmetric updates in weight optimization.
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它类似于sigmoid函数，但是是零中心化的，这有助于减轻权重优化中非对称更新的问题。
 - en: Its nonlinearity can capture a wider range of data variations compared to the
     sigmoid function.
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 其非线性可以捕捉比sigmoid函数更广泛的数据变化范围。
 - en: 'The following are among its limitations:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是它的一些局限性：
 - en: It suffers from the vanishing gradient problem, particularly in deep networks.
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它遭受梯度消失问题，特别是在深度网络中。
 - en: Outputs are still susceptible to saturation at the extremes, resulting in gradients
     close to zero.
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输出仍然容易在极端情况下饱和，导致梯度接近零。
 - en: '[Figure 8-3](#figure-8-3) shows the hyperbolic tangent function.'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-3](#figure-8-3)展示了双曲正切函数。'
 - en: '![](assets/dlff_0803.png)'
+  id: totrans-47
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0803.png)'
 - en: Figure 8-3\. Graph of the hyperbolic tangent function.
+  id: totrans-48
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-3\. 双曲正切函数的图像。
 - en: 'The next function is called the *ReLU activation function*. ReLU stands for
     *rectified linear unit*. This function sets negative values to zero and keeps
     the positive values unchanged. It is efficient and helps avoid the vanishing gradient
     problem. The mathematical representation of the function is as follows:'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来的函数称为*ReLU激活函数*。ReLU代表*修正线性单元*。该函数将负值设为零，保持正值不变。它高效且有助于避免梯度消失问题。该函数的数学表示如下：
 - en: <math alttext="f left-parenthesis x right-parenthesis equals m a x left-parenthesis
     0 comma x right-parenthesis"><mrow><mi>f</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo>
     <mo>=</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>0</mn> <mo>,</mo> <mi>x</mi>
     <mo>)</mo></mrow></math>
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="f left-parenthesis x right-parenthesis equals m a x left-parenthesis
+    0 comma x right-parenthesis"><mrow><mi>f</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo>
+    <mo>=</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>0</mn> <mo>,</mo> <mi>x</mi>
+    <mo>)</mo></mrow></math>
 - en: 'Among the advantages of the ReLU function are the following:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: ReLU函数的优点包括以下几点：
 - en: It is simple to implement, as it only involves taking the maximum of 0 and the
     input value. The simplicity of ReLU leads to faster computation and training compared
     to more complex activation functions.
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它实现简单，只需取0和输入值的最大值。ReLU的简单性导致比更复杂的激活函数更快的计算和训练。
 - en: It helps mitigate the vanishing gradient problem that can occur during deep
     neural network training. The derivative of ReLU is either 0 or 1, which means
     that the gradients can flow more freely and avoid becoming exponentially small
     as the network gets deeper.
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它有助于缓解在深度神经网络训练中可能出现的梯度消失问题。ReLU的导数要么是0要么是1，这意味着梯度可以更自由地流动，避免随着网络深度增加而指数级变小。
 - en: 'Among the limitations of the function are the following:'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 该函数的局限性包括以下几点：
 - en: It outputs 0 for negative input values, which can lead to information loss.
     In some cases, it may be beneficial to have activation functions that can produce
     negative outputs as well.
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于负输入值，它输出0，这可能导致信息丢失。在某些情况下，具有能够产生负输出的激活函数可能是有益的。
 - en: It is not a smooth function, because its derivative is discontinuous at 0\.
     This can cause optimization difficulties in certain scenarios.
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它不是一个平滑的函数，因为它在0处的导数是不连续的。这可能会在某些场景下导致优化困难。
 - en: '[Figure 8-4](#figure-8-4) shows the ReLU function.'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-4](#figure-8-4)展示了ReLU函数。'
 - en: '![](assets/dlff_0804.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0804.png)'
 - en: Figure 8-4\. Graph of the ReLU function.
+  id: totrans-59
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-4\. ReLU函数的图像。
 - en: 'The final activation function to discuss is the *leaky ReLU activation function*.
     This activation function is an extension of the ReLU function that introduces
     a small slope for negative inputs. The mathematical representation of the function
     is as follows:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后要讨论的激活函数是*泄漏整流线性单元激活函数*。该激活函数是ReLU函数的扩展，为负输入引入了一个小的斜率。该函数的数学表示如下：
 - en: <math alttext="f left-parenthesis x right-parenthesis equals m a x left-parenthesis
     0.01 x comma x right-parenthesis"><mrow><mi>f</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo>
     <mo>=</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>0</mn> <mo lspace="0%"
     rspace="0%">.</mo> <mn>01</mn> <mi>x</mi> <mo>,</mo> <mi>x</mi> <mo>)</mo></mrow></math>
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="f left-parenthesis x right-parenthesis equals m a x left-parenthesis
+    0.01 x comma x right-parenthesis"><mrow><mi>f</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo>
+    <mo>=</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>0</mn> <mo lspace="0%"
+    rspace="0%">.</mo> <mn>01</mn> <mi>x</mi> <mo>,</mo> <mi>x</mi> <mo>)</mo></mrow></math>
 - en: Leaky ReLU addresses the dead neuron problem in ReLU and allows some activation
     for negative inputs, which can help with the flow of gradients during training.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 泄漏整流线性单元解决了ReLU中的死神经元问题，并允许负输入的某些激活，这有助于训练期间梯度的流动。
 - en: 'Among the advantages of the leaky ReLU function are the following:'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 泄漏整流线性单元函数的优点包括以下几点：
 - en: It overcomes the issue of dead neurons that can occur with ReLU. By introducing
     a small slope for negative inputs, leaky ReLU ensures that even if a neuron is
     not activated, it can still contribute to the gradient flow during training.
+  id: totrans-64
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它克服了ReLU可能出现的死神经元问题。通过为负输入引入一个小的斜率，泄漏整流线性单元确保即使神经元未被激活，它仍然可以在训练期间对梯度流做出贡献。
 - en: It is a continuous function, even at negative input values. The nonzero slope
     for negative inputs allows the activation function to have a defined derivative
     throughout its input range.
+  id: totrans-65
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它是一个连续函数，即使在负输入值时也是如此。负输入的非零斜率允许激活函数在其输入范围内具有定义的导数。
 - en: 'The following are among the limitations of the function:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数的限制如下：
 - en: The slope of the leaky part is a hyperparameter that needs to be set manually.
     It requires careful tuning to strike a balance between avoiding dead neurons and
     preventing too much leakage that may hinder the nonlinearity of the activation
     function.
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 泄漏部分的斜率是一个需要手动设置的超参数。它需要仔细调整，以在避免死神经元的同时防止过多的泄漏，可能会阻碍激活函数的非线性。
 - en: Although leaky ReLU provides a nonzero response for negative inputs, it does
     not provide the same level of negative activation as some other activation functions,
     such as the hyperbolic tangent (tanh) and sigmoid. In scenarios where a strong
     negative activation response is desired, other activation functions might be more
     suitable.
+  id: totrans-68
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 尽管泄漏整流线性单元为负输入提供了非零响应，但在负激活水平方面，它与某些其他激活函数（如双曲正切（tanh）和S形函数）不同。在需要强烈的负激活响应的场景中，其他激活函数可能更合适。
 - en: '[Figure 8-5](#figure-8-5) shows the leaky ReLU function.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-5](#figure-8-5) 展示了泄漏整流线性单元（leaky ReLU）函数。'
 - en: Your choice of activation function depends on the nature of the problem, the
     architecture of the network, and the desired behavior of the neurons in the network.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 你选择的激活函数取决于问题的性质、网络的结构以及网络中神经元的期望行为。
 - en: Activation functions typically take the weighted sum of inputs to a neuron and
     apply a nonlinear transformation to it. The transformed value is then passed on
     as the output of the neuron to the next layer of the network. The specific form
     and behavior of activation functions can vary, but their overall purpose is to
     introduce nonlinearities that allow the network to learn complex patterns and
     relationships in the data.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 激活函数通常获取神经元输入的加权和，并对其应用非线性变换。转换后的值随后作为神经元的输出传递到网络的下一层。激活函数的具体形式和行为可能有所不同，但它们的整体目的是引入非线性，使网络能够学习数据中的复杂模式和关系。
 - en: '![](assets/dlff_0805.png)'
+  id: totrans-72
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0805.png)'
 - en: Figure 8-5\. Graph of the leaky ReLU function.
+  id: totrans-73
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-5\. 泄漏整流线性单元函数的图示。
 - en: To sum up, activation functions play a crucial role in ANNs by introducing nonlinearity
     into the network’s computations. They are applied to the outputs of individual
     neurons or intermediate layers and help determine whether a neuron should be activated
@@ -366,46 +529,64 @@
     However, most real-world problems (especially financial time series) involve complex,
     nonlinear relationships, so activation functions are essential for enabling neural
     networks to learn and represent such relationships effectively.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 总之，激活函数通过引入非线性，对人工神经网络的计算起到关键作用。它们应用于单个神经元或中间层的输出，并根据其接收到的输入决定神经元是否应激活。如果没有激活函数，网络只能学习输入和输出之间的线性关系。然而，大多数现实世界的问题（特别是金融时间序列）涉及复杂的非线性关系，因此激活函数对于使神经网络有效地学习和表示这些关系至关重要。
 - en: Backpropagation
+  id: totrans-75
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 反向传播
 - en: '*Backpropagation* is a fundamental algorithm used to train neural networks.
     It allows the network to update its weights in a way that minimizes the difference
     between the predicted output and the desired output.'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '*反向传播* 是用于训练神经网络的基本算法。它使网络能够以最小化预测输出与期望输出之间差异的方式更新其权重。'
 - en: Note
+  id: totrans-77
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Backpropagation is a shortened term for *backward propagation of errors.*
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 反向传播是 *backward propagation of errors* 的简称。
 - en: 'Training neural networks involves the following steps:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练神经网络包括以下步骤：
 - en: Randomly initialize the weights and biases of the neural network. This allows
     you to have a first step when you do not have initial information.
+  id: totrans-80
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 随机初始化神经网络的权重和偏置。这使得在没有初始信息时能够迈出第一步。
 - en: Perform *forward propagation*, a technique to calculate the predicted outputs
     of the network for a given input. As a reminder, this step involves calculating
     the weighted sum of inputs for each neuron, applying the activation function to
     the weighted sum, passing the value to the next layer (if it’s not the last),
     and continuing the process until reaching the output layer (prediction).
+  id: totrans-81
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 执行 *forward propagation*，一种计算网络给定输入的预测输出的技术。作为提醒，这一步包括计算每个神经元输入的加权和，应用激活函数到加权和，将值传递到下一层（如果不是最后一层），并继续这个过程直到达到输出层（预测）。
 - en: Compare the predicted output with the actual output (test data) and calculate
     the loss, which represents the difference between them. The choice of the loss
     function (e.g., MAE or MSE) depends on the specific problem being solved.
+  id: totrans-82
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将预测输出与实际输出（测试数据）进行比较并计算损失，表示它们之间的差异。选择损失函数（如 MAE 或 MSE）取决于正在解决的具体问题。
 - en: Perform backpropagation to calculate the gradients of the loss with respect
     to the weights and biases. In this step, the algorithm will start from the output
     layer (the last layer) and go backward. It will compute the gradient of the loss
@@ -415,9 +596,11 @@
     gradient of the loss with respect to the weights and biases of each neuron in
     the current layer using the gradients from the previous steps. These steps are
     repeated until the gradients are calculated for all layers.
+  id: totrans-83
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 执行反向传播计算损失相对于权重和偏置的梯度。在这一步中，算法将从输出层（最后一层）开始向后传播。它将计算当前层每个神经元输出相对于损失的梯度。然后，通过应用链式法则，它将计算当前层每个神经元输入加权和相对于损失的梯度。之后，它将使用前面步骤的梯度计算当前层每个神经元的权重和偏置相对于损失的梯度。这些步骤重复直到所有层的梯度都计算完成。
 - en: Update the weights and biases of the network by using the calculated gradients
     and a chosen optimization algorithm run on a specific number of batches of data,
     which are controlled by the hyperparameter (referred to as the batch size). Updating
@@ -425,42 +608,56 @@
     of the weights. Adjusting the biases is done by subtracting the product of the
     learning rate and the gradient of the biases. Repeat the preceding steps until
     the weights and biases are updated for all layers.
+  id: totrans-84
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用计算得到的梯度和选择的优化算法在特定数量的数据批次上更新网络的权重和偏置，由超参数（称为批量大小）控制。更新权重是通过减去学习率和权重梯度的乘积。调整偏置是通过减去学习率和偏置梯度的乘积。重复上述步骤直到所有层的权重和偏置都更新完成。
 - en: The algorithm then repeats steps 2–5 for a specified number of epochs or until
     a convergence criterion is met. An *epoch* represents one complete pass through
     the entire training dataset (the whole process entails passing through the training
     dataset multiple times ideally).
+  id: totrans-85
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 算法然后重复步骤 2–5 特定数量的 epochs 或者直到达到收敛标准。一个 *epoch* 代表一次完整通过整个训练数据集（理想情况下整个过程通过训练数据集多次进行）。
 - en: Once the training is completed, evaluate the performance of the trained neural
     network on a separate validation or test dataset.
+  id: totrans-86
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 训练完成后，评估训练好的神经网络在单独的验证或测试数据集上的表现。
 - en: Note
+  id: totrans-87
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The *learning rate* is a hyperparameter that determines the step size at which
     a neural network’s weights are updated during the training process. It controls
     how quickly or slowly the model learns from the data it’s being trained on.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '*学习率*是一个超参数，确定在训练过程中更新神经网络权重的步长。它控制模型从正在训练的数据中学习的速度。'
 - en: The *batch size* is a hyperparameter that determines the number of samples processed
     before updating the model’s weights during each iteration of the training process.
     In other words, it specifies how many training examples are used at a time to
     calculate the gradients and update the weights.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '*批量大小*是一个超参数，确定在训练过程的每次迭代中更新模型权重时处理的样本数量。换句话说，它指定了每次用于计算梯度并更新权重的训练样例数量。'
 - en: Choosing an appropriate batch size is essential for efficient training and can
     impact the convergence speed and memory requirements. There is no one-size-fits-all
     answer to the ideal batch size, as it depends on various factors, such as the
     dataset size, available computational resources, and the complexity of the model.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择适当的批量大小对有效训练至关重要，可以影响收敛速度和内存需求。没有适合所有情况的理想批量大小，因为它取决于诸如数据集大小、可用的计算资源和模型复杂性等各种因素。
 - en: Commonly used batch sizes for training MLPs range from small values (such as
     16, 32, or 64) to larger ones (such as 128, 256, or even larger). Smaller batch
     sizes can offer more frequent weight updates and may help the model converge more
@@ -471,138 +668,187 @@
     capabilities, leading to faster training on modern hardware. However, they might
     require more memory, and the updates are less frequent, which could slow down
     convergence or make the training process less robust.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于训练MLP的常用批量大小范围从小值（如16、32或64）到较大值（如128、256或更大）。较小的批量大小可以提供更频繁的权重更新，并可能有助于模型更快地收敛，特别是当数据集很大或具有很多变化时。然而，较小的批量大小可能会引入更多噪声，并由于使用不太准确的梯度进行频繁更新而导致收敛速度较慢。另一方面，较大的批量大小可以提供更稳定的梯度和更好的并行处理能力利用，从而在现代硬件上实现更快的训练。然而，它们可能需要更多的内存，并且更新较少频繁，这可能会减慢收敛速度或使训练过程不够稳健。
 - en: As a general rule of thumb, you can start with a moderate batch size like 32
     and experiment with different values to find the best trade-off between convergence
     speed and computational efficiency for your specific MLP model and dataset.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为一个经验法则，您可以从适度的批量大小，如32开始，并尝试不同的值，以找到您特定的MLP模型和数据集的收敛速度和计算效率之间的最佳平衡。
 - en: The backpropagation algorithm leverages the chain rule (refer to [Chapter 4](ch04.html#ch04)
     for more information on calculus) to calculate the gradients by propagating the
     errors backward through the network.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 反向传播算法利用链式法则（参见[第4章](ch04.html#ch04)了解微积分的更多信息），通过网络向后传播错误来计算梯度。
 - en: By iteratively adjusting the weights based on the error propagated backward
     through the network, backpropagation enables the network to learn and improve
     its predictions over time. Backpropagation is a key algorithm in training neural
     networks and has contributed to significant advancements in various fields.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过根据通过网络向后传播的错误迭代调整权重，反向传播使网络能够随着时间的推移学习并改善其预测能力。反向传播是训练神经网络的关键算法，并在各个领域的显著进展中发挥了作用。
 - en: Optimization Algorithms
+  id: totrans-95
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 优化算法
 - en: 'In neural networks, optimization algorithms, also known as *optimizers*, are
     used to update the parameters (weights and biases) of the network during the training
     process. These algorithms aim to minimize the loss function and find the optimal
     values for the parameters that result in the best performance of the network.
     There are several types of optimizers:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 在神经网络中，优化算法，也称为*优化器*，用于在训练过程中更新网络的参数（权重和偏置）。这些算法旨在最小化损失函数，并找到使网络性能最佳的参数的最优值。有几种类型的优化器：
 - en: Gradient descent (GD)
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 梯度下降（GD）
 - en: Gradient descent is the most fundamental optimization algorithm. It updates
     the network’s weights and biases in the direction opposite to the gradient of
     the loss function with respect to the parameters. It adjusts the parameters by
     taking steps proportional to the negative of the gradient, multiplied by a learning
     rate.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 梯度下降是最基础的优化算法。它根据损失函数关于参数的梯度的方向更新网络的权重和偏置。它通过步长与梯度的负值成比例来调整参数。
 - en: Stochastic gradient descent (SGD)
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机梯度下降（SGD）
 - en: SGD is a variant of gradient descent that randomly selects a single training
     example or a mini batch of examples to compute the gradient and update the parameters.
     It provides a computationally efficient approach and introduces noise in the training
     process, which can help escape local optima.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机梯度下降（SGD）是梯度下降的一种变体，它随机选择单个训练样本或小批量样本来计算梯度并更新参数。它提供了一种计算效率高的方法，并在训练过程中引入噪声，有助于逃离局部最优解。
 - en: Adaptive moment estimation (Adam)
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 自适应矩估计（Adam）
 - en: Adam is an adaptive optimization algorithm that computes adaptive learning rates
     for each parameter based on estimates of the first and second moments of the gradients.
     Adam is widely used due to its effectiveness and efficiency in various applications.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: Adam 是一种自适应优化算法，它根据梯度的一阶和二阶矩估计计算每个参数的自适应学习率。由于其在各种应用中的高效性和有效性，Adam 得到了广泛应用。
 - en: Root mean square propagation (RMSprop)
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 均方根传播（RMSprop）
 - en: The purpose of RMSprop is to address some of the limitations of the standard
     gradient descent algorithm, such as slow convergence and oscillations in different
     directions. RMSprop adjusts the learning rate for each parameter based on the
     average of the recent squared gradients. It calculates an exponentially weighted
     moving average of the squared gradients over time.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: RMSprop 的目的是解决标准梯度下降算法的一些限制，例如收敛速度慢和在不同方向上的振荡。RMSprop 根据最近平方梯度的平均值调整每个参数的学习率。它会计算随时间指数加权移动平均的平方梯度。
 - en: Each optimizer has its own characteristics, advantages, and limitations, and
     their performance can vary depending on the dataset and the network architecture.
     Experimentation and tuning are often necessary to determine the best optimizer
     for a specific task.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 每种优化器都有其独特的特性、优势和限制，它们的性能可以根据数据集和网络架构而异。通常需要进行实验和调优，以确定特定任务的最佳优化器。
 - en: Regularization Techniques
+  id: totrans-106
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 正则化技术
 - en: '*Regularization techniques* in neural networks are methods used to prevent
     overfitting, which can lead to poor performance and reduced ability of the model
     to make accurate predictions on new examples. Regularization techniques help to
     control the complexity of a neural network and improve its ability to generalize
     to unseen data.'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '*神经网络中的正则化技术* 是用于防止过拟合的方法，过拟合可能导致模型性能不佳，并减少模型在新样本上进行准确预测的能力。正则化技术有助于控制神经网络的复杂性，并提高其泛化到未见数据的能力。'
 - en: '*Dropout* is a regularization technique commonly used in neural networks to
     prevent overfitting (refer to [Chapter 7](ch07.html#ch07) for detailed information
     on overfitting). It involves randomly omitting (dropping) a fraction of the neurons
     during training by setting their outputs to zero. This temporarily removes the
     neurons and their corresponding connections from the network, forcing the remaining
     neurons to learn more robust and independent representations.'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Dropout* 是神经网络中常用的正则化技术，用于防止过拟合（详见[第7章](ch07.html#ch07)关于过拟合的详细信息）。在训练过程中，它通过随机地省略（丢弃）部分神经元的输出（将其设置为零）来实现。这暂时从网络中删除神经元及其相应的连接，迫使剩余神经元学习更加健壮和独立的表示。'
 - en: The key idea behind dropout is that it acts as a form of model averaging or
     ensemble learning. By randomly dropping out neurons, the network becomes less
     reliant on specific neurons or connections and learns more robust features. Dropout
     also helps prevent co-adaptation, where certain neurons rely heavily on others,
     reducing their individual learning capability. As a result, dropout can improve
     the network’s generalization ability and reduce overfitting.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: Dropout 的关键思想是它充当模型平均或集成学习的形式。通过随机丢弃神经元，网络减少对特定神经元或连接的依赖，从而学习更加健壮的特征。Dropout
+    还有助于防止神经元的共适应，即某些神经元过度依赖其他神经元，降低它们的个体学习能力。因此，Dropout 可以提高网络的泛化能力并减少过拟合。
 - en: '*Early stopping* is a technique that also prevents overfitting by monitoring
     the model’s performance on a validation set during training. It works by stopping
     the training process when the model’s performance on the validation set starts
     to deteriorate. The idea behind early stopping is that as the model continues
     to train, it may start to overfit the training data, causing a decrease in performance
     on unseen data.'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '*早停止* 是一种技术，它通过在训练过程中监控模型在验证集上的表现来防止过拟合。当模型在验证集上的表现开始恶化时，它会停止训练过程。早停止的理念是随着模型继续训练，它可能开始对训练数据过拟合，从而导致在未见数据上的性能下降。'
 - en: The training process is typically divided into epochs, where each epoch represents
     a complete pass over the training data. During training, the model’s performance
     on the validation set is evaluated after each epoch. If the validation loss or
     a chosen metric starts to worsen consistently for a certain number of epochs,
     training is stopped, and the model’s parameters from the epoch with the best performance
     are used as the final model.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练过程通常分为若干个周期，每个周期代表对训练数据的完整遍历。在训练过程中，每个周期后评估模型在验证集上的表现。如果验证损失或选择的度量开始连续恶化达到一定数量的周期，训练将停止，并使用性能最佳时期的模型参数作为最终模型。
 - en: Early stopping helps prevent overfitting by finding the optimal point at which
     the model has learned the most useful patterns without memorizing noise or irrelevant
     details from the training data. Both dropout and early stopping are key regularization
     techniques that help prevent overfitting and help stabilize the model.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 早停止通过找到模型学习最有用模式的最佳点来帮助防止过拟合，而不是记忆训练数据中的噪声或无关紧要的细节。辍学和早停止都是防止过拟合和帮助稳定模型的关键正则化技术。
 - en: Multilayer Perceptrons
+  id: totrans-113
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 多层感知器
 - en: A *multilayer perceptron* (MLP) is a type of ANN that consists of multiple layers
     of artificial neurons, or nodes, arranged in a sequential manner. It is a *feedforward
     neural network*, meaning that information flows through the network in one direction,
     from the input layer to the output layer, without any loops or feedback connections
     (you will learn more about this later in [“Recurrent Neural Networks”](#recurrent_neural_networks)).
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '*多层感知器*（MLP）是一种包含多层人工神经元或节点、按顺序排列的ANN 类型。它是*前馈神经网络*，意味着信息在网络中单向流动，从输入层到输出层，没有任何循环或反馈连接（您将在后面的[“递归神经网络”](#recurrent_neural_networks)中学到更多）。'
 - en: The basic building block of an MLP is a *perceptron*, an artificial neuron that
     takes multiple inputs, applies weights to those inputs, performs a weighted sum,
     and passes the result through an activation function to produce an output (basically,
@@ -610,18 +856,25 @@
     in layers. It typically consists of an input layer, one or more hidden layers
     (the more layers, the deeper the learning process up to a certain point), and
     an output layer.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: MLP 的基本构建块是*感知器*，它是一种人工神经元，接受多个输入，对这些输入应用权重，执行加权和，并通过激活函数产生输出（基本上是您已经见过的神经元）。MLP
+    包含多个按层组织的感知器。它通常包括一个输入层，一个或多个隐藏层（层数越多，学习过程越深入，直到某个点），以及一个输出层。
 - en: Note
+  id: totrans-116
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The term *perceptron* is sometimes used more broadly to refer to a single-layer
     neural network based on a perceptron-like architecture. In this context, the term
     *perceptron* can be used interchangeably with *neural network* or *single-layer
     perceptron*.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 术语*感知器*有时更广泛地用于指称基于感知器类似架构的单层神经网络。在此背景下，术语*感知器*可以与*神经网络*或*单层感知器*交替使用。
 - en: As a reminder, the input layer receives the raw input data, such as features
     from a dataset (e.g., the stationary values of a moving average). The hidden layers,
     which are intermediate layers between the input and output layers, perform complex
@@ -629,245 +882,360 @@
     from all neurons in the previous layer, applies weights, performs the weighted
     sum, and passes the result through an activation function. The output layer produces
     the final output of the network.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为提醒，输入层接收原始输入数据，例如数据集中的特征（例如移动平均的稳定值）。隐藏层位于输入层和输出层之间，对输入数据执行复杂的变换。隐藏层中的每个神经元从前一层的所有神经元接收输入，应用权重，执行加权和，并通过激活函数传递结果。输出层生成网络的最终输出。
 - en: MLPs are trained using backpropagation, which adjusts the weights of the neurons
     in the network to minimize the difference between the predicted output and the
     desired output. They are known for their ability to learn complex, nonlinear relationships
     in data, making them suitable for a wide range of tasks, including pattern recognition.
     [Figure 8-6](#figure-8-6) shows an example of a deep MLP architecture.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: MLP 使用反向传播进行训练，它调整网络中神经元的权重，以最小化预测输出与期望输出之间的差异。它们以能够学习数据中复杂的非线性关系而闻名，使它们适用于各种任务，包括模式识别。[图 8-6](#figure-8-6)
+    显示了深度 MLP 架构的示例。
 - en: '![](assets/dlff_0806.png)'
+  id: totrans-120
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0806.png)'
 - en: Figure 8-6\. A simple illustration of an MLP with two hidden layers.
+  id: totrans-121
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-6\. 一个具有两个隐藏层的 MLP 的简单示例。
 - en: At this stage, you should understand that deep learning is basically neural
     networks with many hidden layers that add to the complexity of the learning process.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个阶段，您应该理解深度学习基本上就是具有许多隐藏层的神经网络，这增加了学习过程的复杂性。
 - en: Note
+  id: totrans-123
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注
 - en: It is important to download *master_function.py* from this book’s [GitHub repository](https://oreil.ly/5YGHI)
     to access the functions seen in this book. After downloading it, you must set
     your Python’s interpreter directory as the path where *master_function.py* is
     stored.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 从本书的 [GitHub 仓库](https://oreil.ly/5YGHI) 下载 *master_function.py* 是很重要的，以便访问本书中看到的函数。下载后，您必须将
+    Python 解释器的目录设置为存储 *master_function.py* 的路径。
 - en: 'The aim of this section is to create an MLP to forecast daily S&P 500 returns.
     Import the required libraries:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节旨在创建一个多层感知器（MLP）来预测每日标准普尔 500 指数的收益。导入所需的库：
 - en: '[PRE0]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Now import the historical data and transform it:'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在导入历史数据并进行转换：
 - en: '[PRE1]'
+  id: totrans-128
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'Set the hyperparameters for the model:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 为模型设置超参数：
 - en: '[PRE2]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'Use the data preprocessing function to create the four required arrays:'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用数据预处理函数创建四个所需的数组：
 - en: '[PRE3]'
+  id: totrans-132
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'The following code block shows how to build the MLP architecture in *keras*.
     Make sure you understand the notes in the code:'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码块显示了如何在 *keras* 中构建 MLP 架构。确保您理解代码中的注释：
 - en: '[PRE4]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Note
+  id: totrans-135
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注
 - en: When creating a `Dense` layer, you need to specify the `input_dim` parameter
     in the first layer of your neural network. For subsequent `Dense` layers, the
     `input_dim` is automatically inferred from the previous layer’s output.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 在创建 `Dense` 层时，需要在神经网络的第一层中指定 `input_dim` 参数。对于后续的 `Dense` 层，`input_dim` 将自动从上一层的输出中推断出来。
 - en: 'Let’s plot the results and analyze the performance:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们绘制结果并分析性能：
 - en: '[PRE5]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[Figure 8-7](#figure-8-7) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-7](#figure-8-7) 显示了从 `y_train` 的最后值到 `y_test` 和 `y_predicted` 的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0807.png)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0807.png)'
 - en: Figure 8-7\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the MLP regression algorithm.
+  id: totrans-141
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-7\. 训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。所使用的模型是 MLP 回归算法。
 - en: 'The results are extremely volatile when changing the hyperparameters. This
     is why using sophisticated models on complex data requires a lot of tweaks and
     optimizations. Consider the following improvements to enhance the results of the
     model:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 当更改超参数时，结果非常波动。这就是为什么在复杂数据上使用复杂模型需要大量的调整和优化。考虑以下改进来增强模型结果：
 - en: Select relevant features (inputs) that capture the underlying patterns and characteristics
     of the financial time series. This can involve calculating technical indicators
     (e.g., moving averages and the RSI) or deriving other meaningful variables from
     the data.
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 选择相关特征（输入），捕获金融时间序列的潜在模式和特征。这可以涉及计算技术指标（例如，移动平均线和相对强弱指数）或从数据中推导出其他有意义的变量。
 - en: Review the architecture of the model. Consider increasing the number of layers
     or neurons to provide the model with more capacity to learn complex patterns.
     Experiment with different activation functions and regularization techniques such
     as dropout and early stopping (see [Chapter 9](ch09.html#ch09) for an application
     of regularization techniques).
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 审查模型的架构。考虑增加层数或神经元数量，以为模型提供更多学习复杂模式的能力。尝试不同的激活函数和正则化技术，如丢失和提前停止（见 [第 9 章](ch09.html#ch09)
+    中正则化技术的应用）。
 - en: Fine-tune the hyperparameters of your MLP model. Parameters like the batch size
     and the number of epochs can significantly impact the model’s ability to converge
     and generalize.
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 调整你的MLP模型的超参数。像批量大小和epoch数这样的参数可以显著影响模型的收敛能力和泛化能力。
 - en: Combine multiple MLP models into an ensemble. This can involve training several
     models with different initializations or using different subsets of the data.
     Aggregating their predictions can lead to better results than using a single model.
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将多个MLP模型组合成一个集成模型。这可以涉及使用不同的初始化训练多个模型或使用数据的不同子集。聚合它们的预测结果可能比使用单个模型获得更好的结果。
 - en: 'As the model trains, the loss function should decrease due to the learning
     process. This can be seen using the following code (to be run after compiling
     the model):'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着模型训练，由于学习过程，损失函数应该会减少。可以通过以下代码来查看（在编译模型后运行）：
 - en: '[PRE6]'
+  id: totrans-148
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: The previous code block plots the loss at the end of every epoch, thus creating
     a dynamic loss curve visualized in real time. Notice how it falls until reaching
     a plateau where it struggles to decrease. [Figure 8-8](#figure-8-8) shows the
     decreasing loss function across epochs.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 前面的代码块绘制了每个epoch结束时的损失，从而创建了一个实时可视化的动态损失曲线。注意看它如何下降，直到达到一个难以进一步降低的平台期。[图 8-8](#figure-8-8)展示了跨epoch的损失函数下降情况。
 - en: '![](assets/dlff_0808.png)'
+  id: totrans-150
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0808.png)'
 - en: Figure 8-8\. Loss value across epochs.
+  id: totrans-151
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-8\. 跨epoch的损失值。
 - en: Recurrent Neural Networks
+  id: totrans-152
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 循环神经网络
 - en: A *recurrent neural network* (RNN) is a type of artificial neural network that
     is designed to process sequential data or data with temporal dependencies. Unlike
     feedforward neural networks, which process data in a single pass from input to
     output, RNNs maintain internal memory or hidden states to capture information
     from previous inputs and utilize it in the processing of subsequent inputs.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '*循环神经网络*（RNN）是一种设计用来处理序列数据或具有时间依赖性数据的人工神经网络类型。与前馈神经网络不同，后者只需单次通过从输入到输出处理数据，RNN维护内部记忆或隐藏状态，以捕获先前输入的信息，并在处理后续输入时利用它。'
 - en: The key feature of an RNN is the presence of *recurrent connections*, which
     create a loop in the network. This loop allows the network to persist information
     across time steps, making it well suited for tasks that involve sequential or
     time-dependent data.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: RNN的关键特征是*递归连接*的存在，这在网络中创建了一个循环。这个循环允许网络跨时间步保持信息，使其非常适合处理涉及顺序或时间相关数据的任务。
 - en: At each time step, an RNN takes an input vector and combines it with the previous
     hidden state. It then applies activation functions to compute the new hidden state
     and produces an output. This process is repeated for each time step, with the
     hidden state being updated and passed along as information flows through the network.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 在每个时间步，RNN接收一个输入向量并将其与前一个隐藏状态组合。然后应用激活函数计算新的隐藏状态并产生一个输出。此过程针对每个时间步重复进行，更新隐藏状态并将其作为信息传递到网络中。
 - en: The recurrent connections enable RNNs to capture dependencies and patterns in
     sequential data. They can model the context and temporal dynamics of the data,
     making them useful in time series prediction.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 递归连接使得RNN能够捕捉序列数据中的依赖关系和模式。它们可以建模数据的上下文和时间动态，因此在时间序列预测中非常有用。
 - en: However, traditional RNNs suffer from the vanishing gradient problem, where
     the gradients that are backpropagated through the recurrent connections can become
     very small or very large, leading to difficulties in training the network. The
     vanishing gradient problem is resolved in the next section with an enhanced type
     of neural network. For now, let’s focus on RNNs and their specificities.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，传统的RNN存在梯度消失问题，即通过递归连接反向传播的梯度可能变得非常小或非常大，导致训练网络困难。下一节将使用一种增强型神经网络来解决梯度消失问题。现在，让我们专注于RNN及其特性。
 - en: '[Figure 8-9](#figure-8-9) shows an example of an RNN architecture.'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-9](#figure-8-9)展示了一个循环神经网络（RNN）架构的示例。'
 - en: '![](assets/dlff_0809.png)'
+  id: totrans-159
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0809.png)'
 - en: Figure 8-9\. A simple illustration of an RNN with two hidden layers.
+  id: totrans-160
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-9\. 一个包含两个隐藏层的简单循环神经网络示例。
 - en: 'Let’s deploy an RNN algorithm to forecast S&P 500 daily returns. As usual,
     import the required libraries:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们部署一个RNN算法来预测标准普尔500指数的日回报率。像往常一样，导入所需的库：
 - en: '[PRE7]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'Now set the hyperparameters of the model:'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在设置模型的超参数：
 - en: '[PRE8]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'The following code block shows how to build the RNN architecture in *keras*:'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码块展示了如何在*keras*中构建RNN架构。
 - en: '[PRE9]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'Let’s plot the results and analyze the performance:'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们绘制结果并分析性能：
 - en: '[PRE10]'
+  id: totrans-168
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[Figure 8-10](#figure-8-10) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图8-10](#figure-8-10)展示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0810.png)'
+  id: totrans-170
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0810.png)'
 - en: Figure 8-10\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the RNN regression algorithm.
+  id: totrans-171
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-10。训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。所使用的模型是RNN回归算法。
 - en: Tip
+  id: totrans-172
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 提示
 - en: A good task for you to do is to create an optimization function that loops around
     different hyperparameters and selects the best ones or averages the best ones.
     This way, you may be able to obtain a robust model based on the ensembling technique.
     You can also backtest different markets and different time horizons. Note that
     these techniques are valid not only for financial time series, but for all types
     of time series.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以做的一个好任务是创建一个优化函数，循环尝试不同的超参数并选择最佳的或对最佳的进行平均。这样，你可能能够基于集成技术获得一个健壮的模型。你还可以对不同的市场和不同的时间范围进行回测。请注意，这些技术不仅适用于金融时间序列，而且适用于所有类型的时间序列。
 - en: In summary, RNNs are neural networks that can process sequential data by maintaining
     internal memory and capturing temporal dependencies. They are powerful models
     for tasks involving time series or sequential data. As a reminder, stationarity
@@ -878,248 +1246,361 @@
     the time series is nonstationary, it may contain trends, seasonality, or other
     patterns that can affect the performance of RNNs. The optimization and enhancement
     recommendations on MLPs are also valid on RNNs.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 总之，RNN是能够通过维护内部记忆并捕捉时间依赖关系处理序列数据的神经网络。它们对涉及时间序列或顺序数据的任务是强大的模型。作为提醒，稳定性是成功进行时间序列预测的重要属性。稳定的时间序列在时间上展现出恒定的均值、方差和自协方差。RNN（以及其他深度学习模型）假设底层时间序列是稳定的，这意味着数据的统计特性随时间不变。如果时间序列是非稳定的，它可能包含趋势、季节性或其他可能影响RNN性能的模式。MLP的优化和增强建议在RNN上也是有效的。
 - en: Long Short-Term Memory
+  id: totrans-175
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 长短期记忆网络（LSTM）
 - en: '*Long short-term memory* (LSTM) is a type of RNN that addresses the vanishing
     gradient problem and allows the network to capture long-term dependencies in sequential
     data. LSTMs were introduced by Hochreiter and Schmidhuber in 1997.'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: '*长短期记忆*（LSTM）是一种能够解决梯度消失问题并允许网络捕捉序列数据中长期依赖的RNN类型。LSTM由Hochreiter和Schmidhuber于1997年提出。'
 - en: LSTMs are designed to overcome the limitations of traditional RNNs when dealing
     with long sequences of data. They achieve this by incorporating specialized memory
     cells that can retain information over extended time periods. The key idea behind
     LSTMs is the use of a gating mechanism that controls the flow of information through
     the memory cells.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: LSTM旨在克服传统RNN在处理长序列数据时的局限性。它通过引入特殊的记忆细胞来实现在扩展时间段内保持信息的能力。LSTM背后的关键思想是利用门控机制来控制信息在记忆细胞中的流动。
 - en: 'The LSTM architecture consists of memory cells, input gates, forget gates,
     and output gates. The memory cells store and update information at each time step,
     while the gates regulate the flow of information. Here’s how LSTMs work:'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: LSTM结构由记忆细胞、输入门、遗忘门和输出门组成。记忆细胞在每个时间步存储和更新信息，而门控制信息的流动。以下是LSTM的工作原理：
 - en: Input gate
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入门
 - en: The input gate determines which information from the current time step should
     be stored in the memory cell. It takes the current input and the previous hidden
     state as inputs, and then it applies a sigmoid activation function to generate
     a value between 0 and 1 for each component of the memory cell.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入门决定当前时间步的哪些信息应存储在记忆细胞中。它将当前输入和上一个隐藏状态作为输入，然后应用Sigmoid激活函数为记忆细胞的每个组件生成一个介于0和1之间的值。
 - en: Forget gate
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 忘记门
 - en: The forget gate determines which information from the previous memory cell should
     be forgotten. It takes the current input and the previous hidden state as inputs,
     and then it applies a sigmoid activation function to produce a forget vector.
     This vector is then multiplied element-wise with the previous memory cell values,
     allowing the LSTM to forget irrelevant information.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 忘记门确定应从上一个记忆单元中遗忘哪些信息。它接受当前输入和上一个隐藏状态作为输入，然后应用Sigmoid激活函数以生成遗忘向量。然后，该向量与先前的记忆单元值逐元素相乘，允许LSTM遗忘无关信息。
 - en: Update
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 更新
 - en: The update step combines the information from the input gate and the forget
     gate. It takes the current input and the previous hidden state as inputs, and
     then it applies a tanh activation function. The resulting vector is then multiplied
     element-wise with the input gate output, and the product is added to the product
     of the forget gate and the previous memory cell values. This update operation
     determines which new information to store in the memory cell.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 更新步骤结合了输入门和遗忘门的信息。它接受当前输入和上一个隐藏状态作为输入，然后应用tanh激活函数。然后，将得到的向量与输入门输出逐元素相乘，并将乘积添加到遗忘门和先前记忆单元值的乘积中。此更新操作确定要存储在记忆单元中的新信息。
 - en: Output gate
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出门
 - en: The output gate determines the output of the LSTM at the current time step.
     It takes the current input and the previous hidden state as inputs, and then it
     applies a sigmoid activation function. The updated memory cell values are passed
     through a hyperbolic tangent (tanh) activation function and then multiplied element-wise
     with the output gate. The resulting vector becomes the current hidden state and
     is also the output of the LSTM at that time step.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出门确定当前时间步的LSTM输出。它接受当前输入和上一个隐藏状态作为输入，然后应用Sigmoid激活函数。更新后的记忆单元值通过双曲正切(tanh)激活函数传递，并与输出门逐元素相乘。得到的向量成为当前隐藏状态，也是该时间步的LSTM输出。
 - en: The gating mechanisms in LSTMs allow them to selectively remember or forget
     information over long sequences, making them well suited for tasks involving long-term
     dependencies. By addressing the vanishing gradient problem and capturing long-term
     dependencies, LSTMs have become a popular choice for sequential data processing
     and have been instrumental in advancing the field of deep learning.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: LSTM中的门控机制使其能够有选择地记住或遗忘长序列中的信息，使其非常适合涉及长期依赖关系的任务。通过解决梯度消失问题并捕捉长期依赖关系，LSTM已成为顺序数据处理的流行选择，并在推动深度学习领域方面发挥了重要作用。
 - en: Note
+  id: totrans-188
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Theoretically, RNNs are capable of learning long-term dependencies, but in practice,
     they do not, hence the need for LSTMs.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 理论上，RNN能够学习长期依赖关系，但在实践中并不会，因此需要LSTM。
 - en: As usual, let’s apply LSTMs to the same time series problem. Note, however,
     that the results do not mean anything since the explanatory variables are arbitrary
     and the hyperparameters are not tuned. The aim of doing such exercises is to understand
     the code and the logic behind the algorithm. Afterward, it will be up to you to
     select the inputs and the variables that you deem worthy to be tested out.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，让我们将LSTM应用于相同的时间序列问题。然而，请注意，由于解释变量是任意的且超参数未调整，因此结果并无意义。进行这样的练习的目的是理解代码和算法背后的逻辑。之后，由您来选择值得测试的输入和变量。
 - en: 'Import the required libraries as follows:'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 如下导入所需的库：
 - en: '[PRE11]'
+  id: totrans-192
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'Now set the hyperparameters of the model:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在设置模型的超参数：
 - en: '[PRE12]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'The LSTM model requires three-dimensional arrays of features. This can be done
     using the following code:'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: LSTM模型需要特征的三维数组。可以使用以下代码完成：
 - en: '[PRE13]'
+  id: totrans-196
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'The following code block shows how to build the LSTM architecture in *keras*:'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码块显示了如何在*keras*中构建LSTM架构：
 - en: '[PRE14]'
+  id: totrans-198
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 'Let’s plot the results and analyze the performance:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们绘制结果并分析性能：
 - en: '[PRE15]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[Figure 8-11](#figure-8-11) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.
     Note that the hyperparameters are the same as the ones used in the RNN model.'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-11](#figure-8-11)显示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。请注意，超参数与RNN模型中使用的相同。'
 - en: '![](assets/dlff_0811.png)'
+  id: totrans-202
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0811.png)'
 - en: Figure 8-11\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the LSTM regression algorithm.
+  id: totrans-203
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-11\. 训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。所使用的模型是 LSTM 回归算法。
 - en: It is worth seeing how well the algorithm is fitted to the training data. [Figure 8-12](#figure-8-12)
     shows the values from `y_predicted_train` and `y_train`.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 值得一看的是算法如何与训练数据拟合良好。[图 8-12](#figure-8-12) 展示了来自 `y_predicted_train` 和 `y_train`
+    的值。
 - en: '![](assets/dlff_0812.png)'
+  id: totrans-205
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0812.png)'
 - en: Figure 8-12\. In-sample predictions using the LSTM regression algorithm.
+  id: totrans-206
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-12\. 使用 LSTM 回归算法的样本内预测。
 - en: 'In the context of LSTMs, a three-dimensional array represents the shape of
     the input data that is fed into the models. It is typically used to accommodate
     sequential or time series data in the form of input sequences. The dimensions
     of a three-dimensional array have specific meanings:'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 LSTM 的上下文中，一个三维数组表示输入数据的形状，这些数据被馈送到模型中。它通常用于容纳顺序或时间序列数据的输入序列。三维数组的维度具有特定的含义：
 - en: Dimension 1 (samples)
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 维度 1（样本数）
 - en: This dimension represents the number of samples or examples in the dataset.
     Each sample corresponds to a specific sequence or time series instance. For example,
     if you have 1,000 time series sequences in your dataset, dimension 1 would be
     1,000.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个维度代表数据集中的样本或示例数量。每个样本对应于一个特定的序列或时间序列实例。例如，如果你的数据集中有1,000个时间序列，那么维度1就是1,000。
 - en: Dimension 2 (time steps)
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 维度 2（时间步）
 - en: This dimension represents the number of time steps or data points in each sequence.
     It defines the length of the input sequence that the LSTM or RNN model processes
     at each time step. For instance, if your input sequences have a length of 10 time
     steps, dimension 2 would be 10.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个维度代表每个序列中的时间步或数据点的数量。它定义了 LSTM 或 RNN 模型在每个时间步处理的输入序列的长度。例如，如果你的输入序列长度为 10
+    个时间步，那么维度 2 就是 10。
 - en: Dimension 3 (features)
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 维度 3（特征数）
 - en: This dimension represents the number of features or variables associated with
     each time step in the sequence. It defines the dimensionality of each time step’s
     data. In the case of univariate time series data, where only a single value is
     considered at each time step, dimension 3 would typically be 1\. For multivariate
     time series, where multiple variables are observed at each time step, dimension
     3 would be greater than 1.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个维度代表与每个时间步的序列相关联的特征或变量的数量。它定义了每个时间步数据的维度。对于单变量时间序列数据，其中每个时间步只考虑一个单一值，维度 3
+    通常为 1。对于多变量时间序列，其中每个时间步观察到多个变量，维度 3 将大于 1。
 - en: Let’s take a quick break and discuss an interesting topic. Using simple linear
     algorithms to model complex, nonlinear relationships is most likely to give bad
     results. At the same time, using extremely complex methods such as LSTMs on simple
     and predictable data may not be necessary even though it may provide positive
     results. [Figure 8-13](#figure-8-13) shows an ascending time series that looks
     like it’s oscillating in regular intervals.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们稍作休息，讨论一个有趣的话题。使用简单的线性算法来建模复杂的非线性关系很可能会产生糟糕的结果。与此同时，在简单且可预测的数据上使用像 LSTM 这样极其复杂的方法可能并非必要，尽管它可能会带来积极的结果。[图 8-13](#figure-8-13)
+    展示了一个看起来像是在正常间隔内振荡的升序时间序列。
 - en: '![](assets/dlff_0813.png)'
+  id: totrans-215
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0813.png)'
 - en: Figure 8-13\. A generated ascending time series with oscillating properties.
+  id: totrans-216
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-13\. 一个生成的带有振荡特性的升序时间序列。
 - en: Believe it or not, linear regression can actually model this raw time series
     quite well. By assuming an autoregressive model with 100 features (which means
     that to predict the next value, the model looks at the last 100 values), the linear
     regression algorithm can be trained on in-sample data and output the out-of-sample
     results shown in [Figure 8-14](#figure-8-14).
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 信不信由你，线性回归实际上可以很好地对这种原始时间序列进行建模。通过假设一个具有100个特征的自回归模型（这意味着为了预测下一个值，模型查看最后100个值），线性回归算法可以在样本内数据上训练，并输出在
+    [图 8-14](#figure-8-14) 中展示的样本外结果。
 - en: '![](assets/dlff_0814.png)'
+  id: totrans-218
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0814.png)'
 - en: Figure 8-14\. Prediction over the ascending time series using linear regression.
+  id: totrans-219
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-14\. 使用线性回归对升序时间序列进行预测。
 - en: But let’s take its first order difference and make it stationary. Take a look
     at [Figure 8-15](#figure-8-15), which shows a stationary time series created from
     differencing the time series shown in [Figure 8-13](#figure-8-13).
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 但让我们首先对其进行一阶差分，使其平稳化。 看看[图8-15](#figure-8-15)，显示了从[图8-13](#figure-8-13)中差分时间序列创建的平稳时间序列。
 - en: '![](assets/dlff_0815.png)'
+  id: totrans-221
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0815.png)'
 - en: Figure 8-15\. A generated ascending time series with oscillating properties
     (differenced).
+  id: totrans-222
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-15\. 生成的具有振荡特性的上升时间序列（差分）。
 - en: The linear regression algorithm can be trained on in-sample data and output
     the out-of-sample results shown in [Figure 8-16](#figure-8-16) with extreme accuracy.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归算法可以在样本内数据上进行训练，并输出在[图8-16](#figure-8-16)中显示的样本外结果，精度极高。
 - en: '![](assets/dlff_0816.png)'
+  id: totrans-224
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0816.png)'
 - en: Figure 8-16\. Prediction over the differenced time series using linear regression.
+  id: totrans-225
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-16\. 使用线性回归进行差分时间序列预测。
 - en: Another way of assessing the goodness of fit of a linear regression model is
     to use R². Also known as the *coefficient of determination*, *R²* is a statistical
     measure that indicates the proportion of the variance in the dependent variable
     that can be explained by the independent variable(s) in a regression model.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估线性回归模型拟合优度的另一种方法是使用R²。也称为*决定系数*，*R²*是一个统计量，指示因变量方差中可以通过回归模型中的自变量解释的比例。
 - en: R² ranges from 0 to 1 and is often expressed as a percentage. A value of 0 indicates
     that the independent variable(s) cannot explain any of the variability in the
     dependent variable, while a value of 1 indicates that the independent variable(s)
     can completely explain the variability in the dependent variable.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: R²的取值范围从0到1，并经常以百分比形式表示。 值为0表示自变量不能解释因变量的任何变异性，而值为1表示自变量可以完全解释因变量的变异性。
 - en: In simple terms, R² represents the proportion of the dependent variable’s variability
     that can be attributed to the independent variable(s) included in the model. It
     provides a measure of how well the regression model fits the observed data. However,
@@ -1127,37 +1608,53 @@
     quality of the model. It is also worth noting that R² is the squared correlation
     between the two variables. The R² metric for the differenced time series is 0.935,
     indicating extremely good fit.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单来说，R²表示可以归因于模型中包含的独立变量的因变量变异性的比例。它提供了回归模型拟合观察数据的程度的度量。然而，它并不表示变量之间的因果关系或模型的整体质量。
+    值得注意的是，R²是两个变量之间的平方相关性。 差异化时间序列的R²指标为0.935，表明非常良好的拟合度。
 - en: In parallel, using an MLP with some optimization also yields good results. [Figure 8-17](#figure-8-17)
     shows the results of the differenced values when using a simple MLP model (with
     two hidden layers, each containing 24 neurons and a batch size of 128 run through
     50 epochs).
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 同时，使用一些优化的MLP也能产生良好的结果。 [图8-17](#figure-8-17)展示了在使用简单MLP模型（每个包含24个神经元的两个隐藏层和批大小为128经过50个epochs运行）时，使用差分值的结果。
 - en: '![](assets/dlff_0817.png)'
+  id: totrans-230
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0817.png)'
 - en: Figure 8-17\. Prediction over the differenced time series using MLP.
+  id: totrans-231
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-17\. 使用MLP进行差分时间序列预测。
 - en: However, the added complexity of using a deep learning method to predict such
     a simple time series may not be worth it.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，使用深度学习方法预测这样一个简单时间序列可能并不值得增加复杂性。
 - en: Temporal Convolutional Neural Networks
+  id: totrans-233
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 时间卷积神经网络
 - en: '*Convolutional neural networks* (CNNs) are a class of deep learning models
     designed to process structured grid-like data, with a particular emphasis on images
     and other grid-like data such as time series (less commonly used) and audio spectrograms.
     CNNs are good at learning and extracting hierarchical patterns and features from
     input data, making them powerful tools for tasks like image recognition, object
     detection, image segmentation, and more.'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '*卷积神经网络* (CNNs) 是一类专为处理结构化网格数据设计的深度学习模型，特别强调处理图像和其他网格数据，如时间序列（使用较少）和音频频谱图。
+    CNNs擅长从输入数据中学习和提取层次化模式和特征，使它们成为图像识别、物体检测、图像分割等任务的强大工具。'
 - en: The core building blocks of CNNs are the *convolutional layers*. These layers
     perform convolution operations by applying a set of learnable filters to input
     data, resulting in feature maps that capture relevant spatial patterns and local
@@ -1166,71 +1663,93 @@
     *max pooling* (selecting the maximum value in a neighborhood) and *average pooling*
     (computing the average value). Pooling helps reduce spatial dimensions, extract
     dominant features, and improve computational efficiency.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: CNN 的核心构建模块是*卷积层*。这些层通过将一组可学习的滤波器应用于输入数据来执行卷积运算，生成捕获相关空间模式和局部依赖性的特征图。CNN 的另一个重要概念是*池化层*，这些层对卷积层生成的特征图进行降采样。常见的池化操作包括*最大池化*（选择邻域内的最大值）和*平均池化*（计算平均值）。池化有助于减少空间维度，提取主要特征，并提高计算效率。
 - en: Note
+  id: totrans-236
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: A CNN that is specifically used for time series forecasting is often referred
     to as a 1D-CNN or a *temporal convolutional network*.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 专门用于时间序列预测的CNN通常称为1D-CNN或*时序卷积网络*。
 - en: The term *1D-CNN* indicates that the convolutional operations are applied along
     the temporal dimension of the input data, which is characteristic of time series
     data. This distinguishes it from traditional CNNs that operate on spatial dimensions
     in tasks such as image recognition.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 术语*1D-CNN*表示卷积操作应用于输入数据的时间维度，这是时间序列数据的特征。这使其与传统的在空间维度上进行任务（如图像识别）的CNN有所不同。
 - en: 'A typical CNN architecture consists of three main components: an input layer,
     several alternating convolutional and pooling layers, and fully connected layers
     at the end. Convolutional layers are responsible for feature extraction, while
     pooling layers downsample the data. The fully connected layers provide the final
     predictions.'
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 典型的CNN架构包括三个主要组件：输入层，若干交替的卷积和池化层，以及最后的全连接层。卷积层负责特征提取，而池化层则降采样数据。全连接层提供最终的预测。
 - en: CNN architectures can vary greatly depending on the specific task. These architectures
     often employ additional techniques such as dropout regularization to improve performance
     and address challenges like overfitting.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: CNN 的架构可以根据具体任务的不同而大不相同。这些架构通常采用额外的技术，如dropout正则化来提高性能并解决过拟合等挑战。
 - en: 'CNNs can be used for time series prediction by leveraging their ability to
     capture local patterns and extract relevant features from the input data. The
     framework of the process is as follows:'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: CNN 可以通过利用其捕捉局部模式和从输入数据中提取相关特征的能力用于时间序列预测。该过程的框架如下：
 - en: CNNs use convolutional layers to perform localized feature extraction. The convolutional
     layers consist of a set of learnable filters that are convolved with the input
     data. Each filter extracts different features from the input data by applying
     element-wise multiplications and summations in a sliding window manner. The result
     is a feature map that highlights important patterns or features at different locations
     in the input data.
+  id: totrans-242
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: CNN 使用卷积层进行局部特征提取。卷积层由一组可学习的滤波器组成，这些滤波器与输入数据进行卷积。每个滤波器通过滑动窗口方式进行元素级乘法和求和，从输入数据的不同位置提取不同的特征。结果是一个在输入数据中不同位置突出显示重要模式或特征的特征图。
 - en: Pooling layers are often employed after convolutional layers to reduce the spatial
     dimensionality of the feature maps. Max pooling is a common technique, where the
     maximum value within a local neighborhood is selected, effectively downsampling
     the feature map. Pooling helps in capturing the most salient features while reducing
     the computational complexity and enhancing the network’s ability to generalize.
+  id: totrans-243
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 池化层通常在卷积层之后使用，以减少特征图的空间维度。最大池化是一种常见的技术，其中选择局部邻域内的最大值，有效地对特征图进行降采样。池化有助于捕获最显著的特征，同时减少计算复杂性并增强网络的泛化能力。
 - en: After the convolutional and pooling layers, the resulting feature maps are typically
     flattened into a one-dimensional vector. This flattening operation transforms
     the spatially distributed features into a linear sequence, which can then be passed
     to fully connected layers.
+  id: totrans-244
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在卷积和池化层之后，生成的特征图通常被展平为一维向量。这种展平操作将空间分布的特征转换为线性序列，然后可以传递到全连接层。
 - en: Fully connected layers receive the flattened feature vector as input and learn
     to map it to the desired output. These layers enable the network to learn complex
     combinations of features and model the nonlinear relationships between input features
     and target predictions. The last fully connected layer typically represents the
     output layer, which predicts the target values for the time series.
+  id: totrans-245
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 全连接层接收扁平化特征向量作为输入，并学习将其映射到所需的输出。这些层使网络能够学习输入特征和目标预测之间的复杂组合关系。最后一个全连接层通常代表输出层，用于预测时间序列的目标值。
 - en: Before moving to the algorithm creation steps, let’s review some key concepts
     seen with CNNs. In time series forecasting with CNNs, *filters* are applied along
     the temporal dimension of the input data. Instead of considering spatial features
@@ -1243,8 +1762,10 @@
     the network to learn a diverse set of temporal features. Each filter captures
     different aspects of the time series, enabling the model to capture complex temporal
     relationships.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 在进行算法创建步骤之前，让我们回顾一些在CNN中使用的关键概念。在使用CNN进行时间序列预测时，*滤波器*沿着输入数据的时间维度应用。与考虑图像数据中的空间特征不同，这些滤波器旨在捕获时间序列内的时间模式或依赖关系。每个滤波器在时间序列上滑动，一次处理一组连续的时间步长子集。该滤波器学习在输入数据中检测特定的时间模式或特征。例如，它可能捕获短期趋势、季节性或对预测任务有关的重复模式。每个卷积层可以使用多个滤波器，使网络能够学习多样化的时间特征。每个滤波器捕获时间序列的不同方面，使模型能够捕获复杂的时间关系。
 - en: Another concept is the *kernel size*, which refers to the length or the number
     of consecutive time steps that the filter considers during the convolution operation.
     It defines the receptive field of the filter and influences the size of the extracted
@@ -1256,139 +1777,202 @@
     captures the relevant temporal patterns for accurate forecasting. It’s common
     to have multiple convolutional layers with different kernel sizes to capture patterns
     at various temporal scales.
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个概念是*卷积核大小*，它指的是在卷积操作期间滤波器考虑的连续时间步长的长度或数量。它定义了滤波器的接受域，并影响所提取的时间模式的大小。选择卷积核大小取决于时间序列数据的特性和要捕获的模式。较小的卷积核大小，如3或5，专注于捕获短期模式，而较大的卷积核大小，如7或10，则适合捕获长期依赖关系。通过尝试不同的卷积核大小，可以帮助确定捕获准确预测所需的相关时间模式的最佳接受域。通常使用具有不同卷积核大小的多个卷积层来捕获各种时间尺度上的模式。
 - en: 'Now let’s see how to create a temporal CNN to forecast S&P 500 returns using
     its lagged values. Import the required libraries as follows:'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看看如何创建一个时间CNN来预测S&P 500的回报，使用其滞后值。如下导入所需的库：
 - en: '[PRE16]'
+  id: totrans-249
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'Next, set the hyperparameters of the model:'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，设置模型的超参数：
 - en: '[PRE17]'
+  id: totrans-251
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 'Reshape the features arrays into three-dimensional data structures:'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 将特征数组重塑为三维数据结构：
 - en: '[PRE18]'
+  id: totrans-253
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'Now create the architecture of the temporal convolutional network (TCN) and
     run the algorithm:'
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在创建时间卷积网络（TCN）的架构并运行算法：
 - en: '[PRE19]'
+  id: totrans-255
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 'Let’s plot the results and analyze the performance:'
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们绘制结果并分析性能：
 - en: '[PRE20]'
+  id: totrans-257
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[Figure 8-18](#figure-8-18) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图8-18](#figure-8-18)显示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务演变。'
 - en: '![](assets/dlff_0818.png)'
+  id: totrans-259
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0818.png)'
 - en: Figure 8-18\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the CNN regression algorithm.
+  id: totrans-260
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-18\. 训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。所使用的模型是CNN回归算法。
 - en: It is important to use performance metrics that reflect your choice and to search
     for a better algorithm. Accuracy may be one of the base metrics to give you a
     quick glance at the predictive abilities of your model, but on its own, it is
     not enough. The results seen in this chapter reflect only the training using the
     selected hyperparameters. Optimization will allow you to achieve very good results
     on certain models.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用反映您选择的性能指标并寻找更好算法是很重要的。准确率可能是一个基本指标，能够快速了解模型的预测能力，但仅靠它是不够的。本章中的结果仅反映了使用选定超参数进行的训练。优化将使您能够在某些模型上获得非常好的结果。
 - en: Note
+  id: totrans-262
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: There is no strict rule defining the number of hidden layers required to consider
     a neural network as deep. However, a common convention is that a neural network
     with two or more hidden layers is typically considered a deep neural network.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有严格的规定定义神经网络需要多少隐藏层才能被视为深度神经网络。然而，一个常见的约定是，具有两个或更多隐藏层的神经网络通常被认为是深度神经网络。
 - en: Summary
+  id: totrans-264
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Applying deep learning algorithms to time series data can offer several benefits
     and challenges. Deep learning algorithms have shown great utility in time series
     analysis by effectively capturing complex patterns, extracting meaningful features,
     and making accurate predictions. However, their success relies heavily on the
     quality of the data and the chosen features.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 将深度学习算法应用于时间序列数据可以带来几个好处和挑战。深度学习算法在时间序列分析中展示了巨大的效用，通过有效捕捉复杂模式、提取有意义的特征和进行准确预测。然而，它们的成功很大程度上取决于数据的质量和所选择的特征。
 - en: The utility of applying deep learning algorithms on time series data stems from
     their ability to automatically learn hierarchical representations and model intricate
     temporal dependencies. They can handle nonlinear relationships and capture both
     local and global patterns, making them suitable for a wide range of time series
     tasks like forecasting, anomaly detection, classification, and signal processing.
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 将深度学习算法应用于时间序列数据的效用源于它们能够自动学习层次化表示和模拟复杂的时间依赖关系。它们能够处理非线性关系并捕捉局部和全局模式，使其适用于诸如预测、异常检测、分类和信号处理等广泛的时间序列任务。
 - en: 'However, applying deep learning algorithms to time series can present challenges:'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，将深度学习算法应用于时间序列可能面临挑战：
 - en: Data quality
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据质量
 - en: Deep learning models heavily rely on large amounts of high-quality, labeled
     data for training. Insufficient or noisy data can hinder the performance of the
     models, leading to inaccurate predictions or unreliable insights. Data preprocessing,
     cleaning, and addressing missing values become crucial steps to ensure the quality
     of the data.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习模型在训练时严重依赖大量高质量的标记数据。数据不足或噪声过多可能会影响模型的性能，导致预测不准确或洞察不可靠。数据预处理、清洗和处理缺失值成为确保数据质量的关键步骤。
 - en: Feature engineering
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征工程
 - en: Deep learning models can automatically learn relevant features from the data.
     However, the choice and extraction of informative features can significantly impact
     the model’s performance. Domain knowledge, data exploration, and feature engineering
     techniques are important in selecting or transforming features that enhance the
     model’s ability to capture relevant patterns.
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习模型可以自动从数据中学习相关特征。然而，选择和提取信息性特征对模型的性能有重要影响。领域知识、数据探索和特征工程技术在选择或转换能够增强模型捕捉相关模式的特征方面至关重要。
 - en: Model complexity
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型复杂性
 - en: Deep learning models are typically complex with a large number of parameters.
     Training such models requires substantial computational resources, longer training
     times, and careful hyperparameter tuning. Overfitting, where the model memorizes
     the training data without generalizing well to unseen data, is also a common challenge.
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习模型通常非常复杂，具有大量参数。训练这样的模型需要大量的计算资源、较长的训练时间和精细的超参数调整。过拟合是一个常见的挑战，即模型只记住了训练数据，而无法很好地推广到未见过的数据。
 - en: Interpretability
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 可解释性
 - en: Deep learning models are often considered mystery boxes, making it challenging
     to interpret the learned representations and understand the reasoning behind predictions.
     This can be a concern in domains where interpretability and explainability are
     crucial, such as finance.
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习模型通常被视为神秘盒子，这使得解释学习到的表示和理解预测背后的推理过程具有挑战性。在金融等领域，解释性和可解释性至关重要，这可能是一个问题。
 - en: To overcome these challenges and harness the power of deep learning algorithms
     for time series analysis, careful consideration of data quality, appropriate feature
     engineering, model architecture selection, regularization techniques, and interpretability
     approaches are essential. It is crucial to understand the specific characteristics
     and requirements of the time series data and the task at hand to choose and tailor
     the deep learning approach accordingly.
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 要克服这些挑战并利用深度学习算法进行时间序列分析，需要仔细考虑数据质量、适当的特征工程、模型架构选择、正则化技术和解释性方法。理解时间序列数据的特定特征和任务要求是选择和调整深度学习方法的关键。
 - en: '^([1](ch08.html#id685-marker)) W. S. McCulloch and W. Pitts, “A Logical Calculus
     of the Ideas Immanent in Nervous Activity,” *Bulletin of Mathematical Biophysics*
     5 (1943): 115–33.'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: '^([1](ch08.html#id685-marker)) W. S. McCulloch 和 W. Pitts，《神经活动中的思想的逻辑演算》，*Bulletin
+    of Mathematical Biophysics* 5 (1943): 115–33.'

@@ -1,7 +1,9 @@
 - en: 'Chapter 7\. Unsupervised Learning: Dimensionality Reduction'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第7章 无监督学习：降维
 - en: In previous chapters, we used supervised learning techniques to build machine
     learning models using data where the answer was already known (i.e., the class
     labels were available in our input data). Now we will explore *unsupervised learning*,
@@ -11,16 +13,20 @@
     labeled data, which can be time-consuming and impractical to create or acquire,
     this family of models allows for easy use of larger datasets for analysis and
     model development.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 在之前的章节中，我们使用监督学习技术构建了机器学习模型，使用已知答案的数据（即输入数据中已有的类标签）。现在我们将探讨*无监督学习*，在这种学习中，我们从数据集中推断出数据的特征，而输入数据的答案是未知的。无监督学习算法尝试从数据中推断出模式，而不知道数据本应产生的输出。这类模型不需要标记数据，而创建或获取标记数据可能耗时且不切实际，因此可以方便地使用更大的数据集进行分析和模型开发。
 - en: '*Dimensionality reduction* is a key technique within unsupervised learning.
     It compresses the data by finding a smaller, different set of variables that capture
     what matters most in the original features, while minimizing the loss of information.
     Dimensionality reduction helps mitigate problems associated with high dimensionality
     and permits the visualization of salient aspects of higher-dimensional data that
     is otherwise difficult to explore.'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '*降维* 是无监督学习中的关键技术。它通过找到一组较小、不同的变量来压缩数据，这些变量捕捉原始特征中最重要的内容，同时最小化信息损失。降维帮助缓解高维度带来的问题，并允许探索高维数据的显著方面，这在其他情况下很难实现。'
 - en: In the context of finance, where datasets are often large and contain many dimensions,
     dimensionality reduction techniques prove to be quite practical and useful. Dimensionality
     reduction enables us to reduce noise and redundancy in the dataset and find an
@@ -31,8 +37,10 @@
     dimensionality reduction techniques to allocate funds across asset classes and
     individual investments, identify trading strategies and signals, implement portfolio
     hedging and risk management, and develop instrument pricing models.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融领域，数据集通常庞大且包含许多维度，因此降维技术证明非常实用和有用。降维技术使我们能够减少数据集中的噪声和冗余，并使用更少的特征找到数据集的近似版本。减少要考虑的变量数量后，探索和可视化数据集变得更加简单。降维技术还通过减少特征数量或找到新特征来增强基于监督学习的模型。从业者使用这些降维技术来跨资产类别和个别投资分配资金，识别交易策略和信号，实施投资组合对冲和风险管理，以及开发工具定价模型。
 - en: In this chapter, we will discuss fundamental dimensionality reduction techniques
     and walk through three case studies in the areas of portfolio management, interest
     rate modeling, and trading strategy development. The case studies are designed
@@ -41,31 +49,41 @@
     containing the detailed implementation of modeling steps in Python and machine
     learning and finance concepts can be used as a blueprint for any other dimensionality
     reduction–based problem in finance.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们将讨论基本的降维技术，并通过投资组合管理、利率建模和交易策略开发三个案例研究进行详细说明。这些案例研究旨在不仅从金融角度涵盖多样化的主题，还突出多个机器学习和数据科学概念。包含Python实现的建模步骤和机器学习与金融概念的标准模板可以作为在金融领域其他基于降维的问题的蓝图使用。
 - en: 'In [“Case Study 1: Portfolio Management: Finding an Eigen Portfolio”](#CaseStudy1DR),
     we use a dimensionality reduction algorithm to allocate capital into different
     asset classes to maximize risk-adjusted returns. We also introduce a backtesting
     framework to assess the performance of the portfolio we constructed.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 [“案例研究1：投资组合管理：找到特征投资组合”](#CaseStudy1DR) 中，我们使用降维算法将资本分配到不同的资产类别中，以最大化风险调整后的回报。我们还介绍了一个回测框架，评估我们构建的投资组合的表现。
 - en: 'In [“Case Study 2: Yield Curve Construction and Interest Rate Modeling”](#CaseStudy2DR),
     we use dimensionality reduction techniques to generate the typical movements of
     a yield curve. This will illustrate how dimensionality reduction techniques can
     be used for reducing the dimension of market variables across a number of asset
     classes to promote faster and effective portfolio management, trading, hedging,
     and risk management.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究2：收益率曲线构建与利率建模”](#CaseStudy2DR)中，我们使用降维技术来生成收益率曲线的典型运动。这将说明如何利用降维技术来降低跨多种资产类别的市场变量的维度，以促进更快速和有效的投资组合管理、交易、套期保值和风险管理。
 - en: 'In [“Case Study 3: Bitcoin Trading: Enhancing Speed and Accuracy”](#CaseStudy3DR),
     we use dimensionality reduction techniques for algorithmic trading. This case
     study demonstrates data exploration in low dimension.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究3：比特币交易：提升速度和准确性”](#CaseStudy3DR)中，我们使用降维技术进行算法交易。这个案例研究展示了低维度数据探索。
 - en: This Chapter’s Code Repository
+  id: totrans-8
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 本章代码库
 - en: A Python-based master template for dimensionality reduction, along with the
     Jupyter notebook for all the case studies in this chapter, is included in the
     folder [*Chapter 7 - Unsup. Learning - Dimensionality Reduction*](https://oreil.ly/tI-KJ)
@@ -80,86 +98,121 @@
     learning models, so these steps have been merged with step 5\. For situations
     in which steps are irrelevant, they have been skipped or combined with others
     to make the flow of the case study more intuitive.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书代码库中包含基于Python的降维模板，以及本章所有案例研究的Jupyter笔记本，位于[*第7章 - 无监督学习 - 降维*](https://oreil.ly/tI-KJ)文件夹中。要在Python中解决任何涉及本章介绍的降维模型（如PCA、SVD、Kernel
+    PCA或t-SNE）的机器学习问题，读者需要稍微修改模板以与其问题陈述对齐。本章中提供的所有案例研究都使用标准的Python主模板，并按照[第3章](ch03.xhtml#Chapter3)中呈现的标准化模型开发步骤进行。对于降维案例研究，步骤6（即模型调优）和步骤7（即最终化模型）相对较轻，因此这些步骤已与步骤5合并。对于步骤无关的情况，它们已被跳过或与其他步骤合并，以使案例研究的流程更加直观。
 - en: Dimensionality Reduction Techniques
+  id: totrans-10
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 降维技术
 - en: Dimensionality reduction represents the information in a given dataset more
     efficiently by using fewer features. These techniques project data onto a lower
     dimensional space by either discarding variation in the data that is not informative
     or identifying a lower dimensional subspace on or near where the data resides.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 降维通过使用更少的特征更有效地表示给定数据集中的信息。这些技术通过丢弃数据中不含信息的变异或识别数据所在位置或附近的较低维子空间，将数据投影到较低维空间。
 - en: 'There are many types of dimensionality reduction techniques. In this chapter,
     we will cover these most frequently used techniques for dimensionality reduction:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 有许多种类的降维技术。在本章中，我们将介绍这些最常用的降维技术：
 - en: Principal component analysis (PCA)
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 主成分分析（PCA）
 - en: Kernel principal component analysis (KPCA)
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 核主成分分析（KPCA）
 - en: t-distributed stochastic neighbor embedding (t-SNE)
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: t-分布随机邻居嵌入（t-SNE）
 - en: After application of these dimensionality reduction techniques, the low-dimension
     feature subspace can be a linear or nonlinear function of the corresponding high-dimensional
     feature subspace. Hence, on a broad level these dimensionality reduction algorithms
     can be classified as linear and nonlinear. Linear algorithms, such as PCA, force
     the new variables to be linear combinations of the original features.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用这些降维技术后，低维特征子空间可以是对应的高维特征子空间的线性或非线性函数。因此，从广义上讲，这些降维算法可以分为线性和非线性。线性算法如PCA，强制新变量是原始特征的线性组合。
 - en: Nonlinear algorithms such KPCA and t-SNE can capture more complex structures
     in the data. However, given the infinite number of options, the algorithms still
     need to make assumptions to arrive at a solution.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: KPCA 和 t-SNE 等非线性算法能够捕捉数据中更复杂的结构。然而，由于选项的无限性，这些算法仍然需要做出假设以得出解决方案。
 - en: Principal Component Analysis
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 主成分分析
 - en: The idea of principal component analysis (PCA) is to reduce the dimensionality
     of a dataset with a large number of variables, while retaining as much variance
     in the data as possible. PCA allows us to understand whether there is a different
     representation of the data that can explain a majority of the original data points.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 主成分分析（PCA）的理念是在保留数据中尽可能多的方差的同时，减少具有大量变量的数据集的维度。PCA 使我们能够了解是否存在一个不同的数据表示，可以解释大部分原始数据点。
 - en: PCA finds a set of new variables that, through a linear combination, yield the
     original variables. The new variables are called *principal components* (PCs).
     These principal components are orthogonal (or independent) and can represent the
     original data. The number of components is a hyperparameter of the PCA algorithm
     that sets the target dimensionality.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: PCA 找到了一组新的变量，通过线性组合可以得到原始变量。这些新变量称为*主成分*（PC）。这些主成分是正交的（或者独立的），可以表示原始数据。主成分的数量是
+    PCA 算法的一个超参数，用于设置目标维度。
 - en: The PCA algorithm works by projecting the original data onto the principal component
     space. It then identifies a sequence of principal components, each of which aligns
     with the direction of maximum variance in the data (after accounting for variation
     captured by previously computed components). The sequential optimization also
     ensures that new components are not correlated with existing components. Thus
     the resulting set constitutes an orthogonal basis for a vector space.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: PCA 算法通过将原始数据投影到主成分空间上来工作。然后它识别一系列主成分，每个主成分都与数据中的最大方差方向对齐（考虑到先前计算的成分捕捉的变化）。顺序优化还确保新的成分与现有成分不相关。因此，生成的集合构成了向量空间的正交基础。
 - en: The decline in the amount of variance of the original data explained by each
     principal component reflects the extent of correlation among the original features.
     The number of components that capture, for example, 95% of the original variation
     relative to the total number of features provides an insight into the linearly
     independent information of the original data. In order to understand how PCA works,
     let’s consider the distribution of data shown in [Figure 7-1](#PCA1).
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个主成分解释的原始数据方差量的减少反映了原始特征之间相关性的程度。例如，捕获 95% 原始变化相对于总特征数量的组件数量提供了对原始数据线性独立信息的见解。为了理解
+    PCA 的工作原理，让我们考虑 [图 7-1](#PCA1) 中显示的数据分布。
 - en: '![mlbf 0701](Images/mlbf_0701.png)'
+  id: totrans-23
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0701](Images/mlbf_0701.png)'
 - en: Figure 7-1\. PCA-1
+  id: totrans-24
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-1\. PCA-1
 - en: PCA finds a new quadrant system (*y’* and *x’* axes) that is obtained from the
     original through translation and rotation. It will move the center of the coordinate
     system from the original point *(0, 0)* to the center of the distribution of data
@@ -167,86 +220,129 @@
     is the one with the most variation relative to data points (i.e., the direction
     of maximum spread). Then it moves the other axis orthogonally to the principal
     one, into a less important direction of variation.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: PCA 找到了一个新的象限系统（*y’* 和 *x’* 轴），这是从原始系统中通过平移和旋转得到的。它将坐标系的中心从原点 *(0, 0)* 移动到数据点的分布中心。然后将
+    x 轴移动到主要变化的主轴上，这是相对于数据点具有最大变化的方向（即最大散布方向）。然后将另一个轴正交地移动到主轴以外的一个次要变化方向。
 - en: '[Figure 7-2](#PCA2) shows an example of PCA in which two dimensions explain
     nearly all the variance of the underlying data.'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-2](#PCA2) 展示了一个 PCA 的例子，其中两个维度几乎解释了底层数据的所有方差。'
 - en: '![mlbf 0702](Images/mlbf_0702.png)'
+  id: totrans-27
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0702](Images/mlbf_0702.png)'
 - en: Figure 7-2\. PCA-2
+  id: totrans-28
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-2\. PCA-2
 - en: These new directions that contain the maximum variance are called principal
     components and are orthogonal to each other by design.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些包含最大方差的新方向被称为主成分，并且设计上彼此正交。
 - en: 'There are two approaches to finding the principal components: *Eigen decomposition*
     and *singular value decomposition* (SVD).'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 寻找主成分有两种方法：特征分解和奇异值分解（SVD）。
 - en: Eigen decomposition
+  id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 特征分解
 - en: 'The steps of Eigen decomposition are as follows:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征分解的步骤如下：
 - en: First, a covariance matrix is created for the features.
+  id: totrans-33
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 首先为特征创建一个协方差矩阵。
 - en: Once the covariance matrix is computed, the *eigenvectors* of the covariance
     matrix are calculated.^([1](ch07.xhtml#idm45174917893240)) These are the directions
     of maximum variance.
+  id: totrans-34
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 计算完协方差矩阵后，计算协方差矩阵的*特征向量*。[^1]
 - en: The *eigenvalues* are then created. They define the magnitude of the principal
     components.
+  id: totrans-35
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后创建*特征值*。它们定义了主成分的大小。
 - en: So, for *n* dimensions, there will be an *n* × *n* variance-covariance matrix,
     and as a result, we will have an eigenvector of *n* values and *n* eigenvalues.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，对于*n*维度，将有一个*n* × *n*的方差-协方差矩阵，结果将是*n*个特征值和*n*个特征向量。
 - en: Python’s sklearn library offers a powerful implementation of PCA. The `sklearn.decomposition.PCA`
     function computes the desired number of principal components and projects the
     data into the component space. The following code snippet illustrates how to create
     two principal components from a dataset.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: Python的sklearn库提供了PCA的强大实现。`sklearn.decomposition.PCA`函数计算所需数量的主成分，并将数据投影到组件空间中。以下代码片段说明了如何从数据集创建两个主成分。
 - en: '`Implementation`'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '`实现`'
 - en: '[PRE0]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: There are additional items, such as *factor loading*, that can be obtained using
     the functions in the sklearn library. Their use will be demonstrated in the case
     studies.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有额外的项目，如*因子负载*，可以使用sklearn库中的函数获得。它们的使用将在案例研究中进行演示。
 - en: Singular value decomposition
+  id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 奇异值分解
 - en: Singular value decomposition (SVD) is factorization of a matrix into three matrices
     and is applicable to a more general case of *m* × *n* rectangular matrices.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 奇异值分解（SVD）是将一个矩阵分解为三个矩阵，并适用于更一般的*m* × *n*矩形矩阵。
 - en: 'If *A* is an *m* × *n* matrix, then SVD can express the matrix as:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果*A*是一个*m* × *n*矩阵，则SVD可以将矩阵表示为：
 - en: <math alttext="upper A equals upper U normal upper Sigma upper V Superscript
     upper T" display="block"><mrow><mi>A</mi> <mo>=</mo> <mi>U</mi> <mi>Σ</mi> <msup><mi>V</mi>
     <mi>T</mi></msup></mrow></math>
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper A equals upper U normal upper Sigma upper V Superscript
+    upper T" display="block"><mrow><mi>A</mi> <mo>=</mo> <mi>U</mi> <mi>Σ</mi> <msup><mi>V</mi>
+    <mi>T</mi></msup></mrow></math>
 - en: where *A* is an *m* × *n* matrix, *U* is an *(m* × *m)* orthogonal matrix, *Σ*
     is an *(m* × *n)* nonnegative rectangular diagonal matrix, and *V* is an *(n*
     × *n)* orthogonal matrix. SVD of a given matrix tells us exactly how we can decompose
@@ -254,89 +350,125 @@
     values*. Their magnitude indicates how significant they are to preserving the
     information of the original data. *V* contains the principal components as column
     vectors.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*A*是一个*m* × *n*矩阵，*U*是一个*(m* × *m)*正交矩阵，*Σ*是一个*(m* × *n)*非负矩形对角矩阵，*V*是一个*(n*
+    × *n)*正交矩阵。给定矩阵的SVD告诉我们如何精确地分解矩阵。*Σ*是一个对角线上有*m*个对角值的对角矩阵，称为*奇异值*。它们的大小表明它们对保留原始数据信息的重要性。*V*包含作为列向量的主成分。
 - en: As shown above, both Eigen decomposition and SVD tell us that using PCA is effectively
     looking at the initial data from a different angle. Both will always give the
     same answer; however, SVD can be much more efficient than Eigen decomposition,
     as it is able to handle sparse matrices (those which contain very few nonzero
     elements). In addition, SVD yields better numerical stability, especially when
     some of the features are strongly correlated.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 如上所示，特征值分解和奇异值分解告诉我们使用PCA有效地从不同角度查看初始数据。两者始终给出相同的答案；然而，SVD比特征值分解更高效，因为它能处理稀疏矩阵（即包含极少非零元素的矩阵）。此外，SVD在数值稳定性方面表现更佳，特别是当某些特征强相关时。
 - en: '*Truncated SVD* is a variant of SVD that computes only the largest singular
     values, where the number of computes is a user-specified parameter. This method
     is different from regular SVD in that it produces a factorization where the number
     of columns is equal to the specified truncation. For example, given an *n* × *n*
     matrix, SVD will produce matrices with *n* columns, whereas truncated SVD will
     produce matrices with a specified number of columns that may be less than *n*.'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '*截断SVD*是SVD的一个变体，它仅计算最大的奇异值，其中计算的数量是用户指定的参数。这种方法与常规SVD不同，因为它产生的分解中列数等于指定的截断数。例如，给定一个*n*
+    × *n*矩阵，SVD将生成具有*n*列的矩阵，而截断SVD将生成具有少于*n*个列的指定数目的矩阵。'
 - en: '`Implementation`'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '`实现`'
 - en: '[PRE1]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: In terms of the weaknesses of the PCA technique, although it is very effective
     in reducing the number of dimensions, the resulting principal components may be
     less interpretable than the original features. Additionally, the results may be
     sensitive to the selected number of principal components. For example, too few
     principal components may miss some information compared to the original list of
     features. Also, PCA may not work well if the data is strongly nonlinear.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 在PCA技术的弱点方面，虽然它在降低维数方面非常有效，但生成的主成分可能比原始特征的解释性要差。此外，结果可能对选择的主成分数量敏感。例如，与原始特征列表相比，如果主成分太少，可能会丢失一些信息。此外，如果数据非常非线性，PCA可能效果不佳。
 - en: Kernel Principal Component Analysis
+  id: totrans-51
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 核主成分分析
 - en: A main limitation of PCA is that it only applies linear transformations. Kernel
     principal component analysis (KPCA) extends PCA to handle nonlinearity. It first
     maps the original data to some nonlinear feature space (usually one of higher
     dimension). Then it applies PCA to extract the principal components in that space.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: PCA的一个主要局限性是它只适用于线性变换。核主成分分析（KPCA）扩展了PCA以处理非线性。它首先将原始数据映射到某些非线性特征空间（通常是更高维度之一），然后在该空间中应用PCA来提取主成分。
 - en: A simple example of when KPCA is applicable is shown in [Figure 7-3](#KPCA).
     Linear transformations are suitable for the blue and red data points on the left-hand
     plot. However, if all dots are arranged as per the graph on the right, the result
     is not linearly separable. We would then need to apply KPCA to separate the components.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: KPCA适用的一个简单示例显示在[图7-3](#KPCA)中。线性变换适用于左图中的蓝色和红色数据点。然而，如果所有点按右图中的图表排列，结果就不是线性可分的。我们随后需要应用KPCA来分离这些组件。
 - en: '![mlbf 0703](Images/mlbf_0703.png)'
+  id: totrans-54
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0703](Images/mlbf_0703.png)'
 - en: Figure 7-3\. Kernel PCA
+  id: totrans-55
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-3\. 核主成分分析
 - en: '`Implementation`'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Implementation`'
 - en: '[PRE2]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: In the Python code, we specify `kernel='rbf'`, which is the [radial basis function
     kernel](https://oreil.ly/zCo-X). This is commonly used as a kernel in machine
     learning techniques, such as in SVMs (see [Chapter 4](ch04.xhtml#Chapter4)).
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Python代码中，我们指定`kernel='rbf'`，这是[径向基函数核](https://oreil.ly/zCo-X)。这通常用作机器学习技术中的核，例如在SVMs中（见[第4章](ch04.xhtml#Chapter4)）。
 - en: Using KPCA, component separation becomes easier in a higher dimensional space,
     as mapping into a higher dimensional space often provides greater classification
     power.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用KPCA，在更高维度空间中进行组件分离变得更加容易，因为映射到更高维度空间通常提供更大的分类能力。
 - en: t-distributed Stochastic Neighbor Embedding
+  id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: t-分布随机邻居嵌入
 - en: t-distributed stochastic neighbor embedding (t-SNE) is a dimensionality reduction
     algorithm that reduces the dimensions by modeling the probability distribution
     of neighbors around each point. Here, the term *neighbors* refers to the set of
     points closest to a given point. The algorithm emphasizes keeping similar points
     together in low dimensions as opposed to maintaining the distance between points
     that are apart in high dimensions.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: t-分布随机邻域嵌入（t-SNE）是一种降维算法，通过建模每个点周围邻居的概率分布来减少维度。这里，术语*邻居*指的是离给定点最近的一组点。与在高维度中保持点之间距离不同，该算法强调在低维度中将相似的点放在一起。
 - en: The algorithm starts by calculating the probability of similarity of data points
     in corresponding high and low dimensional space. The similarity of points is calculated
     as the conditional probability that a point *A* would choose point *B* as its
@@ -345,22 +477,32 @@
     difference between these conditional probabilities (or similarities) in the high
     and low dimensional spaces for a perfect representation of data points in the
     low dimensional space.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 该算法首先计算对应高维和低维空间中数据点相似性的概率。点的相似性被计算为条件概率，即如果邻居是按照以点*A*为中心的正态分布的概率密度比例来选择的话，点*A*会选择点*B*作为其邻居的概率。然后，该算法试图最小化这些条件概率（或相似性）在高维和低维空间中的差异，以完美地表示低维空间中的数据点。
 - en: '`Implementation`'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Implementation`'
 - en: '[PRE3]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: An implementation of t-SNE is shown in the third case study presented in this
     chapter.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章的第三个案例研究中展示了t-SNE的实现。
 - en: 'Case Study 1: Portfolio Management: Finding an Eigen Portfolio'
+  id: totrans-66
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究1：投资组合管理：找到一个特征投资组合
 - en: A primary objective of portfolio management is to allocate capital into different
     asset classes to maximize risk-adjusted returns. Mean-variance portfolio optimization
     is the most commonly used technique for asset allocation. This method requires
@@ -369,8 +511,10 @@
     these inputs, especially when the sample size of returns is insufficient compared
     to the number of assets being allocated. These errors greatly jeopardize the optimality
     of the resulting portfolios, leading to poor and unstable outcomes.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资组合管理的主要目标之一是将资本分配到不同的资产类别中，以最大化风险调整回报。均值方差投资组合优化是资产配置中最常用的技术。该方法需要估计协方差矩阵和考虑的资产的预期回报。然而，财务回报的不稳定性导致这些输入的估计误差，特别是当回报样本量不足以与被分配的资产数量相比时。这些错误严重危及了结果投资组合的最优性，导致结果不佳和不稳定的结果。
 - en: Dimensionality reduction is a technique we can use to address this issue. Using
     PCA, we can take an *n* × *n* covariance matrix of our assets and create a set
     of *n* linearly uncorrelated principal portfolios (sometimes referred to in literature
@@ -379,232 +523,355 @@
     among the assets and are mutually uncorrelated. Moreover, we can use standardized
     principal components as the portfolio weights, with the statistical guarantee
     that the returns from these principal portfolios are linearly uncorrelated.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 降维是一种可以用来解决这个问题的技术。使用PCA，我们可以取我们资产的*n* × *n*协方差矩阵，并创建一组线性不相关的主要投资组合（有时在文献中称为*eigen
+    portfolio*），由我们的资产及其对应的方差组成。协方差矩阵的主成分捕捉了资产之间的大部分协变性，并且彼此之间是互不相关的。此外，我们可以使用标准化的主成分作为投资组合权重，其统计保证是这些主要投资组合的回报是线性不相关的。
 - en: By the end of this case study, readers will be familiar with a general approach
     to finding an eigen portfolio for asset allocation, from understanding concepts
     of PCA to backtesting different principal components.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究结束时，读者将熟悉通过PCA找到用于资产配置的特征组合（eigen portfolio）的一般方法，从理解PCA概念到回测不同的主成分。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Dimensionality Reduction for Asset Allocation
+  id: totrans-71
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用降维进行资产配置的蓝图
 - en: 1\. Problem definition
+  id: totrans-72
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: Our goal in this case study is to maximize the risk-adjusted returns of an equity
     portfolio using PCA on a dataset of stock returns.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在本案例研究中的目标是通过在股票回报数据集上使用PCA来最大化一个权益投资组合的风险调整回报。
 - en: The dataset used for this case study is the Dow Jones Industrial Average (DJIA)
     index and its respective 30 stocks. The return data used will be from the year
     2000 onwards and can be downloaded from Yahoo Finance.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究使用的数据集是道琼斯工业平均指数（DJIA）及其30只股票。使用的回报数据将从2000年开始，并可从Yahoo Finance下载。
 - en: We will also compare the performance of our hypothetical portfolios against
     a benchmark and backtest the model to evaluate the effectiveness of the approach.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还将比较我们假设投资组合的表现与基准的表现，并回测模型以评估方法的有效性。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-76
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 开始——加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-77
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The list of the libraries used for data loading, data analysis, data preparation,
     model evaluation, and model tuning are shown below. The details of most of these
     packages and functions can be found in Chapters [2](ch02.xhtml#Chapter2) and [4](ch04.xhtml#Chapter4).
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是用于数据加载、数据分析、数据准备、模型评估和模型调优的库列表。这些包和函数的详细信息可以在第[2](ch02.xhtml#Chapter2)章和第[4](ch04.xhtml#Chapter4)章中找到。
 - en: '`Packages for dimensionality reduction`'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于降维的包`'
 - en: '[PRE4]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '`Packages for data processing and visualization`'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于数据处理和可视化的包`'
 - en: '[PRE5]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 2.2\. Loading the data
+  id: totrans-83
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: 'We import the dataframe containing the adjusted closing prices for all the
     companies in the DJIA index:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们导入包含DJIA指数所有公司调整后收盘价格的数据框架：
 - en: '[PRE6]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 3\. Exploratory data analysis
+  id: totrans-86
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: Next, we inspect the dataset.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们检查数据集。
 - en: 3.1\. Descriptive statistics
+  id: totrans-88
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述性统计
 - en: 'Let’s look at the shape of the data:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看数据的形状：
 - en: '[PRE7]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '`Output`'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE8]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: The data is comprised of 30 columns and 4,804 rows containing the daily closing
     prices of the 30 stocks in the index since 2000.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据由30列和4,804行组成，包含自2000年以来指数中30只股票的日收盘价格。
 - en: 3.2\. Data visualization
+  id: totrans-94
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2\. 数据可视化
 - en: 'The first thing we must do is gather a basic sense of our data. Let us take
     a look at the return correlations:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们必须首先对数据有一个基本的了解。让我们看一下收益相关性：
 - en: '[PRE9]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: There is a significant positive correlation between the daily returns. The plot
     (full-size version available on [GitHub](https://oreil.ly/yFwu-)) also indicates
     that the information embedded in the data may be represented by fewer variables
     (i.e., something smaller than the 30 dimensions we have now). We will perform
     another detailed look at the data after implementing dimensionality reduction.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 日常回报之间存在显著的正相关性。图表（完整版本可在[GitHub](https://oreil.ly/yFwu-)上找到）还表明，数据中嵌入的信息可以由更少的变量表示（即小于我们现在有的30个维度）。在实施降维之后，我们将进一步详细查看数据。
 - en: '`Output`'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in01](Images/mlbf_07in01.png)'
+  id: totrans-99
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in01](Images/mlbf_07in01.png)'
 - en: 4\. Data preparation
+  id: totrans-100
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: We prepare the data for modeling in the following sections.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在接下来的几节中为建模准备数据。
 - en: 4.1\. Data cleaning
+  id: totrans-102
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清理
 - en: 'First, we check for NAs in the rows and either drop them or fill them with
     the mean of the column:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们检查行中的缺失值，然后要么删除它们，要么用列的均值填充：
 - en: '[PRE10]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '`Output`'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE11]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'Some stocks were added to the index after our start date. To ensure proper
     analysis, we will drop those with more than 30% missing values. Two stocks fit
     this criteria—Dow Chemicals and Visa:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们开始日期后，有些股票被添加到指数中。为了确保适当的分析，我们将放弃那些超过30%缺失值的股票。两只股票符合此条件—道琼斯化学和Visa：
 - en: '[PRE12]'
+  id: totrans-108
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '`Output`'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE13]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'We end up with return data for 28 companies and an additional one for the DJIA
     index. Now we fill the NAs with the mean of the columns:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们最终得到了28家公司的回报数据，另外还有一家DJIA指数的数据。现在我们用列的均值填充缺失值：
 - en: '[PRE14]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 4.2\. Data transformation
+  id: totrans-113
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 数据转换
 - en: 'In addition to handling the missing values, we also want to standardize the
     dataset features onto a unit scale (mean = 0 and variance = 1). All the variables
     should be on the same scale before applying PCA; otherwise, a feature with large
     values will dominate the result. We use `StandardScaler` in sklearn to standardize
     the dataset, as shown below:'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了处理缺失值外，我们还希望将数据集特征标准化到单位比例尺上（均值 = 0，方差 = 1）。在应用PCA之前，所有变量应处于相同的尺度；否则，具有较大值的特征将主导结果。我们使用sklearn中的`StandardScaler`来标准化数据集，如下所示：
 - en: '[PRE15]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: Overall, cleaning and standardizing the data is important in order to create
     a meaningful and reliable dataset to be used in dimensionality reduction without
     error.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，清理和标准化数据对于创建可用于降维的有意义且可靠的数据集至关重要。
 - en: 'Let us look at the returns of one of the stocks from the cleaned and standardized
     dataset:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看清理和标准化数据集中其中一只股票的回报：
 - en: '[PRE16]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '`Output`'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in02](Images/mlbf_07in02.png)'
+  id: totrans-120
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in02](Images/mlbf_07in02.png)'
 - en: 5\. Evaluate algorithms and models
+  id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: 5.1\. Train-test split
+  id: totrans-122
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 训练测试拆分
 - en: 'The portfolio is divided into training and test sets to perform the analysis
     regarding the best portfolio and to perform backtesting:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 投资组合被分为训练集和测试集，以进行有关最佳投资组合的分析和回测：
 - en: '[PRE17]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '5.2\. Model evaluation: applying principal component analysis'
+  id: totrans-125
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 模型评估：应用主成分分析
 - en: 'As the next step, we create a function to perform PCA using the sklearn library.
     This function generates the principal components from the data that will be used
     for further analysis:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为下一步，我们创建一个函数，使用sklearn库执行PCA。此函数从数据生成主成分，用于进一步分析：
 - en: '[PRE18]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 5.2.1\. Explained variance using PCA
+  id: totrans-128
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.1\. 使用PCA解释方差
 - en: In this step, we look at the variance explained using PCA. The decline in the
     amount of variance of the original data explained by each principal component
     reflects the extent of correlation among the original features. The first principal
@@ -612,36 +879,52 @@
     is a representation of the second highest variance, and so on. The eigenvectors
     with the lowest eigenvalues describe the least amount of variation within the
     dataset. Therefore, these values can be dropped.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们观察使用PCA解释的方差。每个主成分解释的原始数据方差的减少反映了原始特征之间的相关程度。第一个主成分捕获了原始数据中的最大方差，第二个成分是第二大方差的表示，依此类推。具有最低特征值的特征向量描述了数据集中最少的变化量。因此，可以放弃这些值。
 - en: The following charts show the number of principal components and the variance
     explained by each.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的图表显示了每个主成分的数量及其解释的方差。
 - en: '[PRE19]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '`Output`'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in03](Images/mlbf_07in03.png)'
+  id: totrans-133
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in03](Images/mlbf_07in03.png)'
 - en: We find that the most important factor explains around 40% of the daily return
     variation. This dominant principal component is usually interpreted as the “market”
     factor. We will discuss the interpretation of this and the other factors when
     looking at the portfolio weights.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们发现，最重要的因素解释了每日回报变化的约40%。这个主导的主成分通常被解释为“市场”因素。在查看投资组合权重时，我们将讨论这个因素及其他因素的解释。
 - en: The plot on the right shows the cumulative explained variance and indicates
     that around ten factors explain 73% of the variance in returns of the 28 stocks
     analyzed.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 右侧图表显示了累计解释的方差，并指出约十个因素解释了28只股票回报中的73%方差。
 - en: 5.2.2\. Looking at portfolio weights
+  id: totrans-136
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.2\. 查看投资组合权重
 - en: 'In this step, we look more closely at the individual principal components.
     These may be less interpretable than the original features. However, we can look
     at the weights of the factors on each principal component to assess any intuitive
@@ -649,45 +932,71 @@
     of each stock as each of the first five principal components. We then create a
     scatterplot that visualizes an organized descending plot with the respective weight
     of every company at the current chosen principal component:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们更详细地查看各个主成分。这些可能比原始特征更难以解释。然而，我们可以查看每个主成分上因子的权重，以评估相对于这28只股票的任何直觉主题。我们构建了五个投资组合，将每只股票的权重定义为前五个主成分中的每一个。然后，我们创建一个散点图，以可视化当前所选主成分的每家公司的组织排列下降绘图重量：
 - en: '[PRE20]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[PRE21]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '`Output`'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE22]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '[PRE23]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: 'Given that scale for the plots are the same, we can also look at the heatmap
     as follows:'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于图表的尺度相同，我们还可以如下查看热图：
 - en: '`Output`'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in04](Images/mlbf_07in04.png)'
+  id: totrans-145
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in04](Images/mlbf_07in04.png)'
 - en: '[PRE24]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '`Output`'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in05](Images/mlbf_07in05.png)'
+  id: totrans-148
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in05](Images/mlbf_07in05.png)'
 - en: The heatmap and barplots show the contribution of different stocks in each eigenvector.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 热图和条形图显示了每个特征向量中不同股票的贡献。
 - en: Traditionally, the intuition behind each principal portfolio is that it represents
     some sort of independent risk factor. The manifestation of those risk factors
     depends on the assets in the portfolio. In our case study, the assets are all
@@ -696,26 +1005,38 @@
     component (*Portfolio 0*), we see that the weights are distributed homogeneously
     across the stocks. This nearly equal weighted portfolio explains 40% of the variance
     in the index and is a fair representation of a systematic risk factor.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 传统上，每个主要投资组合背后的直觉是它代表某种独立的风险因素。这些风险因素的表现取决于投资组合中的资产。在我们的案例研究中，这些资产都是美国国内的股票。方差最大的主要投资组合通常是系统性风险因素（即“市场”因素）。观察第一个主成分（*Portfolio
+    0*），我们看到权重在各个股票之间均匀分布。这个几乎等权重的投资组合解释了指数方差的40%，是系统性风险因素的一个公平代表。
 - en: The rest of the eigen portfolios typically correspond to sector or industry
     factors. For example, *Portfolio 1* assigns a high weight to JNJ and MRK, which
     are stocks from the health care sector. Similarly, *Portfolio 3* has high weights
     on technology and electronics companies, such AAPL, MSFT, and IBM.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 其余的特征组合通常对应于部门或行业因素。例如，*Portfolio 1* 高度权重于来自健康保健部门的JNJ和MRK等股票。同样，*Portfolio
+    3* 高度权重于技术和电子公司，如AAPL、MSFT和IBM。
 - en: When the asset universe for our portfolio is expanded to include broad, global
     investments, we may identify factors for international equity risk, interest rate
     risk, commodity exposure, geographic risk, and many others.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们的投资组合资产范围扩展到包括广泛的全球投资时，我们可能会识别出国际股票风险、利率风险、商品暴露、地理风险等因素。
 - en: In the next step, we find the best eigen portfolio.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一步中，我们找到最佳的特征组合。
 - en: 5.2.3\. Finding the best eigen portfolio
+  id: totrans-154
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.3\. 寻找最佳的特征组合
 - en: To determine the best eigen portfolio, we use the *Sharpe ratio*. This is an
     assessment of risk-adjusted performance that explains the annualized returns against
     the annualized volatility of a portfolio. A high Sharpe ratio explains higher
@@ -725,87 +1046,134 @@
     to the periods per year (days of operations in the exchange in a year). Annualized
     volatility is computed by taking the standard deviation of the returns and multiplying
     it by the square root of the periods per year.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了确定最佳的特征组合，我们使用*夏普比率*。这是一种根据投资组合的年化回报与年化波动率对风险调整后表现进行评估的方法。高夏普比率解释了在特定投资组合中的高回报和/或低波动率。年化夏普比率通过将年化回报除以年化波动率来计算。对于年化回报，我们应用所有周期内的几何平均数（一年内交易所的运作日）。年化波动率通过计算回报的标准偏差并乘以每年操作的周期的平方根来计算。
 - en: 'The following code computes the Sharpe ratio of a portfolio:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码计算一个投资组合的夏普比率：
 - en: '[PRE25]'
+  id: totrans-157
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: 'We construct a loop to compute the principal component weights for each eigen
     portfolio. Then it uses the Sharpe ratio function to look for the portfolio with
     the highest Sharpe ratio. Once we know which portfolio has the highest Sharpe
     ratio, we can visualize its performance against the index for comparison:'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们构建一个循环来计算每个特征组合的主成分权重。然后使用夏普比率函数查找具有最高夏普比率的投资组合。一旦我们知道哪个投资组合具有最高的夏普比率，我们可以将其性能与指数进行比较可视化：
 - en: '[PRE26]'
+  id: totrans-159
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '`Output`'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE27]'
+  id: totrans-161
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '![mlbf 07in06](Images/mlbf_07in06.png)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in06](Images/mlbf_07in06.png)'
 - en: 'As shown by the results above, *Portfolio 0* is the best performing one, with
     the highest return *and* the lowest volatility. Let us look at the composition
     of this portfolio:'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 如上结果所示，*组合 0* 是表现最佳的，具有最高的回报和最低的波动率。让我们看看这个投资组合的构成：
 - en: '[PRE28]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '`Output`'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in07](Images/mlbf_07in07.png)'
+  id: totrans-166
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in07](Images/mlbf_07in07.png)'
 - en: Recall that this is the portfolio that explains 40% of the variance and represents
     the systematic risk factor. Looking at the portfolio weights (in percentages in
     the y-axis), they do not vary much and are in the range of 2.7% to 4.5% across
     all stocks. However, the weights seem to be higher in the financial sector, and
     stocks such as AXP, JPM, and GS have higher-than-average weights.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 请记住，这是解释了40%方差并代表系统风险因子的投资组合。查看投资组合权重（y轴上的百分比），它们变化不大，所有股票的权重都在2.7%到4.5%的范围内。然而，权重在金融部门较高，像AXP、JPM和GS等股票的权重高于平均水平。
 - en: 5.2.4\. Backtesting the eigen portfolios
+  id: totrans-168
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.4\. 对特征组合进行回测
 - en: 'We will now try to backtest this algorithm on the test set. We will look at
     a few of the top performers and the worst performer. For the top performers we
     look at the 3rd- and 4th-ranked eigen portfolios (*Portfolios 5* and *1*), while
     the worst performer reviewed was ranked 19th (*Portfolio 14*):'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们将尝试在测试集上对这个算法进行回测。我们将查看一些表现最佳的和最差的投资组合。对于表现最佳的投资组合，我们查看第三和第四名的特征组合（*组合 5*
+    和 *1*），而被评为最差表现的是第19名的投资组合（*组合 14*）：
 - en: '[PRE29]'
+  id: totrans-170
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '`Output`'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE30]'
+  id: totrans-172
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '![mlbf 07in08](Images/mlbf_07in08.png)'
+  id: totrans-173
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in08](Images/mlbf_07in08.png)'
 - en: '[PRE31]'
+  id: totrans-174
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '![mlbf 07in09](Images/mlbf_07in09.png)'
+  id: totrans-175
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in09](Images/mlbf_07in09.png)'
 - en: '[PRE32]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: '![mlbf 07in10](Images/mlbf_07in10.png)'
+  id: totrans-177
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in10](Images/mlbf_07in10.png)'
 - en: As shown in the preceding charts, the eigen portfolio return of the top portfolios
     outperforms the equally weighted index. The eigen portfolio ranked 19th underperformed
     the market significantly in the test set. The outperformance and underperformance
@@ -814,56 +1182,79 @@
     For example, *Portfolio 1* assigns high weight to several stocks in the health
     care sector, as discussed previously. This sector saw a significant increase in
     2017 onwards, which is reflected in the chart for *Eigen Portfolio 1*.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 如前面的图表所示，顶级投资组合的特征组合回报优于等权重指数。第19名的特征组合在测试集中表现显著低于市场。这种超额表现和表现不佳归因于特征组合中股票或部门的权重。我们可以进一步深入了解每个投资组合的单个驱动因素。例如，*组合
+    1* 在多个医疗保健股票中分配了高权重，如前所述。这个部门从2017年开始出现了显著增长，这在*特征组合 1* 的图表中有所体现。
 - en: Given that these eigen portfolios are independent, they also provide diversification
     opportunities. As such, we can invest across these uncorrelated eigen portfolios,
     providing other potential portfolio management benefits.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于这些特征组合是独立的，它们还提供了分散投资的机会。因此，我们可以跨这些不相关的特征组合进行投资，从而带来其他潜在的投资组合管理好处。
 - en: Conclusion
+  id: totrans-180
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we applied dimensionality reduction techniques in the context
     of portfolio management, using eigenvalues and eigenvectors from PCA to perform
     asset allocation.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们在投资组合管理的背景下应用了降维技术，利用PCA中的特征值和特征向量进行资产配置。
 - en: We demonstrated that, while some interpretability is lost, the initution behind
     the resulting portfolios can be matched to risk factors. In this example, the
     first eigen portfolio represented a systematic risk factor, while others exhibited
     sector or industry concentration.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们展示了尽管可能失去一些可解释性，但得到的投资组合背后的理念可以与风险因素相匹配。在这个例子中，第一个特征组合代表了一个系统性风险因素，而其他的则展示了特定行业或行业集中度。
 - en: Through backtesting, we found that the portfolio with the best result on the
     training set also achieved the strongest performance on the test set. Several
     of the portfolios outperformed the index based on the Sharpe ratio, the risk-adjusted
     performance metric used in this exercise.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过回测，我们发现在训练集上表现最佳的投资组合也在测试集上取得了最强的表现。根据夏普比率，这些投资组合中的几个表现优于指数，夏普比率是本次练习中使用的风险调整后的绩效指标。
 - en: Overall, we found that using PCA and analyzing eigen portfolios can yield a
     robust methodology for asset allocation and portfolio management.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，我们发现使用主成分分析（PCA）和分析特征组合能够提供一种稳健的资产配置和投资组合管理方法。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-185
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 2: Yield Curve Construction and Interest Rate Modeling'
+  id: totrans-186
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究2：收益率曲线构建与利率建模
 - en: A number of problems in portfolio management, trading, and risk management require
     a deep understanding and modeling of yield curves.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 在投资组合管理、交易和风险管理中存在许多问题需要深入理解和建模收益率曲线。
 - en: 'A yield curve represents interest rates, or yields, across a range of maturities,
     usually depicted in a line graph, as discussed in [“Case Study 4: Yield Curve
     Prediction”](ch05.xhtml#CaseStudy4SR) in [Chapter 5](ch05.xhtml#Chapter5). Yield
     curve illustrates the “price of funds” at a given point in time and, due to the
     time value of money, often shows interest rates rising as a function of maturity.'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 收益率曲线表示在一系列到期期限上的利率或收益率，通常以折线图形式呈现，如第5章的[“案例研究4：收益率曲线预测”](ch05.xhtml#CaseStudy4SR)中所讨论的。收益率曲线反映了某一时点的“资金价格”，由于货币的时间价值，通常显示出利率随到期期限延长而上升的情况。
 - en: Researchers in finance have studied the yield curve and found that shifts or
     changes in the shape of the yield curve are attributable to a few unobservable
     factors. Specifically, empirical studies reveal that more than 99% of the movement
@@ -878,8 +1269,10 @@
     upward sloping). Changes in the short- and long-term rates can also produce a
     flatter yield curve. The main effects of the shock to the curvature factor focuses
     on medium-term interest rates, leading to hump, twist, or U-shaped characteristics.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融研究人员对收益率曲线进行了研究，发现曲线形状的变化主要由几个不可观测的因素引起。具体来说，经验研究表明，超过99%的美国国债收益率变动可以归因于三个因素，通常称为水平、斜率和曲率。这些名称描述了每个因素在冲击下如何影响收益率曲线的形状。水平冲击几乎同等程度地改变所有到期收益率，导致整条曲线整体上移或下移，形成*平行位移*。斜率因子的冲击改变了短期和长期利率之间的差异。例如，当长期利率的增幅超过短期利率时，曲线变得更为陡峭（即曲线在视觉上更向上倾斜）。短期和长期利率的变化也可能导致较平坦的收益率曲线。曲率因子的冲击主要影响中期利率，导致出现驼峰、扭曲或U型特征。
 - en: Dimensionality reduction breaks down the movement of the yield curve into these
     three factors. Reducing the yield curve into fewer components means we can focus
     on a few intuitive dimensions in the yield curve. Traders and risk managers use
@@ -888,321 +1281,495 @@
     when allocating funds. Interest rate structurers use this technique to model the
     yield curve and analyze its shape. Overall, it promotes faster and more effective
     portfolio management, trading, hedging, and risk management.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 降维将收益率曲线的运动分解为这三个因子。将收益率曲线减少到较少的组成部分意味着我们可以专注于收益率曲线中的几个直观维度。交易员和风险经理使用这种技术来在对冲利率风险时压缩曲线中的风险因素。同样，投资组合经理在分配资金时分析的维度更少。利率结构师使用这种技术来建模收益率曲线并分析其形状。总体而言，这促进了更快速和更有效的投资组合管理、交易、对冲和风险管理。
 - en: In this case study, we use PCA to generate typical movements of a yield curve
     and show that the first three principal components correspond to a yield curve’s
     level, slope, and curvature, respectively.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们使用PCA来生成收益率曲线的典型运动，并展示前三个主成分分别对应曲线的水平、斜率和曲率。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-192
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Dimensionality Reduction to Generate a Yield Curve
+  id: totrans-193
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用降维生成收益率曲线的蓝图
 - en: 1\. Problem definition
+  id: totrans-194
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: Our goal in this case study is to use dimensionality reduction techniques to
     generate the typical movements of a yield curve.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们的目标是使用降维技术生成收益率曲线的典型运动。
 - en: The data used for this case study is obtained from [Quandl](https://www.quandl.com),
     a premier source for financial, economic, and alternative datasets. We use the
     data of 11 tenors (or maturities), from 1-month to 30-years, of Treasury curves.
     These are of daily frequency and are available from 1960 onwards.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究使用的数据来自[Quandl](https://www.quandl.com)，这是一个主要的金融、经济和替代数据集来源。我们使用1960年以来的每日频率数据，涵盖了从1个月到30年的11个期限（或到期时间）的国债曲线数据。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-197
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-198
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The loading of Python packages is similar to the previous dimensionality reduction
     case study. Please refer to the Jupyter notebook of this case study for more details.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 加载Python包的步骤与前一次降维案例研究类似。有关详细信息，请参阅本案例研究的Jupyter笔记本。
 - en: 2.2\. Loading the data
+  id: totrans-200
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: 'In the first step, we load the data of different tenors of the Treasury curves
     from Quandl:'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一步中，我们从Quandl加载不同期限的国债曲线数据：
 - en: '[PRE33]'
+  id: totrans-202
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: '[PRE34]'
+  id: totrans-203
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 3\. Exploratory data analysis
+  id: totrans-204
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: Here, we will take our first look at the data.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将首次查看数据。
 - en: 3.1\. Descriptive statistics
+  id: totrans-206
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述统计
 - en: 'In the next step we look at the shape of the dataset:'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一步中，我们来看一下数据集的形状：
 - en: '[PRE35]'
+  id: totrans-208
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: '`Output`'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE36]'
+  id: totrans-210
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: The dataset has 14,420 rows and has the data of 11 tenors of the Treasury curve
     for more than 50 years.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据集有14,420行，包含50多年来11个期限的国债曲线数据。
 - en: 3.2\. Data visualization
+  id: totrans-212
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2\. 数据可视化
 - en: 'Let us look at the movement of the rates from the downloaded data:'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看一下从下载数据中得到的利率变动：
 - en: '[PRE37]'
+  id: totrans-214
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '`Output`'
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in11](Images/mlbf_07in11.png)'
+  id: totrans-216
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in11](Images/mlbf_07in11.png)'
 - en: 'In the next step we look at the correlations across tenors:'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一步中，我们来看一下不同期限之间的相关性：
 - en: '[PRE38]'
+  id: totrans-218
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '`Output`'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in12](Images/mlbf_07in12.png)'
+  id: totrans-220
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in12](Images/mlbf_07in12.png)'
 - en: There is a significant positive correlation between the tenors, as you can see
     in the output (full-size version available on [GitHub](https://oreil.ly/hjQG7)).
     This is an indication that reducing the number dimensions may be useful when modeling
     with the data. Additional visualizations of the data will be performed after implementing
     the dimensionality reduction models.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您在输出中所看到的（GitHub上提供全尺寸版本），不同期限之间存在显著的正相关性。这表明，在模型化数据时减少维度可能是有用的。在实施降维模型后，将对数据进行更多的可视化分析。
 - en: 4\. Data preparation
+  id: totrans-222
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: Data cleaning and transformation are a necessary modeling prerequisite in this
     case study.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，数据清理和转换是必要的建模前提。
 - en: 4.1\. Data cleaning
+  id: totrans-224
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清理
 - en: Here, we check for NAs in the data and either drop them or fill them with the
     mean of the column.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们检查数据中的缺失值，并将其删除或用列的均值填充。
 - en: 4.2\. Data transformation
+  id: totrans-226
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 数据转换
 - en: 'We standardize the variables on the same scale before applying PCA in order
     to prevent a feature with large values from dominating the result. We use the
     `StandardScaler` function in sklearn to standardize the dataset’s features onto
     a unit scale (mean = 0 and variance = 1):'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 在应用 PCA 之前，我们将变量标准化到相同的尺度上，以防止具有较大值的特征主导结果。我们使用 sklearn 中的 `StandardScaler`
+    函数将数据集的特征标准化到单位尺度（均值 = 0，方差 = 1）：
 - en: '[PRE39]'
+  id: totrans-228
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: '`Visualizing the standardized dataset`'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: '`可视化标准化数据集`'
 - en: '[PRE40]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '`Output`'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in13](Images/mlbf_07in13.png)'
+  id: totrans-232
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in13](Images/mlbf_07in13.png)'
 - en: 5\. Evaluate algorithms and models
+  id: totrans-233
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: 5.2\. Model evaluation—applying principal component analysis
+  id: totrans-234
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 应用主成分分析进行模型评估
 - en: 'As a next step, we create a function to perform PCA using the sklearn library.
     This function generates the principal components from the data that will be used
     for further analysis:'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们创建一个使用 sklearn 库执行 PCA 的函数。此函数从数据中生成主成分，用于进一步分析：
 - en: '[PRE41]'
+  id: totrans-236
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 5.2.1\. Explained variance using PCA
+  id: totrans-237
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.1\. 使用 PCA 解释方差
 - en: '[PRE42]'
+  id: totrans-238
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: '`Output`'
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '|  | Explained Variance_Top 5 |'
+  id: totrans-240
   prefs: []
   type: TYPE_TB
+  zh: '|  | 解释的方差前 5 |'
 - en: '| --- | --- |'
+  id: totrans-241
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| 0 | 84.36% |'
+  id: totrans-242
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 84.36% |'
 - en: '| 1 | 98.44% |'
+  id: totrans-243
   prefs: []
   type: TYPE_TB
+  zh: '| 1 | 98.44% |'
 - en: '| 2 | 99.53% |'
+  id: totrans-244
   prefs: []
   type: TYPE_TB
+  zh: '| 2 | 99.53% |'
 - en: '| 3 | 99.83% |'
+  id: totrans-245
   prefs: []
   type: TYPE_TB
+  zh: '| 3 | 99.83% |'
 - en: '| 4 | 99.94% |'
+  id: totrans-246
   prefs: []
   type: TYPE_TB
+  zh: '| 4 | 99.94% |'
 - en: '![mlbf 07in14](Images/mlbf_07in14.png)'
+  id: totrans-247
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in14](Images/mlbf_07in14.png)'
 - en: The first three principal components account for 84.4%, 14.08%, and 1.09% of
     variance, respectively. Cumulatively, they describe over 99.5% of all movement
     in the data. This is an incredibly efficient reduction in dimensions. Recall that
     in the first case study, we saw the first 10 components account for only 73% of
     variance.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 前三个主成分分别占方差的 84.4%，14.08% 和 1.09%。累计起来，它们描述了数据中超过 99.5% 的所有运动。这是维度非常高效的降低。回想一下，在第一个案例研究中，我们看到前
+    10 个成分仅占方差的 73%。
 - en: 5.2.2\. Intuition behind the principal components
+  id: totrans-249
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.2\. 主成分背后的直觉
 - en: 'Ideally, we can have some intuition and interpretation of these principal components.
     To explore this, we first have a function to determine the weights of each principal
     component, and then perform the visualization of the principal components:'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 理想情况下，我们可以对这些主成分有一些直觉和解释。为了探索这一点，我们首先有一个确定每个主成分权重的函数，然后执行主成分的可视化：
 - en: '[PRE43]'
+  id: totrans-251
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: '[PRE44]'
+  id: totrans-252
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: '`Output`'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in15](Images/mlbf_07in15.png)'
+  id: totrans-254
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in15](Images/mlbf_07in15.png)'
 - en: '[PRE45]'
+  id: totrans-255
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: '`Output`'
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in16](Images/mlbf_07in16.png)'
+  id: totrans-257
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in16](Images/mlbf_07in16.png)'
 - en: 'By plotting the components of the eigenvectors we can make the following interpretation:'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过绘制特征向量的成分，我们可以得出以下解释：
 - en: Principal Component 1
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 主成分 1
 - en: This eigenvector has all positive values, with all tenors weighted in the same
     direction. This means that the first principal component reflects movements that
     cause all maturities to move in the same direction, corresponding to *directional
     movements* in the yield curve. These are movements that shift the entire yield
     curve up or down.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个特征向量的所有值都是正的，所有期限方向的权重都是相同的。这意味着第一个主成分反映了导致所有到期收益率朝同一方向移动的运动，对应于*收益率曲线的方向性运动*。这些是使整个收益率曲线上移或下移的运动。
 - en: Principal Component 2
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 主成分 2
 - en: The second eigenvector has the first half of the components negative and the
     second half positive. Treasury rates on the short end (long end) of the curve
     are weighted positively (negatively). This means that the second principal component
     reflects movements that cause the short end to go in one direction and the long
     end in the other. Consequently, it represents *slope movements* in the yield curve.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个特征向量的前半部分为负，后半部分为正。曲线的短端（长端）的国库利率权重为正（负）。这意味着第二主成分反映了使得短端朝一个方向移动，而长端朝另一个方向移动的运动，因此代表了*收益率曲线的斜率运动*。
 - en: Principal Component 3
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 主成分 3
 - en: The third eigenvector has the first third of the components negative, the second
     third positive, and the last third negative. This means that the third principal
     component reflects movements that cause the short and long end to go in one direction,
     and the middle to go in the other, resulting in *curvature movements* of the yield
     curve.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三个特征向量的前三分之一成分为负，中间三分之一为正，最后三分之一为负。这意味着第三主成分反映了使得短端和长端朝一个方向移动，而中间部分朝另一个方向移动的运动，导致了*收益率曲线的曲率运动*。
 - en: 5.2.3\. Reconstructing the curve using principal components
+  id: totrans-265
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.3\. 使用主成分重建曲线
 - en: 'One of the key features of PCA is the ability to reconstruct the initial dataset
     using the outputs of PCA. Using simple matrix reconstruction, we can generate
     a near exact replica of the initial data:'
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 主成分分析（PCA）的关键特性之一是利用PCA的输出重建初始数据集的能力。通过简单的矩阵重建，我们可以生成几乎精确的初始数据副本：
 - en: '[PRE46]'
+  id: totrans-267
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: '`Output`'
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE47]'
+  id: totrans-269
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: 'Mechanically, PCA is just a matrix multiplication:'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 从机械上讲，PCA只是一个矩阵乘法：
 - en: <math display="block"><mi>Y</mi><mo>=</mo><mi>X</mi><mi>W</mi></math>
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mi>Y</mi><mo>=</mo><mi>X</mi><mi>W</mi></math>
 - en: 'where *Y* is the principal components, *X* is input data, and *W* is a matrix
     of coefficients, which we can use to recover the original matrix as per the equation
     below:'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*Y*是主成分，*X*是输入数据，*W*是系数矩阵，我们可以使用下面的等式来恢复原始矩阵：
 - en: <math display="block"><mi>X</mi><mo>=</mo><mi>Y</mi><mi>W</mi><mi>′</mi></math>
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: <math display="block"><mi>X</mi><mo>=</mo><mi>Y</mi><mi>W</mi><mi>′</mi></math>
 - en: where *W′* is the inverse of the matrix of coefficients *W*.
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*W'*是系数矩阵*W*的逆。
 - en: '[PRE48]'
+  id: totrans-275
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: This figure shows the replicated Treasury rate chart and demonstrates that,
     using just the first three principal components, we are able to replicate the
     original chart. Despite reducing the data from 11 dimensions to three, we still
@@ -1212,39 +1779,55 @@
     focus on fewer factors that influence interest rates. For example, in order to
     hedge a portfolio, it may be sufficient to protect the portfolio against moves
     in the first three principal components only.
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 该图显示了复制的国库利率图表，并展示了仅使用前三个主成分，我们能够复制原始图表。尽管将数据从11个维度减少到三个，我们仍保留了超过99%的信息，并且可以轻松复制原始数据。此外，我们还能直观地理解这三个收益率曲线的驱动因素。将收益率曲线降低到更少的组件意味着从业者可以专注于影响利率的更少因素。例如，为了对冲投资组合，仅保护前三个主成分的投资组合可能已经足够。
 - en: '`Output`'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 07in17](Images/mlbf_07in17.png)'
+  id: totrans-278
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in17](Images/mlbf_07in17.png)'
 - en: Conclusion
+  id: totrans-279
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we introduced dimensionality reduction to break down the
     Treasury rate curve into fewer components. We saw that the principal components
     are quite intuitive for this case study. The first three principal components
     explain more than 99.5% of the variation and represent directional movements,
     slope movements, and curvature movements, respectively.
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们介绍了降维以将国库利率曲线分解为较少的组件。我们看到这些主成分对于本案例研究非常直观。前三个主成分解释了超过99.5%的变化，并分别代表方向性移动、斜率移动和曲率移动。
 - en: By using principal component analysis, analyzing the eigenvectors, and understanding
     the intuition behind them, we demonstrated how using dimensionality reduction
     led to fewer intuitive dimensions in the yield curve. Such dimensionality reduction
     of the yield curve can potentially lead to faster and more effective portfolio
     management, trading, hedging, and risk management.
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过主成分分析、分析特征向量并理解背后的直觉，我们展示了如何通过降维在收益率曲线中引入更少的直觉维度。这种对收益率曲线的降维可能会导致更快速和更有效的投资组合管理、交易、对冲和风险管理。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-282
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 3: Bitcoin Trading: Enhancing Speed and Accuracy'
+  id: totrans-283
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究 3：比特币交易：提升速度和准确性
 - en: As trading becomes more automated, traders will continue to seek to use as many
     features and technical indicators as they can to make their strategies more accurate
     and efficient. One of the many challenges in this is that adding more variables
@@ -1257,8 +1840,10 @@
     reduction also enhances exploration and visualization of a dataset to understand
     grouping or relationships, an important task when building and continuously monitoring
     trading strategies.
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着交易变得更加自动化，交易者将继续寻求使用尽可能多的特征和技术指标，以使其策略更加准确和高效。其中一个挑战是添加更多变量会导致复杂性增加，越来越难以得出可靠的结论。使用降维技术，我们可以将许多特征和技术指标压缩为几个逻辑集合，同时仍保留原始数据的显著变异量。这有助于加速模型训练和调优。此外，它通过消除相关变量来防止过拟合，后者可能导致更多损害而非好处。降维还增强了数据集探索和可视化，以了解分组或关系，这在构建和持续监控交易策略时是一个重要任务。
 - en: 'In this case study, we will use dimensionality reduction to enhance [“Case
     Study 3: Bitcoin Trading Strategy”](ch06.xhtml#CaseStudy3SC) presented in [Chapter 6](ch06.xhtml#Chapter6).
     In this case study, we design a trading strategy for bitcoin that considers the
@@ -1266,19 +1851,27 @@
     signal. We create several new intuitive, technical indicator features, including
     trend, volume, volatility, and momentum. We apply dimensionality reduction techniques
     on these features in order to achieve better results.'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们将使用降维技术来增强[“案例研究3：比特币交易策略”](ch06.xhtml#CaseStudy3SC)，该案例研究在[第6章](ch06.xhtml#Chapter6)中介绍。在本案例研究中，我们设计了一种比特币交易策略，考虑了短期和长期价格之间的关系，以预测买入或卖出信号。我们创建了几个新的直观的技术指标特征，包括趋势、成交量、波动性和动量。我们对这些特征应用了降维技术，以获得更好的结果。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-286
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Dimensionality Reduction to Enhance a Trading Strategy
+  id: totrans-287
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用降维来增强交易策略的蓝图
 - en: 1\. Problem definition
+  id: totrans-288
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: 'Our goal in this case study is to use dimensionality reduction techniques to
     enhance an algorithmic trading strategy. The data and the variables used in this
     case study are the same as in [“Case Study 3: Bitcoin Trading Strategy”](ch06.xhtml#CaseStudy3SC).
@@ -1286,325 +1879,503 @@
     bitcoin price from January 2012 to October 2017\. Steps 3 and 4 presented in this
     case study use the same steps as the case study in [Chapter 6](ch06.xhtml#Chapter6).
     As such, these steps are condensed in this case study to avoid repetition.'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们的目标是使用降维技术来增强算法交易策略。本案例研究中使用的数据和变量与[“案例研究3：比特币交易策略”](ch06.xhtml#CaseStudy3SC)相同。作为参考，我们使用的是自2012年1月至2017年10月的比特币日内价格数据、成交量和加权比特币价格。本案例研究中介绍的步骤3和4使用了与[第6章](ch06.xhtml#Chapter6)中案例研究相同的步骤。因此，在本案例研究中将这些步骤压缩，以避免重复。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-290
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-291
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The Python packages used for this case study are the same as those presented
     in the previous two case studies in this chapter.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究中使用的Python包与本章前两个案例研究中介绍的相同。
 - en: 3\. Exploratory data analysis
+  id: totrans-293
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: Refer to [“3\. Exploratory data analysis”](ch06.xhtml#data_analysis_ch6) for
     more details of this step.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 参考[“3\. 探索性数据分析”](ch06.xhtml#data_analysis_ch6)以获取此步骤的更多细节。
 - en: 4\. Data preparation
+  id: totrans-295
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: We prepare the data for modeling in the following sections.
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将在以下几节中为建模准备数据。
 - en: 4.1\. Data cleaning
+  id: totrans-297
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清洗
 - en: 'We clean the data by filling the NAs with the last available values:'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过使用最后可用值填充NA值来清理数据：
 - en: '[PRE49]'
+  id: totrans-299
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: 4.2\. Preparing the data for classification
+  id: totrans-300
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 为分类准备数据
 - en: 'We attach the following label to each movement: 1 if the short-term price increases
     compared to the long-term price; 0 if the short-term price decreases compared
     to the long-term price. This label is assigned to a variable we will call *signal*,
     which is the predicted variable for this case study. Let us look at the data for
     prediction:'
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们给每次移动附加以下标签：如果短期价格比长期价格上涨，则为1；如果短期价格比长期价格下跌，则为0。这个标签被分配给我们将称为*信号*的变量，这是本案例研究的预测变量。让我们看一下预测数据：
 - en: '[PRE50]'
+  id: totrans-302
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: '`Output`'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in18](Images/mlbf_07in18.png)'
+  id: totrans-304
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in18](Images/mlbf_07in18.png)'
 - en: The dataset contains the signal column along with all other columns.
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据集包含信号列以及所有其他列。
 - en: 4.3\. Feature engineering
+  id: totrans-306
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.3\. 特征工程
 - en: 'In this step, we construct a dataset that contains the predictors that will
     be used to make the signal prediction. Using the bitcoin intraday price data,
     including daily open, high, low, close, and volume, we compute the following technical
     indicators:'
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们构建了一个数据集，其中包含用于进行信号预测的预测变量。使用比特币每日开盘价、最高价、最低价、收盘价和交易量数据，我们计算以下技术指标：
 - en: Moving Average
+  id: totrans-308
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 移动平均线
 - en: Stochastic Oscillator %K and %D
+  id: totrans-309
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 随机震荡器 %K 和 %D
 - en: Relative Strength Index (RSI)
+  id: totrans-310
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 相对强弱指数（RSI）
 - en: Rate Of Change (ROC)
+  id: totrans-311
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 变动率（ROC）
 - en: Momentum (MOM)
+  id: totrans-312
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 动量（MOM）
 - en: 'The code for the construction of all of the indicators, along with their descriptions,
     is presented in [Chapter 6](ch06.xhtml#Chapter6). The final dataset and the columns
     used are as follows:'
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有指标的构建代码以及它们的描述都在[第6章](ch06.xhtml#Chapter6)中呈现。最终数据集和使用的列如下：
 - en: '![mlbf 07in19](Images/mlbf_07in19.png)'
+  id: totrans-314
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in19](Images/mlbf_07in19.png)'
 - en: 4.4\. Data visualization
+  id: totrans-315
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.4\. 数据可视化
 - en: 'Let us look at the distribution of the predicted variable:'
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一下预测变量的分布：
 - en: '[PRE51]'
+  id: totrans-317
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: '`Output`'
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in20](Images/mlbf_07in20.png)'
+  id: totrans-319
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in20](Images/mlbf_07in20.png)'
 - en: The predicted signal is “buy” 52.9% of the time.
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测信号“购买”的时间为52.9%。
 - en: 5\. Evaluate algorithms and models
+  id: totrans-321
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: Next, we perform dimensionality reduction and evaluate the models.
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们进行维度约简并评估模型。
 - en: 5.1\. Train-test split
+  id: totrans-323
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 训练测试分离
 - en: 'In this step, we split the dataset into training and test sets:'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们将数据集分割为训练集和测试集：
 - en: '[PRE52]'
+  id: totrans-325
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: 'We standardize the variables on the same scale before applying dimensionality
     reduction. Data standardization is performed using the following Python code:'
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: 在应用维度约简之前，我们将变量标准化到相同的尺度上。数据标准化是使用以下Python代码执行的：
 - en: '[PRE53]'
+  id: totrans-327
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: '`Output`'
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in21](Images/mlbf_07in21.png)'
+  id: totrans-329
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in21](Images/mlbf_07in21.png)'
 - en: 5.2\. Singular value decomposition (feature reduction)
+  id: totrans-330
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 奇异值分解（特征降维）
 - en: 'Here we will use SVD to perform PCA. Specifically, we are using the `TruncatedSVD`
     method in the sklearn package to transform the full dataset into a representation
     using the top five components:'
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将使用SVD执行PCA。具体来说，我们使用sklearn包中的`TruncatedSVD`方法，将完整数据集转换为仅使用前五个组件的表示：
 - en: '[PRE54]'
+  id: totrans-332
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: '`Output`'
+  id: totrans-333
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in22](Images/mlbf_07in22.png)'
+  id: totrans-334
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in22](Images/mlbf_07in22.png)'
 - en: Following the computation, we preserve 92.75% of the variance by using just
     five components rather than the full 25+ original features. This is a tremendously
     useful compression for the analysis and iterations of the model.
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过仅使用五个组件而不是原始的25+个特征，我们保留了92.75%的方差。这对于模型分析和迭代是非常有用的压缩。
 - en: 'For convenience, we will create a Python dataframe specifically for these top
     five components:'
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了方便起见，我们将专门为这五个顶级组件创建一个Python数据框架：
 - en: '[PRE55]'
+  id: totrans-337
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: '`Output`'
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE56]'
+  id: totrans-339
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: '|  | c0 | c1 | c2 | c3 | c4 |'
+  id: totrans-340
   prefs: []
   type: TYPE_TB
+  zh: '|  | c0 | c1 | c2 | c3 | c4 |'
 - en: '| --- | --- | --- | --- | --- | --- |'
+  id: totrans-341
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- |'
 - en: '| 2834071 | –2.252 | 1.920 | 0.538 | –0.019 | –0.967 |'
+  id: totrans-342
   prefs: []
   type: TYPE_TB
+  zh: '| 2834071 | –2.252 | 1.920 | 0.538 | –0.019 | –0.967 |'
 - en: '| 2836517 | 5.303 | –1.689 | –0.678 | 0.473 | 0.643 |'
+  id: totrans-343
   prefs: []
   type: TYPE_TB
+  zh: '| 2836517 | 5.303 | –1.689 | –0.678 | 0.473 | 0.643 |'
 - en: '| 2833945 | –2.315 | –0.042 | 1.697 | –1.704 | 1.672 |'
+  id: totrans-344
   prefs: []
   type: TYPE_TB
+  zh: '| 2833945 | –2.315 | –0.042 | 1.697 | –1.704 | 1.672 |'
 - en: '| 2835048 | –0.977 | 0.782 | 3.706 | –0.697 | 0.057 |'
+  id: totrans-345
   prefs: []
   type: TYPE_TB
+  zh: '| 2835048 | –0.977 | 0.782 | 3.706 | –0.697 | 0.057 |'
 - en: '| 2838804 | 2.115 | –1.915 | 0.475 | –0.174 | –0.299 |'
+  id: totrans-346
   prefs: []
   type: TYPE_TB
+  zh: '| 2838804 | 2.115 | –1.915 | 0.475 | –0.174 | –0.299 |'
 - en: 5.2.1\. Basic visualization of reduced features
+  id: totrans-347
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.1\. 减少特征的基本可视化
 - en: 'Let us visualize the compressed dataset:'
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们可视化压缩后的数据集：
 - en: '[PRE57]'
+  id: totrans-349
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: Pairs-plots
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: 对角线图
 - en: 'Pairs-plots are a simple representation of a set of 2D scatterplots, with each
     component plotted against every other component. The data points are colored according
     to their signal classification:'
+  id: totrans-351
   prefs: []
   type: TYPE_NORMAL
+  zh: 对角线图是一组2D散点图的简单表示，其中每个组件都与其他每个组件进行绘制。数据点根据其信号分类着色：
 - en: '[PRE58]'
+  id: totrans-352
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE58]'
 - en: '`Output`'
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 07in23](Images/mlbf_07in23.png)'
+  id: totrans-354
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in23](Images/mlbf_07in23.png)'
 - en: We can see that there is clear separation of the colored dots (full color version
     available on [GitHub](https://oreil.ly/GWfug)), meaning that data points from
     the same signal tend to cluster together. The separation is more distinct for
     the first components, with the characteristics of signal distributions growing
     more similar as you progress from the first to the fifth component. That said,
     the plot provides support for using all five components in our model.
+  id: totrans-355
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以看到，彩色点有明显的分离（完整的彩色版本可以在[GitHub](https://oreil.ly/GWfug)上找到），这意味着来自同一信号的数据点倾向于聚集在一起。随着从第一到第五个成分的进展，信号分布的特征越来越相似。尽管如此，这幅图表支持我们在模型中使用所有五个成分。
 - en: 5.3\. t-SNE visualization
+  id: totrans-356
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. t-SNE 可视化
 - en: 'In this step, we implement t-SNE and look at the related visualization. We
     will use the basic implementation available in Scikit-learn:'
+  id: totrans-357
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步骤中，我们实现了 t-SNE，并查看了相关的可视化。我们将使用 Scikit-learn 中可用的基本实现：
 - en: '[PRE59]'
+  id: totrans-358
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE59]'
 - en: '`Output`'
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 07in24](Images/mlbf_07in24.png)'
+  id: totrans-360
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 07in24](Images/mlbf_07in24.png)'
 - en: The plot shows us that there is a good degree of clustering for the trading
     signal. There is some overlap of the long and short signals, but they can be distinguished
     quite well using the reduced number of features.
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: 图表显示了交易信号的良好聚类程度。长期和短期信号存在一些重叠，但是在减少的特征数目下，它们可以很好地区分开来。
 - en: 5.4\. Compare models with and without dimensionality reduction
+  id: totrans-362
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.4\. 比较有无降维的模型
 - en: 'In this step, we analyze the impact of the dimensionality reduction on the
     classification and the impact on the overall accuracy and computation time:'
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步骤中，我们分析了降维对分类的影响，以及对整体精度和计算时间的影响：
 - en: '[PRE60]'
+  id: totrans-364
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE60]'
 - en: 5.4.1\. Models
+  id: totrans-365
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.4.1\. 模型
 - en: 'We first look at the time taken by the model without dimensionality reduction,
     where we have all the technical indicators:'
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们查看了没有降维的模型所花费的时间，其中包括所有技术指标：
 - en: '[PRE61]'
+  id: totrans-367
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE61]'
 - en: '`Output`'
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE62]'
+  id: totrans-369
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE62]'
 - en: 'The total time taken without dimensionality reduction is around eight seconds.
     Let us look at the time it takes with dimensionality reduction, when only the
     five principal components from the truncated SVD are used:'
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有降维时的总耗时约为八秒钟。让我们看看在使用截断SVD的五个主成分进行降维时所需的时间：
 - en: '[PRE63]'
+  id: totrans-371
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE63]'
 - en: '`Output`'
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE64]'
+  id: totrans-373
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE64]'
 - en: 'The total time taken with dimensionality reduction is around two seconds—four
     times a reduction in time, which is a significant improvement. Let us investigate
     whether there is any decline in the accuracy when using the condensed dataset:'
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: 降维后的总耗时约为两秒钟，时间减少了四分之一，这是一个显著的改进。让我们来探讨在使用压缩数据集时，是否存在精度下降的情况：
 - en: '[PRE65]'
+  id: totrans-375
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE65]'
 - en: '`Output`'
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE66]'
+  id: totrans-377
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE66]'
 - en: Accuracy declines roughly 5%, from 93.6% to 88.7%. The improvement in speed
     has to be balanced against this loss in accuracy. Whether the loss in accuracy
     is acceptable likely depends on the problem. If this is a model that needs to
@@ -1613,75 +2384,106 @@
     computation time does have other benefits, especially in the early stages of trading
     strategy development. It enables us to test a greater number of features (or technical
     indicators) in less time.
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: 精度大约下降了5%，从93.6%降到88.7%。速度的提升必须与精度的损失进行权衡。是否可以接受精度损失可能取决于具体问题。如果这是一个需要经常重新校准的模型，那么较低的计算时间将至关重要，特别是在处理大型、高速数据集时。计算时间的提升在交易策略开发的早期阶段尤其有益，它使我们能够在更短的时间内测试更多的特征（或技术指标）。
 - en: Conclusion
+  id: totrans-379
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we demonstrated the efficiency of dimensionality reduction
     and principal components analysis in reducing the number of dimensions in the
     context of a trading strategy. Through dimensionality reduction, we achieved a
     commensurate accuracy rate with a fourfold improvement in the modeling speed.
     In trading strategy development involving expansive datasets, such speed enhancements
     can lead to improvements for the entire process.
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们展示了在交易策略背景下，降维和主成分分析在减少维度方面的效率。通过降维，我们在模型速度提升了四倍的同时，达到了与原模型相当的精确率。在涉及庞大数据集的交易策略开发中，这种速度增强可以改善整个过程。
 - en: We demonstrated that both SVD and t-SNE yield reduced datasets that can easily
     be visualized for evaluating trading signal data. This allowed us to distinguish
     the long and short signals of this trading strategy in ways not possible with
     the original number of features.
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们演示了SVD和t-SNE都生成了可以轻松可视化以评估交易信号数据的精简数据集。这使我们能够以不可能通过原始特征数实现的方式区分这种交易策略的多空信号。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-382
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: Chapter Summary
+  id: totrans-383
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 章节总结
 - en: The case studies presented in this chapter focused on understanding the concepts
     of the different dimensionality reduction methods, developing intuition around
     the principal components, and visualizing the condensed datasets.
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍的案例研究集中于理解不同降维方法的概念，发展关于主成分的直觉，并可视化精简的数据集。
 - en: Overall, the concepts in Python, machine learning, and finance presented in
     this chapter through the case studies can used as a blueprint for any other dimensionality
     reduction–based problem in finance.
+  id: totrans-385
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，本章通过案例研究呈现的Python、机器学习和金融领域的概念可以作为金融领域任何基于降维的问题的蓝图。
 - en: In the next chapter, we explore concepts and case studies for another type of
     unsupervised learning—clustering.
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的章节中，我们探讨了另一种无监督学习——聚类的概念和案例研究。
 - en: Exercises
+  id: totrans-387
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 练习
 - en: Using dimensionality reduction, extract the different factors from the stocks
     within a different index and use them to build a trading strategy.
+  id: totrans-388
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用降维技术，从不同指数内的股票中提取不同的因子，并用它们构建交易策略。
 - en: Pick any of the regression-based case studies in [Chapter 5](ch05.xhtml#Chapter5)
     and use dimensionality reduction to see whether there is any improvement in computation
     time. Explain the components using the factor loading and develop some high-level
     intuition of them.
+  id: totrans-389
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 选择[第5章](ch05.xhtml#Chapter5)中的任何基于回归的案例研究，并使用降维技术来查看计算时间是否有所改进。使用因子载荷解释组件，并对其进行高级直觉的开发。
 - en: For case study 3 presented in this chapter, perform factor loading of the principal
     components and understand the intuition of the different components.
+  id: totrans-390
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对本章介绍的案例研究3进行因子载荷，并理解不同组件的直觉。
 - en: Get the principal components of different currency pairs or different commodity
     prices. Identify the drivers of the primary principal components and link them
     to some intuitive macroeconomic variables.
+  id: totrans-391
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 获取不同货币对或不同商品价格的主要成分。确定主要主成分的驱动因素，并将其与一些直观的宏观经济变量联系起来。
 - en: ^([1](ch07.xhtml#idm45174917893240-marker)) [Eigenvectors and eigenvalues](https://oreil.ly/fDaLg)
     are concepts of linear algebra.
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch07.xhtml#idm45174917893240-marker)) [特征向量和特征值](https://oreil.ly/fDaLg)
+    是线性代数的概念。

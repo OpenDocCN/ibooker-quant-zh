@@ -1,13 +1,17 @@
 - en: 'Chapter 8\. Unsupervised Learning: Clustering'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第8章。无监督学习：聚类
 - en: In the previous chapter, we explored dimensionality reduction, which is one
     type of unsupervised learning. In this chapter, we will explore *clustering*,
     a category of unsupervised learning techniques that allows us to discover hidden
     structures in data.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 在上一章中，我们探讨了降维，这是一种无监督学习的类型。在本章中，我们将探讨*聚类*，一类无监督学习技术，它允许我们发现数据中隐藏的结构。
 - en: Both clustering and dimensionality reduction summarize the data. Dimensionality
     reduction compresses the data by representing it using new, fewer features while
     still capturing the most relevant information. Similarly, clustering is a way
@@ -19,45 +23,59 @@
     better understand the data through the lens of several categories or groups created.
     It also permits the automatic categorization of new objects according to the learned
     criteria.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 聚类和降维都是对数据进行总结的方法。降维通过使用新的、较少的特征来表示数据，同时仍捕捉到最相关的信息，从而压缩数据。类似地，聚类是一种通过对原始数据进行分类而不是创建新变量来减少数据量和发现模式的方法。聚类算法将观察结果分配给包含相似数据点的子组。聚类的目标是找到数据中的自然分组，使得同一组中的项目彼此更相似，而与不同组的项目则更不相似。聚类有助于通过几个类别或群组的视角更好地理解数据。它还允许根据学到的标准自动对新对象进行分类。
 - en: In the field of finance, clustering has been used by traders and investment
     managers to find homogeneous groups of assets, classes, sectors, and countries
     based on similar characteristics. Clustering analysis augments trading strategies
     by providing insights into categories of trading signals. The technique has been
     used to segment customers or investors into a number of groups to better understand
     their behavior and to perform additional analysis.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融领域，交易员和投资经理使用聚类来找到具有类似特征的资产、类别、行业和国家的同质化群体。聚类分析通过提供交易信号类别的洞察，增强了交易策略。这一技术已被用于将客户或投资者分成几组，以更好地理解其行为并进行额外的分析。
 - en: In this chapter, we will discuss fundamental clustering techniques and introduce
     three case studies in the areas of portfolio management and trading strategy development.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们将讨论基础聚类技术，并介绍三个关于投资组合管理和交易策略开发的案例研究。
 - en: 'In [“Case Study 1: Clustering for Pairs Trading”](#CaseStudy1CL), we use clustering
     methods to select pairs of stocks for a trading strategy. A *pairs trading strategy*
     involves matching a long position with a short position in two financial instruments
     that are closely related. Finding appropriate pairs can be a challenge when the
     number of instruments is high. In this case study, we demonstrate how clustering
     can be a useful technique in trading strategy development and other similar situations.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究1：配对交易的聚类”](#CaseStudy1CL)中，我们使用聚类方法为交易策略选择股票对。*配对交易策略*涉及在两个密切相关的金融工具中匹配多头头寸和空头头寸。当金融工具的数量较多时，找到合适的配对可能是一项挑战。在这个案例研究中，我们展示了聚类在交易策略开发和类似情况下的有用性。
 - en: 'In [“Case Study 2: Portfolio Management: Clustering Investors”](#CaseStudy2CL),
     we identify clusters of investors with similar abilities and willingness to take
     risks. We show how clustering techniques can be used for effective asset allocation
     and portfolio rebalancing. This illustrates how part of the portfolio management
     process can be automated, which is immensely useful for investment managers and
     robo-advisors alike.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究2：投资组合管理：投资者聚类”](#CaseStudy2CL)中，我们识别出具有类似能力和愿意承担风险程度的投资者群体。我们展示了如何利用聚类技术进行有效的资产配置和投资组合再平衡。这说明了投资组合管理过程的一部分可以自动化，这对投资经理和智能投顾都非常有用。
 - en: 'In [“Case Study 3: Hierarchical Risk Parity”](#CaseStudy3CL), we use a clustering-based
     algorithm to allocate capital into different asset classes and compare the results
     against other portfolio allocation techniques.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究3：层次风险平价”](#CaseStudy3CL)中，我们使用基于聚类的算法将资金分配到不同的资产类别，并将结果与其他投资组合分配技术进行比较。
 - en: This Chapter’s Code Repository
+  id: totrans-8
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 本章的代码库
 - en: A Python-based master template for clustering, along with the Jupyter notebook
     for the case studies presented in this chapter are in [Chapter 8 - Unsup. Learning
     - Clustering](https://oreil.ly/uzbaH) in the code repository for this book. To
@@ -69,199 +87,284 @@
     steps presented in [Chapter 2](ch02.xhtml#Chapter2). For the clustering case studies,
     steps 6 (Model Tuning and Grid Search) and 7 (Finalizing the Model) have merged
     with step 5 (Evaluate Algorithms and Models).
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书代码库中的[第8章 - 无监督学习 - 聚类](https://oreil.ly/uzbaH)中包含用于聚类的基于Python的主模板，以及本章案例研究的Jupyter笔记本。要解决任何涉及聚类模型（如*k*-均值、分层聚类等）的Python机器学习问题，读者只需修改模板以符合其问题陈述。与前几章类似，本章的案例研究使用标准Python主模板，其中包含在[第2章](ch02.xhtml#Chapter2)中介绍的标准化模型开发步骤。对于聚类案例研究，步骤6（模型调整和网格搜索）和步骤7（最终化模型）已与步骤5（评估算法和模型）合并。
 - en: Clustering Techniques
+  id: totrans-10
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 聚类技术
 - en: 'There are many types of clustering techniques, and they differ with respect
     to their strategy of identifying groupings. Choosing which technique to apply
     depends on the nature and structure of the data. In this chapter, we will cover
     the following three clustering techniques:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 有许多种类的聚类技术，它们在识别分组策略上有所不同。选择应用哪种技术取决于数据的性质和结构。在本章中，我们将涵盖以下三种聚类技术：
 - en: '*k*-means clustering'
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*k*-均值聚类'
 - en: Hierarchical clustering
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 分层聚类
 - en: Affinity propagation clustering
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 亲和传播聚类
 - en: The following section summarizes these clustering techniques, including their
     strengths and weaknesses. Additional details for each of the clustering methods
     are provided in the case studies.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一节总结了这些聚类技术，包括它们的优缺点。每种聚类方法的额外细节在案例研究中提供。
 - en: k-means Clustering
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: k均值聚类
 - en: '*k*-means is the most well-known clustering technique. The algorithm of *k*-means
     aims to find and group data points into classes that have high similarity between
     them. This similarity is understood as the opposite of the distance between data
     points. The closer the data points are, the more likely they are to belong to
     the same cluster.'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '*k*-均值是最著名的聚类技术。*k*-均值算法旨在找到并将数据点分组到彼此之间具有高相似性的类别中。这种相似性被理解为数据点之间距离的反义。数据点越接近，它们属于同一簇的可能性就越大。'
 - en: 'The algorithm finds *k* centroids and assigns each data point to exactly one
     cluster with the goal of minimizing the within-cluster variance (called *inertia*).
     It typically uses the Euclidean distance (ordinary distance between two points),
     but other distance metrics can be used. The *k*-means algorithm delivers a local
     optimum for a given *k* and proceeds as follows:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 该算法找到*k*个质心，并将每个数据点分配到一个簇，以最小化簇内方差（称为*惯性*）。通常使用欧几里得距离（两点之间的普通距离），但也可以使用其他距离度量。*k*-均值算法对于给定的*k*提供局部最优解，并按以下步骤进行：
 - en: This algorithm specifies the number of clusters.
+  id: totrans-19
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 此算法指定要生成的簇数。
 - en: Data points are randomly selected as cluster centers.
+  id: totrans-20
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 数据点被随机选择为簇中心。
 - en: Each data point is assigned to the cluster center it is nearest to.
+  id: totrans-21
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将每个数据点分配给最近的簇中心。
 - en: Cluster centers are updated to the mean of the assigned points.
+  id: totrans-22
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 簇中心更新为分配点的均值。
 - en: Steps 3–4 are repeated until all cluster centers remain unchanged.
+  id: totrans-23
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 步骤3–4重复，直到所有簇中心保持不变。
 - en: In simple terms, we randomly move around the specified number of centroids in
     each iteration, assigning each data point to the closest centroid. Once we have
     done that, we calculate the mean distance of all points in each centroid. Then,
     once we can no longer reduce the minimum distance from data points to their respective
     centroids, we have found our clusters.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 简而言之，我们在每次迭代中随机移动指定数量的质心，将每个数据点分配给最近的质心。完成后，我们计算每个质心中所有点的平均距离。一旦无法进一步减少数据点到其各自质心的最小距离，我们就找到了我们的聚类。
 - en: k-means hyperparameters
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: k均值超参数
 - en: 'The *k*-means hyperparameters include:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*k*-均值的超参数包括：'
 - en: Number of clusters
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 聚类数
 - en: The number of clusters and centroids to generate.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 要生成的聚类数和质心。
 - en: Maximum iterations
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 最大迭代次数
 - en: Maximum iterations of the algorithm for a single run.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法单次运行的最大迭代次数。
 - en: Number initial
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始数
 - en: The number of times the algorithm will be run with different centroid seeds.
     The final result will be the best output of the defined number of consecutive
     runs, in terms of inertia.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法将以不同的质心种子运行的次数。最终结果将是连续运行定义数量的最佳输出，从惯性的角度来看。
 - en: With *k*-means, different random starting points for the cluster centers often
     result in very different clustering solutions. Therefore, the *k*-means algorithm
     is run in sklearn with at least 10 different random initializations, and the solution
     occurring the greatest number of times is chosen.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于*k*-means，为群集中心选择不同的随机起始点通常会导致非常不同的聚类解决方案。因此，在sklearn中运行*k*-means算法至少使用10种不同的随机初始化，并选择出现最多次数的解决方案。
 - en: The strengths of *k*-means include its simplicity, wide range of applicability,
     fast convergence, and linear scalability to large data while producing clusters
     of an even size. It is most useful when we know the exact number of clusters,
     *k*, beforehand. In fact, a main weakness of *k*-means is having to tune this
     hyperparameter. Additional drawbacks include the lack of a guarantee to find a
     global optimum and its sensitivity to outliers.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '* k * -means的优势包括其简单性、广泛的适用性、快速收敛以及对大数据的线性可扩展性，同时生成大小均匀的聚类。当我们事先知道确切的聚类数*k*时，它非常有用。事实上，*
+    k * -means的主要缺点是需要调整这个超参数。其他缺点包括缺乏找到全局最优解的保证以及对异常值的敏感性。'
 - en: Implementation in Python
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Python实现
 - en: 'Python’s sklearn library offers a powerful implementation of *k*-means. The
     following code snippet illustrates how to apply *k*-means clustering on a dataset:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: Python的sklearn库提供了* k * -means的强大实现。以下代码片段演示了如何在数据集上应用* k * -means聚类：
 - en: '[PRE0]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: The number of clusters is the key hyperparameter to be tuned. We will look at
     the *k*-means clustering technique in case studies 1 and 2 of this chapter, in
     which further details on choosing the right number of clusters and detailed visualizations
     are provided.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 聚类数是需要调整的关键超参数。我们将在本章的案例研究1和2中查看* k * -means聚类技术，其中提供了选择正确聚类数以及详细可视化的进一步细节。
 - en: Hierarchical Clustering
+  id: totrans-39
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 层次聚类
 - en: '*Hierarchical clustering* involves creating clusters that have a predominant
     ordering from top to bottom. The main advantage of hierarchical clustering is
     that we do not need to specify the number of clusters; the model determines that
     by itself. This clustering technique is divided into two types: agglomerative
     hierarchical clustering and divisive hierarchical clustering.'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '*层次聚类*涉及创建从顶部到底部具有主导排序的聚类。层次聚类的主要优势在于，我们不需要指定聚类的数量；模型自行确定。此聚类技术分为两种类型：聚合层次聚类和分裂层次聚类。'
 - en: '*Agglomerative hierarchical clustering* is the most common type of hierarchical
     clustering and is used to group objects based on their similarity. It is a “bottom-up”
     approach where each observation starts in its own cluster, and pairs of clusters
     are merged as one moves up the hierarchy. The agglomerative hierarchical clustering
     algorithm delivers a *local optimum* and proceeds as follows:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '*聚合层次聚类*是最常见的层次聚类类型，用于根据它们的相似性对对象进行分组。它是一种“自底向上”的方法，其中每个观测值从其自身的独立聚类开始，并且随着层次结构的上升，成对的聚类被合并。聚合层次聚类算法提供了一个*局部最优解*，并按以下方式进行：'
 - en: Make each data point a single-point cluster and form *N* clusters.
+  id: totrans-42
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将每个数据点作为单点聚类，并形成* N *聚类。
 - en: Take the two closest data points and combine them, leaving *N-1* clusters.
+  id: totrans-43
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 取两个最接近的数据点并组合它们，留下* N-1 *聚类。
 - en: Take the two closest clusters and combine them, forming *N-2* clusters.
+  id: totrans-44
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 取两个最接近的聚类并组合它们，形成* N-2 *聚类。
 - en: Repeat step 3 until left with only one cluster.
+  id: totrans-45
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 重复步骤3，直到仅剩一个聚类。
 - en: '*Divisive hierarchical clustering* works “top-down” and sequentially splits
     the remaining clusters to produce the most distinct subgroups.'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '*分裂式分层聚类*采用“自顶向下”的方式，依次将剩余的聚类分割，以产生最不同的子群。'
 - en: Both produce *N-1* hierarchical levels and facilitate the clustering creation
     at the level that best partitions data into homogeneous groups. We will focus
     on the more common agglomerative clustering approach.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 两者都产生* N-1 *层次水平，并促进将数据分区为同质群的聚类创建。我们将专注于更常见的聚合聚类方法。
 - en: Hierarchical clustering enables the plotting of *dendrograms*, which are visualizations
     of a binary hierarchical clustering. A dendrogram is a type of tree diagram showing
     hierarchical relationships between different sets of data. They provide an interesting
     and informative visualization of hierarchical clustering results. A dendrogram
     contains the memory of the hierarchical clustering algorithm, so you can tell
     how the cluster is formed simply by inspecting the chart.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 分层聚类使得可以绘制*树状图*，它是二叉分层聚类的可视化。树状图是一种显示不同数据集之间层次关系的树状图。它们提供了分层聚类结果的有趣和信息丰富的可视化。树状图包含了分层聚类算法的记忆，因此通过检查图表就可以了解聚类是如何形成的。
 - en: '[Figure 8-1](#HC) shows an example of dendrograms based on hierarchical clustering.
     The distance between data points represents dissimilarities, and the height of
     the blocks represents the distance between clusters.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 8-1](#HC) 展示了基于分层聚类的树状图示例。数据点之间的距离表示不相似性，方块的高度表示聚类之间的距离。'
 - en: Observations that fuse at the bottom are similar, while those at the top are
     quite different. With dendrograms, conclusions are made based on the location
     of the vertical axis rather than on the horizontal one.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 在底部融合的观察结果是相似的，而在顶部则相当不同。通过树状图，可以基于垂直轴的位置而不是水平轴来得出结论。
 - en: The advantages of hierarchical clustering are that it is easy to implement it,
     does not require one to specify the number of clusters, and it produces dendrograms
     that are very useful in understanding the data. However, the time complexity for
@@ -270,35 +373,52 @@
     to determine the correct number of clusters by looking at the dendrogram. Hierarchical
     clustering is very sensitive to outliers, and in their presence, model performance
     decreases significantly.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 分层聚类的优点在于易于实现，不需要指定聚类数量，并且生成的树状图在理解数据方面非常有用。然而，与其他算法（如*k*-means）相比，分层聚类的时间复杂度可能导致较长的计算时间。如果数据集很大，通过查看树状图确定正确的聚类数量可能会很困难。分层聚类对离群值非常敏感，在它们存在时，模型性能显著降低。
 - en: '![mlbf 0801](Images/mlbf_0801.png)'
+  id: totrans-52
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0801](Images/mlbf_0801.png)'
 - en: Figure 8-1\. Hierarchical clustering
+  id: totrans-53
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-1\. 分层聚类
 - en: Implementation in Python
+  id: totrans-54
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Python 实现
 - en: 'The following code snippet illustrates how to apply agglomerative hierarchical
     clustering with four clusters on a dataset:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码片段演示了如何在数据集上应用包含四个聚类的聚合分层聚类：
 - en: '[PRE1]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: More details regarding the hyperparameters of agglomerative hierarchical clustering
     can be found on the [sklearn website](https://scikit-learn.org). We will look
     at the hierarchical clustering technique in case studies 1 and 3 in this chapter.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于凝聚分层聚类的超参数的更多详细信息可以在[sklearn 网站](https://scikit-learn.org)找到。我们将在本章的案例研究 1
+    和 3 中探讨分层聚类技术。
 - en: Affinity Propagation Clustering
+  id: totrans-58
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 亲和传播聚类
 - en: '*Affinity propagation* creates clusters by sending messages between data points
     until convergence. Unlike clustering algorithms such as *k*-means, affinity propagation
     does not require the number of clusters to be determined or estimated before running
@@ -307,8 +427,10 @@
     (or prototypes) are used; and the *damping factor*, which dampens the responsibility
     and availability of messages to avoid numerical oscillations when updating these
     messages.'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '*亲和传播*通过在数据点之间发送消息直到收敛来创建聚类。与*k*-means等聚类算法不同，亲和传播在运行算法之前不需要确定或估计聚类的数量。亲和传播中使用两个重要参数来确定聚类数量：*偏好*控制使用多少*典范*（或原型）；*阻尼因子*则减弱消息的责任和可用性，以避免更新这些消息时的数值振荡。'
 - en: A dataset is described using a small number of exemplars. These are members
     of the input set that are representative of clusters. The affinity propagation
     algorithm takes in a set of pairwise similarities between data points and finds
@@ -317,49 +439,67 @@
     the exemplar of the other, which is updated in response to the values from other
     pairs. This updating happens iteratively until convergence, at which point the
     final exemplars are chosen, and we obtain the final clustering.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个数据集使用少量样本来描述。这些样本是输入集合的代表性成员。亲和传播算法接受一组数据点之间的成对相似性，并通过最大化数据点与其代表的总相似性来找到聚类。传递的消息表示一个样本成为另一个样本的代表的适合程度，这会根据来自其他对的值进行更新。这种更新是迭代的，直到收敛为止，此时选择最终的代表，并获得最终的聚类。
 - en: In terms of strengths, affinity propagation does not require the number of clusters
     to be determined before running the algorithm. The algorithm is fast and can be
     applied to large similarity matrices. However, the algorithm often converges to
     suboptimal solutions, and at times it can fail to converge.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 就优势而言，亲和传播不需要在运行算法之前确定簇的数量。该算法速度快，可以应用于大型相似性矩阵。然而，该算法经常收敛于次优解，并且有时可能无法收敛。
 - en: Implementation in Python
+  id: totrans-62
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Python中的实现
 - en: 'The following code snippet illustrates how to implement the affinity propagation
     algorithm for a dataset:'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码片段说明了如何为数据集实现亲和传播算法：
 - en: '[PRE2]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: More details regarding the hyperparameters of affinity propagation clustering
     can be found on the [sklearn website](https://scikit-learn.org). We will look
     at the affinity propagation technique in case studies 1 and 2 in this chapter.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于亲和传播聚类的超参数的更多详细信息可以在[sklearn网站](https://scikit-learn.org)上找到。我们将在本章的案例研究1和2中看到亲和传播技术。
 - en: 'Case Study 1: Clustering for Pairs Trading'
+  id: totrans-66
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究1：配对交易的聚类
 - en: A pairs trading strategy constructs a portfolio of correlated assets with similar
     market risk factor exposure. Temporary price discrepancies in these assets can
     create opportunities to profit through a long position in one instrument and a
     short position in another. A pairs trading strategy is designed to eliminate market
     risk and exploit these temporary discrepancies in the relative returns of stocks.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 配对交易策略构建了一个具有类似市场风险因子暴露的相关资产组合。这些资产的临时价格差异可以通过在一种工具中建立多头仓位，同时在另一种工具中建立空头仓位来创造盈利机会。配对交易策略旨在消除市场风险，并利用这些股票相对回报的临时差异。
 - en: The fundamental premise in pairs trading is that *mean reversion* is an expected
     dynamic of the assets. This mean reversion should lead to a long-run equilibrium
     relationship, which we try to approximate through statistical methods. When moments
     of (presumably temporary) divergence from this long-term trend arise, one can
     possibly profit. The key to successful pairs trading is the ability to select
     the right pairs of assets to be used.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 配对交易的基本前提是*均值回归*是资产的预期动态。这种均值回归应该导致长期均衡关系，我们试图通过统计方法来近似这种关系。当（假定为暂时的）与这种长期趋势背离的时刻出现时，可能会产生利润。成功的配对交易的关键在于选择要使用的正确的资产对。
 - en: Traditionally, trial and error was used for pairs selection. Stocks or instruments
     that were merely in the same sector or industry were grouped together. The idea
     was that if these stocks were for companies in similar industries, their stocks
@@ -367,237 +507,369 @@
     Additionally, with a large universe of stocks, finding a suitable pair is a difficult
     task, given that there are a total of *n(n–1)/2* possible pairs, where *n* is
     the number of instruments. Clustering can be a useful technique here.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 传统上，配对选择使用试错法。仅仅处于相同部门或行业的股票或工具被分组在一起。这个想法是，如果这些股票属于相似行业的公司，它们的股票也应该以类似的方式移动。然而，这并不一定是事实。此外，对于庞大的股票池，找到一个合适的对是一项困难的任务，因为可能有*
+    n（n-1）/2 *种可能的配对，其中*n*是工具的数量。聚类在这里可能是一个有用的技术。
 - en: In this case study, we will use clustering algorithms to select pairs of stocks
     for a pairs trading strategy.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们将使用聚类算法为配对交易策略选择股票对。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Clustering to Select Pairs
+  id: totrans-72
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用聚类选择配对的蓝图
 - en: 1\. Problem definition
+  id: totrans-73
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: Our goal in this case study is to perform clustering analysis on the stocks
     in the S&P 500 to come up with pairs for a pairs trading strategy. S&P 500 stock
     data was obtained using `pandas_datareader` from Yahoo Finance. It includes price
     data from 2018 onwards.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们的目标是对S&P 500股票进行聚类分析，以制定成对交易策略。从Yahoo Finance使用`pandas_datareader`获取了S&P
+    500股票数据。数据包括2018年以来的价格数据。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-75
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: The list of the libraries used for data loading, data analysis, data preparation,
     and model evaluation are shown below.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据加载、数据分析、数据准备和模型评估所使用的库列表如下。
 - en: 2.1\. Loading the Python packages
+  id: totrans-77
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The details of most of these packages and functions have been provided in Chapters
     [2](ch02.xhtml#Chapter2) and [4](ch04.xhtml#Chapter4). The use of these packages
     will be demonstrated in different steps of the model development process.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数这些包和函数的详细信息已在第[2](ch02.xhtml#Chapter2)章和第[4](ch04.xhtml#Chapter4)章中提供。这些包的使用将在模型开发过程的不同步骤中进行演示。
 - en: '`Packages for clustering`'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于聚类的包`'
 - en: '[PRE3]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '`Packages for data processing and visualization`'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于数据处理和可视化的包`'
 - en: '[PRE4]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 2.2\. Loading the data
+  id: totrans-83
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: The stock data is loaded below.^([1](ch08.xhtml#idm45174912844296))
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面加载股票数据。^([1](ch08.xhtml#idm45174912844296))
 - en: '[PRE5]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 3\. Exploratory data analysis
+  id: totrans-86
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: We take a quick look at the data in this section.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在本节快速查看数据。
 - en: 3.1\. Descriptive statistics
+  id: totrans-88
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述统计
 - en: 'Let us look at the shape of the data:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看数据的形状：
 - en: '[PRE6]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '`Output`'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE7]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: The data contains 502 columns and 448 observations.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据包含502列和448个观察值。
 - en: 3.2\. Data visualization
+  id: totrans-94
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2\. 数据可视化
 - en: We will take a detailed look into the visualization postclustering.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将详细查看聚类后的可视化。
 - en: 4\. Data preparation
+  id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: We prepare the data for modeling in the following sections.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在以下几节中为建模准备数据。
 - en: 4.1\. Data cleaning
+  id: totrans-98
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清理
 - en: 'In this step, we check for NAs in the rows and either drop them or fill them
     with the mean of the column:'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们检查行中的NAs，并且要么删除它们，要么用列的均值填充它们：
 - en: '[PRE8]'
+  id: totrans-100
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '`Output`'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE9]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'Let us get rid of the columns with more than 30% missing values:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们去除超过30%缺失值的列：
 - en: '[PRE10]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '`Output`'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE11]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'Given that there are null values, we drop some rows:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于存在空值，我们删除了一些行：
 - en: '[PRE12]'
+  id: totrans-108
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: The data cleaning steps identified those with missing values and populated them.
     This step is important for creating a meaningful, reliable, and clean dataset
     that can be used without any errors in the clustering.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据清洗步骤识别出具有缺失值的数据，并对其进行了填充。此步骤对于创建一个有意义、可靠且清洁的数据集至关重要，该数据集可以在聚类中无误地使用。
 - en: 4.2\. Data transformation
+  id: totrans-110
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 数据转换
 - en: 'For the purpose of clustering, we will be using *annual returns* and *variance*
     as the variables, as they are primary indicators of stock performance and volatility.
     The following code prepares these variables:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了进行聚类分析，我们将使用*年度回报*和*方差*作为变量，因为它们是股票表现和波动性的主要指标。以下代码准备这些变量：
 - en: '[PRE13]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'All the variables should be on the same scale before applying clustering; otherwise,
     a feature with large values will dominate the result. We use `StandardScaler`
     in sklearn to standardize the dataset features onto unit scale (mean = 0 and variance
     = 1):'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 在应用聚类之前，所有变量应处于相同的尺度上；否则，具有较大值的特征将主导结果。我们使用sklearn中的`StandardScaler`将数据集特征标准化为单位尺度（均值=0，方差=1）：
 - en: '[PRE14]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '`Output`'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '|  | Returns | Volatility |'
+  id: totrans-116
   prefs: []
   type: TYPE_TB
+  zh: '|  | 返回 | 波动性 |'
 - en: '| --- | --- | --- |'
+  id: totrans-117
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| ABT | 0.794067 –0.702741 | ABBV |'
+  id: totrans-118
   prefs: []
   type: TYPE_TB
+  zh: '| ABT | 0.794067 –0.702741 | ABBV |'
 - en: With the data prepared, we can now explore the clustering algorithms.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 准备好数据后，我们现在可以探索聚类算法。
 - en: 5\. Evaluate algorithms and models
+  id: totrans-120
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: 'We will look at the following models:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将查看以下模型：
 - en: '*k*-means'
+  id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*k*-均值'
 - en: Hierarchical clustering (agglomerative clustering)
+  id: totrans-123
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 分层聚类（凝聚聚类）
 - en: Affinity propagation
+  id: totrans-124
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 亲和传播
 - en: 5.1\. k-means clustering
+  id: totrans-125
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. *k*-均值聚类
 - en: Here, we model using *k*-means and evaluate two ways to find the optimal number
     of clusters.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们使用*k*-均值建模，并评估两种方法来找到最优聚类数。
 - en: 5.1.1\. Finding the optimal number of clusters
+  id: totrans-127
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.1\. 寻找最优聚类数
 - en: We know that *k*-means initially assigns data points to clusters randomly and
     then calculates centroids or mean values. Further, it calculates the distances
     within each cluster, squares these, and sums them to get the sum of squared errors.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们知道*k*-均值最初将数据点随机分配到集群中，然后计算质心或均值。此外，它计算每个集群内的距离，对这些距离进行平方，并将它们求和以得到平方误差和。
 - en: 'The basic idea is to define *k* clusters so that the total within-cluster variation
     (or error) is minimized. The following two methods are useful in finding the number
     of clusters in *k*-means:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 基本思想是定义*k*个聚类，以使总的聚类内变异（或误差）最小化。以下两种方法有助于找到*k*-means中的聚类数：
 - en: Elbow method
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 肘方法
 - en: Based on the sum of squared errors (SSE) within clusters
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于聚类内的平方误差（SSE）
 - en: Silhouette method
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 轮廓方法
 - en: Based on the silhouette score
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于轮廓分数
 - en: First, let’s examine the elbow method. The SSE for each point is the square
     of the distance of the point from its representation (i.e., its predicted cluster
     center). The sum of squared errors is plotted for a range of values for the number
@@ -605,151 +877,227 @@
     but eventually the marginal gain will drop, giving an angle in the graph. The
     number of clusters is chosen at this point; hence it is referred to as the “elbow
     criterion.”
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们来看看肘方法。每个点的SSE是该点与其表示（即其预测聚类中心）之间距离的平方。对于一系列聚类数的值，绘制平方误差和。第一个聚类将添加大量信息（解释大量方差），但最终边际增益会下降，在图表中形成一个角度。在这一点选择聚类数；因此被称为“肘准则”。
 - en: 'Let us implement this in Python using the sklearn library and plot the SSE
     for a range of values for *k*:'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们使用sklearn库在Python中实现这一点，并绘制一系列值对于*k*的SSE：
 - en: '[PRE15]'
+  id: totrans-136
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '`Output`'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in01](Images/mlbf_08in01.png)'
+  id: totrans-138
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in01](Images/mlbf_08in01.png)'
 - en: Inspecting the sum of squared errors chart, it appears the elbow kink occurs
     around five or six clusters for this data. Certainly we can see that as the number
     of clusters increases past six, the SSE within clusters begins to plateau.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查聚类内平方误差图表，数据显示肘部拐点大约在五或六个聚类处。当聚类数超过六个时，我们可以看到聚类内的SSE开始趋于平稳。
 - en: Now let’s look at the silhouette method. The silhouette score measures how similar
     a point is to its own cluster (*cohesion*) compared to other clusters (*separation*).
     The range of the silhouette value is between 1 and –1\. A high value is desirable
     and indicates that the point is placed in the correct cluster. If many points
     have a negative silhouette value, that may indicate that we have created too many
     or too few clusters.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看看轮廓方法。轮廓分数衡量一个点与其所属聚类的相似程度（*内聚性*）与其他聚类的相似程度（*分离性*）。轮廓值的范围在1到-1之间。高值是理想的，表示该点正确地放置在其聚类中。如果许多点具有负轮廓值，则可能表明我们创建了过多或过少的聚类。
 - en: 'Let us implement this in Python using the sklearn library and plot the silhouette
     score for a range of values for *k*:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们使用sklearn库在Python中实现这一点，并绘制一系列值对于*k*的轮廓分数：
 - en: '[PRE16]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '`Output`'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in02](Images/mlbf_08in02.png)'
+  id: totrans-144
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in02](Images/mlbf_08in02.png)'
 - en: Looking at the silhouette score chart, we can see that there are various parts
     of the graph at which a kink can be seen. Since there is not much of a difference
     in the SSE after six clusters, it implies that six clusters is a preferred choice
     in this *k*-means model.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看轮廓分数图表，我们可以看到图表中的各个部分都能看到一个拐点。由于在六个聚类之后SSE没有太大的差异，这意味着在这个*k*-means模型中六个聚类是首选选择。
 - en: Combining information from both methods, we infer the optimum number of clusters
     to be six.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 结合两种方法的信息，我们推断出最优的聚类数为六。
 - en: 5.1.2\. Clustering and visualization
+  id: totrans-147
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.2\. 聚类和可视化
 - en: 'Let us build the *k*-means model with six clusters and visualize the results:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们建立六个聚类的*k*-means模型并可视化结果：
 - en: '[PRE17]'
+  id: totrans-149
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 'Visualizing how clusters are formed is no easy task when the number of variables
     in the dataset is very large. A basic scatterplot is one method for visualizing
     a cluster in a two-dimensional space. We create one below to identify the relationships
     inherent in our data:'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 当数据集中的变量数量非常大时，要想可视化聚类形成是一项不易的任务。基本散点图是在二维空间中可视化聚类的一种方法。我们在下面创建一个来识别数据中固有的关系：
 - en: '[PRE18]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '`Output`'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in03](Images/mlbf_08in03.png)'
+  id: totrans-153
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in03](Images/mlbf_08in03.png)'
 - en: In the preceding plot, we can somewhat see that there are distinct clusters
     separated by different colors (full-color version available on [GitHub](https://oreil.ly/8RvSp)).
     The grouping of data in the plot seems to be separated quite well. There is also
     a degree of separation in the centroids of the clusters, represented by square
     dots.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前面的图中，我们可以看到不同颜色分开的明显聚类（全彩版可在[GitHub](https://oreil.ly/8RvSp)上找到）。图中的数据分组似乎分离得很好。聚类中心也有一定程度的分离，用方形点表示。
 - en: 'Let us look at the number of stocks in each of the clusters:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看每个聚类中的股票数量：
 - en: '[PRE19]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '`Output`'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in04](Images/mlbf_08in04.png)'
+  id: totrans-158
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in04](Images/mlbf_08in04.png)'
 - en: The number of stocks per cluster ranges from around 40 to 120\. Although the
     distribution is not equal, we have a significant number of stocks in each cluster.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个聚类中的股票数量大约在40到120之间。虽然分布不均匀，但每个聚类中都有相当数量的股票。
 - en: Let’s look at the hierarchical clustering.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看层次聚类。
 - en: 5.2\. Hierarchical clustering (agglomerative clustering)
+  id: totrans-161
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 层次聚类（凝聚聚类）
 - en: In the first step, we look at the hierarchy graph and check for the number of
     clusters.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一步中，我们查看层次图，并检查聚类的数量。
 - en: 5.2.1\. Building hierarchy graph/dendrogram
+  id: totrans-163
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.1\. 构建层次图/树状图
 - en: 'The hierarchy class has a dendrogram method that takes the value returned by
     the *linkage method* of the same class. The linkage method takes the dataset and
     the method to minimize distances as parameters. We use *ward* as the method since
     it minimizes the variance of distances between the clusters:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 层次类具有一个树状图方法，该方法接受同一类的*linkage方法*返回的值。linkage方法接受数据集和最小化距离的方法作为参数。我们使用*ward*作为方法，因为它最小化了集群之间距离的方差：
 - en: '[PRE20]'
+  id: totrans-165
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '`Output`'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE21]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'The best way to visualize an agglomerative clustering algorithm is through
     a dendrogram, which displays a cluster tree, the leaves being the individual stocks
     and the root being the final single cluster. The distance between each cluster
     is shown on the y-axis. The longer the branches are, the less correlated the two
     clusters are:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 最佳可视化凝聚聚类算法的方式是通过树状图，它显示了一个聚类树，叶子是单独的股票，根是最终的单一聚类。每个聚类之间的距离显示在y轴上。分支越长，两个聚类之间的相关性越低：
 - en: '[PRE22]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '`Output`'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in05](Images/mlbf_08in05.png)'
+  id: totrans-171
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in05](Images/mlbf_08in05.png)'
 - en: This chart can be used to visually inspect the number of clusters that would
     be created for a selected distance threshold (although the names of the stocks
     on the horizontal axis are not very clear, we can see that they are grouped into
@@ -759,161 +1107,244 @@
     vertical branches of the dendrogram, implying two clusters at that distance threshold.
     All data points (leaves) from that branch would be labeled as that cluster that
     the horizontal line passed through.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 该图表可以用来直观地检查选择的距离阈值会创建多少个聚类（尽管横轴上股票的名称不太清晰，我们可以看到它们被分成了几个聚类）。一条假设的水平直线穿过的垂直线的数量是在该距离阈值下创建的聚类数。例如，在值为20时，水平线将穿过树状图的两个垂直分支，暗示该距离阈值下有两个聚类。该分支的所有数据点（叶子）将被标记为该水平线穿过的聚类。
 - en: 'Choosing a threshold cut at 13 yields four clusters, as confirmed in the following
     Python code:'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 在13的阈值处切割选择会产生四个聚类，如下Python代码所确认：
 - en: '[PRE23]'
+  id: totrans-174
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '`Output`'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE24]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 5.2.2\. Clustering and visualization
+  id: totrans-177
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.2\. 聚类和可视化
 - en: 'Let us build the hierarchical clustering model with four clusters and visualize
     the results:'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们建立具有四个聚类的层次聚类模型并可视化结果：
 - en: '[PRE25]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[PRE26]'
+  id: totrans-180
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Similar to the plot of *k*-means clustering, we see that there are some distinct
     clusters separated by different colors (full-size version available on [GitHub](https://oreil.ly/8RvSp)).
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似于*k*-均值聚类的图表，我们看到有一些不同颜色分离的明显聚类（完整版本可在[GitHub](https://oreil.ly/8RvSp)上找到）。
 - en: '`Output`'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in06](Images/mlbf_08in06.png)'
+  id: totrans-183
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in06](Images/mlbf_08in06.png)'
 - en: Now let us look at affinity propagation clustering.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来看看亲和传播聚类。
 - en: 5.3\. Affinity propagation
+  id: totrans-185
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. 亲和传播
 - en: 'Let us build the affinity propagation model and visualize the results:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们建立亲和传播模型并可视化结果：
 - en: '[PRE27]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '`Output`'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 08in07](Images/mlbf_08in07.png)'
+  id: totrans-189
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in07](Images/mlbf_08in07.png)'
 - en: The affinity propagation model with the chosen hyperparameters produced many
     more clusters than *k*-means and hierarchical clustering. There is some clear
     grouping, but also more overlap due to the larger number of clusters (full-size
     version available on [GitHub](https://oreil.ly/8RvSp)). In the next step, we will
     evaluate the clustering techniques.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择了的亲和传播模型与*k*-均值和层次聚类相比产生了更多的聚类。虽然有一些明显的分组，但由于聚类数量较多，也存在更多的重叠（完整版本可在[GitHub](https://oreil.ly/8RvSp)上找到）。在下一步中，我们将评估聚类技术。
 - en: 5.4\. Cluster evaluation
+  id: totrans-191
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.4\. 聚类评估
 - en: 'If the ground truth labels are not known, evaluation must be performed using
     the model itself. The silhouette coefficient (`sklearn.metrics.silhouette_score`)
     is one example we can use. A higher silhouette coefficient score implies a model
     with better defined clusters. The silhouette coefficient is computed for each
     of the clustering methods defined above:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果不知道真实标签，则必须使用模型本身进行评估。轮廓系数（`sklearn.metrics.silhouette_score`）就是一个可以使用的例子。较高的轮廓系数分数意味着具有更好定义的群集的模型。轮廓系数计算针对上述每种定义的聚类方法：
 - en: '[PRE28]'
+  id: totrans-193
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '`Output`'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE29]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: Given that affinity propagation performs the best, we proceed with affinity
     propagation and use 27 clusters as specified by this clustering method.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于亲和传播效果最佳，我们继续使用亲和传播，并按照此聚类方法指定的27个群集。
 - en: Visualizing the return within a cluster
+  id: totrans-197
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 在群集内部可视化回报
 - en: 'We have the clustering technique and the number of clusters finalized, but
     we need to check whether the clustering leads to a sensible output. To do this,
     we visualize the historical behavior of the stocks in a few clusters:'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经确定了聚类技术和群集数量，但需要检查聚类是否导致合理的输出。为了做到这一点，我们可视化几个群集中股票的历史行为：
 - en: '[PRE30]'
+  id: totrans-199
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '`Output`'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 08in08](Images/mlbf_08in08.png)![mlbf 08in09](Images/mlbf_08in09.png)'
+  id: totrans-201
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in08](Images/mlbf_08in08.png)![mlbf 08in09](Images/mlbf_08in09.png)'
 - en: Looking at the charts above, across all the clusters with small number of stocks,
     we see similar movement of the stocks under different clusters, which corroborates
     the effectiveness of the clustering technique.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看上述图表，跨所有具有少量股票的群集，我们看到不同群集下的股票出现相似的运动，这证实了聚类技术的有效性。
 - en: 6\. Pairs selection
+  id: totrans-203
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 配对选择
 - en: Once the clusters are created, several cointegration-based statistical techniques
     can be applied on the stocks within a cluster to create the pairs. Two or more
     time series are considered to be cointegrated if they are nonstationary and tend
     to move together.^([2](ch08.xhtml#idm45174910884168)) The presence of cointegration
     between time series can be validated through several statistical techniques, including
     the [Augmented Dickey-Fuller test](https://oreil.ly/5xKZy) and the [Johansen test](https://oreil.ly/9zbnC).
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建群集后，可以在群集内的股票上应用几种基于协整性的统计技术来创建配对。如果两个或更多时间序列是协整的，那么它们是非平稳的并且倾向于共同移动。^([2](ch08.xhtml#idm45174910884168))
+    通过几种统计技术，包括[增广迪基-富勒检验](https://oreil.ly/5xKZy)和[Johansen检验](https://oreil.ly/9zbnC)，可以验证时间序列之间的协整性。
 - en: In this step, we scan through a list of securities within a cluster and test
     for cointegration between the pairs. First, we write a function that returns a
     cointegration test score matrix, a p-value matrix, and any pairs for which the
     p-value was less than 0.05.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们扫描一个群集内的证券列表，并测试配对之间的协整性。首先，我们编写一个返回协整测试分数矩阵、p值矩阵以及p值小于0.05的任何配对的函数。
 - en: Cointegration and pair selection function
+  id: totrans-206
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 协整性和配对选择功能
 - en: '[PRE31]'
+  id: totrans-207
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'Next, we check the cointegration of different pairs within several clusters
     using the function created above and return the pairs found:'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们使用上述创建的函数检查几个群集内不同配对的协整性，并返回找到的配对。
 - en: '[PRE32]'
+  id: totrans-209
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: '`Output`'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE33]'
+  id: totrans-211
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: Let us visualize the results of the pair selection process now. Refer to the
     Jupyter notebook of this case study for the details of the steps related to the
     pair visualization using the t-SNE technique.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们可视化配对选择过程的结果。有关使用t-SNE技术进行配对可视化的步骤的详细信息，请参考本案例研究的Jupyter笔记本。
 - en: The following chart shows the strength of *k*-means for finding nontraditional
     pairs (pointed out with an arrow in the visualization). DXC is the ticker symbol
     for DXC Technology, and XEC is the ticker symbol for Cimarex Energy. These two
@@ -921,51 +1352,72 @@
     surface, but they are identified as pairs using *k*-means clustering and cointegration
     testing. This implies that a long-run stable relationship exists between their
     stock price movements.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下图表显示了*k*-means在寻找非传统配对方面的强度（在可视化中用箭头指出）。DXC是DXC Technology的股票代码，XEC是Cimarex
+    Energy的股票代码。这两只股票来自不同的行业，在表面上看似乎没有共同点，但使用*k*-means聚类和协整测试识别为配对。这意味着它们的股票价格走势之间存在长期稳定的关系。
 - en: '![mlbf 08in10](Images/mlbf_08in10.png)'
+  id: totrans-214
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in10](Images/mlbf_08in10.png)'
 - en: Once the pairs are created, they can be used in a pairs trading strategy. When
     the share prices of the pair deviate from the identified long-run relationship,
     an investor would seek to take a long position in the underperforming security
     and sell short the outperforming security. If the securities return to their historical
     relationship, a profit is made from the convergence of the prices.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦形成股票对，它们可以用于成对交易策略。当这对股票的股价偏离确定的长期关系时，投资者将寻求在表现不佳的证券上建立多头头寸，并空头卖出表现良好的证券。如果证券的价格重新回到其历史关系，投资者将从价格的收敛中获利。
 - en: Conclusion
+  id: totrans-216
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we demonstrated the efficiency of clustering techniques
     by finding small pools of stocks in which to identify pairs to be used in a pairs
     trading strategy. A next step beyond this case study would be to explore and backtest
     various long/short trading strategies with pairs of stocks from the groupings
     of stocks.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们展示了聚类技术的效率，通过找到可以用于成对交易策略的股票小池。超越这个案例研究的下一步将是探索和回测来自股票组合中的股票对的各种多空交易策略。
 - en: Clustering can be used for dividing stocks and other types of assets into groups
     with similar characteristics for several other kinds of trading strategies. It
     can also be effective in portfolio construction, helping to ensure we choose a
     pool of assets with sufficient diversification between them.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 聚类可以用于将股票和其他类型的资产分成具有相似特征的组，以支持多种类型的交易策略。它在投资组合构建中也非常有效，有助于确保我们选择的资产池具有足够的分散化。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-219
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 2: Portfolio Management: Clustering Investors'
+  id: totrans-220
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究2：投资组合管理：聚类投资者
 - en: Asset management and investment allocation is a tedious and time-consuming process
     in which investment managers often must design customized approaches for each
     client or investor.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 资产管理和投资配置是一个繁琐且耗时的过程，在这个过程中，投资经理通常必须为每个客户或投资者设计定制化的方法。
 - en: What if we were able to organize these clients into particular investor profiles,
     or clusters, wherein each group is indicative of investors with similar characteristics?
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们能将这些客户组织成特定的投资者档案或集群，其中每个群体都代表具有类似特征的投资者，那该有多好？
 - en: Clustering investors based on similar characteristics can lead to simplicity
     and standardization in the investment management process. These algorithms can
     group investors based on different factors, such as age, income, and risk tolerance.
@@ -974,301 +1426,456 @@
     any biases that otherwise could adversely impact decision making. The factors
     analyzed through clustering can have a big impact on asset allocation and rebalancing,
     making it an invaluable tool for faster and effective investment management.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据类似特征对投资者进行聚类可以简化和标准化投资管理流程。这些算法可以根据年龄、收入和风险承受能力等不同因素将投资者分组。它可以帮助投资经理识别其投资者群体中的不同群体。此外，通过使用这些技术，经理们可以避免引入可能会对决策产生不利影响的任何偏见。通过聚类分析的因素可以对资产配置和再平衡产生重大影响，使其成为更快速和有效的投资管理工具。
 - en: In this case study, we will use clustering methods to identify different types
     of investors.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们将使用聚类方法来识别不同类型的投资者。
 - en: 'The data used for this case study is from the Survey of Consumer Finances,
     which is conducted by the Federal Reserve Board. The same dataset was used in
     [“Case Study 3: Investor Risk Tolerance and Robo-Advisors”](ch05.xhtml#CaseStudy3SR)
     in [Chapter 5](ch05.xhtml#Chapter5).'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究使用的数据来自美联储委员会进行的消费者金融调查，该数据集还在[“案例研究3：投资者风险承受能力和智能顾问”](ch05.xhtml#CaseStudy3SR)中使用，该案例研究位于[第5章](ch05.xhtml#Chapter5)中。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-226
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Clustering for Grouping Investors
+  id: totrans-227
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用聚类将投资者分组的蓝图
 - en: 1\. Problem definition
+  id: totrans-228
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1. 问题定义
 - en: The goal of this case study is to build a clustering model to group individuals
     or investors based on parameters related to the ability and willingness to take
     risk. We will focus on using common demographic and financial characteristics
     to accomplish this.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究的目标是构建一个聚类模型，根据与承担风险能力和意愿相关的参数来对个人或投资者进行分组。我们将专注于使用常见的人口统计和财务特征来实现这一目标。
 - en: The survey data we’re using includes responses from 10,000+ individuals in 2007
     (precrisis) and 2009 (postcrisis). There are over 500 features. Since the data
     has many variables, we will first reduce the number of variables and select the
     most intuitive features directly linked to an investor’s ability and willingness
     to take risk.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用的调查数据包括2007年（危机前）和2009年（危机后）超过10,000名个体的回答。数据包含500多个特征。由于数据变量众多，我们首先减少变量数量，选择直接与投资者承担风险能力相关的最直观特征。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-231
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-232
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: 'The packages loaded for this case study are similar to those loaded in the
     case study presented in [Chapter 5](ch05.xhtml#Chapter5). However, some additional
     packages related to the clustering techniques are shown in the following code
     snippet:'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究加载的包类似于[第5章](ch05.xhtml#Chapter5)案例研究中加载的包。然而，与聚类技术相关的一些附加包显示在下面的代码片段中：
 - en: '[PRE34]'
+  id: totrans-234
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 2.2\. Loading the data
+  id: totrans-235
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: 'The data (again, previously used in [Chapter 5](ch05.xhtml#Chapter5)) is further
     processed to give the following attributes that represent an individual’s ability
     and willingness to take risk. This preprocessed data is for the 2007 survey and
     is loaded below:'
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据（同样在[第5章](ch05.xhtml#Chapter5)中使用过）经进一步处理，得到以下表示个体承担风险能力和意愿的属性。这些预处理数据是2007年调查的结果，并且已经加载如下：
 - en: '[PRE35]'
+  id: totrans-237
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: 3\. Exploratory data analysis
+  id: totrans-238
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: Next, we take a closer look at the different columns and features found in the
     data.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们仔细查看数据中不同的列和特征。
 - en: 3.1\. Descriptive statistics
+  id: totrans-240
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述性统计
 - en: 'First, looking at the shape of the data:'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，看数据的形状：
 - en: '[PRE36]'
+  id: totrans-242
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '`Output`'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE37]'
+  id: totrans-244
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: 'The data has information for 3,886 individuals across 13 columns:'
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据包含3,886个个体的信息，分布在13列中：
 - en: '[PRE38]'
+  id: totrans-246
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '![mlbf 08in11](Images/mlbf_08in11.png)'
+  id: totrans-247
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in11](Images/mlbf_08in11.png)'
 - en: As we can see in the table above, there are 12 attributes for each of the individuals.
     These attributes can be categorized as demographic, financial, and behavioral
     attributes. They are summarized in [Figure 8-2](#AttrCluster).
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们在上表中看到的，每个个体有12个属性。这些属性可以归类为人口统计、财务和行为属性。它们在[图 8-2](#AttrCluster)中总结。
 - en: '![mlbf 0802](Images/mlbf_0802.png)'
+  id: totrans-249
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 0802](Images/mlbf_0802.png)'
 - en: Figure 8-2\. Attributes for clustering individuals
+  id: totrans-250
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-2\. 用于对个体进行聚类的属性
 - en: 'Many of these were previously used and defined in the [Chapter 5](ch05.xhtml#Chapter5)
     case study. A few additional attributes (LIFECYCL, HHOUSES, and SPENDMOR) are
     used in this case study and are defined below:'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些大多数曾在[第5章](ch05.xhtml#Chapter5)案例研究中使用并定义。在本案例研究中使用并定义了一些额外属性（LIFECYCL、HHOUSES和SPENDMOR）：
 - en: LIFECYCL
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: LIFECYCL
 - en: This is a lifecycle variable, used to approximate a person’s ability to take
     on risk. There are six categories in increasing level of ability to take risk.
     A value of 1 represents “age under 55, not married, and no kids,” and a value
     of 6 represents “age over 55 and not working.”
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个生命周期变量，用于近似一个人承担风险的能力。有六个类别，逐渐增加承担风险的能力。数值1代表“年龄小于55岁，未婚，无子女”，数值6代表“年龄超过55岁且不再工作”。
 - en: HHOUSES
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: HHOUSES
 - en: This is a flag indicating whether the individual is a homeowner. A value of
     1 (0) implies the individual does (does not) own a home.
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个指示个体是否拥有房屋的标志。数值1（0）表示个体拥有（不拥有）房屋。
 - en: SPENDMOR
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: SPENDMOR
 - en: This represents higher spending preference if assets appreciated on a scale
     of 1 to 5.
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果资产增值的话，这表示更高的消费偏好，取值范围为1到5。
 - en: 3.2\. Data visualization
+  id: totrans-258
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2\. 数据可视化
 - en: We will take a detailed look into the visualization postclustering.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将详细查看聚类后的可视化。
 - en: 4\. Data preparation
+  id: totrans-260
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: Here, we perform any necessary changes to the data in preparation for modeling.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们对数据进行必要的变更，为建模做准备。
 - en: 4.1\. Data cleaning
+  id: totrans-262
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清理
 - en: 'In this step, we check for NAs in the rows and either drop them or fill them
     with the mean of the column:'
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们检查行中是否存在NA值，然后删除或用列的平均值填充。
 - en: '[PRE39]'
+  id: totrans-264
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: '`Output`'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE40]'
+  id: totrans-266
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: 'Given that there is not any missing data, and the data is already in categorical
     format, no further data cleaning was performed. The *ID* column is unnecessary
     and is dropped:'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于没有任何缺失数据，并且数据已经是分类格式，无需进一步的数据清理。*ID*列是不必要的，已经被删除：
 - en: '[PRE41]'
+  id: totrans-268
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 4.2\. Data transformation
+  id: totrans-269
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 数据转换
 - en: As we saw in Section 3.1, all the columns represent categorical data with similar
     numeric scale, with no outliers. Hence, no data transformation will be required
     for clustering.
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们在第3.1节中看到的，所有列都代表具有相似数值范围的分类数据，没有异常值。因此，在进行聚类时不需要数据转换。
 - en: 5\. Evaluate algorithms and models
+  id: totrans-271
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: We will analyze the performance of *k*-means and affinity propagation.
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将分析 *k*-均值和亲和传播的性能。
 - en: 5.1\. k-means clustering
+  id: totrans-273
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. k-均值聚类
 - en: We look at the details of the *k*-means clustering in this step. First, we find
     the optimal number of clusters, followed by the creation of a model.
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在这一步看一下 *k*-均值聚类的细节。首先，我们找到最佳的聚类数，然后创建一个模型。
 - en: 5.1.1\. Finding the optimal number of clusters
+  id: totrans-275
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.1\. 寻找最佳聚类数
 - en: 'We look at the following two metrics to evaluate the number of clusters in
     the *k*-means model. The Python code to get these two metrics is the same as in
     case study 1:'
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们看以下两个指标来评估 *k*-均值模型中的聚类数。获取这两个指标的Python代码与案例研究1中的代码相同：
 - en: Sum of squared errors (SSE)
+  id: totrans-277
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 簇内平方和误差（SSE）
 - en: Silhouette score
+  id: totrans-278
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 轮廓分数
 - en: '`Sum of squared errors (SSE) within clusters`'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: '`簇内平方和误差（SSE）`'
 - en: '![mlbf 08in12](Images/mlbf_08in12.png)'
+  id: totrans-280
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in12](Images/mlbf_08in12.png)'
 - en: '`Silhouette score`'
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: '`轮廓分数`'
 - en: '![mlbf 08in13](Images/mlbf_08in13.png)'
+  id: totrans-282
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in13](Images/mlbf_08in13.png)'
 - en: Looking at both of the preceding charts, the optimum number of clusters seems
     to be around 7\. We can see that as the number of clusters increases past 6, the
     SSE within clusters begins to plateau. From the second graph, we can see that
     there are various parts of the graph where a kink can be seen. Since there is
     not much of a difference in the SSE after 7 clusters, we proceed with using 7
     clusters in the *k*-means model below.
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过观察前面两张图表，最佳聚类数似乎在7左右。我们可以看到，当聚类数超过6时，簇内SSE开始趋于平稳。从第二张图中可以看出，图表的各个部分都有一个转折点。由于超过7个聚类后SSE的差异不大，我们决定在下面的
+    *k*-均值模型中使用7个聚类。
 - en: 5.1.2\. Clustering and visualization
+  id: totrans-284
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1.2\. 聚类和可视化
 - en: 'Let us create a *k*-means model with 7 clusters:'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们创建一个包含7个聚类的 *k*-均值模型：
 - en: '[PRE42]'
+  id: totrans-286
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: 'Let us assign a target cluster to each individual in the dataset. This assignment
     is used further for exploratory data analysis to understand the behavior of each
     cluster:'
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们为数据集中的每个个体分配一个目标聚类。此分配进一步用于探索性数据分析，以了解每个聚类的行为：
 - en: '[PRE43]'
+  id: totrans-288
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: 5.2\. Affinity propagation
+  id: totrans-289
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 亲和传播
 - en: 'Here, we build an affinity propagation model and look at the number of clusters:'
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们建立了一个亲和传播模型，并观察了聚类的数量：
 - en: '[PRE44]'
+  id: totrans-291
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: '`Output`'
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE45]'
+  id: totrans-293
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: The affinity propagation resulted in over 150 clusters. Such a large number
     will likely make it difficult to ascertain proper differentiation between them.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 亲和传播结果超过150个聚类。这么多聚类可能会导致很难区分它们之间的差异。
 - en: 5.3\. Cluster evaluation
+  id: totrans-295
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. 聚类评估
 - en: 'In this step, we check the performance of the clusters using silhouette coefficient
     (*sklearn.metrics.silhouette_score*). Recall that a higher silhouette coefficient
     score relates to a model with better defined clusters:'
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们使用轮廓系数（*sklearn.metrics.silhouette_score*）检查聚类的性能。请记住，较高的轮廓系数分数与定义更好的聚类模型相关：
 - en: '[PRE46]'
+  id: totrans-297
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: '`Output`'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE47]'
+  id: totrans-299
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: The *k*-means model has a much higher silhouette coefficient compared to the
     affinity propagation. Additionally, the large number of clusters resulting from
     the affinity propagation is untenable. In the context of the problem at hand,
@@ -1279,32 +1886,49 @@
     eight investor types is much more practical than maintaining a meaningful understanding
     of over 100 different profiles. With this in mind, we proceed with *k*-means as
     the preferred clustering technique.
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: '*k*-均值模型的轮廓系数比亲和传播高得多。此外，亲和传播产生的大量聚类是不可持续的。在手头问题的背景下，拥有更少的聚类或投资者类型分类有助于在投资管理流程中建立简单性和标准化。这为信息的使用者（例如财务顾问）提供了一些管理投资者类型的直觉。理解和能够描述六到八种投资者类型要比理解和维护超过100种不同配置的意义更为实际。考虑到这一点，我们决定将
+    *k*-均值作为首选的聚类技术。'
 - en: 6\. Cluster intuition
+  id: totrans-301
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 聚类直觉
 - en: 'In the next step, we will analyze the clusters and attempt to draw conclusions
     from them. We do that by plotting the average of each variable of the cluster
     and summarizing the findings:'
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们将分析这些簇，并试图从中得出结论。我们通过绘制每个簇的变量平均值并总结结果来进行分析：
 - en: '[PRE48]'
+  id: totrans-303
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: '`Demographics Features: Plot for each of the clusters`'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: '`人口统计特征：每个簇的绘图`'
 - en: '[PRE49]'
+  id: totrans-305
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: '`Output`'
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 08in14](Images/mlbf_08in14.png)'
+  id: totrans-307
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in14](Images/mlbf_08in14.png)'
 - en: The plot here shows the average values of the attributes for each of the clusters
     (full size version available on [GitHub](https://oreil.ly/61d9_)). For example,
     in comparing clusters 0 and 1, cluster 0 has *lower* average age, yet *higher*
@@ -1312,20 +1936,31 @@
     and number of children. So, based on the demographic attributes, the individuals
     in cluster 0 will, on average, have higher risk tolerance compared to those in
     cluster 1.
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的图显示了每个簇的属性平均值（完整版本请参见[GitHub](https://oreil.ly/61d9_)）。例如，在比较簇 0 和 1 时，簇
+    0 的平均年龄较低，但平均受教育程度较高。然而，这两个簇在婚姻状况和子女数量上更为相似。因此，基于人口统计属性，簇 0 中的个体平均而言比簇 1 中的个体更具有较高的风险承受能力。
 - en: '`Financial and Behavioral Attributes: Plot for each of the clusters`'
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: '`财务和行为属性：每个簇的绘图`'
 - en: '[PRE50]'
+  id: totrans-310
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: '`Output`'
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 08in15](Images/mlbf_08in15.png)'
+  id: totrans-312
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in15](Images/mlbf_08in15.png)'
 - en: The plot here shows the average values of the financial and behavior attributes
     for each of the clusters (full size version available on [GitHub](https://oreil.ly/61d9_)).
     Again, comparing clusters 0 and 1, the former has higher average house ownership,
@@ -1334,74 +1969,107 @@
     save, the two clusters are comparable. Therefore, we can posit that the individuals
     in cluster 0 will, on average, have a higher ability and yet a lower willingness
     to take risks compared to the individuals in cluster 1.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的图显示了每个簇的财务和行为属性的平均值（完整版本请参见[GitHub](https://oreil.ly/61d9_)）。再次比较簇 0 和 1，前者具有更高的平均房屋所有权，更高的平均净资产和收入，以及较低的风险承受意愿。在储蓄与收入比较和愿意储蓄方面，这两个簇是可比较的。因此，我们可以推断，与簇
+    1 中的个体相比，簇 0 中的个体平均而言具有更高的能力，但更低的风险承受意愿。
 - en: Combining the information from the demographics, financial, and behavioral attributes
     for these two clusters, the overall ability to take risks for an individual in
     cluster 0 is higher than someone in cluster 1\. Performing similar analyses across
     all other clusters, we summarize the results in the table below. The risk tolerance
     column represents the subjective assessment of the risk tolerance of each cluster.
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 结合这两个簇的人口统计、财务和行为属性信息，簇 0 中个体的整体风险承受能力高于簇 1 中的个体。在所有其他簇中执行类似的分析后，我们在下表中总结结果。风险承受能力列代表了每个簇风险承受能力的主观评估。
 - en: '| Cluster | Features | Risk capacity |'
+  id: totrans-315
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 | 特征 | 风险能力 |'
 - en: '| --- | --- | --- |'
+  id: totrans-316
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| Cluster 0 | Low age, high net worth and income, less risky life category,
     willingness to spend more | High |'
+  id: totrans-317
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 0 | 年龄低，净资产和收入高，生活风险类别较低，愿意更多消费 | 高 |'
 - en: '| Cluster 1 | High age, low net worth and income, highly risky life category,
     willingness to take risk, low education | Low |'
+  id: totrans-318
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 1 | 年龄高，净资产和收入低，生活风险类别高，风险承受意愿高，教育水平低 | 低 |'
 - en: '| Cluster 2 | High age, high net worth and income, highly risky life category,
     willingness to take risk, owns home | Medium |'
+  id: totrans-319
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 2 | 年龄高，净资产和收入高，生活风险类别高，风险承受意愿高，拥有住房 | 中等 |'
 - en: '| Cluster 3 | Low age, very low income and net worth, high willingness to take
     risk, many kids | Low |'
+  id: totrans-320
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 3 | 年龄低，收入和净资产非常低，风险承受意愿高，有多个孩子 | 低 |'
 - en: '| Cluster 4 | Medium age, very high income and net worth, high willingness
     to take risk, many kids, owns home | High |'
+  id: totrans-321
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 4 | 年龄中等，收入和净资产非常高，风险承受意愿高，有多个孩子，拥有住房 | 高 |'
 - en: '| Cluster 5 | Low age, very low income and net worth, high willingness to take
     risk, no kids | Medium |'
+  id: totrans-322
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 5 | 年龄低，收入和净资产非常低，风险承受意愿高，无子女 | 中等 |'
 - en: '| Cluster 6 | Low age, medium income and net worth, high willingness to take
     risk, many kids, owns home | Low |'
+  id: totrans-323
   prefs: []
   type: TYPE_TB
+  zh: '| 簇 6 | 年龄低，收入和净资产中等，风险承受意愿高，有多个孩子，拥有住房 | 低 |'
 - en: Conclusion
+  id: totrans-324
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: One of the key takeaways from this case study is the approach to understanding
     the cluster intuition. We used visualization techniques to understand the expected
     behavior of a cluster member by qualitatively interpreting mean values of the
     variables in each cluster. We demonstrated the efficiency of clustering in discovering
     the natural groups of different investors based on their risk tolerance.
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个案例研究的一个关键要点是理解集群直觉的方法。我们使用可视化技术通过定性解释每个集群中变量的平均值来理解集群成员的预期行为。我们展示了通过风险承受能力将不同投资者的自然群体发现在一起的聚类的效率。
 - en: Given that clustering algorithms can successfully group investors based on different
     factors (such as age, income, and risk tolerance), they can be further used by
     portfolio managers to standardize portfolio allocation and rebalance strategies
     across the clusters, making the investment management process faster and more
     effective.
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定聚类算法能够成功根据不同因素（如年龄、收入和风险承受能力）对投资者进行分组，它们可以进一步被投资组合经理用于跨集群标准化投资组合分配和再平衡策略，从而使投资管理过程更快速、更有效。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-327
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 3: Hierarchical Risk Parity'
+  id: totrans-328
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究 3：层次风险平价
 - en: 'Markowitz’s *mean-variance portfolio optimization* is the most commonly used
     technique for portfolio construction and asset allocation. In this technique,
     we need to estimate the covariance matrix and expected returns of assets to be
@@ -1415,8 +2083,11 @@
     to large effects on the output of the optimization procedure. In this sense, the
     Markowitz mean-variance optimization is an ill-posed (or ill-conditioned) inverse
     problem.'
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 马科维茨的*均值-方差组合优化*是投资组合构建和资产配置中最常用的技术。在这种技术中，我们需要估计用作输入的资产的协方差矩阵和预期收益。正如在[“案例研究
+    1：投资组合管理：找到一种特征投资组合”](ch07.xhtml#CaseStudy1DR) 中所讨论的，金融回报的不稳定性导致了预期收益和协方差矩阵的估计误差，特别是当资产数量远大于样本量时。这些错误极大地危及了最终投资组合的最优性，导致错误和不稳定的结果。此外，假定的资产收益、波动率或协方差的微小变化可能对优化过程的输出产生很大影响。从这个意义上讲，马科维茨的均值-方差优化是一个病态（或病态）的逆问题。
 - en: In [“Building Diversified Portfolios That Outperform Out-of-Sample”](https://oreil.ly/2BmW5)
     by Marcos López de Prado (2016), the author proposes a portfolio allocation method
     based on clustering called *hierarchical risk parity*. The main idea of hierarchical
@@ -1426,100 +2097,147 @@
     same total allocation as a single uncorrelated one). This alleviates some of the
     issues (highlighted above) found in Markowitz’s mean-variance optimization and
     improves numerical stability.
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“构建在样本外表现优异的多样化投资组合”](https://oreil.ly/2BmW5) 中，马科斯·洛佩斯·德·普拉多（2016）提出了一种基于聚类的投资组合分配方法，称为*层次风险平价*。层次风险平价的主要思想是在股票回报的协方差矩阵上运行层次聚类，然后通过将资金平均分配给每个集群层次来找到分散的权重（这样许多相关策略将获得与单个不相关策略相同的总分配）。这减轻了马科维茨的均值-方差优化中发现的一些问题（上面突出显示）并提高了数值稳定性。
 - en: In this case study, we will implement hierarchical risk parity based on clustering
     methods and compare it against Markowitz’s mean-variance optimization method.
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们将基于聚类方法实施层次风险平价，并将其与马科维茨的均值-方差优化方法进行比较。
 - en: The dataset used for this case study is price data for stocks in the S&P 500
     from 2018 onwards. The dataset can be downloaded from Yahoo Finance. It is the
     same dataset as was used in case study 1.
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于本案例研究的数据集是从 2018 年开始的标准普尔 500 指数股票的价格数据。该数据集可以从 Yahoo Finance 下载。这是与案例研究 1
+    中使用的相同数据集。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-333
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Clustering to Implement Hierarchical Risk Parity
+  id: totrans-334
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用聚类实施层次风险平价的蓝图
 - en: 1\. Problem definition
+  id: totrans-335
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1. 问题定义
 - en: Our goal in this case study is to use a clustering-based algorithm on a dataset
     of stocks to allocate capital into different asset classes. In order to backtest
     and compare the portfolio allocation against the traditional Markowitz mean-variance
     optimization, we will perform visualization and use performance metrics, such
     as the Sharpe ratio.
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究的目标是使用基于聚类的算法对股票数据集进行资本分配到不同资产类别。为了对投资组合分配进行回测和与传统的Markowitz均值-方差优化进行比较，我们将进行可视化，并使用性能指标，如夏普比率。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-337
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-338
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: 'The packages loaded for this case study are similar to those loaded in the
     previous case study. However, some additional packages related to the clustering
     techniques are shown in the following code snippet:'
+  id: totrans-339
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究加载的包与上一案例研究中加载的包类似。然而，下面的代码片段显示了一些与聚类技术相关的额外包：
 - en: '[PRE51]'
+  id: totrans-340
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: Since this case study uses the same data as case study 1, some of the next steps
     (i.e., loading the data) have been skipped to avoid repetition. As a reminder,
     the data contains around 500 stocks and 448 observations.
+  id: totrans-341
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于本案例研究使用与案例研究1相同的数据，因此已跳过某些接下来的步骤（即加载数据），以避免重复。作为提醒，数据包含约500只股票和448个观察值。
 - en: 3\. Exploratory data analysis
+  id: totrans-342
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: We will take a detailed look into the visualization postclustering later in
     this case study.
+  id: totrans-343
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们稍后将详细查看聚类后的可视化。
 - en: 4\. Data preparation
+  id: totrans-344
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: 4.1\. Data cleaning
+  id: totrans-345
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清洗
 - en: Refer to case study 1 for data cleaning steps.
+  id: totrans-346
   prefs: []
   type: TYPE_NORMAL
+  zh: 参考案例研究1进行数据清洗步骤。
 - en: 4.2\. Data transformation
+  id: totrans-347
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 数据转换
 - en: 'We will be using annual returns for clustering. Additionally, we will train
     the data and then test the data. Here, we prepare the dataset for training and
     testing by separating 20% of the dataset for testing, and we generate the return
     series:'
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用年收益率进行聚类。此外，我们将训练数据和测试数据。在这里，我们通过将数据集的20%分开以进行测试，并生成收益率序列来为训练和测试准备数据集：
 - en: '[PRE52]'
+  id: totrans-349
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: 5\. Evaluate algorithms and models
+  id: totrans-350
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: In this step, we will look at hierarchical clustering and perform further analysis
     and visualization.
+  id: totrans-351
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们将研究层次聚类并进行进一步的分析和可视化。
 - en: 5.1\. Building a hierarchy graph/dendrogram
+  id: totrans-352
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 构建层次图/树状图
 - en: The first step is to look for clusters of correlations using the agglomerative
     hierarchical clustering technique. The hierarchy class has a dendrogram method
     that takes the value returned by the linkage method of the same class. The linkage
@@ -1527,98 +2245,144 @@
     are different options for measurement of the distance. The option we will choose
     is ward, since it minimizes the variance of distances between the clusters. Other
     possible measures of distance include single and centroid.
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一步是使用凝聚层次聚类技术寻找相关性的群集。层次类具有树状图方法，该方法采用同一类的链接方法返回的值作为参数。链接方法采用数据集和最小化距离的方法作为参数。有不同的选项用于测量距离。我们将选择的选项是ward，因为它最小化了群集之间的距离的方差。其他可能的距离度量包括单一和质心。
 - en: 'Linkage does the actual clustering in one line of code and returns a list of
     the clusters joined in the format:'
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: 链接在一行代码中执行实际的聚类并以以下格式返回群集的列表：
 - en: '[PRE53]'
+  id: totrans-355
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: 'As a precursor, we define a function to convert correlation into distances:'
+  id: totrans-356
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为前提，我们定义一个函数将相关性转换为距离：
 - en: '[PRE54]'
+  id: totrans-357
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: Now we convert the correlation of the returns of the stocks into distances,
     followed by the computation of linkages in the step below. Computation of linkages
     is followed by the visualization of the clusters through a dendrogram. Again,
     the leaves are the individual stocks, and the root is the final single cluster.
     The distance between each cluster is shown on the y-axis; the longer the branches
     are, the less correlated two clusters are.
+  id: totrans-358
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们将股票收益的相关性转换为距离，然后计算以下步骤中的链接。链接计算后通过树状图的可视化来展示群集。再次，叶子是单个股票，根是最终的单一群集。在y轴上显示每个群集之间的距离；分支越长，两个群集之间的相关性越低。
 - en: '[PRE55]'
+  id: totrans-359
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: In the following chart, the horizontal axis represents the clusters. Although
     the names of the stocks on the horizontal axis are not very clear (not surprising,
     given that there are 500 stocks), we can see that they are grouped into several
     clusters. The appropriate number of clusters appears to be 2, 3, or 6, depending
     on the desired distance threshold level. Next, we will leverage the linkages computed
     from this step to compute the asset allocation based on hierarchical risk parity.
+  id: totrans-360
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的图表中，横轴表示簇。尽管横轴上股票的名称不太清晰（考虑到有500只股票，这并不奇怪），但我们可以看到它们被分成了几个簇。合适的簇数似乎是2、3或6，具体取决于所需的距离阈值级别。接下来，我们将利用从这一步骤计算出的链接来计算基于层次风险平价的资产配置。
 - en: '`Output`'
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 08in16](Images/mlbf_08in16.png)'
+  id: totrans-362
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in16](Images/mlbf_08in16.png)'
 - en: 5.2\. Steps for hierarchical risk parity
+  id: totrans-363
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 层次风险平价的步骤
 - en: 'The hierarchical risk parity (HRP) algorithm works in three stages, as outlined
     in Prado’s paper:'
+  id: totrans-364
   prefs: []
   type: TYPE_NORMAL
+  zh: '层次风险平价（HRP）算法按照Prado的论文概述的三个阶段运行： '
 - en: Tree clustering
+  id: totrans-365
   prefs: []
   type: TYPE_NORMAL
+  zh: 树形聚类
 - en: Grouping similar investments into clusters based on their correlation matrix.
     Having a hierarchical structure helps us improve stability issues of quadratic
     optimizers when inverting the covariance matrix.
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据它们的相关矩阵将相似的投资分组成簇。具有层次结构有助于我们在反转协方差矩阵时改善二次优化器的稳定性问题。
 - en: Quasi-diagonalization
+  id: totrans-367
   prefs: []
   type: TYPE_NORMAL
+  zh: 拟对角化
 - en: Reorganizing the covariance matrix so similar investments will be placed together.
     This matrix diagonalization allows us to distribute weights optimally following
     an inverse-variance allocation.
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新组织协方差矩阵，以便将相似的投资放在一起。该矩阵对角化使我们能够根据反方差分配优化地分配权重。
 - en: Recursive bisection
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: 递归二分法
 - en: Distributing the allocation through recursive bisection based on cluster covariance.
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过基于簇协方差的递归二分法分配配置。
 - en: Having performed the first stage in the previous section, where we identified
     clusters based on the distance metrics, we proceed to quasi-diagonalization.
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前一节中进行了第一阶段，我们基于距离度量确定了簇，现在我们进行拟对角化。
 - en: 5.2.1\. Quasi-diagonalization
+  id: totrans-372
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.1\. 拟对角化
 - en: 'Quasi-diagonalization is a process known as *matrix seriation*, which reorganizes
     the rows and columns of a covariance matrix so that the largest values lie along
     the diagonal. As shown in the following code, the process reorganizes the covariance
     matrix so similar investments are placed together. This matrix diagonalization
     allows us to distribute weights optimally following an inverse-variance allocation:'
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: 拟对角化是一个被称为*矩阵序列化*的过程，它重新组织协方差矩阵的行和列，使得最大值位于对角线上。如下所示，该过程重新组织协方差矩阵，使得相似的投资被放在一起。该矩阵对角化允许我们根据反方差分配优化地分配权重：
 - en: '[PRE56]'
+  id: totrans-374
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: 5.2.2\. Recursive bisection
+  id: totrans-375
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2.2\. 递归二分法
 - en: 'In the next step, we perform recursive bisection, which is a top-down approach
     to splitting portfolio weights between subsets based on the inverse proportion
     to their aggregated variances. The function `getClusterVar` computes the cluster
@@ -1626,193 +2390,293 @@
     the function `getIVP`. The output of the function `getClusterVar` is used by the
     function `getRecBipart` to compute the final allocation through recursive bisection
     based on cluster covariance:'
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一步中，我们执行递归二分法，这是一种基于聚合方差的反比例拆分投资组合权重的自上而下方法。函数 `getClusterVar` 计算簇方差，在这个过程中，它需要来自函数
+    `getIVP` 的反方差组合。函数 `getClusterVar` 的输出由函数 `getRecBipart` 使用，根据簇协方差计算最终的分配：
 - en: '[PRE57]'
+  id: totrans-377
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: 'The following function `getHRP` combines the three stages—clustering, quasi-diagonalization,
     and recursive bisection—to produce the final weights:'
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的函数 `getHRP` 结合了三个阶段——聚类、拟对角化和递归二分法——以生成最终的权重：
 - en: '[PRE58]'
+  id: totrans-379
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE58]'
 - en: 5.3\. Comparison against other asset allocation methods
+  id: totrans-380
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. 与其他资产配置方法的比较
 - en: 'A main focus of this case study is to develop an alternative to Markowitz’s
     mean-variance portfolio optimization using clustering. In this step, we define
     a function to compute the allocation of a portfolio based on Markowitz’s mean-variance
     technique. This function (`getMVP`) takes the covariance matrix of the assets
     as an input, performs the mean-variance optimization, and produces the portfolio
     allocations:'
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究的一个主要焦点是开发一种利用聚类代替马科维茨均值方差组合优化的方法。在这一步骤中，我们定义一个函数来计算基于马科维茨均值方差技术的投资组合配置。该函数
+    (`getMVP`) 接受资产的协方差矩阵作为输入，执行均值方差优化，并产生投资组合配置：
 - en: '[PRE59]'
+  id: totrans-382
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE59]'
 - en: 5.4\. Getting the portfolio weights for all types of asset allocation
+  id: totrans-383
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.4\. 获取所有类型资产配置的投资组合权重
 - en: 'In this step, we use the functions above to compute the asset allocation using
     the two asset allocation methods. We then visualize the asset allocation results:'
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步骤中，我们使用上述函数计算资产配置，使用两种资产配置方法。然后我们可视化资产配置结果：
 - en: '[PRE60]'
+  id: totrans-385
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE60]'
 - en: The following pie charts show the asset allocation of MVP versus HRP. We clearly
     see more diversification in HRP. Now let us look at the backtesting results.
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的饼图显示了 MVP 与 HRP 的资产配置情况。我们清楚地看到 HRP 中有更多的多样化。现在让我们看看回测结果。
 - en: '`Output`'
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 08in17](Images/mlbf_08in17.png)'
+  id: totrans-388
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in17](Images/mlbf_08in17.png)'
 - en: 6\. Backtesting
+  id: totrans-389
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 回测
 - en: 'We will now backtest the performance of portfolios produced by the algorithms,
     looking at both in-sample and out-of-sample results:'
+  id: totrans-390
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们将对算法生成的投资组合性能进行回测，分析样本内和样本外结果：
 - en: '[PRE61]'
+  id: totrans-391
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE61]'
 - en: '`Output`'
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 08in18](Images/mlbf_08in18.png)![mlbf 08in19](Images/mlbf_08in19.png)'
+  id: totrans-393
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 08in18](Images/mlbf_08in18.png)![mlbf 08in19](Images/mlbf_08in19.png)'
 - en: 'Looking at the charts, MVP underperforms for a significant amount of time in
     the in-sample test. In the out-of-sample test, MVP performed better than HRP for
     a brief period of time from August 2019 to mid-September 2019\. In the next step,
     we examine the Sharpe ratio for the two allocation methods:'
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过查看图表，我们可以看出 MVP 在样本内测试中有相当长一段时间表现不佳。在样本外测试中，MVP 在2019年8月至2019年9月中旬的短暂时期内表现优于
+    HRP。接下来，我们将分析两种配置方法的夏普比率：
 - en: In-sample results
+  id: totrans-395
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 样本内结果
 - en: '[PRE62]'
+  id: totrans-396
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE62]'
 - en: '`Output`'
+  id: totrans-397
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '|  | stdev | sharp_ratio |'
+  id: totrans-398
   prefs: []
   type: TYPE_TB
+  zh: '|  | stdev | sharp_ratio |'
 - en: '| --- | --- | --- |'
+  id: totrans-399
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| MVP | 0.086 | 0.785 |'
+  id: totrans-400
   prefs: []
   type: TYPE_TB
+  zh: '| MVP | 0.086 | 0.785 |'
 - en: '| HRP | 0.127 | 0.524 |'
+  id: totrans-401
   prefs: []
   type: TYPE_TB
+  zh: '| HRP | 0.127 | 0.524 |'
 - en: Out-of-sample results
+  id: totrans-402
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 样本外结果
 - en: '[PRE63]'
+  id: totrans-403
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE63]'
 - en: '`Output`'
+  id: totrans-404
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '|  | stdev_oos | sharp_ratio_oos |'
+  id: totrans-405
   prefs: []
   type: TYPE_TB
+  zh: '|  | stdev_oos | sharp_ratio_oos |'
 - en: '| --- | --- | --- |'
+  id: totrans-406
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| MVP | 0.103 | 0.787 |'
+  id: totrans-407
   prefs: []
   type: TYPE_TB
+  zh: '| MVP | 0.103 | 0.787 |'
 - en: '| HRP | 0.126 | 0.836 |'
+  id: totrans-408
   prefs: []
   type: TYPE_TB
+  zh: '| HRP | 0.126 | 0.836 |'
 - en: Although the in-sample results of MVP look promising, the out-of-sample Sharpe
     ratio and overall return of the portfolio constructed using the hierarchical clustering
     approach are better. The diversification that HRP achieves across uncorrelated
     assets makes the methodology more robust against shocks.
+  id: totrans-409
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管 MVP 的样本内结果看起来很有希望，但是使用分层聚类方法构建的投资组合的样本外夏普比率和总体回报更佳。HRP 在非相关资产之间实现的分散化使得该方法在面对冲击时更加健壮。
 - en: Conclusion
+  id: totrans-410
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we saw that portfolio allocation based on hierarchical clustering
     offers better separation of assets into clusters with similar characteristics
     without relying on classical correlation analysis used in Markowitz’s mean-variance
     portfolio optimization.
+  id: totrans-411
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们看到基于分层聚类的投资组合配置提供了更好的资产分群分离，而无需依赖于马科维茨均值方差投资组合优化中使用的经典相关性分析。
 - en: Using Markowitz’s technique yields a less diverse portfolio, concentrated in
     a few stocks. The HRP approach, leveraging hierarchical clustering–based allocation,
     results in a more diverse and distributed portfolio. This approach presented the
     best out-of-sample performance and offers better tail risk management due to the
     diversification.
+  id: totrans-412
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用马科维茨的技术会产生一个较少多样化、集中在少数股票上的投资组合。而基于分层聚类的HRP方法则产生了更多样化和分布更广的投资组合。这种方法展示了最佳的样本外表现，并且由于分散化，提供了更好的尾部风险管理。
 - en: Indeed, the corresponding hierarchical risk parity strategies address the shortcomings
     of minimum-variance-based portfolio allocation. It is visual and flexible, and
     it seems to offer a robust methodology for portfolio allocation and portfolio
     management.
+  id: totrans-413
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，相应的分层风险平衡策略弥补了基于最小方差的投资组合配置的缺陷。它视觉化和灵活，似乎为投资组合配置和管理提供了一个强大的方法。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-414
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: Chapter Summary
+  id: totrans-415
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 章节总结
 - en: In this chapter, we learned about different clustering techniques and used them
     to capture the natural structure of data to enhance decision making across several
     areas of finance. Through the case studies, we demonstrated that clustering techniques
     can be useful in enhancing trading strategies and portfolio management.
+  id: totrans-416
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们学习了不同的聚类技术，并使用它们来捕捉数据的自然结构，以增强金融领域决策的效果。通过案例研究，我们展示了聚类技术在增强交易策略和投资组合管理方面的实用性。
 - en: In addition to offering an approach to different finance problems, the case
     studies focused on understanding the concepts of clustering models, developing
     intuition, and visualizing clusters. Overall, the concepts in Python, machine
     learning, and finance presented in this chapter through the case studies can used
     as a blueprint for any other clustering-based problem in finance.
+  id: totrans-417
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了提供解决不同金融问题的方法外，案例研究还聚焦于理解聚类模型的概念、培养直觉和可视化聚类。总体而言，本章通过案例研究呈现的Python、机器学习和金融概念可以作为解决金融中任何基于聚类的问题的蓝图。
 - en: Having covered supervised and unsupervised learning, we will explore another
     type of machine learning, reinforcement learning, in the next chapter.
+  id: totrans-418
   prefs: []
   type: TYPE_NORMAL
+  zh: 在讲解了监督学习和无监督学习之后，我们将在下一章探讨另一种类型的机器学习，强化学习。
 - en: Exercises
+  id: totrans-419
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 练习题
 - en: Use hierarchical clustering to form clusters of investments in a different asset
     class, such as forex or commodities.
+  id: totrans-420
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用层次聚类来形成不同资产类别（如外汇或大宗商品）的投资组合。
 - en: Apply clustering analysis for pairs trading in the interest rate market on the
     universe of bonds.
+  id: totrans-421
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在债券市场上应用聚类分析进行对冲交易。
 - en: ^([1](ch08.xhtml#idm45174912844296-marker)) Refer to the Jupyter notebook to
     understand fetching price data using `pandas_datareader`.
+  id: totrans-422
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch08.xhtml#idm45174912844296-marker)) 参考 Jupyter 笔记本，了解如何使用 `pandas_datareader`
+    获取价格数据。
 - en: ^([2](ch08.xhtml#idm45174910884168-marker)) Refer to [Chapter 5](ch05.xhtml#Chapter5)
     for more details.
+  id: totrans-423
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch08.xhtml#idm45174910884168-marker)) 参考[第5章](ch05.xhtml#Chapter5)获取更多细节。

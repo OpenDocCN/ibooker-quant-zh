@@ -1046,6 +1046,7 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一步中，让我们来看看数据的大小：
 - en: '[PRE34]'
   id: totrans-167
   prefs: []
@@ -1055,6 +1056,7 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE35]'
   id: totrans-169
   prefs: []
@@ -1065,17 +1067,20 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于每笔贷款有150个特征，我们首先将重点放在限制特征空间上，然后进行探索性分析。
 - en: 3.1\. Preparing the predicted variable
   id: totrans-171
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 准备预测变量
 - en: Here, we look at the details of the predicted variable and prepare it. The predicted
     variable will be derived from the `loan_status` column. Let’s check the value
     distributions:^([2](ch06.xhtml#idm45174922143032))
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们查看预测变量的详细信息并准备它。预测变量将从 `loan_status` 列中派生。让我们检查值分布：^([2](ch06.xhtml#idm45174922143032))
 - en: '[PRE36]'
   id: totrans-173
   prefs: []
@@ -1085,6 +1090,7 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE37]'
   id: totrans-175
   prefs: []
@@ -1094,30 +1100,37 @@
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据数据定义文档：
 - en: Fully Paid
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 已全额偿还
 - en: Loans that have been fully repaid.
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 已经全额偿还的贷款。
 - en: Default
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 违约
 - en: Loans that have not been current for 121 days or more.
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 已经超过121天未达到 `Current` 状态的贷款。
 - en: Charged Off
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 已违约
 - en: Loans for which there is no longer a reasonable expectation of further payments.
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 不再有合理预期可以进一步付款的贷款。
 - en: 'A large proportion of observations show a status of `Current`, and we do not
     know whether those will be `Charged Off`, `Fully Paid`, or `Default` in the future.
     The observations for `Default` are tiny in number compared to `Fully Paid` or
@@ -1129,6 +1142,8 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 大部分观测结果显示为 `Current` 状态，我们不知道这些贷款在未来是会 `已违约`，`已全额偿还` 还是 `违约`。 `Default` 的观测数量与
+    `已全额偿还` 或 `已违约` 相比非常少，因此不予考虑。对于此分析来说，`贷款状态` 的其余类别并不是主要关注点。因此，为了将其转换为二元分类问题，并详细分析重要变量对贷款状态的影响，我们只考虑两个主要类别—已违约和已全额偿还：
 - en: '[PRE38]'
   id: totrans-184
   prefs: []
@@ -1138,6 +1153,7 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE39]'
   id: totrans-186
   prefs: []
@@ -1149,6 +1165,7 @@
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 剩余贷款中大约79%已全额偿还，21%已违约，所以我们面临一个有些不平衡的分类问题，但不像我们在之前案例研究中看到的欺诈检测数据集那么不平衡。
 - en: 'In the next step, we create a new binary column in the dataset, where we categorize
     Fully Paid as 0 and Charged Off as 1\. This column represents the predicted variable
     for this classification problem. A value of 1 in this column indicates the borrower
@@ -1156,6 +1173,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们在数据集中创建一个新的二元列，将“已全额偿还”分类为0，而“已违约”分类为1。这一列代表了这个分类问题的预测变量。这一列中的值为1表示借款人已经违约：
 - en: '[PRE40]'
   id: totrans-189
   prefs: []
@@ -1166,6 +1184,7 @@
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2\. 特征选择—限制特征空间
 - en: 'The full dataset has 150 features for each loan, but not all features contribute
     to the prediction variable. Removing features of low importance can improve accuracy
     and reduce both model complexity and overfitting. Training time can also be reduced
@@ -1174,30 +1193,36 @@
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 完整数据集每笔贷款有150个特征，但并非所有特征都对预测变量有贡献。删除重要性较低的特征可以提高准确性，减少模型复杂性和过拟合。对于非常大的数据集，还可以减少训练时间。我们将使用三种不同的方法在以下步骤中消除特征：
 - en: Eliminating features that have more than 30% missing values.
   id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 消除超过30%空值的特征。
 - en: Eliminating features that are unintuitive based on subjective judgment.
   id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 根据主观判断消除不直观的特征。
 - en: Eliminating features with low correlation with the predicted variable.
   id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 根据预测变量消除与之低相关性的特征。
 - en: 3.2.1\. Feature elimination based on significant missing values
   id: totrans-195
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2.1\. 基于显著缺失值消除特征
 - en: 'First, we calculate the percentage of missing data for each feature:'
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们计算每个特征的缺失数据百分比：
 - en: '[PRE41]'
   id: totrans-197
   prefs: []
@@ -1207,6 +1232,7 @@
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE42]'
   id: totrans-199
   prefs: []
@@ -1217,11 +1243,13 @@
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些列的空值较多的列被删除后，此数据集还剩下92列。
 - en: 3.2.2\. Feature elimination based on intuitiveness
   id: totrans-201
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2.2\. 基于直觉消除特征
 - en: To filter the features further we check the description in the data dictionary
     and keep the features that intuitively contribute to the prediction of default.
     We keep features that contain the relevant credit detail of the borrower, including
@@ -2377,17 +2405,20 @@
   id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们将评估不同的算法。
 - en: 5.1\. Train-test split
   id: totrans-399
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 训练集和测试集分割
 - en: 'We first split the dataset into training (80%) and test (20%) sets. For this
     case study we use 100,000 observations for a faster calculation. The next steps
     would be same in the event we want to use the entire dataset:'
   id: totrans-400
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们首先将数据集分成训练集（80%）和测试集（20%）。对于这个案例研究，我们使用了10万条观测数据以便更快地计算。如果我们想使用整个数据集，下一步将是相同的：
 - en: '[PRE81]'
   id: totrans-401
   prefs: []
@@ -2398,11 +2429,13 @@
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 测试选项和评估指标
 - en: 'Accuracy can be used as the evaluation metric since there is not a significant
     class imbalance in the data:'
   id: totrans-403
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于数据中不存在显著的类别不平衡问题，可以使用准确率作为评估指标：
 - en: '[PRE82]'
   id: totrans-404
   prefs: []
@@ -2413,20 +2446,24 @@
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. 比较模型和算法
 - en: In order to know which algorithm is best for our strategy, we evaluate the linear,
     nonlinear, and ensemble models.
   id: totrans-406
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了知道哪种算法最适合我们的策略，我们评估了线性、非线性和集成模型。
 - en: 5.3.1\. Models
   id: totrans-407
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3.1\. 模型
 - en: 'Checking the classification algorithms:'
   id: totrans-408
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查分类算法：
 - en: '[PRE83]'
   id: totrans-409
   prefs: []
@@ -2437,10 +2474,12 @@
   id: totrans-410
   prefs: []
   type: TYPE_NORMAL
+  zh: 在进行*k*折交叉验证后，模型比较如下所示：
 - en: '![mlbf 06in15](Images/mlbf_06in15.png)'
   id: totrans-411
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in15](Images/mlbf_06in15.png)'
 - en: Although some of the models show promising results, we prefer an ensemble model
     given the huge size of the dataset, the large number of features, and an expected
     nonlinear relationship between the predicted variable and the features. Random
@@ -2448,17 +2487,20 @@
   id: totrans-412
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管一些模型显示出有希望的结果，但考虑到数据集的庞大规模、大量特征以及预测变量与特征之间预期的非线性关系，我们更倾向于使用集成模型。随机森林在集成模型中表现最佳。
 - en: 6\. Model tuning and grid search
   id: totrans-413
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 模型调优和网格搜索
 - en: 'A grid search is performed for the random forest model by varying the number
     of estimators and maximum depth. The details of the random forest model and the
     parameters to tune are discussed in [Chapter 4](ch04.xhtml#Chapter4):'
   id: totrans-414
   prefs: []
   type: TYPE_NORMAL
+  zh: 对随机森林模型进行网格搜索，通过调整估计器的数量和最大深度来进行。随机森林模型的详细信息和要调整的参数在[第四章](ch04.xhtml#Chapter4)中讨论：
 - en: '[PRE84]'
   id: totrans-415
   prefs: []
@@ -2468,6 +2510,7 @@
   id: totrans-416
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE85]'
   id: totrans-417
   prefs: []
@@ -2478,20 +2521,24 @@
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7\. 完成模型
 - en: Let us finalize the model with the best parameters found during the tuning step
     and perform the variable intuition.
   id: totrans-419
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们在调优步骤中找到的最佳参数的基础上完成模型，并进行变量直觉分析。
 - en: 7.1\. Results on the test dataset
   id: totrans-420
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 7.1\. 测试数据集的结果
 - en: 'In this step, we evaluate the selected model on the test set:'
   id: totrans-421
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们评估了在测试集上选择的模型：
 - en: '[PRE86]'
   id: totrans-422
   prefs: []
@@ -2501,6 +2548,7 @@
   id: totrans-423
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE87]'
   id: totrans-424
   prefs: []
@@ -2511,24 +2559,29 @@
   id: totrans-425
   prefs: []
   type: TYPE_NORMAL
+  zh: 所选模型表现出色，准确率达到90.75%。让我们看看混淆矩阵：
 - en: '![mlbf 06in16](Images/mlbf_06in16.png)'
   id: totrans-426
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in16](Images/mlbf_06in16.png)'
 - en: The overall model performance is reasonable and is in line with the training
     set results.
   id: totrans-427
   prefs: []
   type: TYPE_NORMAL
+  zh: 整体模型性能合理，与训练集结果一致。
 - en: 7.2\. Variable intuition/feature importance
   id: totrans-428
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 7.2\. 变量直觉/特征重要性
 - en: 'Let us look into the feature importance of the model:'
   id: totrans-429
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们查看模型的特征重要性：
 - en: '[PRE88]'
   id: totrans-430
   prefs: []
@@ -2538,10 +2591,12 @@
   id: totrans-431
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 06in17](Images/mlbf_06in17.png)'
   id: totrans-432
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in17](Images/mlbf_06in17.png)'
 - en: The result of the variable importance looks intuitive, and the momentum indicators
     of RSI and MOM over the last 30 days seem to be the two most important features.
     The feature importance chart corroborates the fact that introducing new features
@@ -2549,11 +2604,13 @@
   id: totrans-433
   prefs: []
   type: TYPE_NORMAL
+  zh: 变量重要性的结果看起来很直观，而RSI和MOM过去30天的动量指标似乎是两个最重要的特征。特征重要性图表证实了引入新特征会改善模型性能的事实。
 - en: 7.3\. Backtesting results
   id: totrans-434
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 7.3\. 回测结果
 - en: In this additional step, we perform a backtest on the model we’ve developed.
     We create a column for strategy returns by multiplying the daily returns by the
     position that was held at the close of business the previous day and compare it
@@ -2561,16 +2618,19 @@
   id: totrans-435
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一额外步骤中，我们对开发的模型进行回测。我们通过将昨天收盘时持有的头寸的日收益乘以每日收益来创建策略收益列，并将其与实际收益进行比较。
 - en: Backtesting Trading Strategies
   id: totrans-436
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 回测交易策略
 - en: A backtesting approach similar to the one presented in this case study can be
     used to quickly backtest any trading strategy.
   id: totrans-437
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似于本案例研究中提出的回测方法可以用于快速回测任何交易策略。
 - en: '[PRE89]'
   id: totrans-438
   prefs: []
@@ -2580,10 +2640,12 @@
   id: totrans-439
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 06in18](Images/mlbf_06in18.png)![mlbf 06in19](Images/mlbf_06in19.png)'
   id: totrans-440
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in18](Images/mlbf_06in18.png)![mlbf 06in19](Images/mlbf_06in19.png)'
 - en: Looking at the backtesting results, we do not deviate significantly from the
     actual market return. Indeed, the achieved momentum trading strategy made us better
     at predicting the price direction to buy or sell in order to make profits. However,

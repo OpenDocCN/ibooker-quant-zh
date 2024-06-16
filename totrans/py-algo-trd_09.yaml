@@ -1,0 +1,612 @@
+- en: Chapter 9\. FX Trading with FXCM
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Financial institutions like to call what they do trading. Let’s be honest. It’s
+    not trading; it’s betting.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Graydon Carter
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter introduces the trading platform from FXCM Group, LLC (“FXCM” afterwards),
+    with its RESTful and streaming application programming interface (API) as well
+    as the Python wrapper package `fcxmpy`. Similar to Oanda, it is a platform well
+    suited for the deployment of automated, algorithmic trading strategies, even for
+    retail traders with smaller capital positions. FXCM offers to retail and institutional
+    traders a number of financial products that can be traded both via traditional
+    trading applications and programmatically via their API. The focus of the products
+    lies on currency pairs as well as contracts for difference (CFDs) on, among other
+    things, major stock indices and commodities. In this context, also refer to [“Contracts
+    for Difference (CFDs)”](ch08.html#cfds) and [“Disclaimer”](#disclaimer).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With regard to the platform criteria as discussed in [Chapter 8](ch08.html#trading_oanda),
+    FXCM offers the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instruments
+  prefs: []
+  type: TYPE_NORMAL
+- en: FX products (for example, the trading of currency pairs), contracts for difference
+    (CFDs) on stock indices, commodities, or rates products.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: FXCM allows for, among other things, (leveraged) long and short positions, market
+    entry orders, and stop loss orders and take profit targets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to the bid-ask spread, a fixed fee is generally due for every trade
+    with FXCM. Different pricing models are available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technology
+  prefs: []
+  type: TYPE_NORMAL
+- en: FXCM provides the algorithmic trader with a modern RESTful API that can be accessed
+    by, for example, the use of the Python wrapper package `fxcmpy`. Standard trading
+    applications for desktop computers, tablets, and smartphones are also available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jurisdiction
+  prefs: []
+  type: TYPE_NORMAL
+- en: FXCM is active in a number of countries globally (for instance, in the United
+    Kingdom or Germany). Depending on the country itself, certain products might not
+    be available/offered due to regulations and restrictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter covers the basic functionalities of the FXCM trading API and the
+    `fxcmpy` Python package required to implement an automated, algorithmic trading
+    strategy programmatically. It is structured as follows. [“Getting Started”](#tp_start)
+    shows how to set up everything to work with the FXCM REST API for algorithmic
+    trading. [“Retrieving Data”](#tp_data) shows how to retrieve and work with financial
+    data (down to the tick level). [“Working with the API”](#tp_api) is at the core
+    in that it illustrates typical tasks implemented using the RESTful API, such as
+    retrieving historical and streaming data, placing orders, or looking up account
+    information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Getting Started
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'A detailed documentation of the FXCM API is found under [*https://oreil.ly/Df_7e*](https://oreil.ly/Df_7e).
+    To install the Python wrapper package `fxcmpy`, execute the following on the shell:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: The documentation of the `fxcmpy` package is found under [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To get started with the the FXCM trading API and the `fxcmpy` package, a free
+    demo account with FXCM is sufficient. One can open such an account under [FXCM
+    Demo Account](https://oreil.ly/v9H6z).^([1](ch09.html#idm45785351530440)) The
+    next step is to create a unique API token (for example, `YOUR_FXCM_API_TOKEN`)
+    from within the demo account. A connection to the API is then opened, for example,
+    via the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Alternatively, you can use the configuration file as created in [Chapter 8](ch08.html#trading_oanda)
+    to connect to the API. This file’s content should be amended as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'One can then connect to the API via the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'By default, the server connects to the demo server. However, by the use of
+    the `server` parameter, the connection can be made to the live trading server
+    (if such an account exists):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Connects to the demo server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Connects to the live trading server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: FXCM provides access to historical market price data sets, such as tick data,
+    in a pre-packaged variant. This means that one can retrieve, for instance, compressed
+    files from FXCM servers that contain tick data for the EUR/USD exchange rate for
+    week 10 of 2020\. The retrieval of historical candles data from the API is explained
+    in the subsequent section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Tick Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'For a number of currency pairs, FXCM provides historical tick data. The `fxcmpy`
+    package makes retrieval of such tick data and working with it convenient. First,
+    some imports:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Second is a look at the available `symbols` (currency pairs) for which tick
+    data is available:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following code retrieves one week’s worth of tick data for a single symbol.
+    The resulting pandas `DataFrame` object has more than 4.5 million data rows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This retrieves the data file, unpacks it, and stores the raw data in a `DataFrame`
+    object (as an attribute to the resulting object).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `.get_raw_data()` method returns the `DataFrame` object with the raw data
+    for which the index values are still `str` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `.get_data()` method returns a `DataFrame` object for which the index has
+    been transformed to a `DatetimeIndex`.^([2](ch09.html#idm45785350353608))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since the tick data is stored in a `DataFrame` object, it is straightforward
+    to pick a sub-set of the data and to implement typical financial analytics tasks
+    on it. [Figure 9-1](#fxcm_01) shows a plot of the mid prices derived for the sub-set
+    and a simple moving average (SMA):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picks a sub-set of the complete data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mid prices from the bid and ask prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives SMA values over intervals of 1,000 ticks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0901](assets/pfat_0901.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-1\. Historical mid tick prices for EUR/USD and SMA
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Retrieving Candles Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In addition, FXCM provides access to historical candles data (beyond the API).
+    Candles data is data for certain homogeneous time intervals (“bars”) with open,
+    high, low, and close values for both bid and ask prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First is a look at the available symbols for which candles data is provided:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Second, the data retrieval itself. It is similar to the the tick data retrieval.
+    The only difference is that a `period` value, or the bar length, needs to be specified
+    (for example, `m1` for one minute, `H1` for one hour, or `D1` for one day):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the `period` value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Open, high, low, and close values for the *bid* prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Open, high, low, and close values for the *ask* prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To conclude this section, the Python code that follows and calculates mid close
+    prices, calculates two SMAs, and plots the results (see [Figure 9-2](#fxcm_02)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mid close prices from the bid and ask close prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Calculates two SMAs: one for a shorter time interval, and one for a longer
+    one.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0902](assets/pfat_0902.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-2\. Historical hourly mid close prices for EUR/USD and two SMAs
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Working with the API
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'While the previous sections retrieve historical tick data and candles data
+    pre-packaged from FXCM servers, this section shows how to retrieve historical
+    data via the API. However, a connection object to the FXCM API is needed. Therefore,
+    first, here is the import of the `fxcmpy` package, the connection to the API (based
+    on the unique API token), and a look at the available instruments. There might
+    be more instruments available as compared to the pre-packaged data sets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This connects to the API; adjust the path/filename.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Historical Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Once connected, data retrieval for specific time intervals is accomplished
+    via a single method call. When using the `.get_candles()` method, the parameter
+    `period` can be one of `m1`, `m5`, `m15`, `m30`, `H1`, `H2`, `H3`, `H4`, `H6`,
+    `H8`, `D1`, `W1`, or `M1`. [Figure 9-3](#fxcm_03) shows one-minute bar ask close
+    prices for the `EUR/USD` instrument (currency pair):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the 10 most recent end-of-day prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves end-of-day prices for a whole year.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO7-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the most recent one-minute bar prices available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical data retrieved from the FXCM RESTful API can change with the pricing
+    model of the account. In particular, the average bid-ask spreads can be higher
+    or lower for different pricing models offered by FXCM to different groups of traders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0903](assets/pfat_0903.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-3\. Historical ask close prices for EUR/USD (minute bars)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Retrieving Streaming Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: While *historical* data is important to, for example, backtest algorithmic trading
+    strategies, continuous access to *real-time or streaming* data (during trading
+    hours) is required to deploy and automate algorithmic trading strategies. Similar
+    to the Oanda API, the FXCM API therefore also allows for the subscription to real-time
+    data streams for all instruments. The `fxcmpy` wrapper package supports this functionality
+    in that it allows one to provide user-defined functions (so called *callback functions*)
+    to process the subscribed real-time data stream.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code presents such a simple callback function—it only
+    prints out selected elements of the data set retrieved—and uses it to process
+    data retrieved in real time, after a subscription for the desired instrument (here
+    `EUR/USD`):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the callback function that prints out certain elements of the retrieved
+    data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is the subscription to a specific real-time data stream. Data is processed
+    asynchronously as long as there is no “unsubscribe” event.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: During the subscription, the `.get_last_price()` method returns the last available
+    data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This unsubscribes from the real-time data stream.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Callback Functions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Callback functions are a flexible way to process real-time streaming data based
+    on a Python function or even multiple such functions. They can be used for simple
+    tasks, such as the printing of incoming data, or complex tasks, such as generating
+    trading signals based on online trading algorithms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Placing Orders
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The FXCM API allows for the placement and management of all types of orders
+    that are also available via the trading application of FXCM (such as entry orders
+    or trailing stop loss orders).^([3](ch09.html#idm45785344248888)) However, the
+    following code illustrates basic market buy and sell orders only since they are
+    generally sufficient to at least get started with algorithmic trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code first verifies that there are no open positions and then
+    opens different positions via the `.create_market_buy_order()` method:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the open positions for the connected (default) account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a position of 100,000 in the `EUR/USD` currency pair.^([4](ch09.html#idm45785343218824))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the open positions for selected elements only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens another position of 50,000 in the `EUR/GBP` currency pair.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'While the `.create_market_buy_order()` opens or increases positions, the `.create_market_sell_order()`
+    allows one to close or decrease positions. There are also more general methods
+    that allow the closing out of positions, as the following code illustrates:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reduces the position in the `EUR/USD` currency pair.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Increases the position in the `EUR/GBP` currency pair.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For `EUR/GBP` there are now two open long positions; contrary to the `EUR/USD`
+    position, it is not netted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `.close_all_for_symbol()` method closes all positions for the specified
+    symbol.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_fx_trading_with_fxcm_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `.close_all()` method closes all open positions at once.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By default, FXCM sets up demo accounts as *hedge accounts*. This means that
+    going long, say EUR/USD, with 10,000 and going short the same instrument with
+    10,000 leads to two different open positions. The default with Oanda are *net
+    accounts* that net orders and positions for the same instrument.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Account Information
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Beyond, for example, open positions, the FXCM API allows one to retrieve more
+    general account informationm, as well. For example, one can look up the default
+    account (if there are multiple accounts) or an overview equity and margin situation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the default `accountId` value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows for all accounts the financial situation and some parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This chapter is about the RESTful API of FXCM for algorithmic trading and covers
+    the following topics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Setting everything up for API usage
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Retrieving historical tick data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Retrieving historical candles data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Retrieving streaming data in real-time
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Placing market buy and sell orders
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Looking up account information
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Beyond these aspects, the FXCM API and the `fxcmpy` wrapper package provide,
+    of course, more functionality. However, the topics of this chapter are the basic
+    building blocks needed to get started with algorithmic trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With Oanda and FXCM, algorithmic traders have two trading platforms (brokers)
+    available that provide a wide-ranging spectrum of financial instruments and appropriate
+    APIs to implement automated, algorithmic trading strategies. Some important aspects
+    are added to the mix in [Chapter 10](ch10.html#automated_trading).
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The following resources cover the FXCM trading API and the Python wrapper package:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Trading API: [*https://fxcm.github.io/rest-api-docs*](https://fxcm.github.io/rest-api-docs)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`fxcmpy` package: [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch09.html#idm45785351530440-marker)) Note that FXCM demo accounts are
+    only offered for certain countries.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch09.html#idm45785350353608-marker)) The `DatetimeIndex` conversion is
+    time consuming, which is why there are two different methods related to tick data
+    retrieval.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch09.html#idm45785344248888-marker)) See the documentation under [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch09.html#idm45785343218824-marker)) Quantities are in 1,000s of the instrument
+    for currency pairs. Also, note that different accounts might have different leverage
+    ratios. This implies that the same position might require more or less equity
+    (margin) depending on the relevant leverage ratio. Adjust the example quantities
+    to lower values if necessary. See [*https://oreil.ly/xUHMP*](https://oreil.ly/xUHMP).
+  prefs: []
+  type: TYPE_NORMAL

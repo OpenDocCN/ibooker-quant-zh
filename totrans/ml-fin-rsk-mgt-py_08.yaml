@@ -1,0 +1,1613 @@
+- en: Chapter 6\. Credit Risk Estimation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Although market risk is much better researched, the larger part of banks’ economic
+    capital is generally used for credit risk. The sophistication of traditional standard
+    methods of measurement, analysis, and management of credit risk might, therefore,
+    not be in line with its significance.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Uwe Wehrspohn (2002)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The primary role of financial institutions is to create a channel by which funds
+    move from entities with surplus into ones with deficit. Thereby, financial institutions
+    ensure the capital allocation in the financial system as well as gain profit in
+    exchange for these transactions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, there is an important risk for financial institutions to handle, which
+    is credit risk. This is such a big risk that without it capital allocation might
+    be less costly and more efficient. *Credit risk* is the risk that arises when
+    a borrower is not able to honor their debt. In other words, when a borrower defaults,
+    they fail to pay back their debt, which causes losses for financial institutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Credit risk and its goal can be defined in a more formal way (BCBS and BIS
+    2000):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Credit risk is most simply defined as the potential that a bank borrower or
+    counterparty will fail to meet its obligations in accordance with agreed terms.
+    The goal of credit risk management is to maximise a bank’s risk-adjusted rate
+    of return by maintaining credit risk exposure within acceptable parameters.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Estimating credit risk is so formidable a task that a regulatory body, Basel,
+    closely monitors recent developments in the financial markets and sets regulations
+    to strengthen bank capital requirements. The importance of having strong capital
+    requirements for a bank rests on the idea that banks should have a capital buffer
+    in turbulent times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a consensus among policy makers that financial institutions should
+    have a minimum capital requirement to ensure the stability of the financial system
+    because a series of defaults may result in a collapse in financial markets, as
+    financial institutions provide collateral to one another. Those looking for a
+    workaround for this capital requirement learned their lessons the hard way during
+    the [2007—2008 mortgage crisis](https://oreil.ly/OjDw9).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Of course, ensuring at least a minimum capital requirement is a burden for financial
+    institutions in the sense that capital is an asset they cannot channel to deficit
+    entities to make a profit. Consequently, managing credit risk amounts to profitable
+    and efficient transactions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this respect, this chapter shows how credit risk can be estimated using cutting-edge
+    ML models. We start our discussion with a theoretical background of credit risk.
+    Needless to say, there are many topics in credit risk analysis, but we confine
+    our focus on probability of default and how we can introduce ML approaches for
+    estimating it. For this purpose, customers are segmented via a clustering method
+    so that models can be separately fitted to this data. This provides a better fit
+    in the sense that the distribution of credit risk data changes across different
+    customer segments. Given the clusters obtained, ML and deep learning models, including
+    the Bayesian approach, are introduced to model the credit risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the Credit Risk
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Aside from the probability of default (which is the likelihood that a borrower
+    fails to cover their debt), credit risk has three defining characteristics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exposure
+  prefs: []
+  type: TYPE_NORMAL
+- en: This refers to a party that may possibly default or suffer an adverse change
+    in its ability to perform.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Likelihood
+  prefs: []
+  type: TYPE_NORMAL
+- en: The likelihood that this party will default on its obligations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recovery rate
+  prefs: []
+  type: TYPE_NORMAL
+- en: How much can be retrieved if a default takes place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The BCBS put forth the global financial credit management standards, which are
+    known as the *Basel Accord*. There are currently three Basel Accords. The most
+    distinctive rule set by Basel I in 1988 was the requirement to hold capital equating
+    to at least 8% of risk-weighted assets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Basel I includes the very first capital measurement system, which was created
+    following the onset of the [Latin American debt crisis](https://oreil.ly/KI5vs).
+    In Basel I, assets are classified as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 0% for risk-free assets
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 20% for loans to other banks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 50% for residential mortgages
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 100% for corporate debt
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In 1999, Basel II issued a revision to Basel I based on three main pillars:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Minimum capital requirements, which sought to develop and expand the standardized
+    rules set out in the 1988 Accord
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Supervisory review of an institution’s capital adequacy and internal assessment
+    process
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Effective use of disclosure as a lever to strengthen market discipline and encourage
+    sound banking practices
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The last accord, Basel III in 2010, was inevitable. as the 2007–2008 mortgage
+    crisis heightened. It introduced a new set of measures to further strengthened
+    liquidity and poor governance practices. For instance, equity requirements were
+    introduced to prevent a serial failure in the financial system, known as *domino
+    effect*, during times of financial turbulence and crises. Accordingly, Basel III
+    requires the financial ratios for banks listed in [Table 6-1](#table6-1).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 6-1\. Financial ratios required by Basel III
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Financial ratio | Formula |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Tier 1 capital ratio | <math alttext="StartFraction Equity capital Over Risk
+    weighted assets EndFraction greater-than equals 4.5 percent-sign"><mrow><mfrac><mrow><mtext>Equity</mtext><mtext>capital</mtext></mrow>
+    <mrow><mtext>Risk</mtext><mtext>weighted</mtext><mtext>assets</mtext></mrow></mfrac>
+    <mo>></mo> <mo>=</mo> <mn>4</mn> <mo>.</mo> <mn>5</mn> <mo>%</mo></mrow></math>
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Leverage ratio | <math alttext="StartFraction Tier 1 capital Over Average
+    total assets EndFraction greater-than equals 3 percent-sign"><mrow><mfrac><mrow><mtext>Tier</mtext><mtext>1</mtext><mtext>capital</mtext></mrow>
+    <mrow><mtext>Average</mtext><mtext>total</mtext><mtext>assets</mtext></mrow></mfrac>
+    <mo>></mo> <mo>=</mo> <mn>3</mn> <mo>%</mo></mrow></math> |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Liquidity coverage ratio | <math alttext="StartFraction Stock of high quality
+    liquid assets Over Total net cash outflows over the next 30 calendar days EndFraction
+    greater-than equals 100 percent-sign"><mrow><mfrac><mrow><mtext>Stock</mtext><mtext>of</mtext><mtext>high</mtext><mtext>quality</mtext><mtext>liquid</mtext><mtext>assets</mtext></mrow>
+    <mrow><mtext>Total</mtext><mtext>net</mtext><mtext>cash</mtext><mtext>outflows</mtext><mtext>over</mtext><mtext>the</mtext><mtext>next</mtext><mtext>30</mtext><mtext>calendar</mtext><mtext>days</mtext></mrow></mfrac>
+    <mo>></mo> <mo>=</mo> <mn>100</mn> <mo>%</mo></mrow></math> |'
+  prefs: []
+  type: TYPE_TB
+- en: Basel II suggests banks implement either a standardized approach or an internal
+    ratings–based (IRB) approach to estimate the credit risk. The standardized approach
+    is out of the scope of this book, but interested readers can refer to the “Standardized
+    Approach to Credit Risk” [consultative document from the BIS](https://oreil.ly/0Mj7J).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s now focus on the IRB approach; the key parameters of this internal assessment
+    are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Expected loss equals EAD times LGD times PD" display="block"><mrow><mtext>Expected</mtext>
+    <mtext>loss</mtext> <mo>=</mo> <mtext>EAD</mtext> <mo>×</mo> <mtext>LGD</mtext>
+    <mo>×</mo> <mtext>PD</mtext></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *PD* is the probability of default, *LGD* is the expected loss given default
+    taking a value between 0 and 1, and *EAD* is the exposure at default.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The most important and challenging part of estimating credit risk is to model
+    the probability of default, and the aim of this chapter is mainly to come up with
+    an ML model to address this issue. Before moving forward, there is one more important
+    issue in estimating credit risk that is sometimes neglected or overlooked: *risk*
+    *bucketing*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Risk Bucketing
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Risk bucketing is nothing but grouping borrowers with similar creditworthiness.
+    The behind-the-scenes story of risk bucketing is to obtain homogenous groups or
+    clusters so that we can better estimate the credit risk. Treating different risky
+    borrowers equally may result in poor predictions because the model cannot capture
+    entirely different characteristics of the data at once. Thus, by dividing the
+    borrowers into different groups based on riskiness, risk bucketing enables us
+    to make accurate predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Risk bucketing can be accomplished via different statistical methods, but we
+    will apply a clustering technique to end up with homogeneous clusters using K-means.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We live in the age of data, but that does not necessarily mean that we always
+    find the data we are searching for. Rather, it is rare to find it without applying
+    data-wrangling and cleaning techniques.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data with dependent variables is, of course, easy to work with and also helps
+    us get more accurate results. However, sometimes we need to unveil the hidden
+    characteristics of the data—that is, if the riskiness of the borrowers is not
+    known, we are supposed to come up with a solution for grouping them based on their
+    riskiness.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Clustering is the method proposed to create these groups or *clusters*. Optimal
+    clustering has clusters located far away from one another spatially:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Clustering groups data instances into subsets in such a manner that similar
+    instances are grouped together, while different instances belong to different
+    groups. The instances are thereby organized into an efficient representation that
+    characterizes the population being sampled.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Rokach and Maimon (2005)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Different clustering methods are available, but the K-means algorithm serves
+    our purpose, which is to create risk bucketing for credit risk analysis. In K-means,
+    the distance of observations within the cluster is calculated based on the cluster
+    center, the *centroid*. Depending on the distance to the centroid, observations
+    are clustered. This distance can be measured via different methods. Of them, the
+    following are the most well-known metrics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Euclidean
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartRoot sigma-summation Underscript i equals 1 Overscript n
+    Endscripts left-parenthesis p Subscript i Baseline minus q Subscript i Baseline
+    right-parenthesis squared EndRoot"><msqrt><mrow><msubsup><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></msubsup> <msup><mrow><mo>(</mo><msub><mi>p</mi> <mi>i</mi></msub>
+    <mo>-</mo><msub><mi>q</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mn>2</mn></msup></mrow></msqrt></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Minkowski
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="left-parenthesis sigma-summation Underscript i equals 1 Overscript
+    n Endscripts StartAbsoluteValue p Subscript i Baseline minus q Subscript i Baseline
+    EndAbsoluteValue Superscript p Baseline right-parenthesis Superscript 1 slash
+    p"><mrow><msup><mrow><mo>(</mo> <msubsup><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></msubsup> <msup><mrow><mo>|</mo> <msub><mi>p</mi> <mi>i</mi></msub>
+    <mo>-</mo> <msub><mi>q</mi> <mi>i</mi></msub> <mo>|</mo></mrow> <mi>p</mi></msup>
+    <mo>)</mo></mrow> <mrow><mn>1</mn><mo>/</mo><mi>p</mi></mrow></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Manhattan
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartRoot sigma-summation Underscript i equals 1 Overscript n
+    Endscripts StartAbsoluteValue p Subscript i Baseline minus q Subscript i Baseline
+    EndAbsoluteValue EndRoot"><msqrt><mrow><msubsup><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></msubsup> <mrow><mo>|</mo> <msub><mi>p</mi> <mi>i</mi></msub> <mo>-</mo>
+    <msub><mi>q</mi> <mi>i</mi></msub> <mo>|</mo></mrow></mrow></msqrt></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The aim in clustering is to minimize the distance between the centroid and
+    observations so that similar observations will be on the same cluster. This logic
+    rests on the intuition that the more similar observations are, the smaller the
+    distance between them. So we are seeking to minimize the distance between observations
+    and the centroid, which is another way of saying that we are minimizing the sum
+    of the squared error between the centroid and the observations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma-summation Underscript i equals 1 Overscript upper K Endscripts
+    sigma-summation Underscript x element-of upper C Subscript i Endscripts left-parenthesis
+    upper C Subscript i Baseline minus x right-parenthesis squared" display="block"><mrow><munderover><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>K</mi></munderover> <munder><mo>∑</mo>
+    <mrow><mi>x</mi><mo>∈</mo><msub><mi>C</mi> <mi>i</mi></msub></mrow></munder> <msup><mrow><mo>(</mo><msub><mi>C</mi>
+    <mi>i</mi></msub> <mo>-</mo><mi>x</mi><mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where *x* is observation and <math alttext="upper C Subscript i"><msub><mi>C</mi>
+    <mi>i</mi></msub></math> is the centroid of <math alttext="i Superscript t h"><msup><mi>i</mi>
+    <mrow><mi>t</mi><mi>h</mi></mrow></msup></math> cluster. However, considering
+    the number of observations and the combinations of clusters, the search area might
+    be too big to handle. It may sound intimidating, but don’t worry: we have the
+    *expectation-maximization* *(E-M)* algorithm behind our clustering. As K-means
+    does not have a closed-form solution, we are searching for an approximate one,
+    and E-M provides this solution. In the E-M algorithm, *E* refers to assigning
+    observations to the nearest centroid, and *M* denotes completion of the data generation
+    process by updating the parameters.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the E-M algorithm, the distances between observations and the centroid is
+    iteratively minimized. The algorithm works as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pick *k* random points to be centroids.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Based on the distance metric chosen, calculate the distances between observations
+    and *n* centroids. Based on these distances, assign each observation to the closest
+    cluster.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Update cluster centers based on the assignment.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Repeat the process from step 2 until the centroid does not change.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Now, we apply risk bucketing using K-means clustering. To decide the optimal
+    number of clusters, different techniques will be employed. First, we use the *elbow
+    method*, which is based on the *inertia*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Inertia is computed as the sum of the squared distances of observations to
+    their closest centroid. Second, the *Silhouette score* is introduced as a tool
+    to decide the optimal number of clusters. This takes a value between 1 and -1\.
+    A value of 1 indicates that an observation is close to the correct centroid and
+    correctly classified. However, -1 shows that an observation is not correctly clustered.
+    The strength of the Silhouette score rests on taking into account both the intracluster
+    distance and the intercluster distance. The formula for Silhouette score is as
+    follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Silhouette score equals StartFraction x minus y Over max left-parenthesis
+    x comma y right-parenthesis EndFraction" display="block"><mrow><mtext>Silhouette</mtext>
+    <mtext>score</mtext> <mo>=</mo> <mfrac><mrow><mi>x</mi><mo>-</mo><mi>y</mi></mrow>
+    <mrow><mtext>max</mtext><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *x* is the average intercluster distance between clusters, and *y* is
+    the mean intracluster distance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The third method is *Calinski-Harabasz* *(CH)*, which is known as the *variance
+    ratio criterion*. The formula for the CH method is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="CH equals StartFraction upper S upper S Subscript upper B Baseline
+    Over upper S upper S Subscript upper W Baseline EndFraction times StartFraction
+    upper N minus k Over k minus 1 EndFraction" display="block"><mrow><mtext>CH</mtext>
+    <mo>=</mo> <mfrac><mrow><mi>S</mi><msub><mi>S</mi> <mi>B</mi></msub></mrow> <mrow><mi>S</mi><msub><mi>S</mi>
+    <mi>W</mi></msub></mrow></mfrac> <mo>×</mo> <mfrac><mrow><mi>N</mi><mo>-</mo><mi>k</mi></mrow>
+    <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="upper S upper S Subscript upper B"><mrow><mi>S</mi> <msub><mi>S</mi>
+    <mi>B</mi></msub></mrow></math> denotes between-cluster variance, <math alttext="upper
+    S upper S Subscript upper W"><mrow><mi>S</mi> <msub><mi>S</mi> <mi>W</mi></msub></mrow></math>
+    represents within cluster variance, *N* is number of observations, and *k* is
+    the number of clusters. Given this information, we are seeking a high CH score,
+    as the larger (lower) the between-cluster variance (within cluster variance),
+    the better it is for finding the optimal number of clusters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The final approach is *gap analysis*. Tibshirani et al. (2001) came up with
+    a unique idea by which we are able to find the optimal number of clusters based
+    on reference distribution. Following the similar notations of Tibshirani et al.,
+    let <math alttext="d Subscript i i Sub Superscript e"><msub><mi>d</mi> <mrow><mi>i</mi><msup><mi>i</mi>
+    <mi>e</mi></msup></mrow></msub></math> be a Euclidean distance between <math alttext="x
+    Subscript i j"><msub><mi>x</mi> <mrow><mi>i</mi><mi>j</mi></mrow></msub></math>
+    and <math alttext="x Subscript i Sub Superscript e j"><msub><mi>x</mi> <msup><mi>i</mi>
+    <mrow><mi>e</mi><mi>j</mi></mrow></msup></msub></math> and let <math alttext="upper
+    C Subscript r"><msub><mi>C</mi> <mi>r</mi></msub></math> be the <math alttext="i
+    Subscript t h"><msub><mi>i</mi> <mrow><mi>t</mi><mi>h</mi></mrow></msub></math>
+    cluster denoting the number of observations in cluster *r*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma-summation Underscript j Endscripts left-parenthesis x Subscript
+    i j Baseline minus x Subscript i Sub Superscript e j Subscript Baseline right-parenthesis
+    squared" display="block"><mrow><munder><mo>∑</mo> <mi>j</mi></munder> <msup><mrow><mo>(</mo><msub><mi>x</mi>
+    <mrow><mi>i</mi><mi>j</mi></mrow></msub> <mo>-</mo><msub><mi>x</mi> <msup><mi>i</mi>
+    <mrow><mi>e</mi><mi>j</mi></mrow></msup></msub> <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The sum of pairwise distances for all observations in cluster *r* is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper D Subscript r Baseline equals sigma-summation Underscript
+    i comma i Superscript e Baseline element-of upper C Subscript r Baseline Endscripts
+    d Subscript i comma i Sub Superscript e" display="block"><mrow><msub><mi>D</mi>
+    <mi>r</mi></msub> <mo>=</mo> <munder><mo>∑</mo> <mrow><mi>i</mi><mo>,</mo><msup><mi>i</mi>
+    <mi>e</mi></msup> <mo>∈</mo><msub><mi>C</mi> <mi>r</mi></msub></mrow></munder>
+    <msub><mi>d</mi> <mrow><mi>i</mi><mo>,</mo><msup><mi>i</mi> <mi>e</mi></msup></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The within-cluster sum of squares, <math alttext="upper W Subscript k"><msub><mi>W</mi>
+    <mi>k</mi></msub></math> , is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper W Subscript k Baseline equals sigma-summation Underscript
+    r equals 1 Overscript k Endscripts StartFraction 1 Over 2 Subscript n Sub Subscript
+    r Subscript Baseline EndFraction upper D Subscript r" display="block"><mrow><msub><mi>W</mi>
+    <mi>k</mi></msub> <mo>=</mo> <munderover><mo>∑</mo> <mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>k</mi></munderover> <mfrac><mn>1</mn> <msub><mn>2</mn> <msub><mi>n</mi> <mi>r</mi></msub></msub></mfrac>
+    <msub><mi>D</mi> <mi>r</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where *n* is the sample size and expectation of <math alttext="upper W Subscript
+    k"><msub><mi>W</mi> <mi>k</mi></msub></math> is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper W Subscript k Baseline equals l o g left-parenthesis p
+    n slash 12 right-parenthesis minus left-parenthesis 2 slash p right-parenthesis
+    l o g left-parenthesis k right-parenthesis plus c o n s t a n t" display="block"><mrow><msub><mi>W</mi>
+    <mi>k</mi></msub> <mo>=</mo> <mi>l</mi> <mi>o</mi> <mi>g</mi> <mrow><mo>(</mo>
+    <mi>p</mi> <mi>n</mi> <mo>/</mo> <mn>12</mn> <mo>)</mo></mrow> <mo>-</mo> <mrow><mo>(</mo>
+    <mn>2</mn> <mo>/</mo> <mi>p</mi> <mo>)</mo></mrow> <mi>l</mi> <mi>o</mi> <mi>g</mi>
+    <mrow><mo>(</mo> <mi>k</mi> <mo>)</mo></mrow> <mo>+</mo> <mi>c</mi> <mi>o</mi>
+    <mi>n</mi> <mi>s</mi> <mi>t</mi> <mi>a</mi> <mi>n</mi> <mi>t</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where *p* and *k* are dimension and centroids, respectively. Let’s create a
+    practice exercise using German credit risk data. The data is gathered from the
+    [Kaggle platform](https://oreil.ly/4NgIy), and the explanations of the variables
+    are shown here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Age: Numerical'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Sex: Male, female'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Job: 0—unskilled and non-resident, 1—unskilled and resident, 2—skilled, 3—highly
+    skilled'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Housing: Own, rent, free'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Saving accounts: Little, moderate, quite rich, rich'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Checking account: Numerical'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Credit amount: Numerical'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Duration: Numerical'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Purpose: Car, furniture/equipment, radio/TV, domestic appliances, repairs,
+    education, business, vacation/others'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The estimate of the optimal clusters will be the value that maximizes the gap
+    statistic, as the gap statistic is the difference between the total within-intracluster
+    variation for different values of *k* and their expected values under null reference
+    distribution of the respective data. The decision is made when we get the highest
+    gap value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the following code block, we import the German credit dataset and drop the
+    unnecessary columns. The dataset includes both categorical and numerical values,
+    which need to be treated differently, and we will do this soon:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Dropping unnecessary column named `Unnamed: 0`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The summary statistics are given in the following code. Accordingly, the average
+    age of the customers is roughly 35, average job type is skilled, average credit
+    amount and duration are nearly 3,271 and 21, respectively. Additionally, the summary
+    statistics tell us that the `credit amount` variable shows a relatively high standard
+    deviation as expected. The `duration` and `age` variables have a very similar
+    standard deviation, but the duration moves within a narrower interval as its minimum
+    and maximum values are 4 and 72, respectively. As `job` is a discrete variable,
+    it is natural to expect low dispersion and we have it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In what follows, the distribution of the numerical variables in the dataset
+    are examined via histogram and it turns out none of the variables follow a normal
+    distribution. The `age`, `credit amount`, and `duration` variables are positively
+    skewed as we can see in [Figure 6-1](#credit_risk_hist), generated by the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Setting a fix figure size
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dropping the object type variables to obtain all numerical variables
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![credit_risk](assets/mlfr_0601.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-1\. Credit risk data histogram
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 6-1](#credit_risk_hist) shows the distribution of age, job, credit
+    amount, and duration variables. Aside from the `job` variable, which is a discrete
+    variable, all other variables have skewed distributions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The elbow method, as a first method, is introduced in the following code snippet
+    and the resulting [Figure 6-2](#elbow_kmeans). To find the optimal number of clusters,
+    we observe the slope of the curve and decide the cut-off point at which the curve
+    gets flatter—that is, the slope of the curve gets lower. As it gets flatter, the
+    inertia, telling us how far away the points within a cluster are located, decreases,
+    which is nice for the purpose of clustering. On the other hand, as we allow inertia
+    to decrease, the number of clusters increases, which makes the analysis more complicated.
+    Given that trade-off, the stopping criteria is the point where the curve gets
+    flatter. In code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying standardization for scaling purpose
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running K-means algorithm
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating `inertia` and storing into a list named `distance`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 6-2](#elbow_kmeans) shows that the curve gets flatter after four clusters.
+    Thus, the elbow method suggests that we stop at four clusters.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![elbow](assets/mlfr_0602.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-2\. Elbow method
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The following code, resulting in [Figure 6-3](#silhouette_kmeans), presents
+    Silhouette scores on the x-axis for clusters 2 to 10\. Given the average Silhouette
+    score represented by the dashed line, the optimal number of clusters can be two:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the `silhouette_score` module to calculate Silhouette score
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the `SilhouetteVisualizer` module to draw Silhouette plots
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using `divmod` for configuring labels, as it returns the quotient (`q`) and
+    remainder (`r`)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting the Silhouette scores
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![silhouette](assets/mlfr_0603.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-3\. Silhouette score
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'As mentioned, the CH method is a convenient tool for finding optimal clustering,
+    and the following code shows how we can use this method in Python, resulting in
+    [Figure 6-4](#CH_analysis). We are looking for the highest CH score, and we’ll
+    see that it is obtained at cluster 2:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing `KElbowVisualizer` to draw the CH score
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizing the CH metric
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH_analysis](assets/mlfr_0604.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-4\. The CH method
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 6-4](#CH_analysis) shows that the elbow occurs at the second cluster,
+    indicating that stopping at two clusters is the optimum decision.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The last step for finding the optimal number of clusters is gap analysis, resulting
+    in [Figure 6-5](#gap_cluster):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the `OptimalK` module for calculating the gap statistic
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running gap statistic using parallelization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the number of clusters based on the gap statistic
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing the result of gap analysis
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![gap_cluster](assets/mlfr_0605.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-5\. Gap analysis
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: What we observe in [Figure 6-5](#gap_cluster) is a sharp increase to the point
+    at which the gap value reaches its peak, and the analysis suggests stopping at
+    the maximum value at which we find the optimal number for clustering. In this
+    case, we find the value at cluster 5, so this is the cut-off point.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In light of these discussions, two clusters are chosen to be the optimal number
+    of clusters, and the K-means clustering analysis is conducted accordingly. To
+    illustrate, given the clustering analysis, let us visualize 2-D clusters with
+    the following, resulting in [Figure 6-6](#all_clusters):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 6-6](#all_clusters) presents the behavior of the observations and cross
+    sign `x` indicates the cluster center, i.e., the centroid. Age represents the
+    more dispersed data, and the centroid of the `age` variable is located above the
+    `credit` variable. Two continuous variables, namely `credit` and `duration`, are
+    shown in the second subplot of [Figure 6-6](#all_clusters), where we observe clearly
+    separated clusters. This figure suggests that the duration variable is more volatile
+    compared to the credit variable. In the last subplot, the relationship between
+    `age` and `duration` is examined via scatter analysis. It turns out that there
+    are many overlapping observations across these two variables.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![clusters](assets/mlfr_0606.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-6\. K-means clusters
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Probability of Default Estimation with Logistic Regression
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Having obtained the clusters, we are able to treat customers with similar characteristics
+    the same way—that is, the model learns in an easier and more stable way if data
+    with similar distributions is provided. Conversely, using all the customers for
+    the entire sample might result in poor and unstable predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section is ultimately about calculating the probability of default with
+    Bayesian estimation, but let’s first look at logistic regression for the sake
+    of comparison.^([1](ch06.html#idm45737223570832))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Logistic regression is a classification algorithm, widely applicable in the
+    finance industry. In other words, it proposes a regression approach to the classification
+    problem. Logistic regression seeks to predict discrete output, taking into account
+    some independent variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let *X* be the set of independent variables and *Y* be a binary (or multinomial)
+    output. Then, the conditional probability becomes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="probability left-parenthesis upper Y equals 1 vertical-bar upper
+    X equals x right-parenthesis" display="block"><mrow><mo form="prefix">Pr</mo>
+    <mo>(</mo> <mi>Y</mi> <mo>=</mo> <mn>1</mn> <mo>|</mo> <mi>X</mi> <mo>=</mo> <mi>x</mi>
+    <mo>)</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This can be read as: given the values of *X*, what is the probability of having
+    *Y* as 1? As the dependent variable of logistic regression is of the probabilistic
+    type, we need to make sure the dependent variable cannot take on values other
+    than between 0 and 1.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To this aim, a modification is applied known as *logistic (logit) transformation*,
+    which is simply the log of the odds ratio (*p* / 1 - *p*):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="l o g left-parenthesis StartFraction p Over 1 minus p EndFraction
+    right-parenthesis" display="block"><mrow><mi>l</mi> <mi>o</mi> <mi>g</mi> <mo>(</mo>
+    <mfrac><mi>p</mi> <mrow><mn>1</mn><mo>-</mo><mi>p</mi></mrow></mfrac> <mo>)</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'And the logistic regression model takes the following form:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="l o g left-parenthesis StartFraction p Over 1 minus p EndFraction
+    right-parenthesis equals beta 0 plus beta 1 x" display="block"><mrow><mi>l</mi>
+    <mi>o</mi> <mi>g</mi> <mrow><mo>(</mo> <mfrac><mi>p</mi> <mrow><mn>1</mn><mo>-</mo><mi>p</mi></mrow></mfrac>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>β</mi> <mn>0</mn></msub> <mo>+</mo> <msub><mi>β</mi>
+    <mn>1</mn></msub> <mi>x</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Solving *p* results in:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="p equals StartFraction e Superscript beta 0 plus beta 1 x Baseline
+    Over 1 plus e Superscript beta 0 plus beta 1 x Baseline EndFraction" display="block"><mrow><mi>p</mi>
+    <mo>=</mo> <mfrac><msup><mi>e</mi> <mrow><msub><mi>β</mi> <mn>0</mn></msub> <mo>+</mo><msub><mi>β</mi>
+    <mn>1</mn></msub> <mi>x</mi></mrow></msup> <mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi>
+    <mrow><msub><mi>β</mi> <mn>0</mn></msub> <mo>+</mo><msub><mi>β</mi> <mn>1</mn></msub>
+    <mi>x</mi></mrow></msup></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s start off our application by preparing the data. First, we distinguish
+    the clusters as 0 and 1\. The credit data has a column named `risk`, suggesting
+    the risk level of the customers. Next, the number of observations per risk in
+    cluster 0 and cluster 1 are examined; it turns out we have 571 and 129 good customers
+    in the cluster 0 and 1, respectively. In code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Obtaining cluster numbers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on the cluster numbers, differentiating the clusters and storing them
+    in a dictionary called `cluster_dict`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a `clusters` column using K-means labels
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Observing the number of observations of categories within a cluster
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_credit_risk_estimation_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finding number of observations per category
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, we draw a couple of bar plots to show the difference of the number of
+    observations per risk level category (Figures [6-7](#risk_level1) and [6-8](#risk_level2)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![cluster_2](assets/mlfr_0607.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-7\. Frequency of risk level of the first cluster
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![cluster_2](assets/mlfr_0608.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-8\. Frequency of risk level of the second cluster
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Based on the clusters we defined previously, we can analyze the frequency of
+    risk level by histogram. [Figure 6-7](#risk_level1) shows that there is an imbalance
+    distribution across risk level in the first cluster, whereas the frequency of
+    good and bad risk levels are more balanced, if not perfectly balanced, in [Figure 6-8](#risk_level2).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'At this point, let’s take a step back and focus on an entirely different problem:
+    *class imbalance*. In credit risk analysis, it is not uncommon to have a class
+    imbalance problem. Class imbalance arises when one class dominates over another.
+    To illustrate, in our case, given the data obtained from the first cluster, we
+    have 571 customers with a good credit record and 193 customers with a bad one.
+    As can be readily observed, customers with good credit records dominate over customers
+    with bad records; that is basically what we refer to as a class imbalance.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are numerous ways to handle this issue: up-sampling, down-sampling, the
+    synthetic minority oversampling technique (SMOTE), and the edited nearest neighbor
+    (ENN) rule. To take advantage of a hybrid approach, we’ll incorporate a combination
+    of SMOTE and ENN so we can clean the unwanted overlapping observations between
+    classes, which will help us detect the optimal balancing ratio and, in turn, boost
+    the predictive performance (Tuong et al. 2018). Converting imbalanced data into
+    balanced data will be our first step in predicting the probability of default,
+    but please note that we will merely apply this technique to the data obtained
+    from the first cluster.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, we next apply a train-test split. To do that, we need to convert the categorical
+    variable `Risk` into a discrete variable. The category `good` takes a value of
+    1, and `bad` takes a value of 0\. In a train-test split, 80% of the data is devoted
+    to training samples and 20% of is allocated to the test sample:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Discretization of the variable
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating data based on the first cluster and dropping last column from `X_train`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating data based on the second cluster and dropping last column from `X_train`
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'After these preparations, we are ready to move ahead and run the logistic regression
+    to predict the probability of default. The library that we’ll make use of is called
+    `statsmodels`, and it is allowed to have a summary table. The following result
+    is based on the first cluster data. According to the result, the `age`, `credit
+    amount`, and `job` variables are positively related with the creditworthiness
+    of customer, while a negative association emerges between the `dependent` and
+    `duration` variables. This finding suggests that all the estimated coefficients
+    reveal statistically significant results at a 1% significance level. A general
+    interpretation would be that a slide in duration and a surge in credit amount,
+    age, and job imply a high probability of default:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing `SMOTEENN` to deal with the class imbalance problem
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating `y_train` based on cluster 0 and risk level
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the `SMOTEENN` method with a random state of 2
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turning the imbalanced data into balanced data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_credit_risk_estimation_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the logistic regression model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_credit_risk_estimation_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the logistic regression model
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In what follows, prediction analysis is conducted by creating different datasets
+    based on clusters. For the sake of testing, the following analysis is done with
+    test data, and results in [Figure 6-9](#roc_auc_curve1_first):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating first test data based on cluster 0
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating second test data based on cluster 1
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running prediction using `X_test1`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Obtaining false and true positives using `roc_curve` function
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_credit_risk_estimation_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Compute the `roc-auc` score
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![roc_auc1](assets/mlfr_0609.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-9\. ROC-AUC curve of the first cluster
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The ROC-AUC curve is a convenient tool in the presence of imbalanced data. The
+    ROC-AUC curve in [Figure 6-9](#roc_auc_curve1_first) suggests that the performance
+    of the model is not very good, because it moves just above the 45-degree line.
+    Generally speaking, given the test results, a good ROC-AUC curve should be close
+    to 1, implying that there is a close-to-perfect separation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Moving on to the second set of training samples obtained from the second cluster,
+    the signs of the estimated coefficients of `job`, `duration`, and `age` are positive,
+    suggesting that customers with `job` type of `1` and having larger duration tend
+    to default, and the `credit amount` variable shows a negative relation with dependent
+    variable. However, all the estimated coefficients are statistically insignificant
+    at 95% confidence interval; therefore, it makes no sense to further interpret
+    the findings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similar to what we did with the first set of test data, we create a second
+    set of test data to run the prediction to draw the ROC-AUC curve, resulting in
+    [Figure 6-10](#roc_auc_curve1_second):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: Given the test data, the result shown in [Figure 6-10](#roc_auc_curve1_second)
+    is worse than the previous application, as can be confirmed by the AUC score of
+    0.4064\. Considering this data, we are far from saying that logistic regression
+    is doing a good job of modeling probability of default using the German credit
+    risk dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We will now use different models to see how good the logistic regression is
+    in modeling this type of problem relative to other methods. Thus, in the following
+    part, we will take a look at Bayesian estimation with maximum a posteriori (MAP)
+    probability and Markov Chain Monte Carlo (MCMC) approaches. We will then explore
+    those approaches using a few well-known ML models—SVM, random forest, and neural
+    networks using `MLPRegressor`—and we will test the deep learning model with TensorFlow.
+    This application will show us which model works better in modeling the probability
+    of default.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![roc_auc2](assets/mlfr_0610.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-10\. ROC-AUC curve of the second cluster
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Probability of Default Estimation with the Bayesian Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this part, we’ll use the `PYMC3` package, which is a Python package for Bayesian
+    estimation, to predict the probability of default. However, there are several
+    approaches for running Bayesian analysis using `PYMC3`, and for the first application,
+    we’ll use the MAP distribution discussed in [Chapter 4](ch04.html#chapter_4).
+    As a quick reminder, given the representative posterior distribution, MAP becomes
+    an efficient model in this case. Moreover, we select the Bayesian model with a
+    deterministic variable (*p*) that is entirely determined by its parents—that is,
+    `age`, `job`, `credit amount`, and `duration`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s compare the results obtained from Bayesian analysis with that of logistic
+    regression:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing `PYMC3`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing `arviz` for exploratory analysis of Bayesian models
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying Bayesian model as `logistic_model1`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the assumed distributions of the variables as normal with defined
+    `mu` and `sigma` parameters
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_credit_risk_estimation_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running a deterministic model using the first sample
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_credit_risk_estimation_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running a Bernoulli distribution to model the dependent variable
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_credit_risk_estimation_CO11-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the MAP model to data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_credit_risk_estimation_CO11-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing all the results of the estimated coefficients into `param`s with six
+    decimals
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most striking observation is that the differences between estimated coefficients
+    are so small that they can be ignored. The difference occurs in the decimals.
+    Taking the estimated coefficient of the credit amount variable as an example,
+    we have estimated the coefficient to be 1.3290 in logistic regression and 1.3272
+    in Bayesian analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The story is more or less the same when it comes to comparing the analysis
+    result based on the second cluster data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: The most remarkable difference occurs in the `duration` variable. The estimated
+    coefficients of this variable are 0.1046 and 0.1045 in logistic regression and
+    Bayesian estimation, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead of finding the local maximum, which is sometimes difficult to get, we
+    look for an approximate expectation based on the sampling procedure. This is referred
+    to as MCMC in the Bayesian setting. As we discussed in [Chapter 4](ch04.html#chapter_4),
+    one of the most well known methods is the Metropolis-Hastings (M-H) algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Python code that applies Bayesian estimation based on the M-H algorithm
+    is shown in the following and results in [Figure 6-11](#MCMC_risk_cluster1). Accordingly,
+    we draw 10,000 posterior samples to simulate the posterior distribution for two
+    independent Markov chains. The summary table for the estimated coefficients is
+    provided in the code as well:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the `logging` package to suppress the warning messages
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Naming the package for logging
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppressing errors without raising exceptions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Initiating the M-H model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_credit_risk_estimation_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the model with 10,000 samples and ignoring the progress bar
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_credit_risk_estimation_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a simple posterior plot using `plot_trace`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_credit_risk_estimation_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Printing the first four rows of the summary result
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![MCMC_risk_cluster1](assets/mlfr_0611.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-11\. Bayesian estimation with M—H with first cluster
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The result suggests that the predictive performances are supposed be very close
+    to that of logistic regression, as the estimated coefficients of these two models
+    are quite similar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In [Figure 6-11](#MCMC_risk_cluster1), we see the dashed and solid lines. Given
+    the first cluster data, the plot located on the lefthand side of [Figure 6-11](#MCMC_risk_cluster1)
+    shows the sample values of the related parameters. Though it is not our present
+    focus, we can observe the deterministic variable, *p*, located in the last plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a similar vein, the result of Bayesian estimation with M-H based on the second
+    cluster performs very closely to the logistic regression. However, the results
+    obtained from MAP application are better, which is expected primarily because
+    M-H works with random sampling. It is not, however, the only potential reason
+    for this small deviation that we’ll discuss.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As for the data that we obtained from the second cluster, the result of Bayesian
+    estimation with M-H can be seen in the following code, which also creates the
+    plot shown in [Figure 6-12](#MCMC_risk_cluster2):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![MCMC_risk_cluster2](assets/mlfr_0612.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-12\. Bayesian estimation with M—H with second cluster
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Let’s now discuss the limitations of the M-H model, which may shed some light
+    on the discrepancies across the model results. One disadvantage of the M-H algorithm
+    is its sensitivity to step size. Small steps hinder the convergence process. Conversely,
+    big steps may cause a high rejection rate. Besides, M-H may suffer from rare events—as
+    the probability of these events are low, requiring a large sample to obtain a
+    reliable estimation—and that is our focus in this case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, let’s consider what happens if we use SVM to predict probability of default
+    and compare its performance with logistic regression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probability of Default Estimation with Support Vector Machines
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: SVM is thought to be a parametric model, and it works well with high-dimensional
+    data. The probability of default case in a multivariate setting may provide fertile
+    ground for running SVM. Before proceeding, it would be a good idea to briefly
+    discuss a new approach that we will use to run hyperparameter tuning, namely `HalvingRandomSearchCV`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`HalvingRandomSearchCV` works with iterative selection so that it uses fewer
+    resources, thereby boosting performance and getting you some time back. `HalvingRandomSearchCV`
+    tries to find the optimal parameters using successive halving to identify candidate
+    parameters. The logic behind this process is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluate all parameter combinations, exploiting a certain number of training
+    samples at first iteration.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Use some of the selected parameters in the second iteration with a large number
+    of training samples.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Only include the top-scoring candidates in the model until the last iteration.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Using the credit dataset, we predict the probability of default with support
+    vector classification (SVC). Again, we use two different datasets based on the
+    clustering we performed at the very first part of this chapter. The results are
+    provided in the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the library to enable successive halving search
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the library to run the halving search
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the halving search using parallel processing
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running a prediction analysis
+  prefs: []
+  type: TYPE_NORMAL
+- en: An important step to take in SVM is hyperparameter tuning. Using a halving search
+    approach, we try to find out the best combination of `kernel`, `gamma`, and `C`.
+    It turns out that the only difference across the two different samples occurs
+    in the `gamma` and `C` hyperparameters. In the first cluster, the optimal `C`
+    score is 1, whereas it is 0.001 in the second one. The higher `C` value indicates
+    that we should choose a smaller margin to make a better classification. As for
+    the `gamma` hyperparameter, both clusters take the same value. Having a lower
+    `gamma` amounts to a larger influence of the support vector on the decision. The
+    optimal kernel is Gaussian, and the `gamma` value is 0.01 for both clusters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The AUC performance criteria indicates that the predictive performance of SVC
+    is slightly below that of logistic regression. More precisely, AUC of the SVC
+    is 0.5179, and that implies that SVC performs worse than logistic regression for
+    the first cluster.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The second cluster shows that the performance of SVC is even slightly worse
+    than that of the first cluster, and this indicates the SVC does not perform well
+    on this data, as it is not clearly separable data, this implies that SVC does
+    not work well with low-dimensional spaces:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: Well, maybe we’ve had enough of parametric methods—let’s move on to nonparametric
+    methods. Now, the word *nonparametric* may sound confusing, but it is nothing
+    but a model with an infinite number of parameters, and one that becomes more complex
+    as the number of observations increases. Random forest is one of the most applicable
+    nonparametric models in ML, and we’ll discuss that next.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probability of Default Estimation with Random Forest
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The random forest classifier is another model we can employ to model the probability
+    of default. Although random forest fails in high-dimensional cases, our data is
+    not that complex, and the beauty of random forest lies in its good predictive
+    performance in the presence of a large number of samples, so it’s plausible to
+    think that the random forest model might outperform the SVC model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using halving search approach, we try to find out the best combination of `n_estimators`,
+    `criterion`, `max_features`, `max_depth`, `min_samples_split`. The result suggests
+    that we use `n_estimators` of 300, `min_samples_split` of 10, `max_depth` of 6
+    with a gini criterion, and `sqrt` `max_features` for the first cluster. As for
+    the second cluster, we have two different optimal hyperparameters as can be seen
+    in the following. Having larger depth in a tree-based model amounts to having
+    a more complex model. With that said, the model proposed for the second cluster
+    is a bit more complex. The `max_features` hyperparameter seems to be different
+    across samples; in the first cluster, the maximum number of features is picked
+    via <math alttext="StartRoot number of features EndRoot"><msqrt><mrow><mtext>number</mtext>
+    <mtext>of</mtext> <mtext>features</mtext></mrow></msqrt></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Given the first cluster data, the AUC score of 0.5387 indicates that random
+    forest has a better performance compared to the other models:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following code shows a random forest run based on the second cluster:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: Random forest has a much better predictive performance in the second cluster,
+    with an AUC score of 0.5906\. Given the predictive performance of random forest,
+    we can conclude that random forest does a better job of fitting the data. This
+    is partly because of the low-dimensional characteristics of the data, as random
+    forest turns out to be a good choice when data has low dimensionality and a large
+    number of observations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probability of Default Estimation with Neural Network
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Given the complexity of the probability of default estimation, unveiling the
+    hidden structure of the data is a tough task, but the NN structure does a good
+    job handling this, so it would be an ideal candidate model for such tasks. In
+    setting up the NN model, `GridSearchCV` is used to optimize the number of hidden
+    layers, optimization technique, and learning rate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In running the model, we first employ the `MLP` library, which allows us to
+    control for many parameters, including hidden layer size, optimization technique
+    (solver), and learning rate. Comparing the optimized hyperparameters of the two
+    clusters indicates that the only difference is in the number of neurons in the
+    hidden layer. Accordingly, we have larger number of neurons in the first hidden
+    layer in cluster one. However, the neuron number is larger in the second hidden
+    layer in the second cluster.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code suggests that data based on the first cluster is only a
+    marginal improvement. In other words, the AUC moves to 0.5263, only slightly worse
+    than random forest:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The ROC-AUC score obtained from the second cluster is 0.6155, with two hidden
+    layers endowed with 10 and 100 neurons, respectively. Moreover, the best optimization
+    technique is `adam`, and optimum initial learning rate is 0.05\. This is the highest
+    AUC score we’ve obtained, implying that the NN is able to capture the dynamics
+    of the complex and nonlinear data, as shown here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Probability of Default Estimation with Deep Learning
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s now take a look at the performance of a deep learning model using TensorFlow
+    via `KerasClassifier`, which enables us to control for the hyperparameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The hyperparameters that we tune in this model are batch size, epoch, and dropout
+    rate. As probability of default is a classification problem, the sigmoid activation
+    function appears to be the optimal function to use. Deep learning is based on
+    the structure of NNs, but provides a more complex structure, so it is expected
+    to better capture the dynamics of data in a way that enables us to have better
+    predictive performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As we can see in the following code, the predictive performance of the second
+    sample stumbles, however, with an AUC score of 0.5628:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing `KerasClassifier` to run grid search
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing `logging` to suppress the warning messages
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Naming TensorFlow for logging
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the optimized hyperparameters of dropout, batch size, and epoch, the deep
+    learning model produces the best performance among the models we have employed
+    so far, with an AUC score of 0.5614\. The difference between MLPClassifier and
+    deep learning models used in this chapter is the number of neurons in the hidden
+    layer. Technically, these two models are deep learning models with different structures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calling a predefined function named `DL_risk` to run with optimized hyperparameters
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying the grid search
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_credit_risk_estimation_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running deep learning algorithm with optimum hyperparameter of dropout rate
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_credit_risk_estimation_CO16-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running deep learning algorithm with optimum hyperparameter of batch size
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_credit_risk_estimation_CO16-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running deep learning algorithm with optimum hyperparameter of epoch number
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_credit_risk_estimation_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Computing the ROC-AUC score after flattening the prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: This finding confirms that DL models have become increasingly popular in financial
+    modeling. In the industry, however, due to the opaque nature of network structure,
+    this method is suggested for use in conjunction with traditional models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Credit risk analysis has a long tradition but is also still a challenging task
+    to accomplish. This chapter attempted to present a brand new ML-based approach
+    to tackling this problem and to getting better predictive performance. In the
+    first part of the chapter, the main concepts related to credit risk were provided.
+    Then, we applied a well-known parametric model, logistic regression, to German
+    credit risk data. The performance of logistic regression was then compared with
+    Bayesian estimation based on MAP and M-H. Finally, core machine learning models—namely
+    SVC, random forest, and NNs with deep learning—were employed, and the performance
+    of all models was compared.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the next chapter, a neglected dimension risk will be introduced: liquidity
+    risk. The appreciation of liquidity risk has grown considerably since the 2007–2008
+    financial crisis and has turned out to be an important part of risk management.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Articles cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basel Committee on Banking Supervision, and Bank for International Settlements.
+    2000\. “Principles for the Management of Credit Risk.” Bank for International
+    Settlements.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Le, Tuong, Mi Young Lee, Jun Ryeol Park, and Sung Wook Baik. 2018\. “Oversampling
+    Techniques for Bankruptcy Prediction: Novel Features from a Transaction Dataset.”
+    *Symmetry* 10 (4): 79.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Tibshirani, Robert, Guenther Walther, and Trevor Hastie. 2001\. “Estimating
+    the Number of Clusters in a Data Set via the Gap Statistic.” *Journal of the Royal
+    Statistical Society: Series B (Statistical Methodology)* 63 (2): 411-423.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Books and PhD theses cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Rokach, Lior, and Oded Maimon. 2005\. “Clustering methods.” In *Data Mining
+    and Knowledge Discovery Handbook*, 321-352\. Boston: Springer.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Wehrspohn, Uwe. 2002\. “Credit Risk Evaluation: Modeling-Analysis-Management.”
+    PhD dissertation. Harvard.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch06.html#idm45737223570832-marker)) It is useful to run logistic regression
+    to initialize results for priors in Bayesian estimation.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,3111 @@
+- en: 'Chapter 5\. Supervised Learning: Regression (Including Time Series Models)'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Supervised regression–based machine learning is a predictive form of modeling
+    in which the goal is to model the relationship between a target and the predictor
+    variable(s) in order to estimate a continuous set of possible outcomes. These
+    are the most used machine learning models in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One of the focus areas of analysts in financial institutions (and finance in
+    general) is to predict investment opportunities, typically predictions of asset
+    prices and asset returns. Supervised regression–based machine learning models
+    are inherently suitable in this context. These models help investment and financial
+    managers understand the properties of the predicted variable and its relationship
+    with other variables, and help them identify significant factors that drive asset
+    returns. This helps investors estimate return profiles, trading costs, technical
+    and financial investment required in infrastructure, and thus ultimately the risk
+    profile and profitability of a strategy or portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With the availability of large volumes of data and processing techniques, supervised
+    regression–based machine learning isn’t just limited to asset price prediction.
+    These models are applied to a wide range of areas within finance, including portfolio
+    management, insurance pricing, instrument pricing, hedging, and risk management.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter we cover three supervised regression–based case studies that
+    span diverse areas, including asset price prediction, instrument pricing, and
+    portfolio management. All of the case studies follow the standardized seven-step
+    model development process presented in [Chapter 2](ch02.xhtml#Chapter2); those
+    steps include defining the problem, loading the data, exploratory data analysis,
+    data preparation, model evaluation, and model tuning.^([1](ch05.xhtml#idm45174931460040))
+    The case studies are designed not only to cover a diverse set of topics from the
+    finance standpoint but also to cover multiple machine learning and modeling concepts,
+    including models from basic linear regression to advanced deep learning that were
+    presented in [Chapter 4](ch04.xhtml#Chapter4).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A substantial amount of asset modeling and prediction problems in the financial
+    industry involve a time component and estimation of a continuous output. As such,
+    it is also important to address *time series models*. In its broadest form, time
+    series analysis is about inferring what has happened to a series of data points
+    in the past and attempting to predict what will happen to it in the future. There
+    have been a lot of comparisons and debates in academia and the industry regarding
+    the differences between supervised regression and time series models. Most time
+    series models are *parametric* (i.e., a known function is assumed to represent
+    the data), while the majority of supervised regression models are *nonparametric*.
+    Time series models primarily use historical data of the predicted variables for
+    prediction, and supervised learning algorithms use *exogenous variables* as predictor
+    variables.^([2](ch05.xhtml#idm45174931449640)) However, supervised regression
+    can embed the historical data of the predicted variable through a time-delay approach
+    (covered later in this chapter), and a time series model (such as ARIMAX, also
+    covered later in this chapter) can use exogenous variables for prediction. Hence,
+    time series and supervised regression models are similar in the sense that both
+    can use exogenous variables as well as historical data of the predicted variable
+    for forecasting. In terms of the final output, both supervised regression and
+    time series models estimate a continuous set of possible outcomes of a variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In [Chapter 4](ch04.xhtml#Chapter4), we covered the concepts of models that
+    are common between supervised regression and supervised classification. Given
+    that time series models are more closely aligned with supervised regression than
+    supervised classification, we will go through the concepts of time series models
+    separately in this chapter. We will also demonstrate how we can use time series
+    models on financial data to predict future values. Comparison of time series models
+    against the supervised regression models will be presented in the case studies.
+    Additionally, some machine learning and deep learning models (such as LSTM) can
+    be directly used for time series forecasting, and those will be discussed as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 1: Stock Price Prediction”](#CaseStudy1SR), we demonstrate
+    one of the most popular prediction problems in finance, that of predicting stock
+    returns. In addition to predicting future stock prices accurately, the purpose
+    of this case study is to discuss the machine learning–based framework for general
+    asset class price prediction in finance. In this case study we will discuss several
+    machine learning and time series concepts, along with focusing on visualization
+    and model tuning.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 2: Derivative Pricing”](#CaseStudy2SR), we will delve into
+    derivative pricing using supervised regression and show how to deploy machine
+    learning techniques in the context of traditional quant problems. As compared
+    to traditional derivative pricing models, machine learning techniques can lead
+    to faster derivative pricing without relying on the several impractical assumptions.
+    Efficient numerical computation using machine learning can be increasingly beneficial
+    in areas such as financial risk management, where a trade-off between efficiency
+    and accuracy is often inevitable.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 3: Investor Risk Tolerance and Robo-Advisors”](#CaseStudy3SR),
+    we illustrate supervised regression–based framework to estimate the risk tolerance
+    of investors. In this case study, we build a robo-advisor dashboard in Python
+    and implement this risk tolerance prediction model in the dashboard. We demonstrate
+    how such models can lead to the automation of portfolio management processes,
+    including the use of robo-advisors for investment management. The purpose is also
+    to illustrate how machine learning can efficiently be used to overcome the problem
+    of traditional risk tolerance profiling or risk tolerance questionnaires that
+    suffer from several behavioral biases.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 4: Yield Curve Prediction”](#CaseStudy4SR), we use a supervised
+    regression–based framework to forecast different yield curve tenors simultaneously.
+    We demonstrate how we can produce multiple tenors at the same time to model the
+    yield curve using machine learning models.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The models used for supervised regression were presented in Chapters [3](ch03.xhtml#Chapter3)
+    and [4](ch04.xhtml#Chapter4). Prior to the case studies, we will discuss time
+    series models. We highly recommend readers turn to *Time Series Analysis and Its
+    Applications*, 4th Edition, by Robert H. Shumway and David S. Stoffer (Springer)
+    for a more in-depth understanding of time series concepts, and to *Hands-On Machine
+    Learning with Scikit-Learn, Keras, and TensorFlow*, 2nd Edition, by Aurélien Géron
+    (O’Reilly) for more on concepts in supervised regression models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This Chapter’s Code Repository
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A Python-based master template for supervised regression, a time series model
+    template, and the Jupyter notebook for all case studies presented in this chapter
+    are included in the folder [*Chapter 5 - Sup. Learning - Regression and Time Series
+    models*](https://oreil.ly/sJFV0) of the code repository for this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For any new supervised regression–based case study, use the common template
+    from the code repository, modify the elements specific to the case study, and
+    borrow the concepts and insights from the case studies presented in this chapter.
+    The template also includes the implementation and tuning of the ARIMA and LSTM
+    models.^([3](ch05.xhtml#idm45174931422552)) The templates are designed to run
+    on the cloud (i.e., Kaggle, Google Colab, and AWS). All the case studies have
+    been designed on a uniform regression template.^([4](ch05.xhtml#idm45174931421656))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Time Series Models
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A *time series* is a sequence of numbers that are ordered by a time index.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this section we will cover the following aspects of time series models,
+    which we further leverage in the case studies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The components of a time series
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Autocorrelation and stationarity of time series
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Traditional time series models (e.g., ARIMA)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Use of deep learning models for time series modeling
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Conversion of time series data for use in a supervised learning framework
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Time Series Breakdown
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A time series can be broken down into the following components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trend Component
+  prefs: []
+  type: TYPE_NORMAL
+- en: A trend is a consistent directional movement in a time series. These trends
+    will be either *deterministic* or *stochastic*. The former allows us to provide
+    an underlying rationale for the trend, while the latter is a random feature of
+    a series that we will be unlikely to explain. Trends often appear in financial
+    series, and many trading models use sophisticated trend identification algorithms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Seasonal Component
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many time series contain seasonal variation. This is particularly true in series
+    representing business sales or climate levels. In quantitative finance we often
+    see seasonal variation, particularly in series related to holiday seasons or annual
+    temperature variation (such as natural gas).
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can write the components of a time series <math alttext="y Subscript t"><msub><mi>y</mi>
+    <mi>t</mi></msub></math> as
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="y Subscript t Baseline equals upper S Subscript t Baseline plus
+    upper T Subscript t Baseline plus upper R Subscript t" display="block"><mrow><msub><mi>y</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>+</mo> <msub><mi>T</mi>
+    <mi>t</mi></msub> <mo>+</mo> <msub><mi>R</mi> <mi>t</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="upper S Subscript t"><msub><mi>S</mi> <mi>t</mi></msub></math>
+    is the seasonal component, <math alttext="upper T Subscript t"><msub><mi>T</mi>
+    <mi>t</mi></msub></math> is the trend component, and <math alttext="upper R Subscript
+    t"><msub><mi>R</mi> <mi>t</mi></msub></math> represents the remainder component
+    of the time series not captured by seasonal or trend component.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Python code for breaking down a time series (*Y*) into its component is
+    as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 5-1](#TimeSeriesComponents) shows the time series broken down into
+    trend, seasonality, and remainder components. Breaking down a time series into
+    these components may help us better understand the time series and identify its
+    behavior for better prediction.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The three time series components are shown separately in the bottom three panels.
+    These components can be added together to reconstruct the actual time series shown
+    in the top panel (shown as “observed”). Notice that the time series shows a trending
+    component after 2017\. Hence, the prediction model for this time series should
+    incorporate the information regarding the trending behavior after 2017\. In terms
+    of seasonality there is some increase in the magnitude in the beginning of the
+    calendar year. The residual component shown in the bottom panel is what is left
+    over when the seasonal and trend components have been subtracted from the data.
+    The residual component is mostly flat with some spikes and noise around 2018 and
+    2019\. Also, each of the plots are on different scales, and the trend component
+    has maximum range as shown by the scale on the plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0501](Images/mlbf_0501.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-1\. Time series components
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Autocorrelation and Stationarity
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When we are given one or more time series, it is relatively straightforward
+    to decompose the time series into trend, seasonality, and residual components.
+    However, there are other aspects that come into play when dealing with time series
+    data, particularly in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Autocorrelation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: There are many situations in which consecutive elements of a time series exhibit
+    correlation. That is, the behavior of sequential points in the series affect each
+    other in a dependent manner. *Autocorrelation* is the similarity between observations
+    as a function of the time lag between them. Such relationships can be modeled
+    using an autoregression model. The term *autoregression* indicates that it is
+    a regression of the variable against itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In an autoregression model, we forecast the variable of interest using a linear
+    combination of past values of the variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Thus, an autoregressive model of order <math alttext="p"><mi>p</mi></math> can
+    be written as
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>y</mi> <mi>t</mi></msub> <mo>=</mo> <mi>c</mi>
+    <mo>+</mo> <msub><mi>ϕ</mi> <mn>1</mn></msub> <msub><mi>y</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <msub><mi>ϕ</mi> <mn>2</mn></msub> <msub><mi>y</mi> <mrow><mi>t</mi><mo>–</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <msub><mi>ϕ</mi> <mi>p</mi></msub>
+    <msub><mi>y</mi> <mrow><mi>t</mi><mo>–</mo><mi>p</mi></mrow></msub> <mo>+</mo>
+    <mi>ϵ</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    is white noise.^([5](ch05.xhtml#idm45174931308056)) An autoregressive model is
+    like a multiple regression but with lagged values of <math alttext="y Subscript
+    t"><msub><mi>y</mi> <mi>t</mi></msub></math> as predictors. We refer to this as
+    an AR(*p*) model, an autoregressive model of order *p*. Autoregressive models
+    are remarkably flexible at handling a wide range of different time series patterns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stationarity
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: A time series is said to be stationary if its statistical properties do not
+    change over time. Thus a time series with trend or with seasonality is not stationary,
+    as the trend and seasonality will affect the value of the time series at different
+    times. On the other hand, a white noise series is stationary, as it does not matter
+    when you observe it; it should look similar at any point in time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-2](#NonStationaryPlots) shows some examples of nonstationary series.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0502](Images/mlbf_0502.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-2\. Nonstationary plots
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In the first plot, we can clearly see that the mean varies (increases) with
+    time, resulting in an upward trend. Thus this is a nonstationary series. For a
+    series to be classified as stationary, it should not exhibit a trend. Moving on
+    to the second plot, we certainly do not see a trend in the series, but the variance
+    of the series is a function of time. A stationary series must have a constant
+    variance; hence this series is a nonstationary series as well. In the third plot,
+    the spread becomes closer as the time increases, which implies that the covariance
+    is a function of time. The three examples shown in [Figure 5-2](#NonStationaryPlots)
+    represent nonstationary time series. Now look at a fourth plot, as shown in [Figure 5-3](#StationaryPlots).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0503](Images/mlbf_0503.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-3\. Stationary plot
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In this case, the mean, variance, and covariance are constant with time. This
+    is what a stationary time series looks like. Predicting future values using this
+    fourth plot would be easier. Most statistical models require the series to be
+    stationary to make effective and precise predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The two major reasons behind nonstationarity of a time series are trend and
+    seasonality, as shown in [Figure 5-2](#NonStationaryPlots). In order to use time
+    series forecasting models, we generally convert any nonstationary series to a
+    stationary series, making it easier to model since statistical properties don’t
+    change over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Differencing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Differencing is one of the methods used to make a time series stationary. In
+    this method, we compute the difference of consecutive terms in the series. Differencing
+    is typically performed to get rid of the varying mean. Mathematically, differencing
+    can be written as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math><mrow><msubsup><mi>y</mi> <mi>t</mi> <mo>′</mo></msubsup> <mo>=</mo> <msub><mi>y</mi>
+    <mi>t</mi></msub> <mo>–</mo> <msub><mi>y</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="y Subscript t"><msub><mi>y</mi> <mi>t</mi></msub></math>
+    is the value at a time *t*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the differenced series is white noise, the original series is referred
+    to as a nonstationary series of degree one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Traditional Time Series Models (Including the ARIMA Model)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are many ways to model a time series in order to make predictions. Most
+    of the time series models aim at incorporating the trend, seasonality, and remainder
+    components while addressing the autocorrelation and stationarity embedded in the
+    time series. For example, the autoregressive (AR) model discussed in the previous
+    section addresses the autocorrelation in the time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One of the most widely used models in time series forecasting is the ARIMA model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARIMA
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'If we combine stationarity with autoregression and a moving average model (discussed
+    further on in this section), we obtain an ARIMA model. *ARIMA* is an acronym for
+    AutoRegressive Integrated Moving Average, and it has the following components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: AR(p)
+  prefs: []
+  type: TYPE_NORMAL
+- en: It represents autoregression, i.e., regression of the time series onto itself,
+    as discussed in the previous section, with an assumption that current series values
+    depend on its previous values with some lag (or several lags). The maximum lag
+    in the model is referred to as *p*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I(d)
+  prefs: []
+  type: TYPE_NORMAL
+- en: It represents order of integration. It is simply the number of differences needed
+    to make the series stationary.
+  prefs: []
+  type: TYPE_NORMAL
+- en: MA(q)
+  prefs: []
+  type: TYPE_NORMAL
+- en: It represents moving average. Without going into detail, it models the error
+    of the time series; again, the assumption is that current error depends on the
+    previous with some lag, which is referred to as *q*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The moving average equation is written as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>y</mi> <mi>t</mi></msub> <mo>=</mo> <mi>c</mi>
+    <mo>+</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo> <msub><mi>θ</mi> <mn>1</mn></msub>
+    <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>+</mo>
+    <msub><mi>θ</mi> <mn>2</mn></msub> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>–</mo><mn>2</mn></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where, <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    is white noise. We refer to this as an *MA(q)* model of order *q*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Combining all the components, the full ARIMA model can be written as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msubsup><mi>y</mi> <mi>t</mi> <mo>′</mo></msubsup>
+    <mo>=</mo> <mi>c</mi> <mo>+</mo> <msub><mi>ϕ</mi> <mn>1</mn></msub> <msubsup><mi>y</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow> <mo>′</mo></msubsup> <mo>+</mo> <mo>⋯</mo>
+    <mo>+</mo> <msub><mi>ϕ</mi> <mi>p</mi></msub> <msubsup><mi>y</mi> <mrow><mi>t</mi><mo>–</mo><mi>p</mi></mrow>
+    <mo>′</mo></msubsup> <mo>+</mo> <msub><mi>θ</mi> <mn>1</mn></msub> <msub><mi>ε</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>+</mo> <mo>⋯</mo> <mo>+</mo>
+    <msub><mi>θ</mi> <mi>q</mi></msub> <msub><mi>ε</mi> <mrow><mi>t</mi><mo>–</mo><mi>q</mi></mrow></msub>
+    <mo>+</mo> <msub><mi>ε</mi> <mi>t</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="y prime Subscript t"><msubsup><mi>y</mi> <mi>t</mi> <mo>'</mo></msubsup></math>
+    is the differenced series (it may have been differenced more than once). The predictors
+    on the right-hand side include both lagged values of <math alttext="y prime Subscript
+    t"><msubsup><mi>y</mi> <mi>t</mi> <mo>'</mo></msubsup></math> and lagged errors.
+    We call this an ARIMA(*p,d,q*) model, where *p* is the order of the autoregressive
+    part, *d* is the degree of first differencing involved, and *q* is the order of
+    the moving average part. The same stationarity and invertibility conditions that
+    are used for autoregressive and moving average models also apply to an ARIMA model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Python code to fit the ARIMA model of the order (1,0,0) is shown in the
+    following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The family of ARIMA models has several variants, and some of them are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARIMAX
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARIMA models with exogenous variables included. We will be using this model
+    in case study 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SARIMA
+  prefs: []
+  type: TYPE_NORMAL
+- en: “S” in this model stands for seasonal, and this model is targeted at modeling
+    the seasonality component embedded in the time series, along with other components.
+  prefs: []
+  type: TYPE_NORMAL
+- en: VARMA
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This is the extension of the model to multivariate case, when there are many
+    variables to be predicted simultaneously. We predict many variables simultaneously
+    in [“Case Study 4: Yield Curve Prediction”](#CaseStudy4SR).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep Learning Approach to Time Series Modeling
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The traditional time series models such as ARIMA are well understood and effective
+    on many problems. However, these traditional methods also suffer from several
+    limitations. Traditional time series models are linear functions, or simple transformations
+    of linear functions, and they require manually diagnosed parameters, such as time
+    dependence, and don’t perform well with corrupt or missing data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we look at the advancements in the field of deep learning for time series
+    prediction, we see that *recurrent neural network* (RNN) has gained increasing
+    attention in recent years. These methods can identify structure and patterns such
+    as nonlinearity, can seamlessly model problems with multiple input variables,
+    and are relatively robust to missing data. The RNN models can retain state from
+    one iteration to the next by using their own output as input for the next step.
+    These deep learning models can be referred to as time series models, as they can
+    make future predictions using the data points in the past, similar to traditional
+    time series models such as ARIMA. Therefore, there are a wide range of applications
+    in finance where these deep learning models can be leveraged. Let us look at the
+    deep learning models for time series forecasting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RNNs
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Recurrent neural networks (RNNs) are called “recurrent” because they perform
+    the same task for every element of a sequence, with the output being dependent
+    on the previous computations. RNN models have a memory, which captures information
+    about what has been calculated so far. As shown in [Figure 5-4](#RNN), a recurrent
+    neural network can be thought of as multiple copies of the same network, each
+    passing a message to a successor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0504](Images/mlbf_0504.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-4\. Recurrent Neural Network
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In [Figure 5-4](#RNN):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*X[t]* is the input at time step *t*.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*O[t]* is the output at time step *t*.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*S[t]* is the hidden state at time step *t*. It’s the memory of the network.
+    It is calculated based on the previous hidden state and the input at the current
+    step.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The main feature of an RNN is this hidden state, which captures some information
+    about a sequence and uses it accordingly whenever needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Long short-term memory
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Long short-term memory* (LSTM) is a special kind of RNN explicitly designed
+    to avoid the long-term dependency problem. Remembering information for long periods
+    of time is practically default behavior for an LSTM model.^([6](ch05.xhtml#idm45174931138088))
+    These models are composed of a set of cells with features to memorize the sequence
+    of data. These cells capture and store the data streams. Further, the cells interconnect
+    one module of the past to another module of the present to convey information
+    from several past time instants to the present one. Due to the use of gates in
+    each cell, data in each cell can be disposed, filtered, or added for the next
+    cells.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *gates*, based on artificial neural network layers, enable the cells to
+    optionally let data pass through or be disposed. Each layer yields numbers in
+    the range of zero to one, depicting the amount of every segment of data that ought
+    to be let through in each cell. More precisely, an estimation of zero value implies
+    “let nothing pass through.” An estimation of one indicates “let everything pass
+    through.” Three types of gates are involved in each LSTM, with the goal of controlling
+    the state of each cell:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forget Gate
+  prefs: []
+  type: TYPE_NORMAL
+- en: Outputs a number between zero and one, where one shows “completely keep this”
+    and zero implies “completely ignore this.” This gate conditionally decides whether
+    the past should be forgotten or preserved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input Gate
+  prefs: []
+  type: TYPE_NORMAL
+- en: Chooses which new data needs to be stored in the cell.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Output Gate
+  prefs: []
+  type: TYPE_NORMAL
+- en: Decides what will yield out of each cell. The yielded value will be based on
+    the cell state along with the filtered and newly added data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Keras wraps the efficient numerical computation libraries and functions and
+    allows us to define and train LSTM neural network models in a few short lines
+    of code. In the following code, LSTM module from `keras.layers` is used for implementing
+    LSTM network. The network is trained with the variable `X_train_LSTM`. The network
+    has a hidden layer with 50 LSTM blocks or neurons and an output layer that makes
+    a single value prediction. Also refer to [Chapter 3](ch03.xhtml#Chapter3) for
+    a more detailed description of all the terms (i.e., sequential, learning rate,
+    momentum, epoch, and batch size).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A sample Python code for implementing an LSTM model in Keras is shown below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: In terms of both learning and implementation, LSTM provides considerably more
+    options for fine-tuning compared to ARIMA models. Although deep learning models
+    have several advantages over traditional time series models, deep learning models
+    are more complicated and difficult to train.^([7](ch05.xhtml#idm45174931122968))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Modifying Time Series Data for Supervised Learning Models
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A time series is a sequence of numbers that are ordered by a time index. Supervised
+    learning is where we have input variables (*X*) and an output variable (*Y*).
+    Given a sequence of numbers for a time series dataset, we can restructure the
+    data into a set of predictor and predicted variables, just like in a supervised
+    learning problem. We can do this by using previous time steps as input variables
+    and using the next time step as the output variable. Let’s make this concrete
+    with an example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can restructure a time series shown in the left table in [Figure 5-5](#Ts2SL)
+    as a supervised learning problem by using the value at the previous time step
+    to predict the value at the next time step. Once we’ve reorganized the time series
+    dataset this way, the data would look like the table on the right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0505](Images/mlbf_0505.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-5\. Modifying time series for supervised learning models
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: We can see that the previous time step is the input (*X*) and the next time
+    step is the output (*Y*) in our supervised learning problem. The order between
+    the observations is preserved and must continue to be preserved when using this
+    dataset to train a supervised model. We will delete the first and last row while
+    training our supervised model as we don’t have values for either *X* or *Y*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In Python, the main function to help transform time series data into a supervised
+    learning problem is the `shift()` function from the Pandas library. We will demonstrate
+    this approach in the case studies. The use of prior time steps to predict the
+    next time step is called the *sliding window*, *time delay*, or *lag* method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having discussed all the concepts of supervised learning and time series models,
+    let us move to the case studies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Case Study 1: Stock Price Prediction'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: One of the biggest challenges in finance is predicting stock prices. However,
+    with the onset of recent advancements in machine learning applications, the field
+    has been evolving to utilize nondeterministic solutions that learn what is going
+    on in order to make more accurate predictions. Machine learning techniques naturally
+    lend themselves to stock price prediction based on historical data. Predictions
+    can be made for a single time point ahead or for a set of future time points.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a high-level overview, other than the historical price of the stock itself,
+    the features that are generally useful for stock price prediction are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Correlated assets
+  prefs: []
+  type: TYPE_NORMAL
+- en: An organization depends on and interacts with many external factors, including
+    its competitors, clients, the global economy, the geopolitical situation, fiscal
+    and monetary policies, access to capital, and so on. Hence, its stock price may
+    be correlated not only with the stock price of other companies but also with other
+    assets such as commodities, FX, broad-based indices, or even fixed income securities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technical indicators
+  prefs: []
+  type: TYPE_NORMAL
+- en: A lot of investors follow technical indicators. Moving average, exponential
+    moving average, and momentum are the most popular indicators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fundamental analysis
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Two primary data sources to glean features that can be used in fundamental
+    analysis include:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance reports
+  prefs: []
+  type: TYPE_NORMAL
+- en: Annual and quarterly reports of companies can be used to extract or determine
+    key metrics, such as ROE (Return on Equity) and P/E (Price-to-Earnings).
+  prefs: []
+  type: TYPE_NORMAL
+- en: News
+  prefs: []
+  type: TYPE_NORMAL
+- en: News can indicate upcoming events that can potentially move the stock price
+    in a certain direction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study, we will use various supervised learning–based models to
+    predict the stock price of Microsoft using correlated assets and its own historical
+    data. By the end of this case study, readers will be familiar with a general machine
+    learning approach to stock prediction modeling, from gathering and cleaning data
+    to building and tuning different models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Using Supervised Learning Models to Predict a Stock Price
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In the supervised regression framework used for this case study, the weekly
+    return of Microsoft stock is the predicted variable. We need to understand what
+    affects Microsoft stock price and incorporate as much information into the model.
+    Out of correlated assets, technical indicators, and fundamental analysis (discussed
+    in the section before), we will focus on correlated assets as features in this
+    case study.^([8](ch05.xhtml#idm45174930951640))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For this case study, other than the historical data of Microsoft, the independent
+    variables used are the following potentially correlated assets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stocks
+  prefs: []
+  type: TYPE_NORMAL
+- en: IBM (IBM) and Alphabet (GOOGL)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Currency^([9](ch05.xhtml#idm45174930944792))
+  prefs: []
+  type: TYPE_NORMAL
+- en: USD/JPY and GBP/USD
+  prefs: []
+  type: TYPE_NORMAL
+- en: Indices
+  prefs: []
+  type: TYPE_NORMAL
+- en: S&P 500, Dow Jones, and VIX
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dataset used for this case study is extracted from Yahoo Finance and [the
+    FRED website](https://fred.stlouisfed.org). In addition to predicting the stock
+    price accurately, this case study will also demonstrate the infrastructure and
+    framework for each step of time series and supervised regression–based modeling
+    for stock price prediction. We will use the daily closing price of the last 10
+    years, from 2010 onward.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The list of the libraries used for data loading, data analysis, data preparation,
+    model evaluation, and model tuning are shown below. The packages used for different
+    purposes have been segregated in the Python code that follows. The details of
+    most of these packages and functions were provided in Chapters [2](ch02.xhtml#Chapter2)
+    and [4](ch04.xhtml#Chapter4). The use of these packages will be demonstrated in
+    different steps of the model development process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Function and modules for the supervised regression models`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Function and modules for data analysis and model evaluation`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Function and modules for deep learning models`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Function and modules for time series models`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Function and modules for data preparation and visualization`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: One of the most important steps in machine learning and predictive modeling
+    is gathering good data. The following steps demonstrate the loading of data from
+    the Yahoo Finance and FRED websites using the Pandas `DataReader` function:^([10](ch05.xhtml#idm45174930595336))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: Next, we define our dependent *(Y)* and independent *(X)* variables. The predicted
+    variable is the weekly return of Microsoft (MSFT). The number of trading days
+    in a week is assumed to be five, and we compute the return using five trading
+    days. For independent variables we use the correlated assets and the historical
+    return of MSFT at different frequencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The variables used as independent variables are lagged five-day return of stocks
+    (IBM and GOOG), currencies (USD/JPY and GBP/USD), and indices (S&P 500, Dow Jones,
+    and VIX), along with lagged 5-day, 15-day, 30-day and 60-day return of MSFT.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The lagged five-day variables embed the time series component by using a time-delay
+    approach, where the lagged variable is included as one of the independent variables.
+    This step is reframing the time series data into a supervised regression–based
+    model framework.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We will look at descriptive statistics, data visualization, and time series
+    analysis in this section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1\. Descriptive statistics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let’s have a look at the dataset we have:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in01](Images/mlbf_05in01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The variable MSFT_pred is the return of Microsoft stock and is the predicted
+    variable. The dataset contains the lagged series of other correlated stocks, currencies,
+    and indices. Additionally, it also consists of the lagged historical returns of
+    MSFT.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2\. Data visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The fastest way to learn more about the data is to visualize it. The visualization
+    involves independently understanding each attribute of the dataset. We will look
+    at the scatterplot and the correlation matrix. These plots give us a sense of
+    the interdependence of the data. Correlation can be calculated and displayed for
+    each pair of the variables by creating a correlation matrix. Hence, besides the
+    relationship between independent and dependent variables, it also shows the correlation
+    among the independent variables. This is useful to know because some machine learning
+    algorithms like linear and logistic regression can have poor performance if there
+    are highly correlated input variables in the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in02](Images/mlbf_05in02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the correlation plot (full-size version available on [GitHub](https://oreil.ly/g3wVU)),
+    we see some correlation of the predicted variable with the lagged 5-day, 15-day,
+    30-day, and 60-day returns of MSFT. Also, we see a higher negative correlation
+    of many asset returns versus VIX, which is intuitive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, we can visualize the relationship between all the variables in the regression
+    using the scatterplot matrix shown below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in03](Images/mlbf_05in03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the scatterplot (full-size version available on [GitHub](https://oreil.ly/g3wVU)),
+    we see some linear relationship of the predicted variable with the lagged 15-day,
+    30-day, and 60-day returns of MSFT. Otherwise, we do not see any special relationship
+    between our predicted variable and the features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.3\. Time series analysis
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Next, we delve into the time series analysis and look at the decomposition
+    of the time series of the predicted variable into trend and seasonality components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in04](Images/mlbf_05in04.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We can see that for MSFT there has been a general upward trend in the return
+    series. This may be due to the large run-up of MSFT in the recent years, causing
+    more positive weekly return data points than negative.^([11](ch05.xhtml#idm45174929976312))
+    The trend may show up in the constant/bias terms in our models. The residual (or
+    white noise) term is relatively small over the entire time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Data preparation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This step typically involves data processing, data cleaning, looking at feature
+    importance, and performing feature reduction. The data obtained for this case
+    study is relatively clean and doesn’t require further processing. Feature reduction
+    might be useful here, but given the relatively small number of variables considered,
+    we will keep all of them as is. We will demonstrate data preparation in some of
+    the subsequent case studies in detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Evaluate models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 5.1\. Train-test split and evaluation metrics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'As described in [Chapter 2](ch02.xhtml#Chapter2), it is a good idea to partition
+    the original dataset into a *training set* and a *test set*. The test set is a
+    sample of the data that we hold back from our analysis and modeling. We use it
+    right at the end of our project to confirm the performance of our final model.
+    It is the final test that gives us confidence on our estimates of accuracy on
+    unseen data. We will use 80% of the dataset for modeling and use 20% for testing.
+    With time series data, the sequence of values is important. So we do not distribute
+    the dataset into training and test sets in random fashion, but we select an arbitrary
+    split point in the ordered list of observations and create two new datasets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.2\. Test options and evaluation metrics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'To optimize the various hyperparameters of the models, we use ten-fold cross
+    validation (CV) and recalculate the results ten times to account for the inherent
+    randomness in some of the models and the CV process. We will evaluate algorithms
+    using the mean squared error metric. This metric gives an idea of the performance
+    of the supervised regression models. All these concepts, including cross validation
+    and evaluation metrics, have been described in [Chapter 4](ch04.xhtml#Chapter4):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.3\. Compare models and algorithms
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Now that we have completed the data loading and designed the test harness, we
+    need to choose a model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3.1\. Machine learning models from Scikit-learn
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, the supervised regression models are implemented using the sklearn
+    package:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Regression and tree regression algorithms`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Neural network algorithms`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Ensemble models`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: Once we have selected all the models, we loop over each of them. First, we run
+    the *k*-fold analysis. Next, we run the model on the entire training and testing
+    dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'All the algorithms use default tuning parameters. We will calculate the mean
+    and standard deviation of the evaluation metric for each algorithm and collect
+    the results for model comparison later:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let’s compare the algorithms by looking at the cross validation results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Cross validation results`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in05](Images/mlbf_05in05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Although the results of a couple of the models look good, we see that the linear
+    regression and the regularized regression including the lasso regression (LASSO)
+    and elastic net (EN) seem to perform best. This indicates a strong linear relationship
+    between the dependent and independent variables. Going back to the exploratory
+    analysis, we saw a good correlation and linear relationship of the target variables
+    with the different lagged MSFT variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let us look at the errors of the test set as well:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Training and test error`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in06](Images/mlbf_05in06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Examining the training and test error, we still see a stronger performance from
+    the linear models. Some of the algorithms, such as the decision tree regressor
+    (CART), overfit on the training data and produced very high error on the test
+    set. Ensemble models such as gradient boosting regression (GBR) and random forest
+    regression (RFR) have low bias but high variance. We also see that the artificial
+    neural network algorithm (shown as MLP in the chart) shows higher errors in both
+    the training and test sets. This is perhaps due to the linear relationship of
+    the variables not captured accurately by ANN, improper hyperparameters, or insufficient
+    training of the model. Our original intuition from the cross validation results
+    and the scatterplots also seem to demonstrate a better performance of linear models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We now look at some of the time series and deep learning models that can be
+    used. Once we are done creating these, we will compare their performance against
+    that of the supervised regression–based models. Due to the nature of time series
+    models, we are not able to run a *k*-fold analysis. We can still compare our results
+    to the other models based on the full training and testing results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '5.3.2\. Time series–based models: ARIMA and LSTM'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The models used so far already embed the time series component by using a time-delay
+    approach, where the lagged variable is included as one of the independent variables.
+    However, for the time series–based models we do not need the lagged variables
+    of MSFT as the independent variables. Hence, as a first step we remove MSFT’s
+    previous returns for these models. We use all other variables as the exogenous
+    variables in these models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let us first prepare the dataset for ARIMA models by having only the correlated
+    varriables as exogenous variables:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We now configure the ARIMA model with the order *(1,0,0)* and use the independent
+    variables as the exogenous variables in the model. The version of the ARIMA model
+    where the exogenous variables are also used is known as the *ARIMAX* model, where
+    "*X*" represents exogenous variables:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now we fit the ARIMA model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: Error of this ARIMA model is reasonable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now let’s prepare the dataset for the LSTM model. We need the data in the form
+    of arrays of all the input variables and the output variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The logic behind the LSTM is that data is taken from the previous day (the
+    data of all the other features for that day—correlated assets and the lagged variables
+    of MSFT) and we try to predict the next day. Then we move the one-day window with
+    one day and again predict the next day. We iterate like this over the whole dataset
+    (of course in batches). The code below will create a dataset in which *X* is the
+    set of independent variables at a given time (*t*) and *Y* is the target variable
+    at the next time (*t + 1*):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In the next step, we create the LSTM architecture. As we can see, the input
+    of the LSTM is in `X_train_LSTM`, which goes into 50 hidden units in the LSTM
+    layer and then is transformed to a single output—the stock return value. The hyperparameters
+    (i.e., learning rate, optimizer, activation function, etc.) were discussed in
+    [Chapter 3](ch03.xhtml#Chapter3) of the book:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now we fit the LSTM model with the data and look at the change in the model
+    performance metric over time simultaneously in the training set and the test set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in07](Images/mlbf_05in07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now, in order to compare the time series and the deep learning models, we append
+    the result of these models to the results of the supervised regression–based models:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in08](Images/mlbf_05in08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Looking at the chart, we find the time series–based ARIMA model comparable
+    to the linear supervised regression models: linear regression (LR), lasso regression
+    (LASSO), and elastic net (EN). This can primarily be due to the strong linear
+    relationship as discussed before. The LSTM model performs decently; however, the
+    ARIMA model outperforms the LSTM model in the test set. Hence, we select the ARIMA
+    model for model tuning.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6\. Model tuning and grid search
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let us perform the model tuning of the ARIMA model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model Tuning for the Supervised Learning or Time Series Models
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The detailed implementation of grid search for all the supervised learning–based
+    models, along with the ARIMA and LSTM models, is provided in the Regression-Master
+    template under the [GitHub repository for this book](https://oreil.ly/9S8h_).
+    For the grid search of the ARIMA and LSTM models, refer to the “ARIMA and LSTM
+    Grid Search” section of the Regression-Master template.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The ARIMA model is generally represented as ARIMA*(p,d,q)* model, where *p*
+    is the order of the autoregressive part, *d* is the degree of first differencing
+    involved, and *q* is the order of the moving average part. The order of the ARIMA
+    model was set to *(1,0,0)*. So we perform a grid search with different *p*, *d*,
+    and *q* combinations in the ARIMA model’s order and select the combination that
+    minimizes the fitting error:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: We see that the ARIMA model with the order *(2,0,1)* is the best performer out
+    of all the combinations tested in the grid search, although there isn’t a significant
+    difference in the mean squared error (MSE) with other combinations. This means
+    that the model with the autoregressive lag of two and moving average of one yields
+    the best result. We should not forget the fact that there are other exogenous
+    variables in the model that influence the order of the best ARIMA model as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7\. Finalize the model
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In the last step we will check the finalized model on the test set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.1\. Results on the test dataset
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: The MSE of the model on the test set looks good and is actually less than that
+    of the training set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the last step, we will visualize the output of the selected model and compare
+    the modeled data against the actual data. In order to visualize the chart, we
+    convert the return time series to a price time series. We also assume the price
+    at the beginning of the test set as one for the sake of simplicity. Let us look
+    at the plot of actual versus predicted data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 05in09](Images/mlbf_05in09.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the chart, we clearly see the trend has been captured perfectly by
+    the model. The predicted series is less volatile compared to the actual time series,
+    and it aligns with the actual data for the first few months of the test set. A
+    point to note is that the purpose of the model is to compute the next day’s return
+    given the data observed up to the present day, and not to predict the stock price
+    several days in the future given the current data. Hence, a deviation from the
+    actual data is expected as we move away from the beginning of the test set. The
+    model seems to perform well for the first few months, with deviation from the
+    actual data increasing six to seven months after the beginning of the test set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We can conclude that simple models—linear regression, regularized regression
+    (i.e., Lasso and elastic net)—along with the time series models, such as ARIMA,
+    are promising modeling approaches for stock price prediction problems. This approach
+    helps us deal with overfitting and underfitting, which are some of the key challenges
+    in predicting problems in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We should also note that we can use a wider set of indicators, such as P/E ratio,
+    trading volume, technical indicators, or news data, which might lead to better
+    results. We will demonstrate this in some of the future case studies in the book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, we created a supervised-regression and time series modeling framework
+    that allows us to perform stock price prediction using historical data. This framework
+    generates results to analyze risk and profitability before risking any capital.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 2: Derivative Pricing'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In computational finance and risk management, several numerical methods (e.g.,
+    finite differences, fourier methods, and Monte Carlo simulation) are commonly
+    used for the valuation of financial derivatives.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *Black-Scholes formula* is probably one of the most widely cited and used
+    models in derivative pricing. Numerous variations and extensions of this formula
+    are used to price many kinds of financial derivatives. However, the model is based
+    on several assumptions. It assumes a specific form of movement for the derivative
+    price, namely a *Geometric Brownian Motion* (GBM). It also assumes a conditional
+    payment at maturity of the option and economic constraints, such as no-arbitrage.
+    Several other derivative pricing models have similarly impractical model assumptions.
+    Finance practitioners are well aware that these assumptions are violated in practice,
+    and prices from these models are further adjusted using practitioner judgment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another aspect of the many traditional derivative pricing models is model calibration,
+    which is typically done not by historical asset prices but by means of derivative
+    prices (i.e., by matching the market prices of heavily traded options to the derivative
+    prices from the mathematical model). In the process of model calibration, thousands
+    of derivative prices need to be determined in order to fit the parameters of the
+    model, and the overall process is time consuming. Efficient numerical computation
+    is increasingly important in financial risk management, especially when we deal
+    with real-time risk management (e.g., high frequency trading). However, due to
+    the requirement of a highly efficient computation, certain high-quality asset
+    models and methodologies are discarded during model calibration of traditional
+    derivative pricing models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Machine learning can potentially be used to tackle these drawbacks related to
+    impractical model assumptions and inefficient model calibration. Machine learning
+    algorithms have the ability to tackle more nuances with very few theoretical assumptions
+    and can be effectively used for derivative pricing, even in a world with frictions.
+    With the advancements in hardware, we can train machine learning models on high
+    performance CPUs, GPUs, and other specialized hardware to achieve a speed increase
+    of several orders of magnitude as compared to the traditional derivative pricing
+    models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Additionally, market data is plentiful, so it is possible to train a machine
+    learning algorithm to learn the function that is collectively generating derivative
+    prices in the market. Machine learning models can capture subtle nonlinearities
+    in the data that are not obtainable through other statistical approaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study, we look at derivative pricing from a machine learning standpoint
+    and use a supervised regression–based model to price an option from simulated
+    data. The main idea here is to come up with a machine learning framework for derivative
+    pricing. Achieving a machine learning model with high accuracy would mean that
+    we can leverage the efficient numerical calculation of machine learning for derivative
+    pricing with fewer underlying model assumptions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Developing a Machine Learning Model for Derivative Pricing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In the supervised regression framework we used for this case study, the predicted
+    variable is the price of the option, and the predictor variables are the market
+    data used as inputs to the Black-Scholes option pricing model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The variables selected to estimate the market price of the option are stock
+    price, strike price, time to expiration, volatility, interest rate, and dividend
+    yield. The predicted variable for this case study was generated using random inputs
+    and feeding them into the well-known Black-Scholes model.^([12](ch05.xhtml#idm45174927997912))
+  prefs: []
+  type: TYPE_NORMAL
+- en: The price of a call option per the Black-Scholes option pricing model is defined
+    in [Equation 5-1](#BSEq).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 5-1\. Black-Scholes equation for call option
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>S</mi> <msup><mi>e</mi> <mrow><mo>–</mo><mi>q</mi><mi>τ</mi></mrow></msup>
+    <mi>Φ</mi> <mrow><mo>(</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>)</mo></mrow>
+    <mo>–</mo> <msup><mi>e</mi> <mrow><mo>–</mo><mi>r</mi><mi>τ</mi></mrow></msup>
+    <mi>K</mi> <mi>Φ</mi> <mrow><mo>(</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: with
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="inline"><mrow><msub><mi>d</mi> <mn>1</mn></msub> <mo>=</mo> <mfrac><mrow><mo
+    form="prefix">ln</mo><mrow><mo>(</mo><mi>S</mi><mo>/</mo><mi>K</mi><mo>)</mo></mrow><mo>+</mo><mrow><mo>(</mo><mi>r</mi><mo>–</mo><mi>q</mi><mo>+</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mo>/</mo><mn>2</mn><mo>)</mo></mrow><mi>τ</mi></mrow> <mrow><mi>σ</mi><msqrt><mi>τ</mi></msqrt></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="inline"><mrow><msub><mi>d</mi> <mn>2</mn></msub> <mo>=</mo> <mfrac><mrow><mo
+    form="prefix">ln</mo><mrow><mo>(</mo><mi>S</mi><mo>/</mo><mi>K</mi><mo>)</mo></mrow><mo>+</mo><mrow><mo>(</mo><mi>r</mi><mo>–</mo><mi>q</mi><mo>–</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mo>/</mo><mn>2</mn><mo>)</mo></mrow><mi>τ</mi></mrow> <mrow><mi>σ</mi><msqrt><mi>τ</mi></msqrt></mrow></mfrac>
+    <mo>=</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>–</mo> <mi>σ</mi> <msqrt><mi>τ</mi></msqrt></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where we have stock price <math alttext="upper S"><mi>S</mi></math> ; strike
+    price <math alttext="upper K"><mi>K</mi></math> ; risk-free rate <math alttext="r"><mi>r</mi></math>
+    ; annual dividend yield <math alttext="q"><mi>q</mi></math> ; time to maturity
+    <math display="inline"><mrow><mi>τ</mi> <mo>=</mo> <mi>T</mi> <mo>–</mo> <mi>t</mi></mrow></math>
+    (represented as a unitless fraction of one year); and volatility <math alttext="sigma"><mi>σ</mi></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: To make the logic simpler, we define moneyness as <math alttext="upper M equals
+    upper K slash upper S"><mrow><mi>M</mi> <mo>=</mo> <mi>K</mi> <mo>/</mo> <mi>S</mi></mrow></math>
+    and look at the prices in terms of per unit of current stock price. We also set
+    <math alttext="q"><mi>q</mi></math> as 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This simplifies the formula to the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math><mrow><msup><mi>e</mi> <mrow><mo>–</mo><mi>q</mi><mi>τ</mi></mrow></msup>
+    <mi>Φ</mi> <mfenced separators="" open="(" close=")"><mfrac><mrow><mo>–</mo><mo
+    form="prefix">ln</mo><mrow><mo>(</mo><mi>M</mi><mo>)</mo></mrow><mo>+</mo><mrow><mo>(</mo><mi>r</mi><mo>+</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mo>/</mo><mn>2</mn><mo>)</mo></mrow><mi>τ</mi></mrow> <mrow><mi>σ</mi><msqrt><mi>τ</mi></msqrt></mrow></mfrac></mfenced>
+    <mo>–</mo> <msup><mi>e</mi> <mrow><mo>–</mo><mi>r</mi><mi>τ</mi></mrow></msup>
+    <mi>M</mi> <mi>Φ</mi> <mfenced separators="" open="(" close=")"><mfrac><mrow><mo>–</mo><mo
+    form="prefix">ln</mo><mrow><mo>(</mo><mi>M</mi><mo>)</mo></mrow><mo>+</mo><mrow><mo>(</mo><mi>r</mi><mo>–</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mo>/</mo><mn>2</mn><mo>)</mo></mrow><mi>τ</mi></mrow> <mrow><mi>σ</mi><msqrt><mi>τ</mi></msqrt></mrow></mfrac></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looking at the equation above, the parameters that feed into the Black-Scholes
+    option pricing model are moneyness, risk-free rate, volatility, and time to maturity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The parameter that plays the central role in derivative market is volatility,
+    as it is directly related to the movement of the stock prices. With the increase
+    in the volatility, the range of share price movements becomes much wider than
+    that of a low volatility stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the options market, there isn’t a single volatility used to price all the
+    options. This volatility depends on the option moneyness and time to maturity.
+    In general, the volatility increases with higher time to maturity and with moneyness.
+    This behavior is referred to as volatility smile/skew. We often derive the volatility
+    from the price of the options existing in the market, and this volatility is referred
+    to as “implied” volatility. In this exercise, we assume the structure of the volatility
+    surface and use function in [Equation 5-2](#VolEq), where volatility depends on
+    the option moneyness and time to maturity to generate the option volatility surface.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 5-2\. Equation for vloatility
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>σ</mi> <mrow><mo>(</mo> <mi>M</mi> <mo>,</mo>
+    <mi>τ</mi> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>σ</mi> <mn>0</mn></msub> <mo>+</mo>
+    <mi>α</mi> <mi>τ</mi> <mo>+</mo> <mi>β</mi> <msup><mrow><mo>(</mo><mi>M</mi><mo>–</mo><mn>1</mn><mo>)</mo></mrow>
+    <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The loading of Python packages is similar to case study 1 in this chapter. Please
+    refer to the Jupyter notebook of this case study for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2\. Defining functions and parameters
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: To generate the dataset, we need to simulate the input parameters and then create
+    the predicted variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a first step we define the constant parameters. The constant parameters
+    required for the volatility surface are defined below. These parameters are not
+    expected to have a significant impact on the option price; therefore, these parameters
+    are set to some meaningful values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The risk-free rate, which is an input to the Black-Scholes option pricing model,
+    is defined as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: Volatility and option pricing functions
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step we define the function to compute the volatility and price of
+    a call option as per Equations [5-1](#BSEq) and [5-2](#VolEq):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: 2.3\. Data generation
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We generate the input and output variables in the following steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Time to maturity (*Ts*) is generated using the `np.random.random` function,
+    which generates a uniform random variable between zero and one.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Moneyness (*Ks*) is generated using the `np.random.randn` function, which generates
+    a normally distributed random variable. The random number multiplied by 0.25 generates
+    the deviation of strike from spot price,^([13](ch05.xhtml#idm45174927663880))
+    and the overall equation ensures that the moneyness is greater than zero.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Volatility (*sigma*) is generated as a function of time to maturity and moneyness
+    using [Equation 5-2](#VolEq).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The option price is generated using [Equation 5-1](#BSEq) for the Black-Scholes
+    option price.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In total we generate 10,000 data points (*N*):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now we create the variables for predicted and predictor variables:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let’s have a look at the dataset we have.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1\. Descriptive statistics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  | Price | Moneyness | Time | Vol |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0 | 1.390e-01 | 0.898 | 0.221 | 0.223 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 3.814e-06 | 1.223 | 0.052 | 0.210 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2 | 1.409e-01 | 0.969 | 0.391 | 0.239 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 3 | 1.984e-01 | 0.950 | 0.628 | 0.263 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 4 | 2.495e-01 | 0.914 | 0.810 | 0.282 |'
+  prefs: []
+  type: TYPE_TB
+- en: The dataset contains *price*—which is the price of the option and is the predicted
+    variable—along with *moneyness* (the ratio of strike and spot price), *time to
+    maturity*, and *volatility*, which are the features in the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2\. Data visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this step we look at scatterplot to understand the interaction between different
+    variables:^([14](ch05.xhtml#idm45174927344984))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in10](Images/mlbf_05in10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The scatterplot reveals very interesting dependencies and relationships between
+    the variables. Let us look at the first row of the chart to see the relationship
+    of price to different variables. We observe that as moneyness decreases (i.e.,
+    strike price decreases as compared to the stock price), there is an increase in
+    the price, which is in line with the rationale described in the previous section.
+    Looking at the price versus time to maturity, we see an increase in the option
+    price. The price versus volatility chart also shows an increase in the price with
+    the volatility. However, option price seems to exhibit a nonlinear relationship
+    with most of the variables. This means that we expect our nonlinear models to
+    do a better job than our linear models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another interesting relationship is between volatility and strike. The more
+    we deviate from the moneyness of one, the higher the volatility we observe. This
+    behavior is shown due to the volatility function we defined before and illustrates
+    the volatility smile/skew.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Data preparation and analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We performed most of the data preparation steps (i.e., getting the dependent
+    and independent variables) in the preceding sections. In this step we look at
+    the feature importance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Univariate feature selection
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We start by looking at each feature individually and, using the single variable
+    regression fit as the criteria, look at the most important variables:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: We observe that the moneyness is the most important variable for the option
+    price, followed by volatility and time to maturity. Given there are only three
+    predictor variables, we retain all the variables for modeling.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Evaluate models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 5.1\. Train-test split and evaluation metrics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'First, we separate the training set and test set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We use the prebuilt sklearn models to run a *k*-fold analysis on our training
+    data. We then train the model on the full training data and use it for prediction
+    of the test data. We will evaluate algorithms using the mean squared error metric.
+    The parameters for the *k*-fold analysis and evaluation metrics are defined as
+    follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.2\. Compare models and algorithms
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Now that we have completed the data loading and have designed the test harness,
+    we need to choose a model out of the suite of the supervised regression models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Linear models and regression trees`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Artificial neural network`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Boosting and bagging methods`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: Once we have selected all the models, we loop over each of them. First, we run
+    the *k*-fold analysis. Next, we run the model on the entire training and testing
+    dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithms use default tuning parameters. We will calculate the mean and
+    standard deviation of error metric and save the results for use later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in11](Images/mlbf_05in11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The Python code for the *k*-fold analysis step is similar to that used in case
+    study 1\. Readers can also refer to the Jupyter notebook of this case study in
+    the code repository for more details. Let us look at the performance of the models
+    in the training set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We see clearly that the nonlinear models, including classification and regression
+    tree (CART), ensemble models, and artificial neural network (represented by MLP
+    in the chart above), perform a lot better that the linear algorithms. This is
+    intuitive given the nonlinear relationships we observed in the scatterplot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Artificial neural networks (ANN) have the natural ability to model any function
+    with fast experimentation and deployment times (definition, training, testing,
+    inference). ANN can effectively be used in complex derivative pricing situations.
+    Hence, out of all the models with good performance, we choose ANN for further
+    analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6\. Model tuning and finalizing the model
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Determining the proper number of nodes for the middle layer of an ANN is more
+    of an art than a science, as discussed in [Chapter 3](ch03.xhtml#Chapter3). Too
+    many nodes in the middle layer, and thus too many connections, produce a neural
+    network that memorizes the input data and lacks the ability to generalize. Therefore,
+    increasing the number of nodes in the middle layer will improve performance on
+    the training set, while decreasing the number of nodes in the middle layer will
+    improve performance on a new dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As discussed in [Chapter 3](ch03.xhtml#Chapter3), the ANN model has several
+    other hyperparameters such as learning rate, momentum, activation function, number
+    of epochs, and batch size. All these hyperparameters can be tuned during the grid
+    search process. However, in this step, we stick to performing grid search on the
+    number of hidden layers for the purpose of simplicity. The approach to perform
+    grid search on other hyperparameters is the same as described in the following
+    code snippet:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: The best model has three layers, with 20, 30, and 20 nodes in each hidden layer,
+    respectively. Hence, we prepare a model with this configuration and check its
+    performance on the test set. This is a crucial step, because a greater number
+    of layers may lead to overfitting and have poor performance in the test set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: We see that the root mean squared error (RMSE) is 3.08e–5, which is less than
+    one cent. Hence, the ANN model does an excellent job of fitting the Black-Scholes
+    option pricing model. A greater number of layers and tuning of other hyperparameters
+    may enable the ANN model to capture the complex relationship and nonlinearity
+    in the data even better. Overall, the results suggest that ANN may be used to
+    train an option pricing model that matches market prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '7\. Additional analysis: removing the volatility data'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'As an additional analysis, we make the process harder by trying to predict
+    the price without the volatility data. If the model performance is good, we will
+    eliminate the need to have a volatility function as described before. In this
+    step, we further compare the performance of the linear and nonlinear models. In
+    the following code snippet, we remove the volatility variable from the dataset
+    of the predictor variable and define the training set and test set again:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, we run the suite of the models (except the regularized regression model)
+    with the new dataset, with the same parameters and similar Python code as before.
+    The performance of all the models after removing the volatility data is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in12](Images/mlbf_05in12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the result, we have a similar conclusion as before and see a poor
+    performance of the linear regression and good performance of the ensemble and
+    ANN models. The linear regression now does even a worse job than before. However,
+    the performance of ANN and other ensemble models does not deviate much from their
+    previous performance. This implies the information of the volatility is likely
+    captured in other variables, such as moneyness and time to maturity. Overall,
+    it is good news as it means that fewer variables might be needed to achieve the
+    same performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We know that derivative pricing is a nonlinear problem. As expected, our linear
+    regression model did not do as well as our nonlinear models, and the non-linear
+    models have a very good overall performance. We also observed that removing the
+    volatility increases the difficulty of the prediction problem for the linear regression.
+    However, the nonlinear models such as ensemble models and ANN are still able to
+    do well at the prediction process. This does indicate that one might be able to
+    sidestep the development of an option volatility surface and achieve a good prediction
+    with a smaller number of variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We saw that an artificial neural network (ANN) can reproduce the Black-Scholes
+    option pricing formula for a call option to a high degree of accuracy, meaning
+    we can leverage efficient numerical calculation of machine learning in derivative
+    pricing without relying on the impractical assumptions made in the traditional
+    derivative pricing models. The ANN and the related machine learning architecture
+    can easily be extended to pricing derivatives in the real world, with no knowledge
+    of the theory of derivative pricing. The use of machine learning techniques can
+    lead to much faster derivative pricing compared to traditional derivative pricing
+    models. The price we might have to pay for this extra speed is some loss of accuracy.
+    However, this reduced accuracy is often well within reasonable limits and acceptable
+    from a practical point of view. New technology has commoditized the use of ANN,
+    so it might be worthwhile for banks, hedge funds, and financial institutions to
+    explore these models for derivative pricing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 3: Investor Risk Tolerance and Robo-Advisors'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The risk tolerance of an investor is one of the most important inputs to the
+    portfolio allocation and rebalancing steps of the portfolio management process.
+    There is a wide variety of risk profiling tools that take varied approaches to
+    understanding the risk tolerance of an investor. Most of these approaches include
+    qualitative judgment and involve significant manual effort. In most of the cases,
+    the risk tolerance of an investor is decided based on a risk tolerance questionnaire.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Several studies have shown that these risk tolerance questionnaires are prone
+    to error, as investors suffer from behavioral biases and are poor judges of their
+    own risk perception, especially during stressed markets. Also, given that these
+    questionnaires must be manually completed by investors, they eliminate the possibility
+    of automating the entire investment management process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So can machine learning provide a better understanding of an investor’s risk
+    profile than a risk tolerance questionnaire can? Can machine learning contribute
+    to automating the entire portfolio management process by cutting the client out
+    of the loop? Could an algorithm be written to develop a personality profile for
+    the client that would be a better representation of how they would deal with different
+    market scenarios?
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal of this case study is to answer these questions. We first build a supervised
+    regression–based model to predict the risk tolerance of an investor. We then build
+    a robo-advisor dashboard in Python and implement the risk tolerance prediction
+    model in the dashboard. The overall purpose is to demonstrate the automation of
+    the manual steps in the portfolio management process with the help of machine
+    learning. This can prove to be immensely useful, specifically for robo-advisors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *dashboard* is one of the key features of a robo-advisor as it provides access
+    to important information and allows users to interact with their accounts free
+    of any human dependency, making the portfolio management process highly efficient.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-6](#ROBO1) provides a quick glance at the robo-advisor dashboard
+    built for this case study. The dashboard performs end-to-end asset allocation
+    for an investor, embedding the machine learning–based risk tolerance model constructed
+    in this case study.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0506](Images/mlbf_0506.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-6\. Robo-advisor dashboard
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: This dashboard has been built in Python and is described in detail in an additional
+    step in this case study. Although it has been built in the context of robo-advisors,
+    it can be extended to other areas in finance and can embed the machine learning
+    models discussed in other case studies, providing finance decision makers with
+    a graphical interface for analyzing and interpreting model results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Modeling Investor Risk Tolerance and Enabling a Machine Learning–Based
+    Robo-Advisor
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In the supervised regression framework used for this case study, the predicted
+    variable is the “true” risk tolerance of an individual,^([15](ch05.xhtml#idm45174926472776))
+    and the predictor variables are demographic, financial, and behavioral attributes
+    of an individual.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data used for this case study is from the [Survey of Consumer Finances (SCF)](https://oreil.ly/2vxJ6),
+    which is conducted by the Federal Reserve Board. The survey includes responses
+    about household demographics, net worth, financial, and nonfinancial assets for
+    the same set of individuals in 2007 (precrisis) and 2009 (postcrisis). This enables
+    us to see how each household’s allocation changed after the 2008 global financial
+    crisis. Refer to the [data dictionary](https://oreil.ly/_L8vS) for more information
+    on this survey.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The details on loading the standard Python packages were presented in the previous
+    case studies. Refer to the Jupyter notebook for this case study for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step we load the data from the Survey of Consumer Finances and look
+    at the data shape:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let us look at the size of the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE58]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE59]'
+  prefs: []
+  type: TYPE_PRE
+- en: As we can see, the dataset has a total of 19,285 observations with 515 columns.
+    The number of columns represents the number of features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3\. Data preparation and feature selection
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this step we prepare the predicted and predictor variables to be used for
+    modeling.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1\. Preparing the predicted variable
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In the first step, we prepare the predicted variable, which is the true risk
+    tolerance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The steps to compute the true risk tolerance are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Compute the risky assets and the risk-free assets for all the individuals in
+    the survey data. Risky and risk-free assets are defined as follows:'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Risky assets
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: Investments in mutual funds, stocks, and bonds.
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: Risk-free assets
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: Checking and savings balances, certificates of deposit, and other cash balances
+    and equivalents.
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: Take the ratio of risky assets to total assets (where total assets is the sum
+    of risky and risk-free assets) of an individual and consider that as a measure
+    of the individual’s risk tolerance.^([16](ch05.xhtml#idm45174926394984)) From
+    the SCF, we have the data of risky and risk-free assets for the individuals in
+    2007 and 2009\. We use this data and normalize the risky assets with the price
+    of a stock index (S&P500) in 2007 versus 2009 to get risk tolerance.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Identify the “intelligent” investors. Some literature describes an intelligent
+    investor as one who does not change their risk tolerance during changes in the
+    market. So we consider the investors who changed their risk tolerance by less
+    than 10% between 2007 and 2009 as the intelligent investors. Of course, this is
+    a qualitative judgment, and there can be several other ways of defining an intelligent
+    investor. However, as mentioned before, beyond coming up with a precise definition
+    of true risk tolerance, the purpose of this case study is to demonstrate the usage
+    of machine learning and provide a machine learning–based framework in portfolio
+    management that can be further leveraged for more detailed analysis.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Let us compute the predicted variable. First, we get the risky and risk-free
+    assets and compute the risk tolerance for 2007 and 2009 in the following code
+    snippet:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE60]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let us look at the details of the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE61]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in13](Images/mlbf_05in13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The data above displays some of the columns out of the 521 columns of the dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let us compute the percentage change in risk tolerance between 2007 and 2009:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE62]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, we drop the rows containing “NA” or “NaN”:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE63]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let us investigate the risk tolerance behavior of individuals in 2007 versus
+    2009\. First we look at the risk tolerance in 2007:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE64]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in14](Images/mlbf_05in14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Looking at the risk tolerance in 2007, we see that a significant number of
+    individuals had a risk tolerance close to one, meaning investments were skewed
+    more toward the risky assets. Now let us look at the risk tolerance in 2009:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE65]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in15](Images/mlbf_05in15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Clearly, the behavior of the individuals reversed after the crisis. Overall
+    risk tolerance decreased, which is shown by the outsized proportion of households
+    having risk tolerance close to zero in 2009\. Most of the investments of these
+    individuals were in risk-free assets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the next step, we pick the intelligent investors whose change in risk tolerance
+    between 2007 and 2009 was less than 10%, as described in [“3.1\. Preparing the
+    predicted variable”](#prep_pred_var):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE66]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We assign the true risk tolerance as the average risk tolerance of these intelligent
+    investors between 2007 and 2009:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE67]'
+  prefs: []
+  type: TYPE_PRE
+- en: This is the predicted variable for this case study.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let us drop other labels that might not be needed for the prediction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE68]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3.2\. Feature selection—limit the feature space
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this section, we will explore ways to condense the feature space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2.1\. Feature elimination
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: To filter the features further, we check the description in the [data dictionary](https://oreil.ly/_L8vS)
+    and keep only the features that are relevant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looking at the entire data, we have more than *500* features in the dataset.
+    However, academic literature and industry practice indicate risk tolerance is
+    heavily influenced by investor demographic, financial, and behavioral attributes,
+    such as age, current income, net worth, and willingness to take risk. All these
+    attributes were available in the dataset and are summarized in the following section.
+    These attributes are used as features to predict investors’ risk tolerance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in16](Images/mlbf_05in16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'In the dataset, each of the columns contains a numeric value corresponding
+    to the value of the attribute. The details are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: AGE
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are six age categories, where 1 represents age less than 35 and 6 represents
+    age more than 75.
+  prefs: []
+  type: TYPE_NORMAL
+- en: EDUC
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are four education categories, where 1 represents no high school and 4
+    represents college degree.
+  prefs: []
+  type: TYPE_NORMAL
+- en: MARRIED
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two categories to represent marital status, where 1 represents married
+    and 2 represents unmarried.
+  prefs: []
+  type: TYPE_NORMAL
+- en: OCCU
+  prefs: []
+  type: TYPE_NORMAL
+- en: This represents occupation category. A value of 1 represents managerial status
+    and 4 represents unemployed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: KIDS
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of children.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WSAVED
+  prefs: []
+  type: TYPE_NORMAL
+- en: This represents the individual’s spending versus income, split into three categories.
+    For example, 1 represents spending exceeded income.
+  prefs: []
+  type: TYPE_NORMAL
+- en: NWCAT
+  prefs: []
+  type: TYPE_NORMAL
+- en: This represents net worth category. There are five categories, where 1 represents
+    net worth less than the 25th percentile and 5 represents net worth more than the
+    90th percentile.
+  prefs: []
+  type: TYPE_NORMAL
+- en: INCCL
+  prefs: []
+  type: TYPE_NORMAL
+- en: This represents income category. There are five categories, where 1 represents
+    income less than $10,000 and 5 represents income more than $100,000.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RISK
+  prefs: []
+  type: TYPE_NORMAL
+- en: This represents the willingness to take risk on a scale of 1 to 4, where 1 represents
+    the highest level of willingness to take risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We keep only the intuitive features as of 2007 and remove all the intermediate
+    features and features related to 2009, as the variables of 2007 are the only ones
+    required for predicting the risk tolerance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE69]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now let us look at the correlation among the features:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE70]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in17](Images/mlbf_05in17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the correlation chart (full-size version available on [GitHub](https://oreil.ly/iQpk4)),
+    net worth and income are positively correlated with risk tolerance. With a greater
+    number of kids and marriage, risk tolerance decreases. As the willingness to take
+    risks decreases, the risk tolerance decreases. With age there is a positive relationship
+    of the risk tolerance. As per Hui Wang and Sherman Hanna’s paper “Does Risk Tolerance
+    Decrease with Age?,” risk tolerance increases as people age (i.e., the proportion
+    of net wealth invested in risky assets increases as people age) when other variables
+    are held constant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So in summary, the relationship of these variables with risk tolerance seems
+    intuitive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Evaluate models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 4.1\. Train-test split
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us split the data into training and test set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE71]'
+  prefs: []
+  type: TYPE_PRE
+- en: 4.2\. Test options and evaluation metrics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: We use R² as the evaluation metric and select 10 as the number of folds for
+    cross validation.^([17](ch05.xhtml#idm45174925517336))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE72]'
+  prefs: []
+  type: TYPE_PRE
+- en: 4.3\. Compare models and algorithms
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Next, we select the suite of the regression model and perform the *k*-folds
+    cross validation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Regression Models`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE73]'
+  prefs: []
+  type: TYPE_PRE
+- en: The Python code for the *k*-fold analysis step is similar to that of previous
+    case studies. Readers can also refer to the Jupyter notebook of this case study
+    in the code repository for more details. Let us look at the performance of the
+    models in the training set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in18](Images/mlbf_05in18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The nonlinear models perform better than the linear models, which means that
+    there is a nonlinear relationship between the risk tolerance and the variables
+    used to predict it. Given random forest regression is one of the best methods,
+    we use it for further grid search.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Model tuning and grid search
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'As discussed in [Chapter 4](ch04.xhtml#Chapter4), random forest has many hyperparameters
+    that can be tweaked while performing the grid search. However, we will confine
+    our grid search to number of estimators (`n_estimators`) as it is one of the most
+    important hyperparameters. It represents the number of trees in the random forest
+    model. Ideally, this should be increased until no further improvement is seen
+    in the model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE74]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE75]'
+  prefs: []
+  type: TYPE_PRE
+- en: Random forest with number of estimators as 250 is the best model after grid
+    search.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6\. Finalize the model
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let us look at the results on the test dataset and check the feature importance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.1\. Results on the test dataset
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We prepare the random forest model with the number of estimators as 250:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE76]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let us look at the performance in the training set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE77]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE78]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The R² of the training set is 96%, which is a good result. Now let us look
+    at the performance in the test set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE79]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE80]'
+  prefs: []
+  type: TYPE_PRE
+- en: From the mean squared error and R² of 76% shown above for the test set, the
+    random forest model does an excellent job of fitting the risk tolerance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.2\. Feature importance and features intuition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Let us look into the feature importance of the variables within the random
+    forest model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE81]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in19](Images/mlbf_05in19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In the chart, the x-axis represents the magnitude of the importance of a feature.
+    Hence, income and net worth, followed by age and willingness to take risk, are
+    the key variables in determining risk tolerance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.3\. Save model for later use
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this step we save the model for later use. The saved model can be used directly
+    for prediction given the set of input variables. The model is saved as *finalized_model.sav*
+    using the `dump` module of the pickle package. This saved model can be loaded
+    using the `load` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s save the model as the first step:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE82]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now let’s load the saved model and use it for prediction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE83]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE84]'
+  prefs: []
+  type: TYPE_PRE
+- en: '7\. Additional step: robo-advisor dashboard'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We mentioned the robo-advisor dashboard in the beginning of this case study.
+    The robo-advisor dashboard performs an automation of the portfolio management
+    process and aims to overcome the problem of traditional risk tolerance profiling.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python Code for Robo-Advisor Dashboard
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This robo-advisor dashboard is built in Python using the plotly dash package.
+    [Dash](https://dash.plot.ly) is a productive Python framework for building web
+    applications with good user interfaces. The code for the robo-advisor dashboard
+    is added to the [code repository for this book](https://oreil.ly/8fTDy). The code
+    is in a Jupyter notebook called “Sample Robo-advisor”. A detailed description
+    of the code is outside the scope of this case study. However, the codebase can
+    be leveraged for creation of any new machine learning–enabled dashboard.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The dashboard has two panels:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Inputs for investor characteristics
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Asset allocation and portfolio performance
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Input for investor characteristics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '[Figure 5-7](#Robo2) shows the input panel for the investor characteristics.
+    This panel takes all the input regarding the investor’s demographic, financial,
+    and behavioral attributes. These inputs are for the predicted variables we used
+    in the risk tolerance model created in the preceding steps. The interface is designed
+    to input the categorical and continuous variables in the correct format.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once the inputs are submitted, we leverage the model saved in [“6.3\. Save model
+    for later use”](#save_model). This model takes all the inputs and produces the
+    risk tolerance of an investor (refer to the `predict_riskTolerance` function of
+    the “Sample Robo-advisor” Jupyter notebook in the code repository for this book
+    for more details). The risk tolerance prediction model is embedded in this dashboard
+    and is triggered once the “Calculate Risk Tolerance” button is pressed after submitting
+    the inputs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0507](Images/mlbf_0507.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-7\. Robo-advisor input panel
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 7.2 Asset allocation and portfolio performance
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '[Figure 5-8](#Robo3) shows the “Asset Allocation and Portfolio Performance”
+    panel, which performs the following functionalities:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once the risk tolerance is computed using the model, it is displayed on the
+    top of this panel.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the next step, we pick the assets for our portfolio from the dropdown.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Once the list of assets are submitted, the traditional mean-variance portfolio
+    allocation model is used to allocate the portfolio among the assets selected.
+    Risk tolerance is one of the key inputs for this process. (Refer to the `get_asset_allocation`
+    function of the “Sample Robo-advisor” Jupyter notebook in the code repository
+    for this book for more details.)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The dashboard also shows the historical performance of the allocated portfolio
+    for an initial investment of *$100*.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '![mlbf 0508](Images/mlbf_0508.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-8\. Robo-advisor asset allocation and portfolio performance panel
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Although the dashboard is a basic version of the robo-advisor dashboard, it
+    performs end-to-end asset allocation for an investor and provides the portfolio
+    view and historical performance of the portfolio over a selected period. There
+    are several potential enhancements to this prototype in terms of the interface
+    and underlying models used. The dashboard can be enhanced to include additional
+    instruments and incorporate additional features such as real-time portfolio monitoring,
+    portfolio rebalancing, and investment advisory. In terms of the underlying models
+    used for asset allocation, we have used the traditional mean-variance optimization
+    method, but it can be further enhanced to use the allocation algorithms based
+    on machine learning techniques such as eigen-portfolio, hierarchical risk parity,
+    or reinforcement learning–based models, described in Chapters [7](ch07.xhtml#Chapter7),
+    [8](ch08.xhtml#Chapter8) and [9](ch09.xhtml#Chapter9), respectively. The risk
+    tolerance model can be further enhanced by using additional features or using
+    the actual data of the investors rather than using data from the Survey of Consumer
+    Finances.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we introduced the regression-based algorithm applied to
+    compute an investor’s risk tolerance, followed by a demonstration of the model
+    in a robo-advisor setup. We showed that machine learning models might be able
+    to objectively analyze the behavior of different investors in a changing market
+    and attribute these changes to variables involved in determining risk appetite.
+    With an increase in the volume of investors’ data and the availability of rich
+    machine learning infrastructure, such models might prove to be more useful than
+    existing manual processes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We saw that there is a nonlinear relationship between the variables and the
+    risk tolerance. We analyzed the feature importance and found that results of the
+    case study are quite intuitive. Income and net worth, followed by age and willingness
+    to take risk, are the key variables to deciding risk tolerance. These variables
+    have been considered key variables to model risk tolerance across academic and
+    industry literature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Through the robo-advisor dashboard powered by machine learning, we demonstrated
+    an effective combination of data science and machine learning implementation in
+    wealth management. Robo-advisors and investment managers could leverage such models
+    and platforms to enhance the portfolio management process with the help of machine
+    learning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 4: Yield Curve Prediction'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A *yield curve* is a line that plots yields (interest rates) of bonds having
+    equal credit quality but differing maturity dates. This yield curve is used as
+    a benchmark for other debt in the market, such as mortgage rates or bank lending
+    rates. The most frequently reported yield curve compares the 3-months, 2-years,
+    5-years, 10-years, and 30-years U.S. Treasury debt.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The yield curve is the centerpiece in a fixed income market. Fixed income markets
+    are important sources of finance for governments, national and supranational institutions,
+    banks, and private and public corporations. In addition, yield curves are very
+    important to investors in pension funds and insurance companies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The yield curve is a key representation of the state of the bond market. Investors
+    watch the bond market closely as it is a strong predictor of future economic activity
+    and levels of inflation, which affect prices of goods, financial assets, and real
+    estate. The slope of the yield curve is an important indicator of short-term interest
+    rates and is followed closely by investors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hence, an accurate yield curve forecasting is of critical importance in financial
+    applications. Several statistical techniques and tools commonly used in econometrics
+    and finance have been applied to model the yield curve.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study we will use supervised learning–based models to predict the
+    yield curve. This case study is inspired by the paper *Artificial Neural Networks
+    in Fixed Income Markets for Yield Curve Forecasting* by Manuel Nunes et al. (2018).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Overall, the case study is similar to the stock price prediction case study
+    presented earlier in this chapter, with the following differences:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: We predict multiple outputs simultaneously, rather than a single output.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The predicted variable in this case study is not the return variable.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Given that we already covered time series models in case study 1, we focus on
+    artificial neural networks for prediction in this case study.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Using Supervised Learning Models to Predict the Yield Curve
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In the supervised regression framework used for this case study, three tenors
+    (1M, 5Y, and 30Y) of the yield curve are the predicted variables. These tenors
+    represent short-term, medium-term, and long-term tenors of the yield curve.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We need to understand what affects the movement of the yield curve and hence
+    incorporate as much information into our model as we can. As a high-level overview,
+    other than the historical price of the yield curve itself, we look at other correlated
+    variables that can influence the yield curve. The independent or predictor variables
+    we consider are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Previous value of the treasury curve for different tenors*. The tenors used
+    are 1-month, 3-month, 1-year, 2-year, 5-year, 7-year, 10-year, and 30-year yields.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Percentage of the federal debt* held by the public, foreign governments, and
+    the federal reserve.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Corporate spread* on Baa-rated debt relative to the 10-year treasury rate.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The federal debt and corporate spread are correlated variables and can be potentially
+    useful in modeling the yield curve. The dataset used for this case study is extracted
+    from Yahoo Finance and [FRED](https://fred.stlouisfed.org). We will use the daily
+    data of the last 10 years, from 2010 onward.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By the end of this case study, readers will be familiar with a general machine
+    learning approach to yield curve modeling, from gathering and cleaning data to
+    building and tuning different models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The loading of Python packages is similar to other case studies in this chapter.
+    Refer to the Jupyter notebook of this case study for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The following steps demonstrate the loading of data using Pandas’s `DataReader`
+    function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE85]'
+  prefs: []
+  type: TYPE_PRE
+- en: Next, we define our dependent (*Y*) and independent (*X*) variables. The predicted
+    variables are the rate for three tenors of the yield curve (i.e., 1M, 5Y, and
+    30Y) as mentioned before. The number of trading days in a week is assumed to be
+    five, and we compute the lagged version of the variables mentioned in the problem
+    definition section as independent variables using five trading day lag.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The lagged five-day variables embed the time series component by using a *time-delay
+    approach*, where the lagged variable is included as one of the independent variables.
+    This step reframes the time series data into a supervised regression–based model
+    framework.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: We will look at descriptive statistics and data visualization in this section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1\. Descriptive statistics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us look at the shape and the columns in the dataset:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE86]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE87]'
+  prefs: []
+  type: TYPE_PRE
+- en: The data contains around 500 observations with 15 columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2\. Data visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us first plot the predicted variables and see their behavior:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE88]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in20](Images/mlbf_05in20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In the plot, we see that the deviation among the short-term, medium-term, and
+    long-term rates was higher in 2010 and has been decreasing since then. There was
+    a drop in the long-term and medium-term rates during 2011, and they also have
+    been declining since then. The order of the rates has been in line with the tenors.
+    However, for a few months in recent years, the *5Y* rate has been lower than the
+    *1M* rate. In the time series of all the tenors, we can see that the mean varies
+    with time, resulting in an upward trend. Thus these series are nonstationary time
+    series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In some cases, the linear regression for such nonstationary dependent variables
+    might not be valid. However, we are using the lagged variables, which are also
+    nonstationary as independent variables. So we are effectively modeling a nonstationary
+    time series against another nonstationary time series, which might still be valid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, we look at the scatterplots (a correlation plot is skipped for this case
+    study as it has a similar interpretation to that of a scatterplot). We can visualize
+    the relationship between all the variables in the regression using the scatter
+    matrix shown below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE89]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in21](Images/mlbf_05in21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the scatterplot (full-size version available on [GitHub](https://oreil.ly/XIsvu)),
+    we see a significant linear relationship of the predicted variables with their
+    lags and other tenors of the yield curve. There is also a linear relationship,
+    with negative slope between 1M, 5Y rates versus corporate spread and changes in
+    foreign government purchases. The 30Y rate shows a linear relationship with these
+    variables, although the slope is negative. Overall, we see a lot of linear relationships,
+    and we expect the linear models to perform well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Data preparation and analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We performed most of the data preparation steps (i.e., getting the dependent
+    and independent variables) in the preceding steps, and so we’ll skip this step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Evaluate models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this step we evaluate the models. The Python code for this step is similar
+    to dthat in case study 1, and some of the repetitive code is skipped. Readers
+    can also refer to the Jupyter notebook of this case study in the code repository
+    for this book for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1\. Train-test split and evaluation metrics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: We will use 80% of the dataset for modeling and use 20% for testing. We will
+    evaluate algorithms using the mean squared error metric. All the algorithms use
+    default tuning parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2\. Compare models and algorithms
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this case study, the primary purpose is to compare the linear models with
+    the artificial neural network in yield curve modeling. So we stick to the linear
+    regression (LR), regularized regression (LASSO and EN), and artificial neural
+    network (shown as MLP). We also include a few other models such as KNN and CART,
+    as these models are simpler with good interpretation, and if there is a nonlinear
+    relationship between the variables, the CART and KNN models will be able to capture
+    it and provide a good comparison benchmark for ANN.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looking at the training and test error, we see a good performance of the linear
+    regression model. We see that lasso and elastic net perform poorly. These are
+    regularized regression models, and they reduce the number of variables in case
+    they are not important. A decrease in the number of variables might have caused
+    a loss of information leading to poor model performance. KNN and CART are good,
+    but looking closely, we see that the test errors are higher than the training
+    error. We also see that the performance of the artificial neural network (MLP)
+    algorithm is comparable to the linear regression model. Despite its simplicity,
+    the linear regression is a tough benchmark to beat for one-step-ahead forecasting
+    when there is a significant linear relationship between the variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in22](Images/mlbf_05in22.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 6\. Model tuning and grid search.
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Similar to case study 2 of this chapter, we perform a grid search of the ANN
+    model with different combinations of hidden layers. Several other hyperparameters
+    such as learning rate, momentum, activation function, number of epochs, and batch
+    size can be tuned during the grid search process, similar to the steps mentioned
+    below.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE90]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE91]'
+  prefs: []
+  type: TYPE_PRE
+- en: The best model is the model with three layers, with 20, 30, and 20 nodes in
+    each hidden layer, respectively. Hence, we prepare a model with this configuration
+    and check its performance on the test set. This is a crucial step, as a greater
+    number of layers may lead to overfitting and have poor performance in the test
+    set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prediction comparison
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In the last step we look at the prediction plot of actual data versus the prediction
+    from both linear regression and ANN models. Refer to the Jupyter notebook of this
+    case study for the Python code of this section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 05in23](Images/mlbf_05in23.png)![mlbf 05in24](Images/mlbf_05in24.png)![mlbf
+    05in25](Images/mlbf_05in25.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the charts above, we see that the predictions of the linear regression
+    and ANN are comparable. For 1M tenor, the fitting with ANN is slightly poor compared
+    to the regression. However, for 5Y and 30Y tenors the ANN performs as well as
+    the regression model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we applied supervised regression to the prediction of several
+    tenors of yield curve. The linear regression model, despite its simplicity, is
+    a tough benchmark to beat for such one-step-ahead forecasting, given the dominant
+    characteristic of the last available value of the variable to predict. The ANN
+    results in this case study are comparable to the linear regression models. An
+    additional benefit of ANN is that it is more flexible to changing market conditions.
+    Also, ANN models can be enhanced by performing grid search on several other hyperparameters
+    and the option of incorporating recurrent neural networks, such as LSTM.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, we built a machine learning–based model using ANN with an encouraging
+    outcome, in the context of fixed income instruments. This allows us to perform
+    predictions using historical data to generate results and analyze risk and profitability
+    before risking any actual capital in the fixed income market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Chapter Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 1: Stock Price Prediction”](#CaseStudy1SR), we covered a machine
+    learning and time series–based framework for stock price prediction. We demonstrated
+    the significance of visualization and compared time series against the machine
+    learning models. In [“Case Study 2: Derivative Pricing”](#CaseStudy2SR), we explored
+    the use of machine learning for a traditional derivative pricing problem and demonstrated
+    a high model performance. In [“Case Study 3: Investor Risk Tolerance and Robo-Advisors”](#CaseStudy3SR),
+    we demonstrated how supervised learning models can be used to model the risk tolerance
+    of investors, which can lead to automation of the portfolio management process.
+    [“Case Study 4: Yield Curve Prediction”](#CaseStudy4SR) was similar to the stock
+    price prediction case study, providing another example of comparison of linear
+    and nonlinear models in the context of fixed income markets.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: We saw that time series and linear supervised learning models worked well for
+    asset price prediction problems (i.e., case studies 1 and 4), where the predicted
+    variable had a significant linear relationship with its lagged component. However,
+    in derivative pricing and risk tolerance prediction, where there are nonlinear
+    relationships, ensemble and ANN models performed better. Readers who are interested
+    in implementing a case study using supervised regression or time series models
+    are encouraged to understand the nuances in the variable relationships and model
+    intuition before proceeding to model selection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, the concepts in Python, machine learning, time series, and finance
+    presented in this chapter through the case studies can used as a blueprint for
+    any other supervised regression–based problem in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exercises
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Using the concepts and framework of machine learning and time series models
+    specified in case study 1, develop a predictive model for another asset class—currency
+    pair (EUR/USD, for example) or bitcoin.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In case study 1, add some technical indicators, such as trend or momentum,
+    and check the enhancement in the model performance. Some of the ideas of the technical
+    indicators can be borrowed from [“Case Study 3: Bitcoin Trading Strategy”](ch06.xhtml#CaseStudy3SC)
+    in [Chapter 6](ch06.xhtml#Chapter6).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Using the concepts in [“Case Study 2: Derivative Pricing”](#CaseStudy2SR),
+    develop a machine learning–based model to price [American options](https://oreil.ly/EMUXv).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Incorporate multivariate time series modeling using a variant of the ARIMA model,
+    such as [VARMAX](https://oreil.ly/t7s8q), for rates prediction in the yield curve
+    prediction case study and compare the performance against the machine learning–based
+    models.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Enhance the robo-advisor dashboard presented in [“Case Study 3: Investor Risk
+    Tolerance and Robo-Advisors”](#CaseStudy3SR) to incorporate instruments other
+    than equities.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch05.xhtml#idm45174931460040-marker)) There may be reordering or renaming
+    of the steps or substeps based on the appropriateness and intuitiveness of the
+    steps/substeps.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch05.xhtml#idm45174931449640-marker)) An exogenous variable is one whose
+    value is determined outside the model and imposed on the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch05.xhtml#idm45174931422552-marker)) These models are discussed later
+    in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch05.xhtml#idm45174931421656-marker)) There may be reordering or renaming
+    of the steps or substeps based on the appropriateness and intuitiveness of the
+    steps/substeps.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch05.xhtml#idm45174931308056-marker)) A white noise process is a random
+    process of random variables that are uncorrelated and have a mean of zero and
+    a finite variance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([6](ch05.xhtml#idm45174931138088-marker)) A detailed explanation of LSTM models
+    can be found in this [blog post by Christopher Olah](https://oreil.ly/4PDhr) .
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([7](ch05.xhtml#idm45174931122968-marker)) An ARIMA model and a Keras-based
+    LSTM model will be demonstrated in one of the case studies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([8](ch05.xhtml#idm45174930951640-marker)) Refer to [“Case Study 3: Bitcoin
+    Trading Strategy”](ch06.xhtml#CaseStudy3SC) presented in [Chapter 6](ch06.xhtml#Chapter6)
+    and [“Case Study 1: NLP and Sentiment Analysis–Based Trading Strategies”](ch10.xhtml#CaseStudy1NLP)
+    presented in [Chapter 10](ch10.xhtml#Chapter10) to understand the usage of technical
+    indicators and news-based fundamental analysis as features in the price prediction.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([9](ch05.xhtml#idm45174930944792-marker)) Equity markets have trading holidays,
+    while currency markets do not. However, the alignment of the dates across all
+    the time series is ensured before any modeling or analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([10](ch05.xhtml#idm45174930595336-marker)) In different case studies across
+    the book we will demonstrate loading the data through different sources (e.g.,
+    CSV, and external websites like quandl).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([11](ch05.xhtml#idm45174929976312-marker)) The time series is not the stock
+    price but stock return, so the trend is mild compared to the stock price series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([12](ch05.xhtml#idm45174927997912-marker)) The predicted variable, which is
+    the option price, should ideally be directly obtained for the market. Given this
+    case study is more for demonstration purposes, we use model-generated option price
+    for the sake of convenience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([13](ch05.xhtml#idm45174927663880-marker)) When the spot price is equal to
+    the strike price, at-the-money option.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([14](ch05.xhtml#idm45174927344984-marker)) Refer to the Jupyter notebook of
+    this case study to go through other charts such as histogram plot and correlation
+    plot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([15](ch05.xhtml#idm45174926472776-marker)) Given that the primary purpose
+    of the model is to be used in the portfolio management context, the individual
+    is also referred to as investor in the case study.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([16](ch05.xhtml#idm45174926394984-marker)) There potentially can be several
+    ways of computing the risk tolerance. In this case study, we use the intuitive
+    ways to measure the risk tolerance of an individual.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([17](ch05.xhtml#idm45174925517336-marker)) We could have chosen RMSE as the
+    evaluation metric; however, R² was chosen as the evaluation metric given that
+    we already used RMSE as the evaluation metric in the previous case studies.
+  prefs: []
+  type: TYPE_NORMAL

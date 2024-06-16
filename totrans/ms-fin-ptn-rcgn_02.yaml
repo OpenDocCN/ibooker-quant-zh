@@ -1,0 +1,1225 @@
+- en: Chapter 2\. Algorithmic Mindset and Functions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: An *algorithm* is a set of rules that a computer applies given the realization
+    of certain conditions. You generally use an algorithm to solve a specific problem
+    or to simply follow a repetitive sequence of tasks. You can also use algorithms
+    to find patterns by scanning for the conditions that you set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The main purpose of this book is to show you how to scan, find, and evaluate
+    candlestick patterns and strategies. The main benefits of using an algorithm as
+    opposed to manually performing the tasks are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Speed
+  prefs: []
+  type: TYPE_NORMAL
+- en: Algorithms can run at extreme speed compared to humans. While a simple algorithm
+    can scan hundreds of thousands of data pieces in a few seconds, a human may spend
+    weeks and months doing the same task.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Discipline
+  prefs: []
+  type: TYPE_NORMAL
+- en: Algorithms follow a distinct set of rules and do not have feelings or emotions
+    that make them ignore the rules occasionally. In addition, algorithms do not fall
+    into the trap of subjective interpretation. This is important for the evaluation
+    process as you need objective and clear measures to judge your trading system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Percentage of error
+  prefs: []
+  type: TYPE_NORMAL
+- en: Algorithms are generally error-free when there are no bugs in the code. Humans
+    can make a lot of mistakes due to inattention and fatigue.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: A *trading system* is composed of multiple algorithms such as trading and risk
+    management algorithms. A robust trading system relies on clear and stable rules-based
+    algorithms to give reliable measures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter is divided into four sections. First it covers [primal functions](#primal-functions),
+    which deal with the basic data manipulation that I use throughout the book. Then
+    it shows how to [code the signals](#coding-signals) of the patterns and strategies.
+    It then moves on to [visualizing the signals](#signal-charts) on the price charts
+    so that you have an aesthetic and interpretable representation. Finally, you’ll
+    learn the [key performance evaluation metrics](#performance-evaluation) and how
+    to code them. Make sure you master the concepts of this chapter as they are crucial
+    for the rest of the book; they are helpful not only in detecting the patterns
+    but also in creating strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Coding the Primal Functions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The *primal functions* are of a small collection of custom functions that help
+    you better manipulate data arrays. The idea of primal functions began as an exercise
+    for me to practice coding in my early years, but over time, they became regular
+    code snippets that I use all the time in my research.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Analyzing and back-testing are repetitive tasks that require some functions
+    to work everywhere. Let’s start with the most basic primal functions (remember,
+    you will be using `numpy` throughout the book).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Function to Add Columns to an Array
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Occasionally, you need to add columns to populate them with either indicators
+    or signals. For example, assume that you have an OHLC array composed of four columns.
+    You can use a function to add an extra column that you may use to harbor the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An indicator calculated from the close price, such as a simple moving average^([1](ch02.xhtml#idm46762874354240))
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A proxy for buy and sell signals using predetermined binary values (such as
+    1 for buy signals and −1 for sell signals)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The rows in the arrays represent time steps. I use the hourly time frame in
+    the book, which means that every row contains the hourly OHLC values and any indicator
+    value or a buy and sell proxy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first primal function is therefore `add_column()`, as shown in the following
+    code snippet:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function loops a predetermined number of times chosen by the variable `times`,
+    and for every loop, a new array is created containing zero values and having the
+    same length as the original data, as shown by `len(data)`. This new array is born
+    out of the `np.zeros()` prebuilt `numpy` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The final step is to take this freshly created array and paste it right next
+    to the original four columns using `np.append()`, thus giving an array with five
+    columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the loop continues, the number of columns increases. The argument `axis`
+    specifies a binary choice between rows and columns. When it is equal to 0, it
+    refers to rows, and when it is equal to 1, it refers to columns. Remember that
+    the variable `times` is the number of columns that you want to add, and this is
+    specified when calling the function. Let’s look at an example to make things clearer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You have an array called `my_data` consisting of four columns, and you want
+    to add five new columns to update your original array so that it has nine columns.
+    What would you write to accomplish this assuming you have already defined the
+    `add_column()` function? The answer is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: The Function to Delete Columns from an Array
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Extra columns may occur when trying to calculate complex indicators because
+    you may have to populate them by intermediary calculations that are not needed
+    after the indicator is ready. An example of this would to be to use a column to
+    calculate weights and to use the next column to calculate a weight-based indicator.
+    You would retain the indicator column but not the weight column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At the end, you want to retain the final result of the indicator and remove
+    the previous columns so that you have a clean array composed of OHLC data with
+    the indicator’s readings in the next column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A quick and easy way to do this is the `delete_column()` function. The following
+    code snippet shows how to define it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Remember that to use a function, you must define it first. This means that after
+    writing the syntax of the function, you must execute it so that Python stores
+    it in its memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function loops around the specified range, which is the number of columns
+    you want to delete as of a selected index. For example, the function deletes the
+    three columns as of column number 4, which is included.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The function states that the newly transformed array has a column deleted using
+    the built-in `numpy` function `np.delete()` starting from the variable `index`.
+    Finally, the variable `times` is the number of columns to delete, and this is
+    specified when calling the function. Here are two examples to make things clearer:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You have an array consisting of 10 columns, and you want to erase 4 of them
+    starting from the column indexed at 4. Here is how to do so:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Remember that a column indexed at 4 is not the fourth column but the fifth.
+    This is because Python starts indexing at zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You have an array consisting of eight columns, and you want to erase two of
+    them starting from the column indexed at 1\. Here is how to do so:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: You would use `delete_column()` mostly with technical indicators as opposed
+    to patterns, as the latter are direct rules instead of sequential complex calculations
+    like some indicators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Function to Add Rows to an Array
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Sometimes you want to add rows to the end of an array due to lag or the addition
+    of manual values from the coder. You can add empty rows to the end of an array
+    using the following function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function loops around the data, and in each loop it finds the shape of the
+    array using the `np.shape()` built-in function, which gives out the number or
+    rows and columns in a matrix. Since you are interested only in the number of columns,
+    you would add `[1]` to tell the algorithm that you want only the second value,
+    which is the number of columns. Having stored the number in the variable `columns`,
+    the algorithm proceeds to the next line and creates a whole new array made up
+    of zeros with only one row and a column number equal to the variable `columns`.
+    Finally, the algorithm appends this freshly created array with one row to the
+    end of the original array, thus giving out a new row with the same size as the
+    other rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Function to Remove Rows from an Array
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'When calculating indicators, some calculations may require a minimum number
+    of data in the past; otherwise, you would see invalid values, which appear as
+    NaN^([2](ch02.xhtml#idm46762878053424)) in Python. The following function deletes
+    rows from the start:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: This simple function states that the data actually starts from the `number`
+    index and continues to the end of the data. Basically, it ignores a select number
+    of rows from the beginning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Function to Round Numbers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Why discuss such a simple concept here that does not seem to be important enough
+    to be a function on its own? The answer is that there are certain patterns that
+    are extremely rare unless you round the numbers of the OHLC data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at an example of the currency pair EURUSD. In recent years, for accuracy
+    reasons, retail market dealers started quoting most currency pairs in five decimals
+    instead of four. While traders were used to the concept of a *pip*, which is the
+    fourth decimal (i.e., the 4 in 1.0964), they now have a *pipette, *which is the
+    fifth decimal (the 5 in 1.09645).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The change can be confusing for market participants who have been used to the
+    conventional four-decimals system, but it is necessary and favors a tighter spread
+    quoted by dealers. The *spread* is the difference between the ask (buy) and bid
+    (sell) prices. It is the compensation of the market dealer for the risk taken.
+    It is considered a transaction cost to the trader because it entails buying slightly
+    more expensive and selling slightly cheaper.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s take this opportunity to discuss how currency pairs work and then build
+    up to the need to round the numbers eventually.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A currency pair is made up of two currencies; the one on the left is the base
+    currency, and the one on its right is the price currency. When you see the pair
+    EURUSD quoting at 1.0500, it means that to buy 1 EUR, you need to spend 1.0500
+    USD.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, let’s assume that you bought 10,000 EUR for 10,500 USD and several weeks
+    later find that EURUSD is quoting at 1.0750\. What does this mean exactly? It
+    means that the value of EUR has gone up relative to the value of USD because now
+    you need 10,750 USD to buy 10,000 EUR; therefore, theoretically, you have made
+    250 USD (which you can also refer to as 250 pips gain, as the value per 1 EUR
+    has gone up by 0.0250). This is realized only if you exchange your EUR back to
+    USD, which gives you back 10,750 USD instead of 10,500 USD. With the development
+    of markets and the introduction of the five-decimals system, you may now see EURUSD
+    with five numbers after the decimals (e.g., EURUSD at 1.07516).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are certain candlestick patterns that require a close price similar to
+    the open price. This is why I include rounding in some of the patterns presented
+    in subsequent chapters. The optimal rounding number for currency pairs must be
+    four decimals—no more, no less. The following code block shows the rounding function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function uses a built-in function called `round()` to simplify the process.
+    Make sure to understand the necessity of rounding the OHLC data when searching
+    for specific patterns as you will need it in subsequent chapters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before moving on, let’s briefly practice the new functions you have learned
+    in this section. Suppose you have an OHLC array and you want to:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Add two columns to the array:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: 'Delete three columns starting from the second column:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: 'Add 11 rows to the end of the array:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: 'Delete the first four rows in the array:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: 'Round all the values in the array to four decimals:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Remember that the variable `data` is generally used in the functions and refers
+    to any data you want to refer to, whereas the variable `my_data`is my default
+    name of all the OHLC arrays I import.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Coding Signals
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This marks the beginning of the signal algorithm. Remember, the aim of this
+    section is to see how to create a set of conditions in order to find valid signals.
+    Up to this point, you have imported an OHLC array of an asset or a currency pair.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As I have not yet started the discussion of any candlestick patterns, I will
+    create a hypothetical pattern and then code its conditions and create the signal
+    algorithm. Let’s call this hypothetical configuration the Alpha pattern:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A long (buy) signal is generated on the next open whenever the current low is
+    lower than the low price 5 periods ago and the low price 13 periods ago but higher
+    than the low price 21 periods ago. Simultaneously, the close price of the current
+    bar must be higher than the close price 3 periods ago.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A short (sell) signal is generated on the next open whenever the current high
+    price is higher than the high price 5 periods ago and the high price 13 periods
+    ago but lower than the high price 21 periods ago. Simultaneously, the close price
+    of the current bar must be lower than the close price 3 periods ago.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: A *short sell* position is a complex action where you profit from a price decrease.
+    In layperson’s terms, you borrow an asset from a third party and then sell it
+    to a buyer. Finally, you buy it back and return it to the original owner. If the
+    price has decreased, you would pocket the difference; otherwise, you would buy
+    it back at a higher price than when you sold it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The previous bullet points give everything you need to generate buy and sell
+    signals, and hence, you can start coding the `signal()` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Think of the `signal()` function as the one that scans each row and leaves a
+    trace if all the conditions you set are made. These traces are buy and sell proxy
+    orders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first thing you need to tell the algorithm is to have a sufficient number
+    of columns that you want to populate with buy and sell orders. As previously seen,
+    you can do this with `add_column()`. The next step is to tell the algorithm to
+    loop around the totality of data, and this is done using the `for` statement,
+    which performs a finite loop between a predefined range, which in your case is
+    the length of the OHLC data array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As you are initiating the position on the next open price after validating the
+    pattern at the close price, you can use the `try()` and `except()` functions,
+    which simply bypass errors caused by having a signal at the last data of the array
+    that gives a trigger on the next nonexistent row. To illustrate this error, imagine
+    having 500 rows and getting a buy signal on the 500th row. Since you are buying
+    on the next open, the signal would appear on the next row, which does not exist.
+    This would cause an index error.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By now, you are ready to code the Alpha pattern’s conditions. I generally code
+    the bullish conditions first. Therefore, after telling the algorithm to add two
+    columns and to loop across the data while ignoring the `IndexError()` issue, I
+    will simply add the conditions using the `if` statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The conditions are intuitive: all you need to know is that the variable `i` refers
+    to the current row index in the ongoing loop and therefore `i-5` refers to the
+    variable five rows (time steps) before the current one. The `i` variable is used
+    with the `for` loop so that the conditions can be applied to every row.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, sometimes you may need to calculate indicators or volatility measures
+    after the OHLC data, which pushes the buy and sell columns to the next indices.
+    This is covered in [“Indicator Analysis”](ch03.xhtml#ch3_indicator-analysis).
+    The following code snippet defines the function of the Alpha pattern:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: The statement `data[i, 4] == 0` is the condition that to have a buy signal,
+    you must not have had a buy signal in the previous row.^([3](ch02.xhtml#idm46762875822448))
+    This is to avoid successive signals in case the pattern is repetitive in nature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The proxy for a long signal is the number 1 inputted in the column indexed at
+    4 (therefore, the fifth column). The reason I write `data[i + 1, 4] = 1` after
+    validating the pattern is to force the algorithm to buy on the next open after
+    finishing with the current close price. In parallel, the proxy for a short signal
+    is the number −1 in the column indexed at 5 (therefore, the sixth column).
+  prefs: []
+  type: TYPE_NORMAL
+- en: And voilà, you have coded the necessary conditions to create signals based on
+    the open of the row. How would you code the following conditions?
+  prefs: []
+  type: TYPE_NORMAL
+- en: A long signal is generated on the next open price whenever the current close
+    price is higher than the close price two periods ago.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A short signal is generated on the next open price whenever the current close
+    price is lower than the close price two periods ago.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The answer is in the following code snippet:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: There you have it! The way you code signals is by using functions and then calling
+    them. Calling a function is synonymous to applying it and seeing it realized.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'To call a signal function, use the following syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `return` statement obliges you to redefine your array to be what you want
+    it to be (as defined by the signal function). This obligation comes from the fact
+    that you are adding columns and, therefore, you must re-create the array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, let’s proceed to the third algorithm: visual representation of the signals.
+    It may seem that this is an optional step, and it is, but it is helpful to look
+    at a sample of the signals so that you get an idea of what to expect. You must
+    also visually check the signals of the patterns to make sure the algorithm is
+    detecting the right configurations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating the Signal Charts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'When you create and apply long and short signals, you have the core of your
+    strategy ready, so you need to evaluate it in two different ways:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Subjectively
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visually inspect multiple signal charts to detect anomalies that can give hints
+    to coding bugs (e.g., a wrong pattern detected by the algorithm). This can also
+    help you understand better the frequency and the succession of signals. This is
+    what you will see in this section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Objectively
+  prefs: []
+  type: TYPE_NORMAL
+- en: Objective evaluation is the more important method. It is about calculating performance
+    metrics such as the hit ratio. You will see and code all the metrics needed in
+    the next section as I discuss them in depth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simple diagram in [Figure 2-1](#figure2-1) can help you understand where
+    you stand at this point. Visualization is the third algorithm within the framework
+    after importing the historical data and coding the signals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/mfpr_0201.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-1\. Algorithmic diagram
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Chapter 1](ch01.xhtml#chapter1) covered how to import historical OHLC data
+    from the MetaTrader 5 platform, and you have also seen how to load your own data
+    in case it is not included on the MetaTrader 5 platform. This chapter has already
+    discussed how to code and apply the signals generated from a set of conditions
+    called the Alpha pattern. Let’s continue with that same example.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is a refresher of the trading conditions leading to a valid Alpha pattern:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A long signal is generated on the next open whenever the current low is lower
+    than the low price 5 periods ago and the low price 13 periods ago but higher than
+    the low price 21 periods ago. Simultaneously, the close price of the current bar
+    must be higher than the close price 3 periods ago.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A short signal is generated on the next open whenever the current high price
+    is higher than the high price 5 periods ago and the high price 13 periods ago
+    but lower than the high price 21 periods ago. Simultaneously, the close price
+    of the current bar must be lower than the close price 3 periods ago.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The next step is to visualize these signals using simple bar charts. I then
+    apply upward-pointing arrows where long signals are generated and downward-pointing
+    arrows where short signals are generated. Later in the book, I create these signal
+    charts using candlesticks, but since I have not introduced those yet, I will use
+    *simple bar charts*, which are black vertical lines joining the highs and the
+    lows of every bar. [Figure 2-2](#figure2-2) shows a simple bar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/mfpr_0202.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-2\. A simple high to low bar
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: As a reminder, I have not yet discussed technical analysis, so don’t worry if
+    you feel overwhelmed with information, as everything should be clearer by the
+    [next chapter](ch03.xhtml#chapter3).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Take a look at [Figure 2-3](#figure2-3). It is an example of a simple bar chart
+    where a vertical line has been drawn between the high and the low of every hour.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s apply the signals from the Alpha pattern on the bars so that you know
+    the positioning of your trades relative to the price action. This allows you to
+    see what has happened to the price every time you have gotten an Alpha signal.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/mfpr_0203.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-3\. Simple bar chart on USDCHF
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Use the following function, which I call `signal_chart()`. Before I define
+    the signal chart, here is how to create the simple bar chart by using the `ohlc_plot_bars()` function,
+    defined as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function allows you to plot the simple bar chart. It first starts by defining
+    the *lookback period*, which is the number of recent observations to include in
+    the visualization. The variable for the lookback period is `window`; thus, a window
+    of 500 shows you the last 500 observations. It later loops around the observations
+    that are within the variable `window` and plots vertical lines using `plt.vlines()`,
+    as shown in the previous code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To chart the last 500 bars, use the following syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now, let’s add the signals represented by arrows to the simple bar chart. Take
+    a look at the following code block that defines the `signal_chart()` function
+    and notice how it uses the previous function I showed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The variable `position` should be set to zero because the signals refer to
+    open prices, which makes the arrows well placed. The function is therefore called
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: If you apply this function on the OHLC array where you have already applied
+    the signals from the Alpha pattern, you would get the signal chart in [Figure 2-4](#figure2-4).
+    Note that upward-pointing arrows represent exactly where long signals have been
+    generated, whereas downward-pointing arrows represent where short signals have
+    been generated. [Figure 2-4](#figure2-4) shows a signal chart on the hourly USDCHF
+    values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/mfpr_0204.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-4\. Signal chart on USDCHF
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Let’s recap what you have done so far. You started by defining and coding the
+    signals so that you have your proxies for buy and sell orders. Then you coded
+    a chart function that shows these signals superimposed on the price chart, which
+    gives an idea of where you bought and sold in the past.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note that even though the simple bar chart shows only the highs and lows, the
+    signals are put where the open price is, as it takes into account the totality
+    of the OHLC data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code shows the chronological order of doing this process on the
+    hourly values of USDCHF, as shown in the previous chart:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 2-5](#figure2-5) shows the same process applied on the hourly values
+    of EURUSD. Note that the pattern is hypothetical and has no scientific backing.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/mfpr_0205.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-5\. Signal chart on the EURUSD
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Coding Performance Evaluation Functions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Visualizing signals is only a first step. You need objective data that tells
+    you whether you have a winning or losing trading system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For this, you need *performance evaluation*, which is simply the calculation
+    of different metrics and ratios that give you hints about past performance. Your
+    job afterward is to interpret these metrics and try to tweak the use of the pattern
+    to improve the metrics.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Remember, a trading strategy can easily be a few conditions that lead to a pattern;
+    therefore, even though this book discusses the details of candlestick patterns,
+    I will briefly review trading strategies. Chapters [10](ch10.xhtml#chapter10)
+    and [11](ch11.xhtml#chapter11) discuss a few strategies that naturally involve
+    candlestick patterns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Performance evaluation also involves the expectation that past performance indicates
+    future performance. This kind of persistence is unlikely, but back-testing and
+    evaluating past performance is the best you can do to validate and take your strategy
+    live.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Hit Ratio
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We humans like to be right more often than we are wrong. Typically, we are proud
+    of our achievements and ashamed of our failures, which is why we are comforted
+    when we find out that most of our decisions led to the expected and desired results.
+    Being right most of the time provides an ego boost that everyone welcomes. After
+    all, who doesn’t want to be seen as successful?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *hit ratio* in trading jargon is the number of past profitable trades divided
+    by the total number of realized past trades. This means that the hit ratio measures
+    the percentage of when you were right about the future direction. A 70% hit ratio
+    means that, on average, you tend to make money on 70 trades out of every 100,
+    which is not bad, but you must absolutely be careful because this is a double-edged
+    sword, and you will see why later. Now, let’s take a look at the mathematical
+    representation of the hit ratio:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Hit ratio equals StartFraction Number of profitable trades Over
+    Number of total trades EndFraction"><mrow><mtext>Hit</mtext> <mtext>ratio</mtext>
+    <mo>=</mo> <mfrac><mrow><mtext>Number</mtext><mtext>of</mtext><mtext>profitable</mtext><mtext>trades</mtext></mrow>
+    <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>total</mtext><mtext>trades</mtext></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evidently, the number of total trades includes both the number of profitable
+    and losing trades. The hit ratio is one of the most observed and analyzed performance
+    metrics due to its psychological effect on the receiver. Make sure you calculate
+    the ratio on the total number of realized trades excluding the pending trades.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Rate of Return
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'When you invest $100 and one year later it becomes $105, what can you say about
+    your rate of return? Instead of stating that you have gained $5, you can present
+    your profit as a return over the initial investment calculated this way:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Rate of return equals left-parenthesis StartFraction New balance
+    Over Initial balance EndFraction right-parenthesis minus 1"><mrow><mtext>Rate</mtext>
+    <mtext>of</mtext> <mtext>return</mtext> <mo>=</mo> <mo>(</mo> <mfrac><mrow><mtext>New</mtext><mtext>balance</mtext></mrow>
+    <mrow><mtext>Initial</mtext><mtext>balance</mtext></mrow></mfrac> <mo>)</mo> <mo>-</mo>
+    <mn>1</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This means that your rate of return is 5%. Expressing profitability in percentage
+    terms gives better information regarding the magnitude of the gains and losses
+    on the portfolio. Take, for example, these two hypotheticals:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Portfolio A made $125,000.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Portfolio B returned 10%.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Portfolio A does seem more impressive, but what if I told you that both portfolios
+    had a starting (initial) balance of $2,000,000? This sure makes portfolio A the
+    underperformer, as it made only 6.25%, whereas portfolio B made 10% ($200,000).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can also calculate several types of returns, namely, the *gross* rate of
+    return and the *net* rate of return. Surely what should interest you is the latter
+    as it is net of fees. Let’s see the difference between the two in the following
+    example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Initial balance on 01/01/2021 = $1,000,000
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Final gross balance on 12/31/2021 = $1,175,000
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Total unpaid commissions and fees incurred during 2021 = $35,000
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Unpaid research provider fees during 2021 = $10,000
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In this example, the gross rate of return is the one that does not consider
+    the fees paid to the broker and other third-party vendors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Gross rate of return left-parenthesis StartFraction 1 comma 175
+    comma 000 Over 1 comma 000 comma 000 EndFraction right-parenthesis minus 1 equals
+    17.5 percent-sign"><mrow><mtext>Gross</mtext> <mtext>rate</mtext> <mtext>of</mtext>
+    <mtext>return</mtext> <mo>=</mo> <mo>(</mo> <mfrac><mrow><mn>1</mn><mo lspace="0%"
+    rspace="0%">,</mo><mn>175</mn><mo lspace="0%" rspace="0%">,</mo><mn>000</mn></mrow>
+    <mrow><mn>1</mn><mo lspace="0%" rspace="0%">,</mo><mn>000</mn><mo lspace="0%"
+    rspace="0%">,</mo><mn>000</mn></mrow></mfrac> <mo>)</mo> <mo>-</mo> <mn>1</mn>
+    <mo>=</mo> <mn>17</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>5</mn> <mo lspace="0%"
+    rspace="0%">%</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The net return is closer to what you actually gain and is found through this
+    calculation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Net rate of return left-parenthesis StartFraction 1 comma 175
+    comma 000 minus 35 comma 000 minus 10 comma 000 Over 1 comma 000 comma 000 EndFraction
+    right-parenthesis minus 1 equals 13 percent-sign"><mrow><mtext>Net</mtext> <mtext>rate</mtext>
+    <mtext>of</mtext> <mtext>return</mtext> <mo>=</mo> <mo>(</mo> <mfrac><mrow><mn>1</mn><mo
+    lspace="0%" rspace="0%">,</mo><mn>175</mn><mo lspace="0%" rspace="0%">,</mo><mn>000</mn><mo>-</mo><mn>35</mn><mo
+    lspace="0%" rspace="0%">,</mo><mn>000</mn><mo>-</mo><mn>10</mn><mo lspace="0%"
+    rspace="0%">,</mo><mn>000</mn></mrow> <mrow><mn>1</mn><mo lspace="0%" rspace="0%">,</mo><mn>000</mn><mo
+    lspace="0%" rspace="0%">,</mo><mn>000</mn></mrow></mfrac> <mo>)</mo> <mo>-</mo>
+    <mn>1</mn> <mo>=</mo> <mn>13</mn> <mo lspace="0%" rspace="0%">%</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Warning
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The portfolio is still profitable but has taken a hit after subtracting the
+    costs. Some portfolios switch from winners to losers after removing the costs,
+    which is why it is important to choose a broker with an acceptable fee structure
+    so that it does not eat away your profits over time. Even small differences in
+    commissions can have a huge impact on active traders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Profit Factor
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The *profit factor* is a quick measure to see how much you are winning for
+    every 1 currency unit of loss. It is calculated as the ratio between gross overall
+    profit and gross overall loss, meaning that you divide the sum of the profits
+    from all profitable trades by the sum of the losses from all losing trades. Mathematically,
+    it is expressed as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Profit factor equals StartFraction Gross total profit Over StartAbsoluteValue
+    Gross total loss EndAbsoluteValue EndFraction"><mrow><mtext>Profit</mtext> <mtext>factor</mtext>
+    <mo>=</mo> <mfrac><mrow><mtext>Gross</mtext><mtext>total</mtext><mtext>profit</mtext></mrow>
+    <mrow><mo>|</mo><mtext>Gross</mtext><mtext>total</mtext><mtext>loss</mtext><mo>|</mo></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is important to divide by the absolute value of the gross total loss. Let’s
+    consider an example of a portfolio that had $127,398 profits in 2020 and $88,318
+    losses. What would be the profit ratio in this case?
+  prefs: []
+  type: TYPE_NORMAL
+- en: The answer is 1.44, which is interpreted as gaining on average $1.44 for every
+    $1.00 lost. Whenever the profitability is positive, the profit factor is bigger
+    than 1, and whenever the profitability is negative, the profit factor is less
+    than 1\. Some traders like to optimize their strategies by tweaking them until
+    they find the highest profit factor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Risk-Reward Ratio
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A good trading system is measured by the amount of reward acquired per amount
+    of risk taken to achieve the reward. When you risk $1.00 to gain $1.00, the risk-reward
+    ratio is equal to 1.00, and you have 50% chance of either winning or losing the
+    same amount, unless you have a statistical edge that over time makes you win more
+    often than you lose.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This statistical edge is the notion of the hit ratio. When you enter a trade
+    and set your *target* (the level at which you close out profitably) and your *stop*
+    (the level at which you close out at a loss to avoid a worse outcome), you can
+    actually calculate your theoretical (expected) risk-reward ratio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is a simple example based on buying the cryptocurrency Cardano (ADA) relative
+    to the USDT (a proxy for the USD):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Buy ADAUSDT at $1.00.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Set stop at $0.95.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Set target at $1.10.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: What is the risk-reward ratio of this trade, and how can you interpret it? Simply
+    put, you are risking $0.05 to gain $0.10, which means your reward is double the
+    risk; hence, the risk-reward ratio is 2.00.
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Risk reward ratio equals StartFraction StartAbsoluteValue Entry
+    price minus Target price EndAbsoluteValue Over StartAbsoluteValue Entry price
+    minus Stop price EndAbsoluteValue EndFraction"><mrow><mtext>Risk</mtext> <mtext>reward</mtext>
+    <mtext>ratio</mtext> <mo>=</mo> <mfrac><mrow><mo>|</mo><mtext>Entry</mtext><mtext>price</mtext><mo>-</mo><mtext>Target</mtext><mtext>price</mtext><mo>|</mo></mrow>
+    <mrow><mo>|</mo><mtext>Entry</mtext><mtext>price</mtext><mo>-</mo><mtext>Stop</mtext><mtext>price</mtext><mo>|</mo></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The preceding formula shows how to calculate the theoretical or expected risk-reward
+    ratio, which is set before the trade.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tip
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: A rule of thumb is to generally try to target strategies that offer a risk-reward
+    ratio close to 2.00, as this gives you enough margin of predictability error to
+    stay in the green. Assuming same quantity trading, with a 2.00 risk-reward ratio,
+    you only need a hit ratio of 33.33% to break even.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The break-even hit ratio is the minimum hit ratio needed to achieve zero profit
+    and loss, excluding costs and fees. As it is just an indicative measure, the break-even
+    hit ratio is rarely presented in performance reports. However, you can easily
+    calculate it through the risk-reward ratio like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math><mrow><mtext>Break-even hit ratio</mtext> <mo>=</mo> <mfrac><mn>1</mn>
+    <mrow><mn>1</mn><mo>+</mo><mtext>Risk reward ratio</mtext></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'That gives you a negative relationship between the hit ratio and the risk-reward
+    ratio, as the less you risk and increase your reward, the less you are likely
+    to actually hit the reward (target) because you are closer to the risk (stop).
+    Consider the following example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hit ratio since 01-01-2021 = 43.67%
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Realized risk-reward ratio since 01-01-2021 = 2.11
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'What would be the break-even hit ratio in this case? By using the formula,
+    you can find the following result:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math><mrow><mtext>Break-even hit ratio</mtext> <mo>=</mo> <mfrac><mn>1</mn>
+    <mrow><mn>1</mn><mo>+</mo><mn>2</mn><mo lspace="0%" rspace="0%">.</mo><mn>11</mn></mrow></mfrac>
+    <mo>=</mo> <mn>32</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>15</mn> <mo lspace="0%"
+    rspace="0%">%</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This means that you have a winning strategy because you have on average 43–44
+    profitable trades per 100 trades. Furthermore, for each of these trades, you win
+    on average 2.11 times the amount you lose, and this is what makes the difference.
+    Proper risk management is what makes profitable trading systems. A first look
+    on the hit ratio leaves the eye unimpressed, but by glancing at the risk-reward,
+    a whole new picture emerges.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In reality, some trades can be closed before getting stopped out or before
+    seeing their targets, and this is due to various reasons, like getting another
+    signal in the same direction. Therefore, you have two different risk-reward ratios:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The theoretical risk-reward ratio
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is generally set before the trade and is a forecast.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The realized risk-reward ratio
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the average profit per trade divided by the average loss per trade,
+    which gives an idea of how close you are to your theoretical risk-reward ratio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s take a look at another example to interpret the two ratios:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Theoretical risk-reward ratio set on 01-01-2021 = 2.00
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Average gain per trade during 2021 = $241,597
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Average loss per trade during 2021 = $127,222
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The realized risk-reward ratio is therefore 1.90, which is slightly less than
+    the theoretical one. This is acceptable as sometimes you exit some trades before
+    reaching the stop or target level. The ratios presented in the back-tests in this
+    book are the realized ones.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Number of Trades
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The frequency of trades is important for performance evaluation. A rule of thumb
+    to keep in mind is to have at least 30 trades in order to meet the minimum threshold
+    for reliability. Of course, over the years, the frequency of trades must be much
+    higher. Some patterns are so rare that they are unlikely to give many signals,
+    thus preventing you from properly judging them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Unfortunately, some patterns can be quite rare, but, in any case, the book
+    is not about blemishing and glorifying them, as some are actually very bad and
+    nonpredictive yet are used by many retail traders to analyze the market. This
+    brings us to the second utility of the book: demystification. It is time to see
+    how to code these metrics in Python.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a Performance Evaluation Function
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You have finally ended the theoretical part of the discussion of performance
+    metrics. Even though in reality there are more metrics that dig into the details
+    of performance, you do not need to calculate them all to get a quick idea of what
+    works and what does not.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, the rate of return is not very useful in the back-tests later
+    in the book because it is a function of position size and transaction costs, so
+    it does not deal with predictability directly. This is why I use only the other
+    four metrics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The hit ratio gives you a preliminary idea of the predictability of the pattern
+    or the strategy.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The profit factor allows you to see whether the generated profits are greater
+    than the generated losses regardless of position sizing.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The realized risk-reward ratio shows you how much you are being rewarded compared
+    to the risk you are taking.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The frequency of signals reveals whether the results are meaningful or not and
+    whether you expect frequent signals or uncommon ones.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The performance metrics are bundled into a Python function that I call `performance()`,
+    shown in the following code block. I will explain after the code how it works
+    and what it outputs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function is not as complex as it seems. For instance, it takes seven variables
+    that refer to the array and its column indices. The variable `data` represents
+    the OHLC array that contains the historical data and the signals generated by
+    the pattern. Remember, the signals are in the form of 1s in case of a long trigger
+    and in the form of −1s in case of a short trigger. The variable `open_price` is
+    simply the first column of the array, which represents the open price for each
+    time step. In your case, it would be each hour as you are using the hourly time
+    frame.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Do not forget that the first column of an array is indexed at zero in Python,
+    so the variable `open_price` always has a value of 0\. The following two variables
+    represent the positions where the buy and sell signals are stored, respectively.
+    With simple patterns, it is generally 4 and 5, while with more complex patterns,
+    it can be more. The `long_result_col` and the `short_result_col` variables are
+    the indices of the results found from the `buy_column` and `sell_column`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This means that whenever you exit a long position, the result of that position
+    is stored in the column described by the variable `long_result_col`. Finally,
+    `total_result_col` is always the next column to come after `short_result_col`
+    as it is the sum of the two result columns. The `total_result_col` column is created
+    to facilitate the calculation of the performance metrics. Now, to call the function,
+    use the following syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: The statement calls the performance function on an array called `my_data`, which
+    you have seen how to import, then it replaces the variables with the necessary
+    values. If you are unsure of how to find the variables, carefully reread the previous
+    paragraph.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A Hypothetical Example: Appraising Performance'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Before I close this chapter, let’s take a look at a full example and interpret
+    its results. After all, back-testing is about understanding what the strategy
+    or pattern has given so that you improve it. The following details are for a portfolio
+    that uses a single strategy between 2017 and 2021:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Total number of trades = 2,348
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Profitable trades = 1,236
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Losing trades = 1,112
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Theoretical risk-reward ratio = 2.00
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Total net gain from trades = $457,995
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Total net loss from trades = $321,589
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Average gain per trade = $370.54
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Average loss per trade = $289.19
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: What is the hit ratio of the period between 2017 and 2021?
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The hit ratio is simply the number of profitable trades divided by the total
+    number of realized trades. In this example, it is 52.64%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What is the net profit factor between 2017 and 2021? How would you interpret
+    it?
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The profit factor is the total profits divided by the total losses. In this
+    example, it is 1.42, which is well above 1.00\. The portfolio is generating $1.42
+    for every $1.00 it loses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What is the realized risk-reward ratio between 2017 and 2021? And how does it
+    compare to the theoretical risk-reward ratio?
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The realized risk-reward ratio is the ratio of the average gain per trade to
+    the average loss per trade. In this example, it is 1.28\. It is well below the
+    theoretical risk-reward ratio, which stands at 2.00, and therefore the portfolio
+    is experiencing suboptimal risk management, probably due to early closing of positions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How should we interpret the frequency of signals?
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: With 2,348 trades over the course of five years, the portfolio has a relatively
+    high trading activity, about 469 trades per year. Transaction costs are a cause
+    of concern with such a high number of trades. Statistically, the performance metrics
+    should properly describe the portfolio’s situation since there are many signals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is this a well-managed portfolio?
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Even though profitability as shown by the profit factor is high, the manager
+    should consider improving the realized risk-reward ratio while maintaining a hit
+    ratio above 50%. This can be done through tweaks, optimizations, and even reviewing
+    the entry/exit techniques. The manager should also investigate filtering the trades
+    in order to decrease brokerage fees. However, the portfolio is in the green and
+    seems to have a predictive strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You have now finished building the core of the algorithms that you will use
+    to analyze and back-test the candlestick patterns. Before presenting those patterns,
+    you have one more stop to make, which is to understand technical analysis, the
+    field of research where candlestick pattern recognition lies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([1](ch02.xhtml#idm46762874354240-marker)) A *moving average* is a mean calculated
+    on a rolling window. It is typically used to understand the trend of the market.
+    Moving averages are discussed in greater depth in [Chapter 3](ch03.xhtml#chapter3).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch02.xhtml#idm46762878053424-marker)) An abbreviation for Not a Number.
+    The cell that has NaN is considered invalid and will yield only other NaNs if
+    used in calculations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch02.xhtml#idm46762875822448-marker)) Since I use an hourly time frame
+    throughout the book, the previous row refers to the previous hourly candlestick.
+  prefs: []
+  type: TYPE_NORMAL

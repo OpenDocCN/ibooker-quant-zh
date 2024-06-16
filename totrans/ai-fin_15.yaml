@@ -1,0 +1,1217 @@
+- en: Chapter 11\. Risk Management
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A significant barrier to deploying autonomous vehicles (AVs) on a massive scale
+    is safety assurance.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Majid Khonji et al. (2019)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Having better prediction raises the value of judgment. After all, it doesn’t
+    help to know the likelihood of rain if you don’t know how much you like staying
+    dry or how much you hate carrying an umbrella.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Ajay Agrawal et al. (2018)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Vectorized backtesting in general enables one to judge the economic potential
+    of a prediction-based algorithmic trading strategy on an as-is basis (that is,
+    in its pure form). Most AI agents applied in practice have more components than
+    just the prediction model. For example, the AI of autonomous vehicles (AVs) comes
+    not standalone but rather with a large number of rules and heuristics that restrict
+    what actions the AI takes or can take. In the context of AVs, this primarily relates
+    to managing risks, such as those resulting from collisions or crashes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In a financial context, AI agents or trading bots are also not deployed as-is
+    in general. Rather, there are a number of standard risk measures that are typically
+    used, such as *(trailing) stop loss orders* or *take profit orders*. The reasoning
+    is clear. When placing directional bets in financial markets, too-large losses
+    are to be avoided. Similarly, when a certain profit level is reached, the success
+    is to be protected by early close outs. How such risk measures are handled is
+    a matter, more often than not, of human judgment, supported probably by a formal
+    analysis of relevant data and statistics. Conceptually, this is a major point
+    discussed in the book by Agrawal et al. (2018): AI provides improved predictions,
+    but human judgment still plays a role in setting decision rules and action boundaries.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter has a threefold purpose. First, it backtests in both *vectorized*
+    and *event-based* fashion algorithmic trading strategies that result from a trained
+    deep Q-learning agent. Henceforth, such agents are called *trading bots*. Second,
+    it assesses risks related to the financial instrument on which the strategies
+    are implemented. And third, it backtests typical risk measures, such as stop loss
+    orders, using the event-based approach introduced in this chapter. The major benefit
+    of event-based backtesting when compared to vectorized backtesting is a higher
+    degree of flexibility in modeling and analyzing decision rules and risk management
+    measures. In other words, it allows one to zoom in on details that are pushed
+    toward the background when working with vectorized programming approaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Trading Bot”](#rm_trading_bot) introduces and trains the trading bot based
+    on the financial Q-learning agent from [Chapter 9](ch09.xhtml#reinforcement_learning).
+    [“Vectorized Backtesting”](#rm_vec_back) uses vectorized backtesting from [Chapter 10](ch10.xhtml#vectorized_backtesting)
+    to judge the (pure) economic performance of the trading bot. Event-based backtesting
+    is introduced in [“Event-Based Backtesting”](#rm_event_back). First, a base class
+    is discussed. Second, based on the base class, the backtesting of the trading
+    bot is implemented and conducted. In this context, also see Hilpisch (2020, ch.
+    6). [“Assessing Risk”](#rm_assessing_risk) analyzes selected statistical measures
+    important for setting risk management rules, such as *maximum drawdown* and *average
+    true range* (ATR). [“Backtesting Risk Measures”](#rm_risk_measures) then backtests
+    the impact of major risk measures on the performance of the trading bot.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trading Bot
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This section presents a trading bot based on the financial Q-learning agent,
+    `FQLAgent`, from [Chapter 9](ch09.xhtml#reinforcement_learning). This is the trading
+    bot that is analyzed in subsequent sections. As usual, our imports come first:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[“Finance Environment”](#rm_finance) presents a Python module with the `Finance`
+    class used in the following. [“Trading Bot”](#rm_trading_bot) provides the Python
+    module with the `TradingBot` class and some helper functions for plotting training
+    and validation results. Both classes are pretty close to the ones introduced in
+    [Chapter 9](ch09.xhtml#reinforcement_learning), which is why they are used here
+    without further explanations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code trains the trading bot on historical end-of-day (EOD) data,
+    including a sub-set of the data used for validation. [Figure 11-1](#figure_rm_01)
+    shows average total rewards as achieved for the different training episodes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1101](Images/aiif_1101.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-1\. Average total reward per training episode
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 11-2](#figure_rm_02) compares the gross performance of the trading
+    bot on the training data—exhibiting quite some variance due to alternating between
+    exploitation and exploration—with the one on the validation data set making use
+    of exploitation only:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1102](Images/aiif_1102.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-2\. Gross performance on training and validation data set
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: This trained trading bot is used for backtesting in the following sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized Backtesting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Vectorized backtesting cannot directly be applied to the trading bot. [Chapter 10](ch10.xhtml#vectorized_backtesting)
+    uses dense neural networks (DNNs) to illustrate the approach. In this context,
+    the data with the features and labels sub-sets is prepared first and then fed
+    to the DNN to generate all predictions at once. In a reinforcement learning (RL)
+    context, data is generated and collected by interacting with the environment action
+    by action and step by step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To this end, the following Python code defines the `backtest` function, which
+    takes as input a `TradingBot` instance and a `Finance` instance. It generates
+    in the original `DataFrame` objects of the `Finance` environment columns with
+    the positions the trading bot takes and the resulting strategy performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reshapes a single feature-label combination
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates a column for the position values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the optimal action (prediction) given the trained DNN
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the resulting position (`+1` for long/upwards, `–1` for short/downwards)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and stores in the corresponding column at the appropriate index position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO1-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the strategy log returns given the position values
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equipped with the `backtest` function, vectorized backtesting boils down to
+    a few lines of Python code as in [Chapter 10](ch10.xhtml#vectorized_backtesting).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 11-3](#figure_rm_03) compares the passive benchmark investment’s gross
+    performance with the strategy gross performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the relevant environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the additional data required
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Counts the number of long and short positions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the gross performances for the passive benchmark investment (`r`)
+    and the strategy (`s`)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …as well as the corresponding net performances
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1103](Images/aiif_1103.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-3\. Gross performance of the passive benchmark investment and the
+    trading bot (in-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'To get a more realistic picture of the performance of the trading bot, the
+    following Python code creates a test environment with data that the trading bot
+    has not yet seen. [Figure 11-4](#figure_rm_04) shows how the trading bot fares
+    compared to the passive benchmark investment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1104](Images/aiif_1104.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-4\. Gross performance of the passive benchmark investment and the
+    trading bot (out-of-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The out-of-sample performance without any risk measures implemented seems already
+    promising. However, to be able to properly judge the real performance of a trading
+    strategy, risk measures should be included. This is where event-based backtesting
+    comes into play.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Event-Based Backtesting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Given the results of the previous section, the out-of-sample performance without
+    any risk measures seems already promising. However, to be able to properly analyze
+    risk measures, such as trailing stop loss orders, *event-based backtesting* is
+    required. This section introduces this alternative approach to judging the performance
+    of algorithmic trading strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Backtesting Base Class”](#rm_base) presents the `BacktestingBase` class that
+    can be flexibly used to test different types of directional trading strategies.
+    The code has detailed comments on the important lines. This base class provides
+    the following methods:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`get_date_price()`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a given `bar` (index value for the `DataFrame` object containing the financial
+    data), it returns the relevant `date` and `price`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`print_balance()`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a given `bar`, it prints the current (cash) balance of the trading bot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`calculate_net_wealth()`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a given `price`, it returns the net wealth composed of the current (cash)
+    balance and the instrument position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`print_net_wealth()`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a given `bar`, it prints the net wealth of the trading bot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`place_buy_order()`, `place_sell_order()`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a given `bar` and a given number of `units` or a given `amount`, these methods
+    place buy or sell orders and adjust relevant quantities accordingly (for example,
+    accounting for transaction costs).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`close_out()`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: At a given `bar`, this method closes open positions and calculates and reports
+    performance statistics.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code illustrates how an instance of the `BacktestingBase`
+    class functions based on some simple steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates a `BacktestingBase` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looks up the `initial_amount` attribute value
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes a `bar` value
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the `date` and `price` values for the `bar`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the state of the `Finance` environment for the `bar`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a buy order using the `amount` parameter
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_risk_management_CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints the net wealth at a later point (`2 * bar`)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_risk_management_CO3-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a sell order at that later point using the `units` parameter
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_risk_management_CO3-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes out the remaining long position even later (`3 * bar`)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Inheriting from the `BacktestingBase` class, the `TBBacktester` class implements
+    the event-based backtesting for the trading bot:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the state of the `Finance` environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the optimal action (prediction) given the state and the `model` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the optimal position (long/short) given the optimal action (prediction)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enters a *long* position if the conditions are met
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enters a *short* position if the conditions are met
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Collects the net wealth values over time and transforms them into a `DataFrame`
+    object
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The application of the `TBBacktester` class is straightforward, given that
+    the `Finance` and `TradingBot` instances are already available. The following
+    code backtests the trading bot first on the *learning environment* data—without
+    and with transaction costs. [Figure 11-5](#figure_rm_05) compares the two cases
+    visually over time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Event-based backtest in-sample *without* transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Event-based backtest in-sample *with* transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1105](Images/aiif_1105.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-5\. Gross performance of the trading bot before and after transaction
+    costs (in-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 11-6](#figure_rm_06) compares the gross performances of the trading
+    bot for the *test environment* data over time—again, before and after transaction
+    costs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Event-based backtest out-of-sample *without* transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Event-based backtest out-of-sample *with* transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1106](Images/aiif_1106.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-6\. Gross performance of the trading bot before and after transaction
+    costs (out-of-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'How does the performance before transaction costs from the event-based backtesting
+    compare to the performance from the vectorized backtesting? [Figure 11-7](#figure_rm_07)
+    shows the normalized net wealth compared to the gross performance over time. Due
+    to the different technical approaches, the two time series are not exactly the
+    same but are pretty similar. The performance difference can be mainly explained
+    by the fact that the event-based backtesting assumes the same amount for every
+    position taken. Vectorized backtesting takes compound effects into account, leading
+    to a slightly higher reported performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1107](Images/aiif_1107.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-7\. Gross performance of the passive benchmark investment and the
+    trading bot (vectorized and event-based backtesting)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Performance Differences
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The performance numbers from the vectorized and the event-based backtesting
+    are close but not exactly the same. In the first case, it is assumed that financial
+    instruments are perfectly divisible. Compounding is also done continuously. In
+    the latter case, only full units of the financial instrument are accepted for
+    trading, which is closer to reality. The net wealth calculations are based on
+    price differences. The event-based code as it is used does not, for example, check
+    whether the current balance is large enough to cover a certain trade by cash.
+    This is for sure a simplifying assumption, and buying on margin, for instance,
+    may not always be possible. Code adjustments in this regard are easily added to
+    the `BacktestingBase` class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assessing Risk
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The implementation of risk measures requires the understanding of the risks
+    involved in trading the chosen financial instrument. Therefore, to properly set
+    parameters for risk measures, such as stop loss orders, an assessment of the risk
+    of the underlying instrument is important. There are many approaches available
+    to measure the risk of a financial instrument. There are, for example, *nondirected
+    risk measures*, such as volatility or average true range (ATR). There are also
+    *directed measures*, such as maximum drawdown or value-at-risk (VaR).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A common practice when setting target levels for stop loss (SL), trailing stop
+    loss (TSL), or take profit orders (TP) is to relate such levels to ATR values.^([1](ch11.xhtml#idm45625264808136))
+    The following Python code calculates the ATR in absolute and relative terms for
+    the financial instrument on which the trading bot is trained and backtested (that
+    is, the EUR/USD exchange rate). The calculations rely on the data from the learning
+    environment and use a typical window length of 14 days (bars). [Figure 11-8](#figure_rm_08)
+    shows the calculated values, which vary significantly over time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The instrument price column from the original `DataFrame` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The window length to be used for the calculations
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rolling minimum
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rolling maximum
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO7-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The difference between rolling maximum and minimum
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO7-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The absolute difference between rolling maximum and previous day’s price
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_risk_management_CO7-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The absolute difference between rolling minimum and previous day’s price
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_risk_management_CO7-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The maximum of the max-min difference and the max-price difference
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_risk_management_CO7-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The maximum between the previous maximum and the min-price difference (= ATR)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](Images/10.png)](#co_risk_management_CO7-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The ATR value in percent from the absolute ATR value and the price
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1108](Images/aiif_1108.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11-8\. Average true range (ATR) in absolute (price) and relative (%)
+    terms
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The code that follows displays the final values for ATR in absolute and relative
+    terms. A typical rule would be to set, for example, the SL level at the entry
+    price minus *x* times ATR. Depending on the risk appetite of the trader or investor,
+    *x* might be smaller than 1 or larger. This is where human judgment or formal
+    risk policies come into play. If *x = 1*, then the SL level is set at about 2%
+    below the entry level:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'However, *leverage* plays an important role in this context. If a leverage
+    of, say, 10 is used, which is actually quite low for foreign exchange trading,
+    then the ATR numbers need to be multiplied by the leverage. As a consequence,
+    for an assumed ATR factor of 1, the same SL level from before now is to be set
+    at about 20% instead of just 2%. Or, when taking the median value of the ATR from
+    the whole data set, it is set to be at about 25%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: The basic idea behind relating SL or TP levels to ATR is that one should avoid
+    setting them either too low or too high. Consider a 10 times leveraged position
+    for which the ATR is 20%. Setting an SL level of only 3% or 5% might reduce the
+    financial risk for the position, but it introduces the risk of a stop out that
+    happens too early and that is due to typical movements in the financial instrument.
+    Such “typical movements” within certain ranges are often called *noise*. The SL
+    order should protect, in general, from unfavorable market movements that are larger
+    than typical price movements (noise).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same holds true for a take profit level. If it is set too high, say at three
+    times the ATR level, decent profits might not be secured and positions might remain
+    open for too long until they give up previous profits. Even if formal analyses
+    and mathematical formulas can be used in this context, the setting of such target
+    levels involves, as they say, more art than science. In a financial context, there
+    is quite a degree of freedom for setting such target levels, and human judgment
+    can come to the rescue. In other contexts, such as for AVs, this is different,
+    as no human judgment is needed to instruct the AI to avoid any collisions with
+    human beings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: NonNormality and NonLinearity
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A *margin stop out* closes a trading position in cases when the margin, or the
+    invested equity, is used up. Assume a leveraged trading position with a margin
+    stop out in place. For a leverage of 10, for example, the margin is 10% equity.
+    An *unfavorable* move of 10% or larger in the traded instrument eats up all the
+    equity and triggers the close out of the position—a loss of 100% of the equity.
+    A *favorable* move of the underlying of, say, 25% leads to a return on equity
+    of 150%. Even if returns of the traded instrument are normally distributed, leverage
+    and margin stop outs lead to nonnormally distributed returns and asymmetric, nonlinear
+    relationships between the traded instrument and the trading position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtesting Risk Measures
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Having an idea of the ATR of a financial instrument is often a good start for
+    the implementation of risk measures. To be able to properly backtest the effect
+    of the typical risk management orders, some adjustments to the `BacktestingBase`
+    class are helpful. The following Python code presents a new base class—`BacktestBaseRM`,
+    which inherits from `BacktestingBase`—that helps in tracking the entry price of
+    the previous trade as well as the maximum and minimum prices since that trade.
+    These values are used to calculate the relevant performance measures during the
+    event-based backtesting to which SL, TSL, and TP orders relate:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the *entry* price for the most recent trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the initial *minimum* price since the most ecent trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the initial *maximum* price since the most recent trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the relevant prices after a trade is executed
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on this new base class, [“Backtesting Class”](#rm_backtest) presents a
+    new backtesting class, `TBBacktesterRM`, that allows the inclusion of SL, TSL,
+    and TP orders. The relevant code parts are discussed in the following sub-sections.
+    The parametrization of the backtesting examples orients itself roughly on an ATR
+    level of about 2%, as calculated in the previous section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: EUT and Risk Measures
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: EUT, MVP, and the CAPM (see Chapters [3](ch03.xhtml#normative_finance) and [4](ch04.xhtml#data_driven_finance))
+    assume that financial agents know about the future distribution of the returns
+    of a financial instrument. MPT and the CAPM assume furthermore that returns are
+    normally distributed and that there is, for example, a linear relationship between
+    the market portfolio’s returns and the returns of a traded financial instrument.
+    The use of SL, TSL, and TP orders leads—similar and in addition to leverage in
+    combination with margin stop out—to a “guaranteed nonnormal” distribution and
+    to highly asymmetric, nonlinear payoffs of a trading position in relation to the
+    traded instrument.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stop Loss
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The first risk measure is the SL order. It fixes a certain price level or, more
+    often, a fixed percent value that triggers the closing of a position. For example,
+    if the entry price for an unleveraged position is 100 and the SL level is set
+    to 5%, then a long position is closed out at 95 while a short position is closed
+    out at 105.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code is the relevant part of the `TBBacktesterRM` class
+    that handles an SL order. For the SL order, the class allows one to specify whether
+    the price level for the order is guaranteed or not.^([2](ch11.xhtml#idm45625263710744))
+    Working with guaranteed SL price levels might lead to too-optimistic performance
+    results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether an SL is defined and whether the position is not neutral
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the performance based on the entry price for the last trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether an SL event is given for a *long* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the *long* position, at either the current price or the guaranteed price
+    level
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the number of bars to wait before the next trade happens to `wait`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the position to neutral
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_risk_management_CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether an SL event is given for a *short* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_risk_management_CO9-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the *short* position, at either the current price or the guaranteed price
+    level
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code backtests the trading strategy of the trading bot
+    without and with an SL order. For the given parametrization, the SL order has
+    a negative impact on the strategy performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the backtesting class for risk management
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance without any risk measure
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with an SL order (*no* guarantee)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with an SL order (*with* guarantee)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trailing Stop Loss
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In contrast to a regular SL order, a TSL order is adjusted whenever a new high
+    is observed after the base order has been placed. Assume the base order for an
+    unleveraged long position has an entry price of 95 and the TSL is set to 5%. If
+    the instrument price reaches 100 and falls back to 95, this implies a TSL event,
+    and the position is closed at the entry price level. If the price reaches 110
+    and falls back to 104.5, this would imply another TSL event.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code is the relevant part of the `TBBacktesterRM` class
+    that handles a TSL order. To handle such an order correctly, the maximum prices
+    (highs) and the minimum prices (lows) need to be tracked. The maximum price is
+    relevant for a long position, whereas the minimum price is relevant for a short
+    position:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Updates the *maximum* price if necessary
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Updates the *minimum* price if necessary
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the relevant performance for a *long* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the relevant performance for a *short* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether a TSL event is given for a *long* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether a TSL event is given for a *short* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As the backtesting results that follow show, using a TSL order with the given
+    parametrization reduces the gross performance compared to a strategy without a
+    TSL order in place:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with a TSL order
+  prefs: []
+  type: TYPE_NORMAL
+- en: Take Profit
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Finally, there are TP orders. A TP order closes out a position that has reached
+    a certain profit level. Say an unleveraged long position is opened at a price
+    of 100 and the TP order is set to a level of 5%. If the price reaches 105, the
+    position is closed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following code from the `TBBacktesterRM` class finally shows the part that
+    handles a TP order. The TP implementation is straightforward, given the references
+    of the SL and TSL order codes. For the TP order, there is also the option to backtest
+    with a guaranteed price level as compared to the relevant high/low price levels,
+    which would most probably lead to performance values that are too optimistic:^([3](ch11.xhtml#idm45625261444776))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'For the given parametrization, adding a TP order—without guarantee—improves
+    the trading bot performance noticeably compared to the passive benchmark investment.
+    This result might be too optimistic given the considerations from before. Therefore,
+    the TP order with guarantee leads to a more realistic performance value in this
+    case:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with a TP order (*no* guarantee)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with a TP order (*with* guarantee)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Of course, SL/TSL orders can also be combined with TP orders. The backtest
+    results of the Python code that follows are in both cases worse than those for
+    the strategy without the risk measures in place. In managing risk, there is hardly
+    any free lunch:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with an SL and TP order
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the trading bot performance with a TSL and TP order
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance Impact
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Risk measures have their reasoning and benefits. However, reducing risk may
+    come at the price of lower overall performance. On the other hand, the backtesting
+    example with the TP order shows performance improvements that can be explained
+    by the fact that, given the ATR of a financial instrument, a certain profit level
+    can be considered good enough to realize the profit. Any hope to see even higher
+    profits typically is smashed by the market turning around again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter has three main topics. It backtests the performance of a trading
+    bot (that is, a trained deep Q-learning agent) out-of-sample in both vectorized
+    and event-based fashion. It also assesses risks in the form of the average true
+    range (ATR) indicator that measures the *typical* variation in the price of the
+    financial instrument of interest. Finally, the chapter discusses and backtests
+    event-based typical risk measures in the form of stop loss (SL), trailing stop
+    loss (TSL), and take profit (TP) orders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similar to autonomous vehicles (AVs), trading bots are hardly ever deployed
+    based on the predictions of their AI only. To avoid large downside risks and to
+    improve the (risk-adjusted) performance, risk measures usually come into play.
+    Standard risk measures, as discussed in this chapter, are available on almost
+    every trading platform, as well as for retail traders. The next chapter illustrates
+    this in the context of the [Oanda](http://oanda.com) trading platform. The event-based
+    backtesting approach provides the algorithmic flexibility to properly backtest
+    the effects of such risk measures. While “reducing risk” may sound appealing,
+    the backtest results indicate that the reduction in risk often comes at a cost:
+    the performance might be lower when compared to the pure strategy without any
+    risk measures. However, when finely tuned, the results also show that TP orders,
+    for example, can also have a positive effect on the performance.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018\. *Prediction Machines:
+    The Simple Economics of Artificial Intelligence.* Boston: Harvard Business Review
+    Press.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2020\. *Python for Algorithmic Trading: From Idea to Cloud
+    Deployment.* Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Khonji, Majid, Jorge Dias, and Lakmal Seneviratne. 2019\. “Risk-Aware Reasoning
+    for Autonomous Vehicles.” arXiv. October 6, 2019\. [*https://oreil.ly/2Z6WR*](https://oreil.ly/2Z6WR).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Code
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Finance Environment
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python module with the `Finance` environment class:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: Trading Bot
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python module with the `TradingBot` class, based on a
+    financial Q-learning agent:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Backtesting Base Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python module with the `BacktestingBase` class for event-based
+    backtesting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_risk_management_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The relevant `Finance` environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_risk_management_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The relevant DNN model (from the trading bot)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_risk_management_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial/current balance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_risk_management_CO15-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proportional transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_risk_management_CO15-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixed transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_risk_management_CO15-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Whether the prints are verbose or not
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_risk_management_CO15-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial number of units of the financial instrument traded
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_risk_management_CO15-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial number of trades implemented
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_risk_management_CO15-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The relevant *date* given a certain bar
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](Images/10.png)](#co_risk_management_CO15-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The relevant *instrument price* at a certain bar
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](Images/11.png)](#co_risk_management_CO15-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The output of the *date* and *current balance* for a certain bar
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](Images/12.png)](#co_risk_management_CO15-13)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The calculation of the *net wealth* from the current balance and the instrument
+    position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![13](Images/13.png)](#co_risk_management_CO15-14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The output of the *date* and the *net wealth* at a certain bar
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![14](Images/14.png)](#co_risk_management_CO15-15)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of units to be traded given the trade amount
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![15](Images/15.png)](#co_risk_management_CO15-17)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The impact of the trade and the associated costs on the current balance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![16](Images/16.png)](#co_risk_management_CO15-18)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The adjustment of the number of units held
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![17](Images/17.png)](#co_risk_management_CO15-19)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The adjustment of the number of trades implemented
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![18](Images/18.png)](#co_risk_management_CO15-25)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The closing of a *short* position…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![19](Images/19.png)](#co_risk_management_CO15-26)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …or of a *long* position
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![20](Images/20.png)](#co_risk_management_CO15-27)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The net performance given the initial amount and the final current balance
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtesting Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python module with the `TBBacktesterRM` class for event-based
+    backtesting including risk measures (stop loss, trailing stop loss, take profit
+    orders):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch11.xhtml#idm45625264808136-marker)) For more details on the ATR measure,
+    see [ATR (1) Investopedia](https://oreil.ly/2sUsg) or [ATR (2) Investopedia](https://oreil.ly/zwrnO).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch11.xhtml#idm45625263710744-marker)) A *guaranteed* stop loss order might
+    only be available in certain jurisdictions for certain groups of broker clients,
+    such as retail investors/traders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch11.xhtml#idm45625261444776-marker)) A take profit order has a fixed
+    target price level. Therefore, it is unrealistic to use the high price of a time
+    interval for a long position or the low price of the interval for a short position
+    to calculate the realized profit.
+  prefs: []
+  type: TYPE_NORMAL

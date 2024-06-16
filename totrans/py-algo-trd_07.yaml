@@ -1,0 +1,860 @@
+- en: Chapter 7\. Working with Real-Time Data and Sockets
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: If you want to find the secrets of the universe, think in terms of energy, frequency,
+    and vibration.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Nikola Tesla
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Developing trading ideas and backtesting them is a rather asynchronous and
+    non-critical process during which there are multiple steps that might or might
+    not be repeated, during which no capital is at stake, and during which performance
+    and speed are not the most important requirements. Turning to the markets to deploy
+    a trading strategy changes the rules considerably. Data arrives in real time and
+    usually in massive amounts, making a real-time processing of the data and the
+    real-time decision making based on the streaming data a necessity. This chapter
+    is about working with real-time data for which *sockets* are in general the technological
+    tool of choice. In this context, here are a few words on central technical terms:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Network socket
+  prefs: []
+  type: TYPE_NORMAL
+- en: Endpoint of a connection in a computer network, also simply *socket* for short.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Socket address
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combination of an Internet Protocol (IP) address and a port number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Socket protocol
+  prefs: []
+  type: TYPE_NORMAL
+- en: A protocol defining and handling the socket communication, like the Transfer
+    Control Protocol (TCP).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Socket pair
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combination of a local and a remote socket that communicate with each other.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Socket API
+  prefs: []
+  type: TYPE_NORMAL
+- en: The application programming interface allowing for the controlling of sockets
+    and their communication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter focuses on the use of [`ZeroMQ`](http://zeromq.org) as a lightweight,
+    fast, and scalable socket programming library. It is available on multiple platforms
+    with wrappers for the most popular programming languages. `ZeroMQ` supports different
+    patterns for socket communication. One of those patterns is the so-called *publisher-subscriber*
+    (`PUB-SUB`) pattern where a single socket publishes data and multiple sockets
+    simultaneously retrieve the data. This is similar to a radio station that broadcasts
+    its program that is simultaneously listened to by thousands of people via radio
+    devices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the `PUB-SUB` pattern, a fundamental application scenario in algorithmic
+    trading is the retrieval of real-time financial data from an exchange, a trading
+    platform, or a data service provider. Suppose you have developed an intraday trading
+    idea based on the EUR/USD currency pair and have backtested it thoroughly. When
+    deploying it, you need to be able to receive and process the price data in real-time.
+    This fits exactly such a `PUB-SUB` pattern. A central instance broadcasts the
+    new tick data as it becomes available and you, as well as probably thousands of
+    others, receive and process it at the same time.^([1](ch07.html#idm45785358164968))
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter is organized as follows. [“Running a Simple Tick Data Server”](#tick_server)
+    describes how to implement and run a tick data server for sample financial data.
+    [“Connecting a Simple Tick Data Client”](#tick_client) implements a tick data
+    client to connect to the tick data server. [“Signal Generation in Real Time”](#signal_generation)
+    shows how to generate trading signals in real time based on data from the tick
+    data server. Finally, [“Visualizing Streaming Data with Plotly”](#stream_plotting)
+    introduces the [Plotly](http://plot.ly) plotting package as an efficient way to
+    plot streaming data in real time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal of this chapter is to have a tool set and approaches available to be
+    able to work with streaming data in the context of algorithmic trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The code in this chapter makes heavy use of ports over which socket communication
+    takes place and requires the simultaneous execution of two or more scripts at
+    the same time. It is therefore recommended to execute the codes in this chapter
+    in different terminal instances, running different Python kernels. The execution
+    within a single Jupyter Notebook, for instance, does not work in general. What
+    works, however, is the execution of the tick data server script ([“Running a Simple
+    Tick Data Server”](#tick_server)) in a terminal and the retrieval of data in a
+    Jupyter Notebook ([“Visualizing Streaming Data with Plotly”](#stream_plotting)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running a Simple Tick Data Server
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section shows how to run a simple tick data server based on simulated financial
+    instrument prices. The model used for the data generation is the geometric Brownian
+    motion (without dividends) for which an exact Euler discretization is available,
+    as shown in [Equation 7-1](#euler_disc). Here, <math alttext="upper S"><mi>S</mi></math>
+    is the instrument price, <math alttext="r"><mi>r</mi></math> is the constant short
+    rate, <math alttext="sigma"><mi>σ</mi></math> is the constant volatility factor,
+    and <math alttext="z"><mi>z</mi></math> is a standard normal random variable.
+    <math alttext="normal upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math>
+    is the interval between two discrete observations of the instrument price.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 7-1\. Euler discretization of geometric Brownian motion
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
+    normal upper Delta t Baseline dot exp left-parenthesis left-parenthesis r minus
+    StartFraction sigma squared Over 2 EndFraction right-parenthesis normal upper
+    Delta t plus sigma StartRoot normal upper Delta t EndRoot z right-parenthesis"
+    display="block"><mrow><msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>Δ</mi><mi>t</mi></mrow></msub> <mo>·</mo> <mo form="prefix">exp</mo>
+    <mfenced close=")" open="(" separators=""><mfenced close=")" open="(" separators=""><mi>r</mi>
+    <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac></mfenced>
+    <mi>Δ</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msqrt><mrow><mi>Δ</mi> <mi>t</mi></mrow></msqrt>
+    <mi>z</mi></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Making use of this model, [“Sample Tick Data Server”](#py_tick_server) presents
+    a Python script that implements a tick data server using `ZeroMQ` and a class
+    called `InstrumentPrice` to publish new, simulated tick data in a randomized fashion.
+    The publishing is randomized in two ways. First, the stock price value is based
+    on a Monte Carlo simulation. Second is the length of time interval between two
+    publishing events it randomized. The remainder of this section explains the major
+    parts of the script in detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first part of the following script does some imports, among other things,
+    for the Python wrapper of `ZeroMQ`. It also instantiates the major objects needed
+    to open a socket of `PUB` type:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This imports the Python wrapper for the `ZeroMQ` library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `Context` object is instantiated. It is the central object for the socket
+    communication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The socket itself is defined based on the `PUB` socket type (“communication
+    pattern”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The socket gets bound to the local IP address (`0.0.0.0` on Linux and Mac OS,
+    `127.0.0.1` on Windows) and the port number 5555.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The class `InstrumentPrice` is for the simulation of instrument price values
+    over time. As attributes, there are the major parameters for the geometric Brownian
+    motion in addition to the instrument symbol and the time at which an instance
+    is created. The only method `.simulate_value()` generates new values for the stock
+    price given the time passed since it has been called the last time and a random
+    factor:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The attribute `t` stores the time of the initialization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the `.simulate_value()` method is called, the current time is recorded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`dt` represents the time interval between the current time and the one stored
+    in `self.t` in (trading) year fractions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: To have larger instrument price movements, this line of code scales the `dt`
+    variable (by an arbitrary factor).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The attribute `t` is updated with the current time, which represents the reference
+    point for the next call of the method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on an Euler scheme for the geometric Brownian motion, a new instrument
+    price is simulated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The main part of the script consists of the instantiation of an object of type
+    `InstrumentPrice` and an infinite `while` loop. During the `while` loop, a new
+    instrument price gets simulated, and a message is created, printed, and sent via
+    the socket.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, the execution pauses for a random amount of time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This line instantiates an `InstrumentPrice` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An infinite `while` loop is started.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The message text gets generated based on the `symbol` attribute and a newly
+    simulated stock price value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The message `str` object is printed to the standard out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is also sent to subscribed sockets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The execution of the loop is paused for a random amount of time (between 0 and
+    2 seconds), simulating the random arrival of new tick data in the markets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Executing the script prints out messages as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: At this point, it cannot yet be verified whether the script is also sending
+    the same message via the socket bound to `tcp://0.0.0.0:5555` (`tcp://127.0.0.1:5555`
+    on Windows). To this end, another socket subscribing to the publishing socket
+    is needed to complete the socket pair.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Often, the Monte Carlo simulation of prices for financial instruments relies
+    on homogeneous time intervals (like “one trading day”). In many cases, this is
+    a “good enough” approximation when working with, say, end-of-day closing prices
+    over longer horizons. In the context of intraday tick data, the random arrival
+    of the data is an important characteristic that needs to be taken into account.
+    The Python script for the tick data server implements the random arrival times
+    by randomized time intervals during which it pauses the execution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Connecting a Simple Tick Data Client
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The code for the tick data server is already quite concise, with the `InstrumentPrice`
+    simulation class representing the longest part. The code for a respective tick
+    data client, as shown in [“Tick Data Client”](#py_tick_client), is even more concise.
+    It is only a few lines of code that instantiate the main `Context` object, connect
+    to the publishing socket, and subscribe to the `SYMBOL` channel, which happens
+    to be the only available channel here. In the `while` loop, the string-based message
+    is received and printed. That makes for a rather short script.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The initial part of the following script is almost symmetrical to the tick
+    data server script:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This imports the Python wrapper for the `ZeroMQ` library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the client, the main object also is an instance of `zmq.Context`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: From here, the code is different; the socket type is set to `SUB`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This socket connects to the respective IP address and port combination.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This line of code defines the so-called channel to which the socket subscribes.
+    Here, there is only one, but a specification is nevertheless required. In real-world
+    applications, however, you might receive data for a multitude of different symbols
+    via a socket connection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `while` loop boils down to the retrieval of the messages sent by the server
+    socket and printing them out:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This socket receives data in an infinite loop.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the main line of code where the data (string-based message) is received.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`data` is printed to `stdout`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The output of the Python script for the socket client is exactly the same as
+    the one from the Python script for the socket server:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: Retrieving data in the form of string-based messages via socket communication
+    is only a prerequisite for the very tasks to be accomplished based on the data,
+    like generating trading signals in real time or visualizing the data. This is
+    what the two next sections cover.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`ZeroMQ` allows the transmission of other object types, as well. For example,
+    there is an option to send a Python object via a socket. To this end, the object
+    is, by default, serialized and deserialized with `pickle`. The respective methods
+    to accomplish this are `.send_pyobj()` and `.recv_pyobj()` (see [The PyZMQ API](https://oreil.ly/ok2kc)).
+    In practice, however, platforms and data providers cater to a diverse set of environments,
+    with Python being only one out of many languages. Therefore, string-based socket
+    communication is often used, for example, in combination with standard data formats
+    such as `JSON`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Signal Generation in Real Time
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: An *online algorithm* is an algorithm based on data that is received incrementally
+    (bit by bit) over time. Such an algorithm only knows the current and previous
+    states of relevant variables and parameters, but nothing about the future. This
+    is a realistic setting for financial trading algorithms for which any element
+    of (perfect) foresight is to be excluded. By contrast, an *offline algorithm*
+    knows the complete data set from the beginning. Many algorithms in computer science
+    fall into the category of offline algorithms, such as a sorting algorithm over
+    a list of numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To generate signals in real time on the basis of an online algorithm, data
+    needs to be collected and processed over time. Consider, for example, a trading
+    strategy based on the time series momentum of the last three five-second intervals
+    (see [Chapter 4](ch04.html#vectorized_backtesting)). Tick data needs to be collected
+    and then resampled, and the momentum needs to be calculated based on the resampled
+    data set. When time passes by, a continuous, incremental updating takes place.
+    [“Momentum Online Algorithm”](#py_online_algorithm) presents a Python script that
+    implements the momentum strategy, as described previously as an online algorithm.
+    Technically, there are two major parts in addition to handling the socket communication.
+    First are the retrieval and storage of the tick data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an empty `pandas` `DataFrame` to collect the tick data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the number of time intervals for the momentum calculation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the (initial) minimum length for the signal generation to be triggered.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The retrieval of the tick data via the socket connection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO6-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A timestamp is generated for the data retrieval.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO6-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The string-based message is split into the symbol and the numerical value (still
+    a `str` object here).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_working_with_real_time_data_and_sockets_CO6-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This line of code first generates a temporary `DataFrame` object with the new
+    data and then appends it to the existing `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second is the resampling and processing of the data, as shown in the following
+    Python code. This happens based on the tick data collected up to a certain point
+    in time. During this step, log returns are calculated based on the resampled data
+    and the momentum is derived. The sign of the momentum defines the positioning
+    to be taken in the financial instrument:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tick data is resampled to a five-second interval, taking the last available
+    tick value as the relevant one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This calculates the log returns over the five-second intervals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This increases the minimum length of the resampled `DataFrame` object by one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The momentum and, based on its sign, the positioning are derived given the log
+    returns from three resampled time intervals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This prints the final five rows of the resampled `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_real_time_data_and_sockets_CO7-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A momentum value of `1.0` means a long market position. In production, the first
+    signal or a change in the signal then triggers certain actions, like placing an
+    order with the broker. Note that the second but last value of the `momentum` column
+    is used since the last value is based at this stage on incomplete data for the
+    relevant (not yet finished) time interval. Technically, this is due to using the
+    `pandas` `.resample()` method with the `label='right'` parametrization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_working_with_real_time_data_and_sockets_CO7-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Similarly, a momentum value of `-1.0` implies a short market position and potentially
+    certain actions that might be triggered, such as a sell order with a broker. Again,
+    the second but last value from the `momentum` column is used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the script is executed, it takes some time, depending on the very parameters
+    chosen, until there is enough (resampled) data available to generate the first
+    signal.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is an intermediate example output of the online trading algorithm script:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: It is a good exercise to implement, based on the presented tick client script,
+    both an SMA-based strategy and a mean-reversion strategy as an online algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizing Streaming Data with Plotly
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The visualization of streaming data in real time is generally a demanding task.
+    Fortunately, there are quite a few technologies and Python packages available
+    nowadays that significantly simplify such a task. In what follows, we will work
+    with [Plotly](http://plot.ly), which is both a technology and a service used to
+    generate nice looking, interactive plots for static and streaming data. To follow
+    along, the `plotly` package needs to be installed. Also, several Jupyter Lab extensions
+    need to be installed when working with Jupyter Lab. The following command should
+    be executed on the terminal:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: The Basics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Once the required packages and extension are installed, the generation of a
+    streaming plot is quite efficient. The first step is the creation of a Plotly
+    figure widget:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This imports the graphical objects from `plotly`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This instantiates a Plotly figure widget within the Jupyter Notebook.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The second step is to set up the socket communication with the sample tick
+    data server, which needs to run on the same machine in a separate Python process.
+    The incoming data is enriched by a timestamp and collected in `list` objects.
+    These `list` objects in turn are used to update the `data` objects of the figure
+    widget (see [Figure 7-1](#plotly_stream_01)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`list` object for the timestamps.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`list` object for the real-time prices.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates a timestamp and appends it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Updates the `data` object with the amended `x` (`times`) and `y` (`prices`)
+    data sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0701](assets/pfat_0701.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-1\. Plot of streaming price data, as retrieved in real time via socket
+    connection
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Three Real-Time Streams
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A streaming plot with Plotly can have multiple graph objects. This comes in
+    handy when, for instance, two simple moving averages (SMAs) shall be visualized
+    in real time in addition to the price ticks. The following code instantiates again
+    a figure widget—this time with three `scatter` objects. The tick data from the
+    sample tick data server is collected in a `pandas` `DataFrame` object. The two
+    SMAs are calculated after each update from the socket. The amended data sets are
+    used to update the `data` object of the figure widget (see [Figure 7-2](#plotly_stream_02)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Collects the tick data in a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds the two SMAs in separate columns to the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Again, it is a good exercise to combine the plotting of streaming tick data
+    and the two SMAs with the implementation of an online trading algorithm based
+    on the two SMAs. In this case, resampling should be added to the implementation
+    since such trading algorithms are hardly ever based on tick data but rather on
+    bars of fixed length (five seconds, one minute, etc.).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0702](assets/pfat_0702.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-2\. Plot of streaming price data and two SMAs calculated in real time
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Three Sub-Plots for Three Streams
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'As with conventional Plotly plots, streaming plots based on figure widgets
+    can also have multiple sub-plots. The example that follows creates a streaming
+    plot with three sub-plots. The first plots the real-time tick data. The second
+    plots the log returns data. The third plots the time series momentum based on
+    the log returns data. [Figure 7-3](#plotly_stream_03) shows a snapshot of the
+    whole figure object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_real_time_data_and_sockets_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates three sub-plots that share the x-axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_real_time_data_and_sockets_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the first sub-plot for the price data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_real_time_data_and_sockets_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the second sub-plot for the log returns data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_real_time_data_and_sockets_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the third sub-plot for the momentum data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_real_time_data_and_sockets_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the height of the figure object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0703](assets/pfat_0703.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-3\. Streaming price data, log returns, and momentum in different sub-plots
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Streaming Data as Bars
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Not all streaming data is best visualized as a time series (`Scatter` object).
+    Some streaming data is better visualized as bars with changing height. [“Sample
+    Data Server for Bar Plot”](#py_bars_server) contains a Python script that serves
+    sample data suited for a bar-based visualization. A single data set (message)
+    consists of eight floating point numbers. The following Python code generates
+    a streaming bar plot (see [Figure 7-4](#plotly_stream_04)). In this context, the
+    x data usually does not change. For the following code to work, the `BarsServer.py`
+    script needs to be executed in a separate, local Python instance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0704](assets/pfat_0704.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-4\. Streaming data as bars with changing height
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Nowadays, algorithmic trading has to deal with different types of streaming
+    (real-time) data types. The most important type in this regard is tick data for
+    financial instruments that is, in principle, generated and published around the
+    clock.^([2](ch07.html#idm45785354874120)) Sockets are the technological tool of
+    choice to deal with streaming data. A powerful and at the same time easy-to-use
+    library in this regard is `ZeroMQ`, which is used in this chapter to create a
+    simple tick data server that endlessly emits sample tick data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Different tick data clients are introduced and explained to generate trading
+    signals in real time based on online algorithms and to visualize the incoming
+    tick data by streaming plots using Plotly. Plotly makes streaming visualization
+    within a Jupyter Notebook an efficient affair, allowing for, among other things,
+    multiple streams at the same time—both in a single plot or in different sub-plots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on the topics covered in this chapter and the previous ones, you are now
+    able to work with both *historical structured data* (for example, in the context
+    of the backtesting of trading strategies) and *real-time streaming data* (for
+    example, in the context of generating trading signals in real time). This represents
+    a major milestone in the endeavor to build an automated, algorithmic trading operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The best starting point for a thorough overview of `ZeroMQ` is the [ZeroMQ home
+    page](http://zeromq.org). The [Learning ZeroMQ with Python](https://bit.ly/zmq_pub_sub)
+    tutorial page provides an overview of the `PUB-SUB` pattern based on the Python
+    wrapper for the socket communication library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A good place to start working with Plotly is the [Plotly home page](http://plot.ly)
+    and in particular the [Getting Started with Plotly page](https://oreil.ly/7ARrQ)
+    for Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python Scripts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section presents Python scripts referenced and used in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sample Tick Data Server
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is a script that runs a sample tick data server based on `ZeroMQ`.
+    It makes use of Monte Carlo simulation for the geometric Brownian motion:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: Tick Data Client
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is a script that runs a tick data client based on `ZeroMQ`. It
+    connects to the tick data server from [“Sample Tick Data Server”](#py_tick_server):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: Momentum Online Algorithm
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is a script that implements a trading strategy based on time
+    series momentum as an online algorithm. It connects to the tick data server from
+    [“Sample Tick Data Server”](#py_tick_server):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: Sample Data Server for Bar Plot
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is a Python script that generates sample data for a streaming
+    bar plot:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch07.html#idm45785358164968-marker)) When speaking of *simultaneously*
+    or *at the same time*, this is meant in a theoretical, idealized sense. In practical
+    applications, different distances between the sending and receiving sockets, network
+    speeds, and other factors affect the exact retrieval time per subscriber socket.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch07.html#idm45785354874120-marker)) Not all markets are open 24 hours,
+    7 days per week, and for sure not all financial instruments are traded around
+    the clock. However, cryptocurrency markets, for example, for Bitcoin, indeed operate
+    around the clock, constantly creating new data that needs to be digested in real-time
+    by players active in these markets.
+  prefs: []
+  type: TYPE_NORMAL

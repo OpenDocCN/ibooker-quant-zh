@@ -1,0 +1,855 @@
+- en: Chapter 6\. The Dangers of Conventional AI Systems
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A man’s got to know his limitations.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: —Detective “Dirty” Harry in the movie Magnum Force, as he watches an overconfident
+    criminal mastermind’s car explode
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: A model’s got to know its limitations. This is worth emphasizing because of
+    the importance of this characteristic for models in finance and investing. The
+    corollary is that an AI’s got to know its limitations. The most serious limitation
+    of all AI systems is that they lack common sense. This stems from their inability
+    to understand causal relationships. AI systems only learn statistical relationships
+    during training that are hard to generalize to new situations without comprehending
+    causality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear), we examined
+    the three ways in which financial markets can humble you even when you apply our
+    best models cautiously and thoughtfully. Markets will almost surely humiliate
+    you when your models are based on flawed financial and statistical theories such
+    as those discussed in the first half of the book. That’s actually not such a bad
+    outcome, because a humiliating financial loss can often lead to personal insights
+    and growth. A worse outcome is getting fired from your job or your career coming
+    to an ignoble end. The worst outcome is personal financial ruin, where the wisdom
+    gained from such an experience may not be timely enough to be useful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When traditional ML models (such as deep learning networks and logistic regression)
+    are trained, they generally use the maximum likelihood estimation (MLE) method
+    to learn the model parameters from in-sample data. Consequently, these ML systems
+    have three deep flaws that severely limit their use in finance and investing.
+    First, the parameter estimates of their models are erroneous when used with small
+    datasets, especially when they learn from noisy financial data. Second, these
+    ML models are awful at extrapolating beyond the data ranges and classes on which
+    they have been trained and tested. Third, the probability scores of MLE models
+    have to be calibrated into valid probabilities by using a function such as a Sigmoid
+    or Softmax function. However, these calibrations are not guaranteed to represent
+    the underlying probabilities accurately leading to poor uncertainty quantifications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What makes all these flaws egregious is that the conventional statistical models
+    on which these ML systems are based make erroneous estimates and predictions with
+    appallingly high confidence, making them very dangerous in an uncertain world.
+    Just like in the movie *Magnum Force*, these overconfident AI models have the
+    potential of blowing up investment accounts, companies, financial institutions,
+    and economies if they are implemented without understanding their severe limitations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In [Chapter 4](ch04.html#the_dangers_of_conventional_statistical), we exposed
+    the fallacious inferential reasoning of popular statistical methods such as NHST,
+    p-values, and confidence intervals. In this chapter, we examine the severe limitations
+    and flaws of the popular MLE method and why it fails in finance and investing.
+    We do this by examining a case where we want to project whether a newly listed
+    public company we have invested in will beat its quarterly earnings expectations,
+    based on a short track record. By comparing the results of a traditional MLE model
+    with that of a probabilistic model, we demonstrate why probabilistic models are
+    better suited for finance and investing in general, especially when datasets are
+    sparse.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As discussed earlier, most real-world probabilistic inference problems cannot
+    be solved analytically because of the intractable complexity of the summations/integrals
+    in the marginal probability distribution. Instead of using flawed probability
+    calibration methods used by MLE models, we settle for approximate numerical solutions
+    to probabilistic inference problems. Even though the earnings expectation problem
+    can be solved analytically using basic calculus, we apply grid approximation to
+    solve it to show how this simple, powerful technique works and makes probabilistic
+    inference much easier to understand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Markov chain Monte Carlo (MCMC) simulation is a breakthrough numerical method
+    that has transformed the usability of probabilistic inference by estimating analytically
+    intractable, high dimensional posterior probability distributions. MCMC simulates
+    complex probability distributions using dependent random sampling algorithms.
+    We explore the fundamental concepts underlying this powerful, scalable simulation
+    method. As a proof-of-concept of the MCMC method, we use the famous Metropolis
+    sampling algorithm to simulate a Student’s t-distribution with fat tails.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'AI Systems: A Dangerous Lack of Common Sense'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Humans are endowed with a very important quality that no AI has been able to
+    learn so far: a commonsensical ability to generalize our learnings reasonably
+    well to unseen, out-of-sample related classes or ranges, even if we have not been
+    specifically trained on them. Unlike AI systems, almost all humans can easily
+    deduce, infer, and adjust their knowledge to new circumstances based on common
+    sense. For instance, a deep neural network trained to recognize live elephants
+    in the wilderness was unable to recognize a taxidermy elephant on display in a
+    museum.^([1](ch06.html#ch06fn1)) Even a toddler could do this task easily by just
+    using their common sense. As others have pointed out, the AI system literally
+    could not see the elephant in the room!'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The primary reason for such common failures is that AI models only compute correlations
+    and don’t have the tools to comprehend causation. Furthermore, humans are able
+    to abstract concepts from specific examples and think in terms of generalization
+    of objects and causal relationships among them, while AI systems are just unable
+    to do that. This is a major problem when dealing with noisy, big datasets as they
+    present abundant opportunities for correlating variables that have no plausible
+    physical or causal relationship. With large datasets, spurious correlations among
+    variables are the rule, not the exception.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For instance, [Figure 6-1](#spurious_correlations_are_the_rule_in_b) shows that
+    between 1999 and 2009, there was a 99.8% correlation between US spending on science,
+    space and technology, and suicides by hanging, strangulation, and suffocation.^([2](ch06.html#ch06fn2))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Spurious correlations are the rule in big datasets.](assets/pmlf_0601.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-1\. Spurious correlations are the rule in big datasets^([3](ch06.html#ch06fn3))
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Clearly this relationship is nonsensical and underscores the adage that correlation
+    does not imply causation. Humans would understand the absurdity of such spurious
+    correlations quite easily, but not AI systems. This also makes AI systems easy
+    to fool by humans who understand such weaknesses and can exploit them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: While artificial neural networks were inspired by the structure and function
+    of the human brain, our understanding of how human neurons learn and work is still
+    incomplete. As a result, artificial neural networks are not exact replicas of
+    biological neurons, and there are still many unsolved mysteries surrounding the
+    workings of the human brain. The term “deep neural networks” is a misleading marketing
+    term to describe artificial neural networks with more than two hidden layers between
+    the input and output layers. There is nothing deep about a deep neural network
+    that lacks the common sense of a toddler.^([4](ch06.html#ch06fn4))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why MLE Models Fail in Finance
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The MLE statistical method is used by all conventional parametric ML systems,
+    from simple linear models to complex deep learning neural networks. The MLE method
+    is used to compute the optimal parameters that best fit the data of an assumed
+    statistical distribution. The MLE algorithm is useful when the model is dealing
+    with only aleatory uncertainty of large datasets that have time-invariant statistical
+    distributions where optimization makes sense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Much valuable information and assessment of uncertainty are lost when a statistical
+    distribution is summarized by a point estimate, even if it is an optimal estimate.
+    By definition and design, a point estimate cannot capture the epistemic uncertainty
+    of model parameters because they are not probability distributions. This has serious
+    consequences in finance and investing, where we are dealing with complex, dynamic
+    social systems that are steeped in all three dimensions of uncertainty: aleatory,
+    epistemic, and ontological. In [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear),
+    we discussed why it is dangerous and foolish to use point estimates in finance
+    and investing given that we are continually dealing with erroneous measurements,
+    incomplete information, and three-dimensional uncertainty. In other words, MLE-based
+    traditional ML systems operate only along one dimension in the three-dimensional
+    space of uncertainty as illustrated in [Figure 2-7](ch02.html#human_intelligence_supported_by_probabi).
+    What is even more alarming is that many of these ML systems are generally black
+    boxes operating confidently at high speeds with flawed probability calibrations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Furthermore, MLE ignores prior domain knowledge in the form of base rates or
+    prior probabilities, which can lead to base-rate fallacies, as discussed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
+    This is especially true when MLE is applied to small datasets. Let’s actually
+    see why this is indeed the case by applying the MLE method to a real-world problem
+    of estimating the probability that a company will actually beat the market’s expectation
+    of its earnings estimates based on a short track record. This example has been
+    inspired by the coin tossing example illustrated in the book referred to in the
+    references.^([5](ch06.html#ch06fn5))
+  prefs: []
+  type: TYPE_NORMAL
+- en: An MLE Model for Earnings Expectations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Assume you have changed jobs and are now working at a mutual fund as an equity
+    analyst. Last year, your fund was allocated equity shares in the initial public
+    offering (IPO) of ZYX, a high-growth technology company. Even though ZYX has never
+    turned a profit in its entire nascent life, its brand is already a household name
+    due in large part to its aggressive marketing campaigns that were supported by
+    massive amounts of venture capital. Clearly, private and public equity investors
+    bought into its compelling growth story, as narrated by its charismatic CEO.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In all the last three quarters since its IPO, the negative earnings of ZYX beat
+    market expectations of even bigger losses. In financial markets, less bad is good.
+    The stock price of ZYX has continued its relentless climb upward and is currently
+    trading at all-time highs, enriching everyone in the process. Your portfolio manager
+    (PM) has asked you to estimate the probability that ZYX’s earnings will beat market
+    expectations in the upcoming fourth quarter. Based on your probability estimate,
+    your PM is going to increase or decrease the fund’s equity investment in ZYX before
+    their earnings announcement, which is due shortly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Having been schooled in conventional statistical methods, we decide to build
+    a standard MLE model to compute the required probability. The earnings announcement
+    event has only two outcomes that interest us: either the earnings beat market
+    expectations, or they fall short of them. We don’t care about the outcome of earnings
+    merely meeting market expectations. Like many other investors, your PM has decided
+    that such an outcome is the equivalent of earnings falling short of market expectations.
+    It is common knowledge that management of companies play a game with Wall Street
+    analysts throughout the year, where they lower their earnings expectations so
+    that it becomes easier to beat those expectations when the actual earnings are
+    announced.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s design our quarterly earnings MLE model and specify the assumptions that
+    underpin it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a single event or trial, the model’s output variable y can assume only one
+    of two possible outcomes, y = 1 or y = 0.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The two outcomes are mutually exclusive and collectively exhaustive.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Assign y = 1 to the outcome that ZYX beats market expectations of its quarterly
+    earnings.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Assign y = 0 to the outcome that ZYX does not beat or only meets market expectations
+    of its quarterly earnings.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: We now have to select a statistical distribution for our likelihood function
+    that best models the binary event of an earnings announcement. The Bernoulli distribution
+    models a single event or trial that has binary outcomes. See [Figure 6-2](#shows_a_bernoulli_variable_with_outcome).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Shows a Bernoulli variable with outcome x = 1 occurring with probability
+    p and outcome x = 0 occurring with probability 1-p](assets/pmlf_0602.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-2\. Bernoulli variable^([6](ch06.html#ch06fn6)) with outcome x = 1
+    occurring with probability p and outcome x = 0 occurring with probability 1-p
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Recall that in [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear),
+    we used the binomial distribution to model the total number of interest rate increases
+    by the Federal Reserve over several meetings or trials. The Bernoulli distribution
+    is a special case of the binomial distribution since they both have the same probability
+    distribution when used for a single trial.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assume that variable y follows a Bernoulli distribution with an unknown parameter
+    p, which gives us the probability of an earnings beat (y = 1).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Since both probabilities must add up to 1, this implies that the probability
+    of not beating earnings expectations (y = 0) is its complement, 1-p.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Our objective is to find the MLE of the parameter p, the probability that ZYX
+    beats the market expectations of its quarterly earnings based on ZYX’s short track
+    record of setting market expectations and then beating them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Bernoulli process of the variable y is a discrete time series of independent
+    and identically distributed (i.i.d.) Bernoulli trials, denoted by y[i].
+  prefs: []
+  type: TYPE_NORMAL
+- en: The i.i.d. assumption means that each earnings announcement is independent of
+    all the previous ones and is drawn from the same Bernoulli distribution with constant
+    parameter p.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In its last three quarters, ZYX beat earnings expectations, so our training
+    data for parameter p is D = (y[1] = 1, y[2] = 1, y[3] = 1).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Let’s call p′ the MLE for the parameter p of the Bernoulli variable y. It can
+    be shown mathematically that p′ is the expected value or arithmetic mean of the
+    sample of time series data D. It is the optimal parameter that when inserted in
+    a Bernoulli likelihood function best fits the time series data D. This implies
+    p′ trained on dataset D is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: p′(D) = (y[1]+y[2]+y[3]) / 3 = (1 + 1 + 1) / 3 = 3 / 3 = 1
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Therefore, the probability that ZYX will beat market expectations of its earnings
+    in its fourth quarter is P(y[4] = 1 | p′) = p′ = 1 or 100%.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Since MLE models only allow aleatory uncertainty caused by random sampling
+    of data, let’s compute the variance of y. The variance of a Bernoulli variable
+    y with parameter p′ is given by:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Aleatory uncertainty or variance (y | p′) = (p′) × (1 – p′) = 1 × (1 – 1) =
+    1 × 0 = 0.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Epistemic uncertainty = 0 since p′ is a point estimate that is an optimum.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ontological uncertainty = 0 since p′ is considered a “true” constant and the
+    Bernoulli distribution is assumed to be time invariant.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: So our MLE model is assigning a 100% probability with a 0 sampling error that
+    y[4] = 1\. In other words, our model is absolutely certain that ZYX is going to
+    beat market expectations of its earnings estimate in the upcoming fourth quarter.
+    Our model’s heroic prediction of ZYX’s earnings beating market expectations is
+    based on only three data points of a fledgling, loss-making technology company.
+    Moreover, our current MLE model will continue to predict an earnings beat for
+    every quarterly earnings event for the rest of ZYX’s life. It’s not just death
+    and taxes that are certain. We need to add our MLE model’s predictions to the
+    list.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Any financial analyst with even a modicum of common sense would not present
+    this MLE model and its predictions to their portfolio manager. However, it is
+    very common to have sparse datasets in finance and investing. For instance, we
+    have financial data for only two occurrences of global pandemics. Early stage
+    technology startup companies or strategy/special projects have little or no relevant
+    data for making specific decisions. Since the Great Depression ended in 1933,
+    the US economy has experienced only 13 recessions. Since 1942, the S&P 500 has
+    had three consecutive years of negative total returns only once (2000–2003). These
+    are some of the obvious examples. The list of sparse datasets in finance and investing
+    is quite long indeed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Clearly, MLE models are dangerous when applied to sparse datasets common in
+    finance and investing. They really don’t know their limitations and unabashedly
+    flaunt their ignorance. Building complex financial ML systems based on MLE models
+    will only lead to financial disasters sooner rather than later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Probabilistic Model for Earnings Expectations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Now let’s delete our useless MLE model and pause to reflect on the problem.
+    With only three data points to work with, it would be foolhardy to be absolutely
+    certain about any point estimate of the parameter p, the probability that ZYX’s
+    fourth quarter earnings will beat market expectations. Why is that? There are
+    so many possible things that could have gone wrong in the past quarter that only
+    some company insiders might be aware of. Given the persistent asymmetry of information
+    between the company management and its shareholders, this is always possible.
+    This is a major source of our epistemic uncertainty about parameter p.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most importantly, there are so many things—company specific, political, regulatory,
+    legal, monetary, and economic—that can go wrong in the immediate future and change
+    the market’s expectations before ZYX makes its earnings public. These are some
+    of the sources of our ontological uncertainty. Of course, nobody knows what will
+    happen in the future, but it is more likely that the future will reflect the recent
+    past than not.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So based on our understanding of the three dimensions of uncertainty of the
+    real world we live in and the information that we currently have, we can reasonably
+    bet that it is very probable that ZYX will beat the market’s expectations of its
+    fourth quarter earnings. However, it’s not a certainty. This implies that our
+    model parameter p should be able to take any value between 0 and 1, with the ones
+    closer to 1 being more probable. In other words, our estimate for p is better
+    expressed by a probability distribution than as any particular point estimate.
+    In particular, after seeing the dataset D, our estimate for p is best expressed
+    as a positively skewed probability distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note that the MLE is the optimal value for p that best replicates the observed
+    data. But there is no universal natural law that says that it is a certainty that
+    the MLE is the value of p that produced the in-sample data. Other values of the
+    parameter p could easily have generated the dataset D too. We are dealing with
+    complex social systems with emotional beings that do suboptimal things all the
+    time. Most importantly, we are not constrained by the problem to pick only one
+    value for p.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s actually quantify and visualize the statistical distribution for p more
+    precisely by building a probabilistic model. Recall that a probabilistic model
+    requires us to specify two probability distributions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first is a prior probability distribution P(p) that encapsulates our knowledge
+    or hypothesis about model parameters before we observe any data. Let’s assume
+    you have no prior knowledge about ZYX company or any idea of what the parameter
+    p should be. This makes a uniform distribution, U(0, 1), that we learned in the
+    Monty Hall problem a good choice for our prior distribution. This distribution
+    assigns equal probability to all values of p between 0 and 1\. So P(p) ~U (0,
+    1), where the tilde sign (~) is shorthand for “is statistically distributed as.”
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The second is a likelihood function P(D | p) that gives us the plausibility
+    of observing our in-sample data D assuming any value for our parameter p between
+    0 and 1\. We will continue to use the Bernoulli probability distribution and its
+    related process in our probabilistic model. So the likelihood function of our
+    probabilistic model is P(D | p) ~Bernoulli (p).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Our objective is to estimate the posterior probability distribution of our
+    model parameter p given the in-sample data D and our prior knowledge or hypothesis
+    of p. This will give us the probability distribution for the outcome y = 1, the
+    probability of an earnings beat. As always, we will use the inverse probability
+    rule to compute the probability distribution of p given the data D. Our probabilistic
+    model can be specified as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: P( p | D) = P(D | p) ✕ P(p) / P(D) where
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(p) ~U (0, 1)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(D | p) ~ Bernoulli (p)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: D = (y[1] = 1, y[2] = 1, y[3] = 1)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This posterior distribution is simple enough to be solved analytically using
+    basic calculus.^([7](ch06.html#ch06fn7)) However, this involves using integrals
+    over probability density functions, which may not be accessible to many readers.
+    Instead of doing that here, we will compute the posterior distribution using a
+    simple numerical approach called grid approximation. This approach will convert
+    our problem of integral calculus into a much simpler problem of descriptive statistics.
+    This should help us to build our intuition for the underlying mechanism of our
+    probabilistic model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since our prior distribution is discrete and uniformly distributed, we can split
+    the interval between 0 and 1 into 9 equidistant points, 0.1 apart, as shown in
+    [Figure 6-3](#there_are_n_number_of_grid_points_unifo).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![There are n number of grid points uniformly distributed between a and b,
+    and each has a probability of 1/n.](assets/pmlf_0603.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-3\. There are n number of grid points uniformly distributed between
+    a and b, and each has a probability of 1/n^([8](ch06.html#ch06fn8))
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: So our grid points are {p[1] = 0.1, p[2] = 0.2, .., p[9] = 0.9}. Since the n
+    grid points are uniformly distributed, they all have the same probability, namely
+    P(p) = 1/n, where n is the number of grid points. In our approximation, we have
+    n = 9 grid points.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The prior probability for every parameter p[1],...p[9] on our one-dimensional
+    grid is P(p) = 1/9 = 0.111.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For every parameter p[i] we sample from the set of nine grid points to simulate
+    an earnings event with a value of p[i], the Bernoulli likelihood function generates
+    y = 1 with probability pi or y = 0 with probability 1-p[i]. The Bernoulli process
+    for the last three quarters of ZYX’s earnings event is given by our training data
+    D = (y[1] = 1, y[2] = 1, y[3] = 1). So the likelihood of the Bernoulli process
+    is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: P(D | p[i]) = p[i] × p[i] × p[i] = p[i]³
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For each parameter p[i], we use a grid point {p[1],...p[9]} to compute the
+    unnormalized posterior distribution P*(p | D), using the inverse probability rule.
+    To compute the normalized posterior P(p | D), we first add up the all the unnormalized
+    posterior values and then divide each unnormalized posterior by the sum as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P asterisk left-parenthesis p Subscript i Baseline vertical-bar
+    upper D right-parenthesis proportional-to upper P left-parenthesis upper D vertical-bar
+    p Subscript i Baseline right-parenthesis upper P left-parenthesis p Subscript
+    i Baseline right-parenthesis equals p Subscript i Superscript 3 Baseline times
+    0.111"><mrow><mi>P</mi> <mo>*</mo> <mrow><mo>(</mo> <msub><mi>p</mi> <mi>i</mi></msub>
+    <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow> <mo>∝</mo> <mi>P</mi> <mrow><mo>(</mo>
+    <mi>D</mi> <mo>|</mo> <msub><mi>p</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mi>P</mi>
+    <mrow><mo>(</mo> <msub><mi>p</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mo>=</mo>
+    <msubsup><mi>p</mi> <mi>i</mi> <mn>3</mn></msubsup> <mo>×</mo> <mn>0</mn> <mo>.</mo>
+    <mn>111</mn></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(p[i] | D) = <math alttext="upper P asterisk left-parenthesis p Subscript i
+    Baseline vertical-bar upper D right-parenthesis slash sigma-summation Underscript
+    i Endscripts upper P asterisk left-parenthesis p Subscript i Baseline vertical-bar
+    upper D right-parenthesis"><mrow><mi>P</mi> <mo>*</mo> <mrow><mo>(</mo> <msub><mi>p</mi>
+    <mi>i</mi></msub> <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow> <mo>/</mo> <msub><mo>∑</mo>
+    <mi>i</mi></msub> <mi>P</mi> <mo>*</mo> <mrow><mo>(</mo> <msub><mi>p</mi> <mi>i</mi></msub>
+    <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Let’s use Python code to develop a grid approximation of the solution:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_06in01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_06in02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This figure clearly shows that our probabilistic model has computed a probability
+    distribution for the model parameter p before and after training the model on
+    in-sample data D. This is a much more realistic solution, given that we always
+    have incomplete information about any event.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Our model has learned the parameter p from our prior knowledge and the data.
+    This is only half the solution. We need to use our model to predict the probability
+    that ZYX will beat the market’s expectations of its fourth quarter earnings estimates.
+    In other words, we need to develop the predictive distributions of our model.
+    Let’s continue coding that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_06in03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The expected value or posterior predictive mean is 76%, which is close to the
+    theoretical value of 75%. Regardless, our probabilistic model is not 100% sure
+    that ZYX will beat market expectations in the fourth quarter, even though it has
+    successfully done so in the last three quarters. Our model predicts that it is
+    about three times more likely to beat market expectations than not. This is a
+    far more realistic probability distribution and something we can use to make our
+    investment decisions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, the numerical grid approximation technique we used to solve the
+    earnings expectations problem does not scale if the model has more than a few
+    parameters. So the most scalable and robust numerical methods that we are left
+    with are random sampling methods for estimating approximate solutions for probabilistic
+    inference problems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Markov Chain Monte Carlo Simulations
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Generally speaking, there are two types of random sampling methods: independent
+    sampling, and dependent sampling. The standard Monte Carlo simulation (MCS) method
+    that we learned in [Chapter 3](ch03.html#quantifying_output_uncertainty_with_mon)
+    is an independent random sampling method. However, random sampling does not work
+    well when samples are dependent or correlated with one another.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Furthermore, these independent sampling algorithms are inefficient when the
+    target probability distribution they are trying to simulate has many parameters
+    or dimensions. We generally encounter these two issues when simulating complex
+    posterior probability distributions. So we need random sampling algorithms which
+    work with samples that are dependent or correlated with one another.^([9](ch06.html#ch06fn9))
+    Markov chains are a popular way of generating dependent random samples. The most
+    important aspect of a Markov chain is that the next sample generated is only dependent
+    on the previous sample and independent of everything else.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Markov Chains
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A Markov chain is used to model a stochastic process consisting of a series
+    of discrete and dependent states linked together in a chain-like structure. It
+    is a sequential process that transitions probabilistically in discrete time from
+    state to state in the chain. The most important aspect of a Markov state is that
+    it is memoryless. For any state, its future state only depends on the transition
+    probabilities of the current state and is independent of all past states and the
+    path it took to get to its current state. It’s as if Markovian chains have encoded
+    Master Oogway’s Zen saying from the movie *Kung Fu Panda*: “Yesterday is history,
+    tomorrow is a mystery, but today is a gift. That is why it is called the present.”'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equally important, this simplifying memoryless property makes the Markovian
+    chain easy to understand and implement. A random walk process, whether arithmetic
+    or geometric, is a specific type of Markov chain and is used extensively to model
+    asset prices, returns, interest rates, and volatility. A graphic representation
+    of a Markov chain depicting the three basic and discrete states of the financial
+    markets and their hypothetical transition probabilities is shown in [Figure 6-4](#a_markov_chain_depicting_the_three_basi).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![A Markov chain depicting the three basic states of the financial markets
+    and their hypothetical transition probabilities](assets/pmlf_0604.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-4\. A Markov chain depicting the three basic states of the financial
+    markets and their hypothetical transition probabilities^([10](ch06.html#ch06fn10))
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: According to this state transition diagram, if the financial market is currently
+    in a bear market state, there is an 80% probability it will remain in a bear market
+    state. However, there is a 15% probability that the market will transition to
+    a bull market state and a 5% probability it will transition to a stagnant market
+    state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Say the market transitions from a bear market state to a stagnant market state
+    and then to a bull market state over time. Once it is in the bull market state,
+    it will have no dependence or memory of the stagnant market state or bear market
+    state. Probabilities about its transition to its future state will be dependent
+    only on its present bull market state. So, for example, there is a 90% probability
+    that it will stay in a bull market state regardless of whether it came from a
+    stagnant market state or a bear market state or some permutation of the two. In
+    other words, the future state of any Markov chain is conditionally independent
+    of all past states given the current state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Despite the random walks a stochastic process takes in the state space of a
+    Markov chain, if it can go from one state to every other state in a finite number
+    of moves, the Markov chain is said to be stationary ergodic. Based on this definition,
+    the Markov chain of the hypothetical financial market process depicted in [Figure 6-3](#there_are_n_number_of_grid_points_unifo)
+    is stationary ergodic because the market will eventually reach any state in the
+    Markov chain given enough time. Such a hypothetical stationary ergodic financial
+    market would imply that the ensemble average price returns of all investors is
+    expected to equal the price returns of every single random trajectory taken by
+    any single investor in the ensemble over a long enough time period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, as was discussed earlier, real financial markets are neither stationary
+    nor ergodic. For instance, as an investor, you could suffer heavy losses in an
+    unrelenting bear market state, or make foolish investments in a bubblicious bull
+    market state, or be forced to liquidate your investments to pay for expensive
+    divorce lawyers in a stagnant market state, and never be in another market state
+    again. You would then be banished to a special Markovian state called an absorbing
+    state from which there is no escape. This special state absorbs the essence of
+    the lyric from the Eagles’ song “Hotel California”: “You can check out any time
+    you like, but you can never leave.” We will discuss the problem of ergodicity
+    in finance and investing in [Chapter 8](ch08.html#making_probabilistic_decisions_with_gen).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Metropolis Sampling
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The Metropolis algorithm generates a Markov chain to simulate any discrete
+    or continuous target probability distribution. The Metropolis algorithm iteratively
+    generates dependent random samples based on three key elements:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proposal probability distribution
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a probability distribution that helps explore the target probability
+    distribution efficiently by proposing the next state in the Markov chain based
+    on the current state. Different proposal distributions can be used depending on
+    the problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proposal acceptance ratio
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a measure of the relative probability of the proposed move. In a probabilistic
+    inference problem, the acceptance ratio is the ratio of the posterior probabilities
+    of the target distribution evaluated at the proposed state to the current state
+    in the Markov chain. Recall from the previous chapter that taking the ratio of
+    the posterior probabilities at two different points gets rid of the analytically
+    intractable marginal probability distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Decision rules on the proposed state
+  prefs: []
+  type: TYPE_NORMAL
+- en: These are probabilistic decision rules that determine whether to accept or reject
+    the proposed state in the chain. If the acceptance ratio is greater than or equal
+    to 1, the proposed state is accepted and the Markov chain moves to the next state.
+    If the acceptance ratio is less than 1, the algorithm generates a random number
+    between 0 and 1\. If the random number is less than the acceptance ratio, the
+    proposed state is accepted. Otherwise it is rejected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Metropolis algorithm builds its Markov chain iteratively and stops when
+    the required number of samples have been accepted. The accepted samples are then
+    used to simulate the target probability distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a proof-of-concept of MCMC simulation, we will use the Metropolis algorithm
+    to simulate a Student’s t-distribution with six degrees of freedom. This distribution
+    is widely used in finance and investing for modeling asset price return distributions
+    with fat tails. The Student’s t-distribution is a family of probability distributions,
+    with each specific distribution controlled by its degrees of freedom parameter.
+    The lower that value, the fatter the tails of the distribution. We will apply
+    this distribution and discuss it further in the next chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the following Python code, we use the uniform distribution as the proposal
+    distribution and the Student’s t-distribution with six degrees of freedom as our
+    target distribution to simulate. It initializes the Markov chain arbitrarily at
+    x = 0 and runs the Metropolis sampling algorithm 10,000 times. The resulting samples
+    are stored in a list, which is plotted to visualize the sample path of the Markov
+    chain. Finally, the code plots a histogram of the samples to show its convergence
+    to the actual target distribution:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_06in04.png)![Image](assets/pmlf_06in05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In 1970, William Hastings generalized the Metropolis sampling algorithm so that
+    asymmetric proposal distributions and more flexible acceptance criteria could
+    be applied. The resulting Metropolis-Hastings MCMC algorithm can simulate any
+    target probability distribution asymptotically, i.e., given enough samples, the
+    simulation will converge to the target probability distribution. However, this
+    algorithm can be inefficient and costly for high-dimensional, complex target distributions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Metropolis-Hastings algorithm is dependent on the arbitrary initial starting
+    value of the Markov chain. The initial samples gathered during this period, called
+    the burn-in period, are generally discarded. The randomness of the walk-through
+    state space can waste time due to the possibility of revisiting the same regions
+    several times. Moreover, the algorithm can get stuck in narrow regions of multidimensional
+    spaces.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Modern dependent sampling algorithms have been developed to address the shortcomings
+    of this general-purpose MCMC sampling algorithm. The Hamiltonian Monte Carlo (HMC)
+    algorithm uses the geometry of any continuous target distribution to move efficiently
+    in high-dimensional space. It is the default MCMC sampling algorithm in the PyMC
+    library, and we don’t need any specialized knowledge to use it. In the next chapter,
+    we will use these MCMC algorithms to simulate the posterior probability distributions
+    of model parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Traditional statistical MLE models on which most conventional ML systems are
+    based are limited in their capabilities. They are designed to deal with only aleatory
+    uncertainty and are unaware of their limitations. As we have demonstrated in this
+    chapter, MLE-based models make silly predictions confidently. This makes them
+    dangerous in our world of three-dimensional uncertainty. Poor predictive performance
+    and disastrous risk management from such overconfident, simplistic, and hasty
+    ML models are almost surely inevitable in the complex world of finance and investing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In designing probabilistic models, we acknowledge the fact that only death is
+    certain—everything else, including taxes, has a probability distribution. Probabilistic
+    models are designed to manage uncertainties generated from noisy sample data and
+    inexact model parameters. These models enable us to go from a one-dimensional
+    world of aleatory uncertainty to a two-dimensional world with aleatory and epistemic
+    uncertainties. This makes them more appropriate for the world of finance and investing.
+    However, this comes at the cost of higher computational complexities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To apply probabilistic machine learning to complex financial and investing problems,
+    we have to use dependent random sampling because other numerical methods don’t
+    work or don’t scale. MCMC simulation methods are transformative. They use dependent
+    random sampling algorithms to simulate complex probability distributions that
+    are difficult to sample from directly. We will apply MCMC methods in the next
+    chapter, using a popular probabilistic ML Python library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ontological uncertainty emanates from complex social systems, which can be disruptive
+    at times. Among other things, it involves rethinking and redesigning the probabilistic
+    model from scratch and making it more appropriate for the new market environment.
+    This is generally best managed by human beings with common sense, judgment, and
+    experience. We are still very much relevant in the bold, new world of AI and have,
+    indeed, the hardest job.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Dürr, Oliver, and Beate Sick. *Probabilistic Deep Learning with Python, Keras,
+    and TensorFlow Probability*. Manning Publications, 2020.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Guo, Chuan, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. “On Calibration
+    of Modern Neural Networks.” Last revised August 3, 2017\. *https://arxiv.org/abs/1706.04599.*
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Lambert, Ben. *A Student’s Guide to Bayesian Statistics*. London, UK: Sage
+    Publications, 2018.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Mitchell, Melanie. *Artificial Intelligence: A Guide for Thinking Humans*.
+    New York: Farrar, Straus and Giroux, 2020.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Vigen, Tyler. *Spurious Correlations*. New York: Hachette Books, 2015.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([1](ch06.html#ch06fn1-marker)) Oliver Dürr and Beate Sick, “Bayesian Learning,”
+    in *Probabilistic Deep Learning with Python, Keras, and TensorFlow Probability*
+    (Manning Publications, 2020), 197–228.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([2](ch06.html#ch06fn2-marker)) Tyler Vigen, *Spurious Correlations* (New
+    York: Hachette Books, 2015).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch06.html#ch06fn3-marker)) Adapted from an image on Wikimedia Commons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([4](ch06.html#ch06fn4-marker)) Melanie Mitchell, “Knowledge, Abstraction,
+    and Analogy in Artificial Intelligence,” in *Artificial Intelligence: A Guide
+    for Thinking Humans* (New York: Farrar, Straus and Giroux, 2019), 247–65.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch06.html#ch06fn5-marker)) Dürr and Sick, “Bayesian Learning.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([6](ch06.html#ch06fn6-marker)) Adapted from an image on Wikimedia Commons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([7](ch06.html#ch06fn7-marker)) Dürr and Sick, “Bayesian Learning.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([8](ch06.html#ch06fn8-marker)) Adapted from an image on Wikimedia Commons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([9](ch06.html#ch06fn9-marker)) Ben Lambert, “Leaving Conjugates Behind: Markov
+    Chain Monte Carlo,” in *A Student’s Guide to Bayesian Statistics* (London, UK:
+    Sage Publications, 2018), 263–90.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([10](ch06.html#ch06fn10-marker)) Adapted from an image on Wikimedia Commons.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,1114 @@
+- en: Chapter 2\. Python Infrastructure
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In building a house, there is the problem of the selection of wood.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: It is essential that the carpenter’s aim be to carry equipment that will cut
+    well and, when he has time, to sharpen that equipment.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Miyamoto Musashi (*The Book of Five Rings*)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: For someone new to Python, Python deployment might seem all but straightforward.
+    The same holds true for the wealth of libraries and packages that can be installed
+    optionally. First of all, there is not only one Python. Python comes in many different
+    flavors, like CPython, Jython, IronPython, or PyPy. Then there is still the divide
+    between Python 2.7 and the 3.x world. This chapter focuses on *CPython*, the most
+    popular version of the Python programming language, and on version 3.8.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Even when focusing on CPython 3.8 (henceforth just “Python”), deployment is
+    made difficult due to a number of reasons:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The interpreter (a standard CPython installation) only comes with the so-called
+    *standard library* (e.g. covering typical mathematical functions).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Optional Python packages need to be installed separately, and there are hundreds
+    of them.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Compiling (“building”) such non-standard packages on your own can be tricky
+    due to dependencies and operating system–specific requirements.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Taking care of such dependencies and of version consistency over time (maintenance)
+    is often tedious and time consuming.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Updates and upgrades for certain packages might cause the need for recompiling
+    a multitude of other packages.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Changing or replacing one package might cause trouble in (many) other places.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Migrating from one Python version to another one at some later point might amplify
+    all the preceding issues.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Fortunately, there are tools and strategies available that help with the Python
+    deployment issue. This chapter covers the following types of technologies that
+    help with Python deployment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Package manager
+  prefs: []
+  type: TYPE_NORMAL
+- en: Package managers like [`pip`](https://oreil.ly/5vKCa) or [`conda`](https://oreil.ly/uTZRn)
+    help with the installing, updating, and removing of Python packages. They also
+    help with version consistency of different packages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Virtual environment manager
+  prefs: []
+  type: TYPE_NORMAL
+- en: A virtual environment manager like [`virtualenv`](https://oreil.ly/xMnlC) or
+    `conda` allows one to manage multiple Python installations in parallel (for example,
+    to have both a Python 2.7 and 3.8 installation on a single machine or to test
+    the most recent development version of a fancy Python package without risk).^([1](ch02.html#idm45785393599784))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Container
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Docker](http://docker.com) containers represent complete file systems containing
+    all pieces of a system needed to run a certain software, such as code, runtime,
+    or system tools. For example, you can run a Ubuntu 20.04 operating system with
+    a Python 3.8 installation and the respective Python codes in a Docker container
+    hosted on a machine running Mac OS or Windows 10\. Such a containerized environment
+    can then also be deployed later in the cloud without any major changes.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cloud instance
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deploying Python code for financial applications generally requires high availability,
+    security, and performance. These requirements can typically be met only by the
+    use of professional compute and storage infrastructure that is nowadays available
+    at attractive conditions in the form of fairly small to really large and powerful
+    cloud instances. One benefit of a cloud instance (virtual server) compared to
+    a dedicated server rented longer term is that users generally get charged only
+    for the hours of actual usage. Another advantage is that such cloud instances
+    are available literally in a minute or two if needed, which helps with agile development
+    and scalability.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The structure of this chapter is as follows. [“Conda as a Package Manager”](#conda_package)
+    introduces `conda` as a package manager for Python. [“Conda as a Virtual Environment
+    Manager”](#conda_environment) focuses on `conda` capabilities for virtual environment
+    management. [“Using Docker Containers”](#docker_container) gives a brief overview
+    of Docker as a containerization technology and focuses on the building of a Ubuntu-based
+    container with Python 3.8 installation. [“Using Cloud Instances”](#cloud_instance)
+    shows how to deploy Python and [`Jupyter Lab`](https://oreil.ly/4LqUS), a powerful,
+    browser-based tool suite for Python development and deployment in the cloud.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal of this chapter is to have a proper Python installation with the most
+    important tools, as well as numerical, data analysis, and visualization packages,
+    available on a professional infrastructure. This combination then serves as the
+    backbone for implementing and deploying the Python codes in later chapters, be
+    it interactive financial analytics code or code in the form of scripts and modules.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conda as a Package Manager
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Although `conda` can be installed alone, an efficient way of doing it is via
+    *Miniconda*, a minimal Python distribution that includes `conda` as a package
+    and virtual environment manager.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Installing Miniconda
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You can download the different versions of Miniconda on the [Miniconda page](https://oreil.ly/-Z_6H).
+    In what follows, the Python 3.8 64-bit version is assumed, which is available
+    for Linux, Windows, and Mac OS. The main example in this sub-section is a session
+    in an Ubuntu-based Docker container, which downloads the Linux 64-bit installer
+    via `wget` and then installs Miniconda. The code as shown should work (with maybe
+    minor modifications) on any other Linux-based or Mac OS–based machine, as well:^([2](ch02.html#idm45785395838952))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Simply pressing the `ENTER` key starts the installation process. After reviewing
+    the license agreement, approve the terms by answering `yes`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After you have agreed to the licensing terms and have confirmed the install
+    location, you should allow Miniconda to prepend the new Miniconda install location
+    to the `PATH` environment variable by answering `yes` once again:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After that, you might want to update `conda` since the Miniconda installer
+    is in general not as regularly updated as `conda` itself:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After this rather simple installation procedure, there are now both a basic
+    Python installation and `conda` available. The basic Python installation comes
+    already with some nice batteries included, like the [`SQLite3`](https://sqlite.org)
+    database engine. You might try out whether you can start Python in a *new shell
+    instance* or after *appending the relevant path* to the respective environment
+    variable (as done in the preceding example):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Basic Operations with Conda
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`conda` can be used to efficiently handle, among other things, the installation,
+    updating, and removal of Python packages. The following list provides an overview
+    of the major functions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Installing Python x.x
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda install python=x.x`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Updating Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda update python`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Installing a package
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda install $PACKAGE_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Updating a package
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda update $PACKAGE_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Removing a package
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda remove $PACKAGE_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Updating conda itself
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda update conda`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Searching for packages
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda search $SEARCH_TERM`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing installed packages
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda list`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given these capabilities, installing, for example, `NumPy` (as one of the most
+    important packages of the so-called *scientific stack*) is a single command only.
+    When the installation takes place on a machine with an Intel processor, the procedure
+    automatically installs the [Intel Math Kernel Library `mkl`](https://oreil.ly/Tca2C),
+    which speeds up numerical operations not only for `NumPy` on Intel machines but
+    also for a few other scientific Python packages:^([3](ch02.html#idm45785395802712))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Multiple packages can also be installed at once. The `-y` flag indicates that
+    all (potential) questions shall be answered with `yes`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After the resulting installation procedure, some of the most important libraries
+    for financial analytics are available in addition to the standard ones:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[IPython](http://ipython.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An improved interactive Python shell
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[matplotlib](http://matplotlib.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard plotting library for Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[NumPy](http://numpy.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Efficient handling of numerical arrays
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[pandas](http://pandas.pydata.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Management of tabular data, like financial time series data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PyTables](http://pytables.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Python wrapper for the [HDF5](http://hdfgroup.org) library
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[scikit-learn](http://scikit-learn.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A package for machine learning and related tasks
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[SciPy](http://scipy.org)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A collection of scientific classes and functions
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This provides a basic tool set for data analysis in general and financial analytics
+    in particular. The next example uses `IPython` and draws a set of pseudo-random
+    numbers with `NumPy`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Executing `conda list` shows which packages are installed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In case a package is not needed anymore, it is efficiently removed with `conda
+    remove`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`conda` as a package manager is already quite useful. However, its full power
+    only becomes evident when adding virtual environment management to the mix.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda` as a package manager makes installing, updating, and removing Python
+    packages a pleasant experience. There is no need to take care of building and
+    compiling packages on your own, which can be tricky sometimes given the list of
+    dependencies a package specifies and given the specifics to be considered on different
+    operating systems.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conda as a Virtual Environment Manager
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Having installed Miniconda with `conda` included provides a default Python
+    installation depending on what version of Miniconda has been chosen. The virtual
+    environment management capabilities of `conda` allow one, for example, to add
+    to a Python 3.8 default installation a completely separated installation of Python
+    2.7.x. To this end, `conda` offers the following functionality:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a virtual environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda create --name $ENVIRONMENT_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Activating an environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda activate $ENVIRONMENT_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deactivating an environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda deactivate $ENVIRONMENT_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Removing an environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda env remove --name $ENVIRONMENT_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exporting to an environment file
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda env export > $FILE_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating an environment from a file
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda env create -f $FILE_NAME`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing all environments
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda info --envs`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a simple illustration, the example code that follows creates an environment
+    called `py27`, installs `IPython`, and executes a line of Python 2.7.x code. Although
+    the support for Python 2.7 has ended, the example illustrates how legacy Python
+    2.7 code can easily be executed and tested:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Notice how the prompt changes to include `(py27)` after the environment is
+    activated:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Finally, this allows one to use `IPython` with Python 2.7 syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'As this example demonstrates, `conda` as a virtual environment manager allows
+    one to install different Python versions alongside each other. It also allows
+    one to install different versions of certain packages. The default Python installation
+    is not influenced by such a procedure, nor are other environments that might exist
+    on the same machine. All available environments can be shown via `conda info --envs`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Sometimes it is necessary to share environment information with others or to
+    use environment information on multiple machines, for instance. To this end, one
+    can export the installed packages list to a file with `conda env export`. However,
+    this only works properly by default for the same operating system since the build
+    versions are specified in the resulting `yaml` file. However, they can be deleted
+    to only specify the package version via the `--no-builds` flag:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Often, virtual environments, which are technically not that much more than
+    a certain (sub-)folder structure, are created to do some quick tests.^([4](ch02.html#idm45785399695288))
+    In such a case, an environment is easily removed (after deactivation) via `conda
+    env remove`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: This concludes the overview of `conda` as a virtual environment manager.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conda` not only helps with managing packages, but it is also a virtual environment
+    manager for Python. It simplifies the creation of different Python environments,
+    allowing one to have multiple versions of Python and optional packages available
+    on the same machine without them influencing each other in any way. `conda` also
+    allows one to export environment information to easily replicate it on multiple
+    machines or to share it with others.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using Docker Containers
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Docker containers have taken the IT world by storm (see [Docker](http://docker.com)).
+    Although the technology is still relatively young, it has established itself as
+    one of the benchmarks for the efficient development and deployment of almost any
+    kind of software application.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For our purposes, it suffices to think of a Docker container as a separated
+    (“containerized”) file system that includes an operating system (for example,
+    Ubuntu 20.04 LTS for server), a (Python) runtime, additional system and development
+    tools, and further (Python) libraries and packages as needed. Such a Docker container
+    might run on a local machine with Windows 10 Professional 64 Bit or on a cloud
+    instance with a Linux operating system, for instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section goes into the exciting details of Docker containers. It is a concise
+    illustration of what the Docker technology can do in the context of Python deployment.^([5](ch02.html#idm45785399679560))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Docker Images and Containers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before moving on to the illustration, two fundamental terms need to be distinguished
+    when talking about Docker. The first is a *Docker image*, which can be compared
+    to a Python class. The second is a *Docker container*, which can be compared to
+    an instance of the respective Python class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'On a more technical level, you will find the following definition for a *Docker
+    image* in the [Docker glossary](https://oreil.ly/NNUiB):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Docker images are the basis of containers. An image is an ordered collection
+    of root filesystem changes and the corresponding execution parameters for use
+    within a container runtime. An image typically contains a union of layered filesystems
+    stacked on top of each other. An image does not have state and it never changes.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Similarly, you will find the following definition for a *Docker container*
+    in the [Docker glossary](https://oreil.ly/NNUiB), which makes the analogy to Python
+    classes and instances of such classes transparent:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A container is a runtime instance of a Docker image.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: A Docker container consists of
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: A Docker image
+  prefs:
+  - PREF_BQ
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: An execution environment
+  prefs:
+  - PREF_BQ
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: A standard set of instructions
+  prefs:
+  - PREF_BQ
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The concept is borrowed from Shipping Containers, which define a standard to
+    ship goods globally. Docker defines a standard to ship software.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Depending on the operating system, the installation of Docker is somewhat different.
+    That is why this section does not go into the respective details. More information
+    and further links are found on the [Get Docker page](https://oreil.ly/hGgxs).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Building a Ubuntu and Python Docker Image
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: This sub-section illustrates the building of a Docker image based on the latest
+    version of Ubuntu that includes Miniconda, as well as a few important Python packages.
+    In addition, it does some Linux housekeeping by updating the Linux packages index,
+    upgrading packages if required and installing certain additional system tools.
+    To this end, two scripts are needed. One is a `Bash` script doing all the work
+    on the Linux level.^([6](ch02.html#idm45785399656040)) The other is a so-called
+    *Dockerfile*, which controls the building procedure for the image itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Bash script in [Example 2-1](#docker_install), which does the installing,
+    consists of three major parts. The first part handles the Linux housekeeping.
+    The second part installs Miniconda, while the third part installs optional Python
+    packages. There are also more detailed comments inline:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Example 2-1\. Script installing Python and optional packages
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `Dockerfile` in [Example 2-2](#docker_file) uses the `Bash` script in [Example 2-1](#docker_install)
+    to build a new Docker image. It also has its major parts commented inline:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Example 2-2\. Dockerfile to build the image
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'If these two files are in a single folder and Docker is installed, then the
+    building of the new Docker image is straightforward. Here, the tag `pyalgo:basic`
+    is used for the image. This tag is needed to reference the image, for example,
+    when running a container based on it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Existing Docker images can be listed via `docker images`. The new image should
+    be on top of the list:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Having built the `pyalgo:basic` image successfully allows one to run a respective
+    Docker container with `docker run`. The parameter combination `-ti` is needed
+    for interactive processes running within a Docker container, like a shell process
+    of `IPython` (see the [Docker Run Reference page](https://oreil.ly/s0_hn)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Exiting `IPython` will exit the container as well, since it is the only application
+    running within the container. However, you can detach from a container via the
+    following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After having detached from the container, the `docker ps` command shows the
+    running container (and maybe other currently running containers):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Attaching to the Docker container is accomplished by `docker attach $CONTAINER_ID`.
+    Notice that a few letters of the `CONTAINER ID` are enough:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `exit` command terminates `IPython` and therewith stops the Docker container,
+    as well. It can be removed by `docker rm`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Similarly, the Docker image `pyalgo:basic` can be removed via `docker rmi`
+    if not needed any longer. While containers are relatively lightweight, single
+    images might consume quite a bit of storage. In the case of the `pyalgo:basic`
+    image, the size is close to 2 GB. That is why you might want to regularly clean
+    up the list of Docker images:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: Of course, there is much more to say about Docker containers and their benefits
+    in certain application scenarios. For the purposes of this book, they provide
+    a modern approach to deploying Python, to doing Python development in a completely
+    separated (containerized) environment, and to shipping codes for algorithmic trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are not yet using Docker containers, you should consider starting to
+    use them. They provide a number of benefits when it comes to Python deployment
+    and development efforts, not only when working locally but also in particular
+    when working with remote cloud instances and servers deploying code for algorithmic
+    trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using Cloud Instances
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section shows how to set up a full-fledged Python infrastructure on a [DigitalOcean](http://digitalocean.com)
+    cloud instance. There are many other cloud providers out there, among them [Amazon
+    Web Services](http://aws.amazon.com) (AWS) as the leading provider. However, DigitalOcean
+    is well known for its simplicity and relatively low rates for smaller cloud instances,
+    which it calls *Droplet*. The smallest Droplet, which is generally sufficient
+    for exploration and development purposes, only costs 5 USD per month or 0.007
+    USD per hour. Usage is charged by the hour so that one can (for example) easily
+    spin up a Droplet for two hours, destroy it, and get charged just 0.014 USD.^([7](ch02.html#idm45785399102600))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The goal of this section is to set up a Droplet on DigitalOcean that has a
+    Python 3.8 installation plus typically needed packages (such as `NumPy` and `pandas`)
+    in combination with a password-protected and Secure Sockets Layer (SSL)-encrypted
+    [Jupyter Lab](http://jupyter.org) server installation.^([8](ch02.html#idm45785399086424))
+    As a web-based tool suite, `Jupyter Lab` provides several tools that can be used
+    via a regular browser:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jupyter Notebook
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is one of the most popular (if not *the* most popular) browser-based, interactive
+    development environment that features a selection of different language kernels
+    like Python, R, and Julia.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python console
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is an `IPython`-based console that has a graphical user interface different
+    from the look and feel of the standard, terminal-based implementation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Terminal
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a system shell implementation accessible via the browser that allows
+    not only for all typical system administration tasks, but also for usage of helpful
+    tools such as [`Vim`](http://vim.org/download) for code editing or [`git`](https://git-scm.com/)
+    for version control.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Editor
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another major tool is a browser-based text file editor with syntax highlighting
+    for many different programming languages and file types, as well as typical text/code
+    editing capabilities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: File manager
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Jupyter Lab` also provides a full-fledged file manager that allows for typical
+    file operations, such as uploading, downloading, and renaming.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having `Jupyter Lab` installed on a Droplet allows one to do Python development
+    and deployment via the browser, circumventing the need to log in to the cloud
+    instance via Secure Shell (SSH) access.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To accomplish the goal of this section, several scripts are needed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Server setup script
+  prefs: []
+  type: TYPE_NORMAL
+- en: This script orchestrates all steps necessary, such as copying other files to
+    the Droplet and running them on the Droplet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python and `Jupyter` installation script
+  prefs: []
+  type: TYPE_NORMAL
+- en: This script installs Python, additional packages, `Jupyter Lab`, and starts
+    the `Jupyter Lab` server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jupyter Notebook configuration file
+  prefs: []
+  type: TYPE_NORMAL
+- en: This file is for the configuration of the `Jupyter Lab` server, for example,
+    with regard to password protection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RSA public and private key files
+  prefs: []
+  type: TYPE_NORMAL
+- en: These two files are needed for the SSL encryption of the communication with
+    the `Jupyter Lab` server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following section works backwards through this list of files since although
+    the setup script is executed first, the other files need to have been created
+    beforehand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RSA Public and Private Keys
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In order to accomplish a secure connection to the `Jupyter Lab` server via
+    an arbitrary browser, an SSL certificate consisting of RSA public and private
+    keys (see [RSA Wikipedia page](https://oreil.ly/8UG1K)) is needed. In general,
+    one would expect that such a certificate comes from a so-called Certificate Authority
+    (CA). For the purposes of this book, however, a self-generated certificate is
+    “good enough.”^([9](ch02.html#idm45785399055176)) A popular tool to generate RSA
+    key pairs is [`OpenSSL`](http://openssl.org). The brief interactive session to
+    follow generates a certificate appropriate for use with a `Jupyter Lab` server
+    (see the [Jupyter Notebook docs](https://oreil.ly/YxxaF)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: The two files `mykey.key` and `mycert.pem` need to be copied to the Droplet
+    and need to be referenced by the `Jupyter Notebook` configuration file. This file
+    is presented next.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jupyter Notebook Configuration File
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A public `Jupyter Lab` server can be deployed securely, as explained in the
+    [Jupyter Notebook docs](https://oreil.ly/YxxaF). Among others things, `Jupyter
+    Lab` shall be password protected. To this end, there is a password hash code-generating
+    function called `passwd()` available in the `notebook.auth` sub-package. The following
+    code generates a password hash code with `jupyter` being the password itself:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: This hash code needs to be placed in the `Jupyter Notebook` configuration file
+    as presented in [Example 2-3](#jupyter_config_file). The configuration file assumes
+    that the RSA key files have been copied on the Droplet to the `/root/.jupyter/`
+    folder.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Example 2-3\. Jupyter Notebook configuration file
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: The next step is to make sure that Python and `Jupyter Lab` get installed on
+    the Droplet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deploying `Jupyter Lab` in the cloud leads to a number of security issues since
+    it is a full-fledged development environment accessible via a web browser. It
+    is therefore of paramount importance to use the security measures that a `Jupyter
+    Lab` server provides by default, like password protection and SSL encryption.
+    But this is just the beginning, and further security measures might be advised
+    depending on what exactly is done on the cloud instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Installation Script for Python and Jupyter Lab
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The bash script to install Python and `Jupyter Lab` is similar to the one presented
+    in section [“Using Docker Containers”](#docker_container) to install Python via
+    Miniconda in a Docker container. However, the script in [Example 2-4](#cloud_install)
+    needs to start the `Jupyter Lab` server, as well. All major parts and lines of
+    code are commented inline.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Example 2-4\. Bash script to install Python and to run the `Jupyter Notebook`
+    server
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: This script needs to be copied to the Droplet and needs to be started by the
+    orchestration script, as described in the next sub-section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Script to Orchestrate the Droplet Set Up
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The second bash script, which sets up the Droplet, is the shortest one (see
+    [Example 2-5](#server_setup)). It mainly copies all the other files to the Droplet
+    for which the respective IP address is expected as a parameter. In the final line,
+    it starts the `install.sh` bash script, which in turn does the installation itself
+    and starts the `Jupyter Lab` server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Example 2-5\. `Bash` script to set up the Droplet
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Everything now is together to give the set up code a try. On DigitalOcean,
+    create a new Droplet with options similar to these:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Operating system
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ubuntu 20.04 LTS x64 (the newest version available at the time of this writing)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Size
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two core, 2GB, 60GB SSD (standard Droplet)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data center region
+  prefs: []
+  type: TYPE_NORMAL
+- en: Frankfurt (since your author lives in Germany)
+  prefs: []
+  type: TYPE_NORMAL
+- en: SSH key
+  prefs: []
+  type: TYPE_NORMAL
+- en: Add a (new) SSH key for password-less login^([10](ch02.html#idm45785398949480))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Droplet name
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prespecified name or something like `pyalgo`
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, clicking on the `Create` button initiates the Droplet creation process,
+    which generally takes about one minute. The major outcome for proceeding with
+    the set-up procedure is the IP address, which might be, for instance, 134.122.74.144
+    when you have chosen Frankfurt as your data center location. Setting up the Droplet
+    now is as easy as what follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The resulting process, however, might take a couple of minutes. It is finished
+    when there is a message from the `Jupyter Lab` server saying something like the
+    following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In any current browser, visiting the following address accesses the running
+    `Jupyter Notebook` server (note the `https` protocol):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: After maybe adding a security exception, the `Jupyter Notebook` login screen
+    prompting for a password (in our case `jupyter`) should appear. Everything is
+    now ready to start Python development in the browser via `Jupyter Lab`, via the
+    `IPython`-based console, and via a terminal window or the text file editor. Other
+    file management capabilities like file upload, deletion of files, or creation
+    of folders are also available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cloud instances, like those from DigitalOcean, and `Jupyter Lab` (powered by
+    the `Jupyter Notebook` server) are a powerful combination for the Python developer
+    and algorithmic trading practitioner to work on and to make use of professional
+    compute and storage infrastructure. Professional cloud and data center providers
+    make sure that your (virtual) machines are physically secure and highly available.
+    Using cloud instances also keeps the exploration and development phase at rather
+    low costs since usage is generally charged by the hour without the need to enter
+    long term agreements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Python is the programming language and technology platform of choice not only
+    for this book but also for almost every leading financial institution. However,
+    Python deployment can be tricky at best and sometimes even tedious and nerve-wracking.
+    Fortunately, technologies are available today—almost all of which are younger
+    than ten years—that help with the deployment issue. The open source software `conda`
+    helps with both Python package and virtual environment management. Docker containers
+    go even further in that complete file systems and runtime environments can be
+    easily created in a technically shielded “sandbox,” or the *container*. Going
+    even one step further, cloud providers like DigitalOcean offer compute and storage
+    capacity in professionally managed and secured data centers within minutes and
+    billed by the hour. This in combination with a Python 3.8 installation and a secure
+    `Jupyter Notebook/Lab` server installation provides a professional environment
+    for Python development and deployment in the context of Python for algorithmic
+    trading projects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'For *Python package management*, consult the following resources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[`pip` package manager page](https://pypi.python.org/pypi/pip)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[`conda` package manager page](http://conda.pydata.org)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[official Installing Packages page](https://packaging.python.org/installing)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For *virtual environment management*, consult these resources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[`virtualenv` environment manager page](https://pypi.python.org/pypi/virtualenv)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[`conda` Managing Environments page](http://conda.pydata.org/docs/using/envs.html)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[`pipenv` package and environment manager](https://github.com/pypa/pipenv)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Information about *Docker containers* can found, among other places, at the
+    [Docker home page](http://docker.com), as well as in the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Matthias, Karl, and Sean Kane. 2018\. *Docker: Up and Running.* 2nd ed. Sebastopol:
+    O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Robbins (2016) provides a concise introduction to and overview of the `Bash`
+    *scripting language*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Robbins, Arnold. 2016\. *Bash Pocket Reference*. 2nd ed. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: How to *run a public Jupyter Notebook/Lab server securely* is explained in [The
+    Jupyter Notebook Docs](https://oreil.ly/uBEeq). There is also `JupyterHub` available,
+    which allows the management of multiple users for a `Jupyter Notebook` server
+    (see [JupyterHub](https://oreil.ly/-XLi5)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: To sign up on DigitalOcean with a 10 USD starting balance in your new account,
+    visit [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up). This pays for two
+    months of usage for the smallest Droplet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([1](ch02.html#idm45785393599784-marker)) A recent project called `pipenv`
+    combines the capabilities of the package manager `pip` with those of the virual
+    environment manager `virtualenv`. See [*https://github.com/pypa/pipenv*](https://github.com/pypa/pipenv).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch02.html#idm45785395838952-marker)) On Windows, you can also run the
+    exact same commands in a Docker container (see [*https://oreil.ly/GndRR*](https://oreil.ly/GndRR)).
+    Working on Windows directly requires some adjustments. See, for example, the book
+    by Matthias and Kane (2018) for further details on Docker usage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch02.html#idm45785395802712-marker)) Installing the meta package `nomkl`,
+    such as in `conda install numpy nomkl`, avoids the automatic installation and
+    usage of `mkl` and related other packages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([4](ch02.html#idm45785399695288-marker)) In the official documentation, you
+    will find the following explanation: “Python *Virtual Environments* allow Python
+    packages to be installed in an isolated location for a particular application,
+    rather than being installed globally.” See the [Creating Virtual Environments
+    page](https://oreil.ly/5Jgjc).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch02.html#idm45785399679560-marker)) See Matthias and Kane (2018) for
+    a comprehensive introduction to the Docker technology.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([6](ch02.html#idm45785399656040-marker)) Consult the book by Robbins (2016)
+    for a concise introduction to and a quick overview of `Bash` scripting. Also see
+    see [GNU Bash](https://oreil.ly/SGHn1).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([7](ch02.html#idm45785399102600-marker)) For those who do not have an account
+    with a cloud provider yet, on [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up),
+    new users get a starting credit of 10 USD for DigitalOcean.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([8](ch02.html#idm45785399086424-marker)) Technically, `Jupyter Lab` is an
+    extension of `Jupyter Notebook`. Both expressions are, however, sometimes used
+    interchangeably.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([9](ch02.html#idm45785399055176-marker)) With such a self-generated certificate,
+    you might need to add a security exception when prompted by the browser. On Mac
+    OS you might even explicitely register the certificate as trustworthy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([10](ch02.html#idm45785398949480-marker)) If you need assistance, visit either
+    [How To Use SSH Keys with DigitalOcean Droplets](https://oreil.ly/Tggw7) or [How
+    To Use SSH Keys with PuTTY on DigitalOcean Droplets (Windows users)](https://oreil.ly/-jTif).
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,1341 @@
+- en: Chapter 3\. Working with Financial Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Clearly, data beats algorithms. Without comprehensive data, you tend to get
+    non-comprehensive predictions.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Rob Thomas (2016)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In algorithmic trading, one generally has to deal with four types of data, as
+    illustrated in [Table 3-1](#types_of_data). Although it simplifies the financial
+    data world, distinguishing data along the pairs *historical versus real-time*
+    and *structured versus unstructured* often proves useful in technical settings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 3-1\. Types of financial data (examples)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|   | Structured | Unstructured |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Historical | End-of-day closing prices | Financial news articles |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Real-time | Bid/ask prices for FX | Posts on Twitter |'
+  prefs: []
+  type: TYPE_TB
+- en: This book is mainly concerned with *structured data* (numerical, tabular data)
+    of both historical and real-time types. This chapter in particular focuses on
+    historical, structured data, like end-of-day closing values for the SAP SE stock
+    traded at the Frankfurt Stock Exchange. However, this category also subsumes intraday
+    data, such as 1-minute-bar data for the Apple, Inc. stock traded at the NASDAQ
+    stock exchange. The processing of real-time, structured data is covered in [Chapter 7](ch07.html#realtime_sockets).
+  prefs: []
+  type: TYPE_NORMAL
+- en: An algorithmic trading project typically starts with a trading idea or hypothesis
+    that needs to be (back)tested based on historical financial data. This is the
+    context for this chapter, the plan for which is as follows. [“Reading Financial
+    Data From Different Sources”](#reading_from_sources) uses `pandas` to read data
+    from different file- and web-based sources. [“Working with Open Data Sources”](#open_data_sources)
+    introduces [Quandl](http://quandl.com) as a popular open data source platform.
+    [“Eikon Data API”](#eikon_data_api) introduces the Python wrapper for the Refinitiv
+    Eikon Data API. Finally, [“Storing Financial Data Efficiently”](#storing_data)
+    briefly shows how to store historical, structured data efficiently with `pandas`
+    based on the [HDF5](http://hdfgroup.org) binary storage format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal for this chapter is to have available financial data in a format with
+    which the backtesting of trading ideas and hypotheses can be implemented effectively.
+    The three major themes are the importing of data, the handling of the data, and
+    the storage of it. This and subsequent chapters assume a Python 3.8 installation
+    with Python packages installed as explained in detail in [Chapter 2](ch02.html#python_environment).
+    For the time being, it is not yet relevant on which infrastructure exactly this
+    Python environment is provided. For more details on efficient input-output operations
+    with Python, see Hilpisch (2018, ch. 9).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading Financial Data From Different Sources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This section makes heavy use of the capabilities of `pandas`, the popular data
+    analysis package for Python (see [`pandas` home page](http://pandas.pydata.org)).
+    `pandas` comprehensively supports the three main tasks this chapter is concerned
+    with: *reading data*, *handling data*, and *storing data*. One of its strengths
+    is the reading of data from different types of sources, as the remainder of this
+    section illustrates.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Data Set
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, we work with a fairly small data set for the Apple Inc. stock
+    price (with symbol `AAPL` and Reuters Instrument Code or RIC `AAPL.O`) as retrieved
+    from the Eikon Data API for April 2020.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since such historical financial data has been stored in a CSV file on disk,
+    pure Python can be used to read and print its content:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the file on disk (adjust path and filename if necessary).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets up a `for` loop with five iterations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints the first five lines in the opened CSV file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This approach allows for simple inspection of the data. One learns that there
+    is a header line and that the single data points per row represent `Date, OPEN,
+    HIGH, LOW, CLOSE, COUNT`, and `VOLUME`, respectively. However, the data is not
+    yet available in memory for further usage with Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading from a CSV File with Python
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'To work with data stored as a CSV file, the file needs to be parsed and the
+    data needs to be stored in a Python data structure. Python has a built-in module
+    called `csv` that supports the reading of data from a CSV file. The first approach
+    yields a `list` object containing other `list` objects with the data from the
+    file:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `csv` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates a `csv.reader` iterator object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `list` comprehension adding every single line from the CSV file as a `list`
+    object to the resulting `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the first five elements of the `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Working with such a nested `list` object—for the calculation of the average
+    closing price, for exammple—is possible in principle but not really efficient
+    or intuitive. Using a `csv.DictReader` iterator object instead of the standard
+    `csv.reader` object makes such tasks a bit more manageable. Every row of data
+    in the CSV file (apart from the header row) is then imported as a `dict` object
+    so that single values can be accessed via the respective key:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here, the `csv.DictReader` iterator object is instantiated, which reads every
+    data row into a `dict` object, given the information in the header row.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Based on the single `dict` objects, aggregations are now somewhat easier to
+    accomplish. However, one still cannot speak of a convenient way of calculating
+    the mean of the Apple closing stock price when inspecting the respective Python
+    code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, a `list` object is generated via a list comprehension with all closing
+    values; second, the sum is taken over all these values; third, the resulting sum
+    is divided by the number of closing values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is one of the major reasons why `pandas` has gained such popularity in
+    the Python community. It makes the importing of data and the handling of, for
+    example, financial time series data sets more convenient (and also often considerably
+    faster) than pure Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading from a CSV File with pandas
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'From this point on, this section uses `pandas` to work with the Apple stock
+    price data set. The major function used is `read_csv()`, which allows for a number
+    of customizations via different parameters (see the [`read_csv()` API reference](https://oreil.ly/IAVfO)).
+    `read_csv()` yields as a result of the data reading procedure a `DataFrame` object,
+    which is the central means of storing (tabular) data with `pandas`. The `DataFrame`
+    class has many powerful methods that are particularly helpful in financial applications
+    (refer to the [`DataFrame` API reference](https://oreil.ly/5-sNr)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `pandas` package is imported.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This imports the data from the CSV file, indicating that the first column shall
+    be treated as the index column and letting the entries in that column be interpreted
+    as date-time information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This method call prints out meta information regarding the resulting `DataFrame`
+    object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `data.tail()` method prints out by default the five most recent data rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Calculating the mean of the Apple stock closing values now is only a single
+    method call:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Chapter 4](ch04.html#vectorized_backtesting) introduces more functionality
+    of `pandas` for the handling of financial data. For details on working with `pandas`
+    and the powerful `DataFrame` class, also refer to the official [`pandas` Documentation
+    page](https://oreil.ly/5PM-O) and to McKinney (2017).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although the Python standard library provides capabilities to read data from
+    CSV files, `pandas` in general significantly simplifies and speeds up such operations.
+    An additional benefit is that the data analysis capabilities of `pandas` are immediately
+    available since `read_csv()` returns a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exporting to Excel and JSON
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`pandas` also excels at exporting data stored in `DataFrame` objects when this
+    data needs to be shared in a non-Python specific format. Apart from being able
+    to export to CSV files, `pandas` also allows one to do the export in the form
+    of Excel spreadsheet files as well as JSON files, both of which are popular data
+    exchange formats in the financial industry. Such an exporting procedure typically
+    needs a single method call only:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exports the data to an Excel spreadsheet file on disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exports the data to a JSON file on disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In particular when it comes to the interaction with Excel spreadsheet files,
+    there are more elegant ways than just doing a data dump to a new file. `xlwings`,
+    for example, is a powerful Python package that allows for an efficient and intelligent
+    interaction between Python and Excel (visit the [`xlwings` home page](http://xlwings.org)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading from Excel and JSON
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Now that the data is also available in the form of an Excel spreadsheet file
+    and a JSON data file, `pandas` can read data from these sources, as well. The
+    approach is as straightforward as with CSV files:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This reads the data from the Excel spreadsheet file to a new `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first five rows of the first in-memory copy of the data are printed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This reads the data from the JSON file to yet another `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This then prints the first five rows of the second in-memory copy of the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`pandas` proves useful for reading and writing financial data from and to different
+    types of data files. Often the reading might be tricky due to nonstandard storage
+    formats (like a “;” instead of a “,” as separator), but `pandas` generally provides
+    the right set of parameter combinations to cope with such cases. Although all
+    examples in this section use a small data set only, one can expect high performance
+    input-output operations from `pandas` in the most important scenarios when the
+    data sets are much larger.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Working with Open Data Sources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: To a great extent, the attractiveness of the Python ecosystem stems from the
+    fact that almost all packages available are open source and can be used for free.
+    Financial analytics in general and algorithmic trading in particular, however,
+    cannot live with open source software and algorithms alone; data also plays a
+    vital role, as the quotation at the beginning of the chapter emphasizes. The previous
+    section uses a small data set from a commercial data source. While there have
+    been helpful open (financial) data sources available for some years (such as the
+    ones provided by Yahoo! Finance or Google Finance), there are not too many left
+    at the time of this writing in 2020\. One of the more obvious reasons for this
+    trend might be the ever-changing terms of data licensing agreements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The one notable exception for the purposes of this book is [Quandl](http://quandl.com),
+    a platform that aggregates a large number of open, as well as premium (i.e., to-be-paid-for)
+    data sources. The data is provided via a unified API for which a Python wrapper
+    package is available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Python wrapper package for the Quandl data API (see the [Python wrapper
+    page on Quandl](https://oreil.ly/xRt5x) and the [GitHub page](https://oreil.ly/LcJEo)
+    of the package) is installed with `conda` through `conda install quandl`. The
+    first example shows how to retrieve historical average prices for the BTC/USD
+    exchange rate since the introduction of Bitcoin as a cryptocurrency. With Quandl,
+    requests always expect a combination of the *database* and the specific *data
+    set* desired. (In the example, `BCHAIN` and `MKPRU`.) Such information can generally
+    be looked up on the Quandl platform. For the example, the relevant page on Quandl
+    is [BCHAIN/MKPRU](https://oreil.ly/APwvn).
+  prefs: []
+  type: TYPE_NORMAL
+- en: By default, the `quandl` package returns a `pandas` `DataFrame` object. In the
+    example, the `Value` column is also presented in annualized fashion (that is,
+    with year end values). Note that the number shown for 2020 is the last available
+    value in the data set (from May 2020) and not necessarily the year end value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'While a large part of the data sets on the Quandl platform are free, some of
+    the free data sets require an API key. Such a key is required after a certain
+    limit of free API calls too. Every user obtains such a key by signing up for a
+    free Quandl account on the [Quandl sign up page](https://oreil.ly/sbh9j). Data
+    requests requiring an API key expect the key to be provided as the parameter `api_key`.
+    In the example, the API key (which is found on the account settings page) is stored
+    as a string in the variable `quandl_api_key`. The concrete value for the key is
+    read from a configuration file via the `configparser` module:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the Python wrapper package for Quandl.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads historical data for the BTC/USD exchange rate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the `Value` column, resamples it—from the originally *daily* values
+    to *yearly* values—and defines the last available observation to be the relevant
+    one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Quandl also provides, for example, diverse data sets for single stocks, like
+    end-of-day stock prices, stock fundamentals, or data sets related to options traded
+    on a certain stock:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The API key can also be configured permanently with the Python wrapper via
+    the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The Quandl platform also offers premium data sets for which a subscription
+    or fee is required. Most of these data sets offer free samples. The example retrieves
+    option implied volatilities for the Microsoft Corp. stock. The free sample data
+    set is quite large, with more than 4,100 rows and many columns (only a subset
+    is shown). The last lines of code display the 30, 60, and 90 days implied volatility
+    values for the five most recent days available:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: This concludes the overview of the Python wrapper package `quandl` for the Quandl
+    data API. The Quandl platform and service is growing rapidly and proves to be
+    a valuable source for financial data in an algorithmic trading context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Open source software is a trend that started many years ago. It has lowered
+    the barriers to entry in many areas and also in algorithmic trading. A new, reinforcing
+    trend in this regard is open data sources. In some cases, such as with Quandl,
+    they even provide high quality data sets. It cannot be expected that open data
+    will completely replace professional data subscriptions any time soon, but they
+    represent a valuable means to get started with algorithmic trading in a cost efficient
+    manner.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Eikon Data API
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Open data sources are a blessing for algorithmic traders wanting to get started
+    in the space and wanting to be able to quickly test hypotheses and ideas based
+    on real financial data sets. Sooner or later, however, open data sets will not
+    suffice anymore to satisfy the requirements of more ambitious traders and professionals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Refinitiv](http://refinitiv.com) is one of the biggest financial data and
+    news providers in the world. Its current desktop flagship product is [Eikon](https://oreil.ly/foYNk),
+    which is the equivalent to the [Terminal](https://oreil.ly/kMJl7) by Bloomberg,
+    the major competitor in the data services field. [Figure 3-1](#eikon_terminal)
+    shows a screenshot of Eikon in the browser-based version. Eikon provides access
+    to petabytes of data via a single access point.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0301](assets/pfat_0301.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3-1\. Browser version of Eikon terminal
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Recently, Refinitiv have streamlined their API landscape and have released a
+    Python wrapper package, called `eikon`, for the Eikon data API, which is installed
+    via `pip install eikon`. If you have a subscription to the Refinitiv Eikon data
+    services, you can use the Python package to programmatically retrieve historical
+    data, as well as streaming structured and unstructured data, from the unified
+    API. A technical prerequisite is that a local desktop application is running that
+    provides a desktop API session. The latest such desktop application at the time
+    of this writing is called Workspace (see [Figure 3-2](#workspace_charting)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are an Eikon subscriber and have an account for the [Developer Community
+    pages](https://oreil.ly/xowdi), you will find an overview of the Python Eikon
+    Scripting Library under [Quick Start](https://oreil.ly/7dnQx).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0302](assets/pfat_0302.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3-2\. Workspace application with desktop API services
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In order to use the Eikon Data API, the Eikon `app_key` needs to be set. You
+    get it via the App Key Generator (`APPKEY`) application in either Eikon or Workspace:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `eikon` package as `ek`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the `app_key`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the help text for the main module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Historical Structured Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The retrieval of historical financial time series data is as straightforward
+    as with the other wrappers used before:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a few symbols as a `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The central line of code that retrieves data for the first symbol…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …for the given start date and…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …the given end date.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_financial_data_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The time interval is here chosen to be `daily`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_financial_data_CO10-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: All fields are requested.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_working_with_financial_data_CO10-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function `get_timeseries()` returns a multi-index `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_working_with_financial_data_CO10-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The values corresponding to each level are regular `DataFrame` objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_working_with_financial_data_CO10-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This provides an overview of the data stored in the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_working_with_financial_data_CO10-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The final five rows of data are shown.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The beauty of working with a professional data service API becomes evident
+    when one wishes to work with multiple symbols and in particular with a different
+    granularity of the financial data (that is, other time intervals):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data is retrieved for all symbols at once.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The time interval…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …is drastically shortened.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function call retrieves minute bars for the symbols.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_financial_data_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints five rows from the Google, LLC, data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_financial_data_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints three data rows from every `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The preceding code illustrates how convenient it is to retrieve historical
+    financial time series data from the Eikon API with Python. By default, the function
+    `get_timeseries()` provides the following options for the `interval` parameter:
+    `tick`, `minute`, `hour`, `daily`, `weekly`, `monthly`, `quarterly`, and `yearly`.
+    This gives all the flexibility needed in an algorithmic trading context, particularly
+    when combined with the resampling capabilities of `pandas` as shown in the following
+    code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A time interval of…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …one hour is chosen (due to data retrieval limits).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `interval` parameter is set to `tick`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Close to 50,000 price ticks are retrieved for the interval.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_financial_data_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The time series data set shows highly irregular (heterogeneous) interval lengths
+    between two ticks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_financial_data_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tick data is resampled to a 30 second interval length (by taking the last
+    value and the sum, respectively)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_working_with_financial_data_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …which is reflected in the `DatetimeIndex` of the new `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Historical Unstructured Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A major strength of working with the Eikon API via Python is the easy retrieval
+    of unstructured data, which can then be parsed and analyzed with Python packages
+    for natural language processing (NLP). Such a procedure is as simple and straightforward
+    as for financial time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The code that follows retrieves news headlines for a fixed time interval that
+    includes Apple Inc. as a company and “Macbook” as a word. The five most recent
+    hits are displayed as a maximum:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `query` parameter for the retrieval operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the maximum number of hits to five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the interval…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …for which to look for news headlines.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_financial_data_CO13-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gives out the results object (output shortened).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_financial_data_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: One particular headline is picked…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_working_with_financial_data_CO13-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and the `story_id` shown.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_working_with_financial_data_CO13-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This retrieves the news text as html code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_working_with_financial_data_CO13-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In `Jupyter Notebook`, for example, the html code…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_working_with_financial_data_CO13-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …can be rendered for better reading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This concludes the illustration of the Python wrapper package for the Refinitiv
+    Eikon data API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing Financial Data Efficiently
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In algorithmic trading, one of the most important scenarios for the management
+    of data sets is “retrieve once, use multiple times.” Or from an input-output (IO)
+    perspective, it is “write once, read multiple times.” In the first case, data
+    might be retrieved from a web service and then used to backtest a strategy multiple
+    times based on a temporary, in-memory copy of the data set. In the second case,
+    tick data that is received continually is written to disk and later on again used
+    multiple times for certain manipulations (like aggregations) in combination with
+    a backtesting procedure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section assumes that the in-memory data structure to store the data is
+    a `pandas` `DataFrame` object, no matter from which source the data is acquired
+    (from a CSV file, a web service, etc.).
+  prefs: []
+  type: TYPE_NORMAL
+- en: To have a somewhat meaningful data set available in terms of size, the section
+    uses a sample financial data set generated by the use of pseudorandom numbers.
+    [“Python Scripts”](#sample_data) presents the Python module with a function called
+    `generate_sample_data()` that accomplishes the task.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In principle, this function generates a sample financial data set in tabular
+    form of arbitrary size (available memory, of course, sets a limit):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the function from the Python script.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints a sample financial data set with five rows and four columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing DataFrame Objects
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The storage of a `pandas` `DataFrame` object as a whole is made simple by the
+    `pandas` `HDFStore` wrapper functionality for the [HDF5](http://hdfgroup.org)
+    binary storage standard. It allows one to dump complete `DataFrame` objects in
+    a single step to a file-based database object. To illustrate the implementation,
+    the first step is to create a sample data set of meaningful size. Here the size
+    of the `DataFrame` generated is about 420 MB:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A sample financial data set with 5,000,000 rows and ten columns is generated;
+    the generation takes a couple of seconds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second step is to open a `HDFStore` object (that is, a HDF5 database file)
+    on disk and to write the `DataFrame` object to it.^([1](ch03.html#idm45785385472888))
+    The size on disk of about 440 MB is a bit larger than for the in-memory `DataFrame`
+    object. However, the writing speed is about five times faster than the in-memory
+    generation of the sample data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Working in Python with binary stores like HDF5 database files usually gets you
+    writing speeds close to the theoretical maximum of the hardware available:^([2](ch03.html#idm45785385469896))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This opens the database file on disk for writing (and overwrites a potentially
+    existing file with the same name).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO16-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing the `DataFrame` object to disk takes less than a second.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO16-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This prints out meta information for the database file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This closes the database file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The third step is to read the data from the file-based `HDFStore` object. Reading
+    also generally takes place close to the theoretical maximum speed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the database file for reading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading takes less than half of a second.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There is another, somewhat more flexible way of writing the data from a `DataFrame`
+    object to an `HDFStore` object. To this end, one can use the `to_hdf()` method
+    of the `DataFrame` object and set the `format` parameter to `table` (see the [`to_hdf`
+    API reference page](https://oreil.ly/uu0_j)). This allows the appending of new
+    data to the `table` object on disk and also, for example, the searching over the
+    data on disk, which is not possible with the first approach. The price to pay
+    is slower writing and reading speeds:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This defines the writing format to be of type `table`. Writing becomes slower
+    since this format type involves a bit more overhead and leads to a somewhat increased
+    file size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading is also slower in this application scenario.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In practice, the advantage of this approach is that one can work with the `table_frame`
+    object on disk like with any other `table` object of the `PyTables` package that
+    is used by `pandas` in this context. This provides access to certain basic capabilities
+    of the [`PyTables`](http://pytables.org) package, such as appending rows to a
+    `table` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `PyTables` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens the database file for reading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO19-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the contents of the database file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO19-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints the first three rows in the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_financial_data_CO19-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the database.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although this second approach provides *more* flexibility, it does not open
+    the doors to the full capabilities of the `PyTables` package. Nevertheless, the
+    two approaches introduced in this sub-section are convenient and efficient when
+    you are working with more or less *immutable data sets that fit into memory*.
+    Nowadays, algorithmic trading, however, has to deal in general with continuously
+    and rapidly growing data sets like, for example, tick data with regard to stock
+    prices or foreign exchange rates. To cope with the requirements of such a scenario,
+    alternative approaches might prove useful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using the `HDFStore` wrapper for the HDF5 binary storage standard, `pandas`
+    is able to write and read financial data almost at the maximum speed the available
+    hardware allows. Exports to other file-based formats, like CSV, are generally
+    much slower alternatives.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using TsTables
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The `PyTables` package, with the import name `tables`, is a wrapper for the
+    HDF5 binary storage library that is also used by `pandas` for its `HDFStore` implementation
+    presented in the previous sub-section. The `TsTables` package (see the [GitHub
+    page for the package](https://oreil.ly/VGPas)) in turn is dedicated to the efficient
+    handling of large financial time series data sets based on the HDF5 binary storage
+    library. It is effectively an enhancement of the `PyTables` package and adds support
+    for time series data to its capabilities. It implements a hierarchical storage
+    approach that allows for a fast retrieval of data sub-sets selected by providing
+    start and end dates and times, respectively. The major scenario supported by `TsTables`
+    is “write once, retrieve multiple times.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: The setup illustrated in this sub-section is that data is continuously collected
+    from a web source, professional data provider, etc. and is stored interim and
+    in-memory in a `DataFrame` object. After a while or a certain number of data points
+    retrieved, the collected data is then stored in a `TsTables` `table` object in
+    an HDF5 database.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First, here is the generation of the sample data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This generates a sample financial data set with 2,500,000 rows and five columns
+    with a one second frequency; the sample data is rounded to two digits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second, some more imports and the creation of the `TsTables` `table` object.
+    The major part is the definition of the `desc` class, which provides the description
+    for the `table` object’s data structure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Currently, `TsTables` only works with the old `pandas` version 0.19\. A friendly
+    fork, working with newer versions of `pandas` is available under [*http://github.com/yhilpisch/tstables*](http://github.com/yhilpisch/tstables)
+    which can be installed with the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`TsTables` (installed from [*https://github.com/yhilpisch/tstables*](https://github.com/yhilpisch/tstables))…'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …`PyTables` are imported.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO21-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first column of the table is a `timestamp` represented as an `int` value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO21-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: All data columns contain `float` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_working_with_financial_data_CO21-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This opens a new database file for writing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_working_with_financial_data_CO21-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `TsTables` table is created at the root node, with name `data` and given
+    the class-based description `desc`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_working_with_financial_data_CO21-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Inspecting the database file reveals the basic principle behind the hierarchical
+    structuring in years, months, and days.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Third is the writing of the sample data stored in a `DataFrame` object to the
+    `table` object on disk. One of the major benefits of `TsTables` is the convenience
+    with which this operation is accomplished, namely by a simple method call. Even
+    better, that convenience here is coupled with speed. With regard to the structure
+    in the database, `TsTables` chunks the data into sub-sets of a single day. In
+    the example case where the frequency is set to one second, this translates into
+    24 x 60 x 60 = 86,400 data rows per full day’s worth of data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This appends the `DataFrame` object via a simple method call.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `table` object shows 86,400 rows per day after the `append()` operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Reading sub-sets of the data from a `TsTables` `table` object is generally
+    really fast since this is what it is optimized for in the first place. In this
+    regard, `TsTables` supports typical algorithmic trading applications, like backtesting,
+    pretty well. Another contributing factor is that `TsTables` returns the data already
+    as a `DataFrame` object such that additional conversions are not necessary in
+    general:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This defines the starting date and…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …end date for the data retrieval operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO23-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `read_range()` method takes the start and end dates as input—reading here
+    is only a matter of milliseconds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: New data that is retrieved during a day can be appended to the `TsTables` `table`
+    object, as illustrated previously. The package is therefore a valuable addition
+    to the capabilities of `pandas` in combination with `HDFStore` objects when it
+    comes to the efficient storage and retrieval of (large) financial time series
+    data sets over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing Data with SQLite3
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Financial time series data can also be written directly from a `DataFrame` object
+    to a relational database like `SQLite3`. The use of a relational database might
+    be useful in scenarios where the SQL query language is applied to implement more
+    sophisticated analyses. With regard to speed and also disk usage, relational databases
+    cannot, however, compare with the other approaches that rely on binary storage
+    formats like HDF5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `DataFrame` class provides the method `to_sql()` (see the [`to_sql()` API
+    reference page](https://oreil.ly/ENhoW)) to write data to a table in a relational
+    database. The size on disk with 100+ MB indicates that there is quite some overhead
+    when using relational databases:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The sample financial data set has 1,000,000 rows and five columns; memory usage
+    is about 46 MB.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO24-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This imports the `SQLite3` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO24-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A connection is opened to a new database file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO24-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing the data to the relational database takes a couple of seconds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One strength of relational databases is the ability to implement (out-of-memory)
+    analytics tasks based on standardized SQL statements. As an example, consider
+    a query that selects for column `No1` all those rows where the value in that row
+    lies between 105 and 108:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_working_with_financial_data_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The SQL query as a Python `str` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_working_with_financial_data_CO25-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The query executed to retrieve all results rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_working_with_financial_data_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first five results printed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_working_with_financial_data_CO25-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The length of the results `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Admittedly, such simple queries are also possible with `pandas` if the data
+    set fits into memory. However, the SQL query language has proven useful and powerful
+    for decades now and should be in the algorithmic trader’s arsenal of data weapons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`pandas` also supports database connections via `SQLAlchemy`, a Python abstraction
+    layer package for diverse relational databases (refer to the [`SQLAlchemy` home
+    page](http://sqlalchemy.org)). This in turn allows for the use of, for example,
+    [`MySQL`](https://mysql.com) as the relational database backend.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers the handling of financial time series data. It illustrates
+    the reading of such data from different file-based sources, like CSV files. It
+    also shows how to retrieve financial data from web services, such as that of Quandl,
+    for end-of-day and options data. Open financial data sources are a valuable addition
+    to the financial landscape. Quandl is a platform integrating thousands of open
+    data sets under the umbrella of a unified API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another important topic covered in this chapter is the efficient storage of
+    complete `DataFrame` objects on disk, as well as of the data contained in such
+    an in-memory object in databases. Database flavors used in this chapter include
+    the HDF5 database standard and the light-weight relational database `SQLite3`.
+    This chapter lays the foundation for [Chapter 4](ch04.html#vectorized_backtesting),
+    which addresses vectorized backtesting; [Chapter 5](ch05.html#machine_learning),
+    which covers machine learning and deep learning for market prediction; and [Chapter 6](ch06.html#event_based_backtesting),
+    which discusses event-based backtesting of trading strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'You can find more information about Quandl at the following link:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[*http://quandl.org*](http://quandl.org)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Information about the package used to retrieve data from that source is found
+    here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Python wrapper page on Quandl](https://www.quandl.com/tools/python)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[GitHub page of the Quandl Python wrapper](https://github.com/quandl/quandl-python)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'You should consult the official documentation pages for more information on
+    the packages used in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[`pandas` home page](http://pandas.pydata.org)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[`PyTables` home page](http://pytables.org)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[`TsTables` fork on GitHub](https://github.com/yhilpisch/tstables)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[`SQLite` home page](http://sqlite.org)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Books and articles cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance*.
+    2nd ed. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'McKinney, Wes. 2017\. *Python for Data Analysis: Data Wrangling with Pandas,
+    NumPy, and IPython*. 2nd ed. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Thomas, Rob. “Bad Election Day Forecasts Deal Blow to Data Science: Prediction
+    Models Suffered from Narrow Data, Faulty Algorithms and Human Foibles.” *Wall
+    Street Journal*, November 9, 2016.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Scripts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The following Python script generates sample financial time series data based
+    on a Monte Carlo simulation for a geometric Brownian motion; for more, see Hilpisch
+    (2018, ch. 12):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch03.html#idm45785385472888-marker)) Of course, multiple `DataFrame` objects
+    could also be stored in a single `HDFStore` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch03.html#idm45785385469896-marker)) All values reported here are from
+    the author’s MacMini with Intel i7 hexa core processor (12 threads), 32 GB of
+    random access memory (DDR4 RAM), and a 512 GB solid state drive (SSD).
+  prefs: []
+  type: TYPE_NORMAL

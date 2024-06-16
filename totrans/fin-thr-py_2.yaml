@@ -1,0 +1,2957 @@
+- en: Chapter 2\. Two-State Economy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As an empirical domain, finance is aimed at specific answers, such as an appropriate
+    value for a given security, or an optimal number of its shares to hold.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Darrell Duffie (1988)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The notion of arbitrage is crucial to the modern theory of Finance.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Delbaen and Schachermayer (2006)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'The analysis in this chapter is based on the most simple *model economy* that
+    is still rich enough to introduce many important notions and concepts of finance:
+    an economy with two relevant points in time and two uncertain future states only.
+    It also allows us to present some important results in the field, like the *Fundamental
+    Theorems of Asset Pricing*, that are discussed in this chapter.^([1](ch02_split_001.xhtml#idm44853711197832))'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simple model chosen is a means to simplify the formal introduction of the
+    sometimes rather abstract mathematical concepts and financial ideas by avoiding
+    as many technicalities as possible. Once these ideas are fleshed out and well
+    understood, the transfer to more realistic financial models usually proves seamless.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter covers mainly the following central topics from finance, mathematics,
+    and Python programming:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Finance | Mathematics | Python |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Time | Natural numbers <math alttext="double-struck upper N"><mi>ℕ</mi></math>
+    | `int`, `type` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Money (currency) | Real numbers <math alttext="double-struck upper R"><mi>ℝ</mi></math>
+    | `float` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Cash flow | Tuple | `tuple`, `list` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Return, interest | Real numbers <math alttext="double-struck upper R"><mi>ℝ</mi></math>
+    | `abs` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| (Net) present value | Function | `def`, `return` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Uncertainty | Vector space <math alttext="double-struck upper R squared"><msup><mi>ℝ</mi>
+    <mn>2</mn></msup></math> | `NumPy`, `ndarray`, `np.array` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Financial asset | Process | `ndarray`, `tuple` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Risk | Probability, state space, power set, mapping | `ndarray` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Expectation, expected return | Dot product | `np.dot` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Volatility | Variance, standard deviation | `np.sqrt` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Contingent claims | Random variable | `np.arange`, `np.maximum`, `plt.plot`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Replication, arbitrage | Linear equations, matrix form | `ndarray(2d)`, `np.linalg.solve`,
+    `np.dot` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Completeness, Arrow-Debreu securities | Linear independence, span | `np.linalg.solve`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Martingale pricing | Martingale, martingale measure | `np.dot` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Mean-variance | Expectation, variance, standard deviation | `np.linspace`,
+    `.std()`, `[x for y in z]` |'
+  prefs: []
+  type: TYPE_TB
+- en: Economy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The first element of the financial model is the idea of an *economy*. An economy
+    is an abstract notion that subsumes other elements of the financial model, like
+    assets (real, financial), agents (people, institutions), or money. Like in the
+    real world, an economy cannot be seen or touched. Nor can it be formally modeled
+    directly—it rather simplifies communication to have such a summary term available.
+    The single model elements together form the economy.^([2](ch02_split_001.xhtml#idm44853711142360))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Real Assets
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Multiple *real assets* are available in the economy that can be used for different
+    purposes. A real asset might be a chicken egg or a complex machine to produce
+    other real assets. At this point, it is not relevant who, for example, produces
+    the real assets or who owns them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agents
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Agents* can be thought of as individual human beings being active in the economy.
+    They might be involved in producing real assets or consuming them or trading them.
+    They accept money during transactions and spend it during others. An agent might
+    also be an institution like a bank that allows other agents to deposit money on
+    which it then pays interest.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Time
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Economic activity, like trading real assets, takes place at discrete points
+    in time only. Formally, it holds for a point in time <math alttext="t element-of
+    0 comma 1 comma 2 comma 3 comma period period period"><mrow><mi>t</mi> <mo>∈</mo>
+    <mrow><mn>0</mn> <mo>,</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo> <mn>3</mn>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo></mrow></mrow></math> or <math alttext="t
+    element-of double-struck upper N 0"><mrow><mi>t</mi> <mo>∈</mo> <msub><mi>ℕ</mi>
+    <mn>0</mn></msub></mrow></math> . In the following, only the two points in time
+    <math alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math>
+    and <math alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math>
+    are relevant. They should be best interpreted as *today* and *one year from today*,
+    although it is not necessarily the only interpretation of the relevant time interval.
+    In many contexts, one can also think of *today* and *tomorrow*. In any case, financial
+    theory speaks of a *static economy* if only two points in time are relevant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Python data type to model the natural numbers <math alttext="double-struck
+    upper N"><mi>ℕ</mi></math> is `int`, which stands for *integers*.^([3](ch02_split_001.xhtml#idm44853711101112))
+    Typical arithmetic operations are possible on integers like addition, subtraction,
+    multiplication, and more:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#manual_co_two_state_economy_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds up two integer values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#manual_co_two_state_economy_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multiplies two integer values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#manual_co_two_state_economy_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigns a value of 0 to the variable name `t`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#manual_co_two_state_economy_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the value of variable `t`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#manual_co_two_state_economy_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigns a new value of 1 to `t`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_000.xhtml#manual_co_two_state_economy_CO1-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looks up and prints the Python type of `t`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Money
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In the economy, *money* (or *currency*), is available in unlimited supply. Money
+    is also infinitely divisible. Money and currency should be thought of in abstract
+    terms only and not in terms of cash (physical coins or bills).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Money in general serves as the *numeraire* in the economy in that the value
+    of one unit of money (think USD, EUR, GBP, etc.) is normalized to exactly 1\.
+    The prices for all other goods are then expressed in such units and are fractions
+    or multiples of such units. Formally, units of the currency are represented as
+    (non-negative) real numbers <math><mrow><mi>c</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In Python, `float` is the standard data type used to represent real numbers
+    <math alttext="double-struck upper R"><mi>ℝ</mi></math> . It stands for *floating
+    point numbers*. Like the `int` type, it allows, among others, for typical arithmetic
+    operations, like addition and subtraction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adding two numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Subtracting two numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning the result of the addition to the variable `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Printing the value of the variable `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looking up and printing out the Python type of the variable `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Beyond serving as a numeraire, money also allows agents to buy and sell real
+    assets or to store value over time. These two functions rest on the trust that
+    money indeed has intrinsic value today and also in one year. In general, this
+    translates into trust in people and institutions being willing to accept money
+    both today and later for any kind of transaction. The numeraire function is independent
+    of this trust since it is a numerical operation only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cash Flow
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Combining time with currency leads to the notion of *cash flow*. Consider an
+    investment project that requires an investment of, say, 9.5 currency units today
+    and pays back 11.75 currency units after one year. An investment is generally
+    considered to be a cash *outflow*, and one often represents this as a negative
+    real number, <math><mrow><mi>c</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn><0</mn></mrow></msub></mrow></math>
+    , or, more specifically, <math alttext="c equals"><mrow><mi>c</mi> <mo>=</mo></mrow></math>
+    –9.5\. The payback is a cash *inflow* and therewith a positive real number, <math><mrow><mi>c</mi><mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math> , or <math alttext="c equals"><mrow><mi>c</mi>
+    <mo>=</mo></mrow></math> +11.75 in the example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To indicate the points in time when cash flows happen, a time index is used:
+    in the example, <math alttext="c Subscript t equals 0 Baseline equals"><mrow><msub><mi>c</mi>
+    <mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow></msub> <mo>=</mo></mrow></math> –9.5
+    and <math alttext="c Subscript t equals 1 Baseline equals"><mrow><msub><mi>c</mi>
+    <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow></msub> <mo>=</mo></mrow></math> 11.75,
+    or for short, <math alttext="c 0 equals"><mrow><msub><mi>c</mi> <mn>0</mn></msub>
+    <mo>=</mo></mrow></math> –9.5 and <math alttext="c 1 equals"><mrow><msub><mi>c</mi>
+    <mn>1</mn></msub> <mo>=</mo></mrow></math> 11.75.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A pair of cash flows now and one year from now is modeled mathematically as
+    an *ordered pair* or *two-tuple*, which combines the two relevant cash flows into
+    one object: <math alttext="c element-of double-struck upper R squared"><mrow><mi>c</mi>
+    <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mrow></math> with <math alttext="c
+    equals left-parenthesis c 0 comma c 1 right-parenthesis"><mrow><mi>c</mi> <mo>=</mo>
+    <mo>(</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>c</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></math> and <math alttext="c 0 comma c 1 element-of double-struck
+    upper R"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>c</mi>
+    <mn>1</mn></msub> <mo>∈</mo> <mi>ℝ</mi></mrow></math> .'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In Python, there are multiple data structures available to model such a mathematical
+    object. The two most basic ones are `tuple` and `list`. Objects of type `tuple`
+    are immutable, that is, they cannot be changed after instantiation, while those
+    of type `list` are mutable and can be changed after instantiation. First, an illustration
+    of `tuple` objects (characterized by parentheses):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the cash outflow today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the cash inflow one year later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the `tuple` object `c` (note the use of parentheses).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the cash flow pair (note the parentheses).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looks up and shows the type of object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the first element of object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_000.xhtml#co_two_state_economy_CO2-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the second element of object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second, an illustration of the `list` object (characterized by square brackets):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the `list` object `c` (note the use of square brackets).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the cash flow pair (note the square brackets).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looks up and shows the type of object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the first element of object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the second element of object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overwrites the value at the first index position in the object `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_000.xhtml#co_two_state_economy_CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the resulting changes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Return
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Consider an investment project with cash flows <math alttext="c equals left-parenthesis
+    c 0 comma c 1 right-parenthesis equals"><mrow><mi>c</mi> <mo>=</mo> <mo>(</mo>
+    <msub><mi>c</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>c</mi> <mn>1</mn></msub>
+    <mo>)</mo> <mo>=</mo></mrow></math> (–10, 12). The *return* <math alttext="upper
+    R element-of double-struck upper R"><mrow><mi>R</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math>
+    of the project is the sum of the cash flows <math alttext="upper R equals c 0
+    plus c 1 equals"><mrow><mi>R</mi> <mo>=</mo> <msub><mi>c</mi> <mn>0</mn></msub>
+    <mo>+</mo> <msub><mi>c</mi> <mn>1</mn></msub> <mo>=</mo></mrow></math> –10 + 12
+    = 2\. The *rate of return*, <math alttext="r element-of double-struck upper R"><mrow><mi>r</mi>
+    <mo>∈</mo> <mi>ℝ</mi></mrow></math> , is the return, <math alttext="upper R"><mi>R</mi></math>
+    , divided by <math alttext="bar c 0 bar"><mrow><mo>|</mo> <msub><mi>c</mi> <mn>0</mn></msub>
+    <mo>|</mo></mrow></math> , that is by the absolute value of the investment outlay
+    today:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="r equals StartFraction upper R Over bar c 0 bar EndFraction equals
+    StartFraction negative 10 plus 12 Over 10 EndFraction equals two-tenths equals
+    0.2" display="block"><mrow><mi>r</mi> <mo>=</mo> <mfrac><mi>R</mi> <mrow><mo>|</mo><msub><mi>c</mi>
+    <mn>0</mn></msub> <mo>|</mo></mrow></mfrac> <mo>=</mo> <mfrac><mrow><mo>-</mo><mn>10</mn><mo>+</mo><mn>12</mn></mrow>
+    <mn>10</mn></mfrac> <mo>=</mo> <mfrac><mn>2</mn> <mn>10</mn></mfrac> <mo>=</mo>
+    <mn>0.2</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In Python, this boils down to simple arithmetic operations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the cash flow pair as `tuple` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the return `R` by taking the sum of all elements of `c` and…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …prints out the result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rate of return `r` with `abs(x)`, giving the absolute value of
+    `x` and…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …prints out the result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Interest
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There is a difference between a cash flow today and a cash flow in one year.
+    The difference results from *interest* that is being earned on currency units
+    or that has to be paid to borrow currency units. Interest in this context is the
+    *price* being paid for having control over money that belongs to another agent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An agent that has currency units that they do not need today can deposit these
+    with a bank or lend them to another agent *to earn interest*. If the agent needs
+    more currency units than they currently have available, they can borrow them from
+    a bank or other agents, but they will need *to pay interest*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose an agent deposits <math alttext="c 0 equals"><mrow><msub><mi>c</mi>
+    <mn>0</mn></msub> <mo>=</mo></mrow></math> –10 currency units today with a bank.
+    According to the deposit contract, they receive <math alttext="c 1 equals 11"><mrow><msub><mi>c</mi>
+    <mn>1</mn></msub> <mo>=</mo> <mn>11</mn></mrow></math> currency units after one
+    year from the bank. The interest, <math alttext="upper I element-of double-struck
+    upper R"><mrow><mi>I</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math> , being paid on
+    the deposit is <math alttext="upper I equals c 0 plus c 1 equals"><mrow><mi>I</mi>
+    <mo>=</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo> <msub><mi>c</mi> <mn>1</mn></msub>
+    <mo>=</mo></mrow></math> -10 + 11 = 1\. The *interest rate*, <math alttext="i
+    element-of double-struck upper R"><mrow><mi>i</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math>
+    , accordingly is <math alttext="i equals StartFraction upper I Over bar c 0 bar
+    EndFraction equals"><mrow><mi>i</mi> <mo>=</mo> <mfrac><mi>I</mi> <mrow><mo>|</mo><msub><mi>c</mi>
+    <mn>0</mn></msub> <mo>|</mo></mrow></mfrac> <mo>=</mo></mrow></math> 0.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the following, it is assumed that the relevant interest rate for both lending
+    and borrowing is the same and that it is fixed for the entire economy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Present Value
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Having lending or depositing options available leads to *opportunity costs*
+    for deploying money in an investment project. A cash flow of, say, <math alttext="c
+    1 equals"><mrow><msub><mi>c</mi> <mn>1</mn></msub> <mo>=</mo></mrow></math> 12.1
+    in one year cannot be compared directly in terms of value with a cash flow of
+    <math alttext="c 0 equals"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>=</mo></mrow></math>
+    12.1 today since interest can be earned on currency units not deployed in a project.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To appropriately compare cash flows in one year with those of today, the *present
+    value* needs to be calculated. This is accomplished by *discounting* using the
+    fixed interest rate in the economy. Discounting can be modeled as a function <math
+    alttext="upper D colon"><mrow><mi>D</mi> <mo>:</mo></mrow></math> <math alttext="double-struck
+    upper R right-arrow double-struck upper R comma c 1 right-arrow from bar upper
+    D left-parenthesis c 1 right-parenthesis"><mrow><mi>ℝ</mi> <mo>→</mo> <mi>ℝ</mi>
+    <mo>,</mo> <msub><mi>c</mi> <mn>1</mn></msub> <mo>↦</mo> <mi>D</mi> <mrow><mo>(</mo>
+    <msub><mi>c</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math> , which maps
+    a real number (cash flow in one year) to another real number (cash flow today).
+    It holds
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column c 0 2nd Column equals 3rd Column
+    upper D left-parenthesis c 1 right-parenthesis 2nd Row 1st Column Blank 2nd Column
+    equals 3rd Column StartFraction c 1 Over 1 plus i EndFraction 3rd Row 1st Column
+    Blank 2nd Column equals 3rd Column StartFraction 12.1 Over 1 plus 0.1 EndFraction
+    4th Row 1st Column Blank 2nd Column equals 3rd Column 11 EndLayout" display="block"><mtable><mtr><mtd><msub><mi>c</mi>
+    <mn>0</mn></msub></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><mi>D</mi> <mo>(</mo>
+    <msub><mi>c</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mfrac><msub><mi>c</mi> <mn>1</mn></msub> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><mn>12</mn><mo>.</mo><mn>1</mn></mrow>
+    <mrow><mn>1</mn><mo>+</mo><mn>0</mn><mo>.</mo><mn>1</mn></mrow></mfrac></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mn>11</mn></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'for an interest rate of <math alttext="i equals"><mrow><mi>i</mi> <mo>=</mo></mrow></math>
+    0.1\. This relationship results from the alternative “investment” in deposits
+    with a bank:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c 1 equals left-parenthesis 1 plus i right-parenthesis dot c
+    0 left right double arrow c 0 equals StartFraction c 1 Over 1 plus i EndFraction"
+    display="block"><mrow><msub><mi>c</mi> <mn>1</mn></msub> <mo>=</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>·</mo> <msub><mi>c</mi>
+    <mn>0</mn></msub> <mo>⇔</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>=</mo> <mfrac><msub><mi>c</mi>
+    <mn>1</mn></msub> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Python functions are well suited to represent mathematical functions like the
+    one for discounting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the interest rate `i`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Function definition with `def` statement; `D` is the function name; `c1` is
+    the parameter name.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Returns the present value with the `return` statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the present value of 12.1; note the rounding error due to internal
+    floating point number representation issues.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the present value of 11 (“exactly” in this case).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Net Present Value
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'How shall an agent decide whether to conduct an investment project or not?
+    One criterion is the *net present value*. The net present value, <math alttext="upper
+    N upper P upper V element-of double-struck upper R"><mrow><mi>N</mi> <mi>P</mi>
+    <mi>V</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math> , is the sum of the cash outflow
+    today and the present value of the cash inflow in one year:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper N upper P upper V left-parenthesis c right-parenthesis
+    equals c 0 plus upper D left-parenthesis c 1 right-parenthesis" display="block"><mrow><mi>N</mi>
+    <mi>P</mi> <mi>V</mi> <mrow><mo>(</mo> <mi>c</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo> <mi>D</mi> <mrow><mo>(</mo> <msub><mi>c</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here, the net present value calculation is a function <math alttext="upper N
+    upper P upper V colon double-struck upper R squared right-arrow double-struck
+    upper R"><mrow><mi>N</mi> <mi>P</mi> <mi>V</mi> <mo>:</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup>
+    <mo>→</mo> <mi>ℝ</mi></mrow></math> mapping a cash flow tuple to a real number.
+    If the net present value is positive, the project should be conducted; if it is
+    negative, then not—since the alternative of just depositing the money with a bank
+    is more attractive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Consider an investment project with cash flows <math alttext="c Superscript
+    upper A Baseline equals"><mrow><msup><mi>c</mi> <mi>A</mi></msup> <mo>=</mo></mrow></math>
+    (–10.5, 12.1). The net present value is <math alttext="upper N upper P upper V
+    left-parenthesis c Superscript upper A Baseline right-parenthesis equals"><mrow><mi>N</mi>
+    <mi>P</mi> <mi>V</mi> <mo>(</mo> <msup><mi>c</mi> <mi>A</mi></msup> <mo>)</mo>
+    <mo>=</mo></mrow></math> –10.5 + <math alttext="upper D"><mi>D</mi></math> (12.1)
+    = –10.5 + 11 = 0.5\. The project should be conducted. Consider an alternative
+    investment project with <math alttext="c Superscript upper B Baseline equals"><mrow><msup><mi>c</mi>
+    <mi>B</mi></msup> <mo>=</mo></mrow></math> (–10.5, 11). This one has a negative
+    net present value and should not be conducted: <math alttext="upper N upper P
+    upper V left-parenthesis c Superscript upper B Baseline right-parenthesis equals"><mrow><mi>N</mi>
+    <mi>P</mi> <mi>V</mi> <mo>(</mo> <msup><mi>c</mi> <mi>B</mi></msup> <mo>)</mo>
+    <mo>=</mo></mrow></math> –10.5 + <math alttext="upper D"><mi>D</mi></math> (11)
+    = –10.5 + 10 = –0.5.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Building on previous definitions, a respective Python function is easily defined:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Positive net present value project.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Negative net present value project.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Uncertainty
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Cash inflows from an investment project one year from now are in general *uncertain*.
+    They might be influenced by a number of factors in reality (competitive forces,
+    new technologies, growth of the economy, weather, problems during project implementation,
+    etc.). In the model economy, the concept of *states* of the economy in one year
+    subsumes the influence of all relevant factors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assume that in one year the economy might be in one of two different states
+    <math alttext="u"><mi>u</mi></math> and <math alttext="d"><mi>d</mi></math> ,
+    which might be interpreted as *up* (“good”) and *down* (“bad”). The cash flow
+    of a project in one year <math alttext="c 1"><msub><mi>c</mi> <mn>1</mn></msub></math>
+    then becomes a *vector*
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c 1 element-of double-struck upper R squared" display="block"><mrow><msub><mi>c</mi>
+    <mn>1</mn></msub> <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: with two different values
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c 1 Superscript u Baseline comma c 1 Superscript d Baseline element-of
+    double-struck upper R" display="block"><mrow><msubsup><mi>c</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>,</mo> <msubsup><mi>c</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>∈</mo> <mi>ℝ</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'representing the relevant cash flows per state of the economy. Formally, this
+    is represented as a so-called *column vector*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c 1 equals StartBinomialOrMatrix c 1 Superscript u Baseline Choose
+    c 1 Superscript d EndBinomialOrMatrix" display="block"><mrow><msub><mi>c</mi>
+    <mn>1</mn></msub> <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>c</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>c</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Mathematically, there are certain operations defined on such vectors, like
+    *scalar multiplication* and *addition*, for instance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="alpha dot c 1 plus beta equals alpha dot StartBinomialOrMatrix
+    c 1 Superscript u Baseline Choose c 1 Superscript d Baseline EndBinomialOrMatrix
+    plus beta equals StartBinomialOrMatrix alpha dot c 1 Superscript u Baseline plus
+    beta Choose alpha dot c 1 Superscript d Baseline plus beta EndBinomialOrMatrix"
+    display="block"><mrow><mi>α</mi> <mo>·</mo> <msub><mi>c</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>β</mi> <mo>=</mo> <mi>α</mi> <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>c</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>c</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>+</mo> <mi>β</mi> <mo>=</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><mrow><mi>α</mi> <mo>·</mo> <msubsup><mi>c</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>+</mo> <mi>β</mi></mrow></mtd></mtr> <mtr><mtd><mrow><mi>α</mi>
+    <mo>·</mo> <msubsup><mi>c</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>+</mo> <mi>β</mi></mrow></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Another important operation on vectors is the creation of *linear combinations*
+    of vectors. Consider two different vectors: <math alttext="c 1 comma d 1 element-of
+    double-struck upper R squared"><mrow><msub><mi>c</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>d</mi> <mn>1</mn></msub> <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mrow></math>
+    . A linear combination is then given by:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="alpha dot c 1 plus beta dot d 1 equals StartBinomialOrMatrix
+    alpha dot c 1 Superscript u Baseline plus beta dot d 1 Superscript u Baseline
+    Choose alpha dot c 1 Superscript d Baseline plus beta dot d 1 Superscript d EndBinomialOrMatrix"
+    display="block"><mrow><mi>α</mi> <mo>·</mo> <msub><mi>c</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>β</mi> <mo>·</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>=</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><mrow><mi>α</mi> <mo>·</mo> <msubsup><mi>c</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>+</mo> <mi>β</mi> <mo>·</mo> <msubsup><mi>d</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mrow></mtd></mtr> <mtr><mtd><mrow><mi>α</mi>
+    <mo>·</mo> <msubsup><mi>c</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>+</mo> <mi>β</mi>
+    <mo>·</mo> <msubsup><mi>d</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here and before, it is assumed that <math alttext="alpha comma beta element-of
+    double-struck upper R"><mrow><mi>α</mi> <mo>,</mo> <mi>β</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The most common way of modeling vectors (and matrices) in Python is via the
+    [`NumPy`](http://numpy.org) package, which is an external package and needs to
+    be installed separately. For the following code, consider an investment project
+    with <math alttext="c 0 equals"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>=</mo></mrow></math>
+    –10 and <math alttext="c 1 equals left-parenthesis 20 comma 5 right-parenthesis
+    Superscript upper T"><mrow><msub><mi>c</mi> <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><mn>20</mn><mo>,</mo><mn>5</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> , where the superscript <math alttext="upper T"><mi>T</mi></math>
+    stands for the transpose of the vector (transforming a *row or horizontal vector*
+    into a *column or vertical vector*). The major class used to model vectors is
+    the `ndarray` class, which stands for *n-dimensional array*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `numpy` package as `np`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cash outflow today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The uncertain cash inflow in one year; one-dimensional `ndarray` objects do
+    not distinguish between row (horizontal) and column (vertical).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looks up and prints the type of `c1`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints the cash flow vector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combines the cash flows to a `tuple` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `tuple`, like a `list` object, can contain other complex data structures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A linear transformation of the vector by scalar multiplication and addition;
+    technically one also speaks of a vectorized numerical operation and of broadcasting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](ch02_split_000.xhtml#co_two_state_economy_CO7-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A linear combination of two `ndarray` objects (vectors).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial Assets
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Financial assets* are financial instruments (“contracts”) that have a fixed
+    price today and an uncertain price in one year. Think of a share in the equity
+    of a firm that conducts an investment project. Such a share might be available
+    at a price today of <math><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>>0</mn></mrow></msub></mrow></math> . The price of the share in one
+    year depends on the success of the investment project, i.e., whether a high cash
+    inflow is observed in the <math alttext="u"><mi>u</mi></math> state or a low one
+    in the <math alttext="d"><mi>d</mi></math> state. Formally, <math><mrow><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math> with
+    <math alttext="upper S 1 Superscript u Baseline greater-than upper S 1 Superscript
+    d"><mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>></mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup></mrow></math> .'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One speaks also of the *price process* of the financial asset <math><mrow><mi>S</mi><mo>:</mo><msub><mi>ℕ</mi>
+    <mn>0</mn></msub> <mo>×</mo><mrow><mo>{</mo><mi>u</mi><mo>,</mo><mi>d</mi><mo>}</mo></mrow><mo>→</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math> mapping time and state of the economy
+    to the price of the financial asset. Note that the price today is independent
+    of the state <math alttext="upper S 0 Superscript u Baseline equals upper S 0
+    Superscript d Baseline identical-to upper S 0"><mrow><msubsup><mi>S</mi> <mn>0</mn>
+    <mi>u</mi></msubsup> <mo>=</mo> <msubsup><mi>S</mi> <mn>0</mn> <mi>d</mi></msubsup>
+    <mo>≡</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></math> , while the price
+    after one year is not in general. One also writes <math alttext="left-parenthesis
+    upper S Subscript t Baseline right-parenthesis Subscript t element-of StartSet
+    0 comma 1 EndSet Baseline equals left-parenthesis upper S 0 comma upper S 1 right-parenthesis"><mrow><msub><mrow><mo>(</mo><msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>)</mo></mrow> <mrow><mi>t</mi><mo>∈</mo><mo>{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>}</mo></mrow></msub>
+    <mo>=</mo> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math> , or for short, <math alttext="upper
+    S equals left-parenthesis upper S 0 comma upper S 1 right-parenthesis"><mrow><mi>S</mi>
+    <mo>=</mo> <mo>(</mo> <msub><mi>S</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></math> . The `NumPy` package is again the
+    tool of choice for the modeling:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The price of the financial asset today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The uncertain price in one year as a vector (`ndarray` object).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The price process as a `tuple` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints the price process information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the price today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the price in one year in the <math alttext="u"><mi>u</mi></math> (first)
+    state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_000.xhtml#co_two_state_economy_CO8-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accesses the price in one year in the <math alttext="d"><mi>d</mi></math> (second)
+    state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Risk
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Often it is implicitly assumed that the two states of the economy are *equally
+    likely*. What this means in general is that when an experiment in the economy
+    is repeated (infinitely) many times, it is observed that half of the time the
+    <math alttext="u"><mi>u</mi></math> state materializes and that in the other half
+    the <math alttext="d"><mi>d</mi></math> state materializes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a frequentist point of view, according to which probabilities for a
+    state to materialize are calculated based on the frequency the state is observed
+    divided by the total number of experiments leading to observations. If state <math
+    alttext="u"><mi>u</mi></math> is observed 30 times out of 50 experiments, the
+    probability <math><mrow><mi>p</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math>
+    with <math alttext="0 less-than-or-equal-to p less-than-or-equal-to 1"><mrow><mn>0</mn>
+    <mo>≤</mo> <mi>p</mi> <mo>≤</mo> <mn>1</mn></mrow></math> is accordingly <math
+    alttext="p equals StartFraction 30 Over 50 EndFraction"><mrow><mi>p</mi> <mo>=</mo>
+    <mfrac><mn>30</mn> <mn>50</mn></mfrac></mrow></math> = 0.6, or 60%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a modeling context, the probabilities for all possible states to occur are
+    assumed to be given *a priori*. One speaks sometimes of *objective* or *physical*
+    probabilities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probability Measure
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The probabilities for events that are physically possible together form a *probability
+    measure*. Such a probability measure is a function <math alttext="upper P colon
+    normal script upper P left-parenthesis StartSet u comma d EndSet right-parenthesis
+    right-arrow double-struck upper R Subscript 0 Baseline"><mrow><mi>P</mi> <mo>:</mo>
+    <mi>℘</mi> <mrow><mo>(</mo> <mrow><mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>d</mi>
+    <mo>}</mo></mrow> <mo>)</mo></mrow> <mo>→</mo> <msub><mi>ℝ</mi> <mrow><mo>≥</mo><mn>0</mn></mrow></msub></mrow></math>
+    mapping all elements of the *power set* of <math alttext="StartSet u comma d EndSet"><mrow><mo>{</mo>
+    <mi>u</mi> <mo>,</mo> <mi>d</mi> <mo>}</mo></mrow></math> —with <math alttext="normal
+    script upper P left-parenthesis StartSet u comma d EndSet right-parenthesis equals
+    StartSet normal empty-set comma StartSet u EndSet comma StartSet d EndSet comma
+    StartSet u comma d EndSet EndSet"><mrow><mi>℘</mi> <mo>(</mo> <mo>{</mo> <mi>u</mi>
+    <mo>,</mo> <mi>d</mi> <mo>}</mo> <mo>)</mo> <mo>=</mo> <mo>{</mo> <mi>∅</mi> <mo>,</mo>
+    <mo>{</mo> <mi>u</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>d</mi> <mo>}</mo> <mo>,</mo>
+    <mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>d</mi> <mo>}</mo> <mo>}</mo></mrow></math>
+    —to the unit interval. The power set in this case embodies all events that are
+    physically possible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this context, the set <math alttext="StartSet u comma d EndSet"><mrow><mo>{</mo>
+    <mi>u</mi> <mo>,</mo> <mi>d</mi> <mo>}</mo></mrow></math> is also called the *state
+    space* and is symbolized by <math alttext="normal upper Omega"><mi>Ω</mi></math>
+    . The triple <math alttext="left-parenthesis normal upper Omega comma normal script
+    upper P left-parenthesis normal upper Omega right-parenthesis comma upper P right-parenthesis"><mrow><mo>(</mo>
+    <mi>Ω</mi> <mo>,</mo> <mi>℘</mi> <mo>(</mo> <mi>Ω</mi> <mo>)</mo> <mo>,</mo> <mi>P</mi>
+    <mo>)</mo></mrow></math> together is called a *probability space*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A function <math alttext="upper P"><mi>P</mi></math> representing a probability
+    measure needs to satisfy three conditions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P left-parenthesis normal empty-set right-parenthesis equals
+    0"><mrow><mi>P</mi> <mo>(</mo> <mi>∅</mi> <mo>)</mo> <mo>=</mo> <mn>0</mn></mrow></math>
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: <math alttext="0 less-than-or-equal-to upper P left-parenthesis omega right-parenthesis
+    comma omega element-of normal upper Omega less-than-or-equal-to 1"><mrow><mn>0</mn>
+    <mo>≤</mo> <mi>P</mi> <mo>(</mo> <mi>ω</mi> <mo>)</mo> <mo>,</mo> <mi>ω</mi> <mo>∈</mo>
+    <mi>Ω</mi> <mo>≤</mo> <mn>1</mn></mrow></math>
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: <math alttext="upper P left-parenthesis normal upper Omega right-parenthesis
+    equals upper P left-parenthesis u right-parenthesis plus upper P left-parenthesis
+    d right-parenthesis equals 1"><mrow><mi>P</mi> <mo>(</mo> <mi>Ω</mi> <mo>)</mo>
+    <mo>=</mo> <mi>P</mi> <mo>(</mo> <mi>u</mi> <mo>)</mo> <mo>+</mo> <mi>P</mi> <mo>(</mo>
+    <mi>d</mi> <mo>)</mo> <mo>=</mo> <mn>1</mn></mrow></math>
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The first condition implies that at least one of the states must materialize.
+    The second implies that the probability for a state to materialize is between
+    0 and 1\. The third one says that all the probabilities add up to 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the simple model economy with two states only, it is convenient to define
+    <math alttext="p identical-to upper P left-parenthesis u right-parenthesis"><mrow><mi>p</mi>
+    <mo>≡</mo> <mi>P</mi> <mo>(</mo> <mi>u</mi> <mo>)</mo></mrow></math> and to accordingly
+    have <math alttext="upper P left-parenthesis d right-parenthesis equals 1 minus
+    p"><mrow><mi>P</mi> <mo>(</mo> <mi>d</mi> <mo>)</mo> <mo>=</mo> <mn>1</mn> <mo>-</mo>
+    <mi>p</mi></mrow></math> , given the preceding third condition. Fixing <math alttext="p"><mi>p</mi></math>
+    then defines the probability measure <math alttext="upper P"><mi>P</mi></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having a fully specified probability measure available, the model economy is
+    typically called an *economy under risk*. A model economy without a fully specified
+    probability measure is often called an *economy under ambiguity*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In applications, a probability measure is usually modeled also as a vector
+    and `ndarray` object, respectively. This is at least possible for a discrete state
+    space with a finite number of elements:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: Notions of Uncertainty
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Uncertainty in a financial context can take on different forms. *Risk* in general
+    refers to a situation in which a full probability distribution over future states
+    of the economy is (assumed to be) known. *Ambiguity* refers to situations in which
+    such a distribution is not known. Traditionally, finance has relied almost exclusively
+    on model economies under risk, although there is a stream of research that deals
+    with finance problems under ambiguity (see Guidolin and Rinaldi (2012) for a survey
+    of the research literature).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Expectation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Based on the probability measure, the *expectation* of an uncertain quantity,
+    like the price in one year of a financial asset, can be calculated. The expectation
+    can be interpreted as the *weighted average*, where the weights are given by the
+    probabilities. It is an average since the probabilities add up to one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider the financial asset with price process <math alttext="upper S equals
+    left-parenthesis upper S 0 comma upper S 1 right-parenthesis"><mrow><mi>S</mi>
+    <mo>=</mo> <mfenced separators="" open="(" close=")"><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>,</mo> <msub><mi>S</mi> <mn>1</mn></msub></mfenced></mrow></math> . The expectation
+    of the uncertain price <math alttext="upper S 1"><msub><mi>S</mi> <mn>1</mn></msub></math>
+    in one year under the probability measure <math alttext="upper P"><mi>P</mi></math>
+    is
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E Superscript upper P Baseline left-parenthesis upper
+    S 1 right-parenthesis identical-to sigma-summation Underscript omega element-of
+    normal upper Omega Endscripts upper P left-parenthesis omega right-parenthesis
+    dot upper S 1 Superscript omega Baseline equals p dot upper S 1 Superscript u
+    Baseline plus left-parenthesis 1 minus p right-parenthesis dot upper S 1 Superscript
+    d" display="block"><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow> <mo>≡</mo> <munder><mo>∑</mo> <mrow><mi>ω</mi><mo>∈</mo><mi>Ω</mi></mrow></munder>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow> <mo>·</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>ω</mi></msubsup> <mo>=</mo> <mi>p</mi> <mo>·</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>p</mi> <mo>)</mo></mrow> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'with <math alttext="p identical-to upper P left-parenthesis u right-parenthesis"><mrow><mi>p</mi>
+    <mo>≡</mo> <mi>P</mi> <mo>(</mo> <mi>u</mi> <mo>)</mo></mrow></math> . If <math
+    alttext="upper S 1 equals left-parenthesis 20 comma 5 right-parenthesis Superscript
+    upper T"><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><mn>20</mn><mo>,</mo><mn>5</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> and <math alttext="p equals"><mrow><mi>p</mi>
+    <mo>=</mo></mrow></math> 0.4 hold, the expectation value is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo>
+    <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0.4</mn> <mo>·</mo>
+    <mn>20</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mn>0.4</mn> <mo>)</mo></mrow>
+    <mo>·</mo> <mn>5</mn> <mo>=</mo> <mn>11</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mathematically, the expectation can be expressed as the *dot product* (or *inner
+    product*) of two vectors. If <math alttext="x comma y element-of double-struck
+    upper R squared"><mrow><mi>x</mi> <mo>,</mo> <mi>y</mi> <mo>∈</mo> <msup><mi>ℝ</mi>
+    <mn>2</mn></msup></mrow></math> , the dot product is defined as
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="left-parenthesis x comma y right-parenthesis equals sigma-summation
+    Underscript i equals 1 Overscript 2 Endscripts x Subscript i Baseline dot y Subscript
+    i Baseline equals x 1 dot y 1 plus x 2 dot y 2" display="block"><mrow><mrow><mo>(</mo>
+    <mi>x</mi> <mo>,</mo> <mi>y</mi> <mo>)</mo></mrow> <mo>=</mo> <munderover><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mn>2</mn></munderover> <msub><mi>x</mi>
+    <mi>i</mi></msub> <mo>·</mo> <msub><mi>y</mi> <mi>i</mi></msub> <mo>=</mo> <msub><mi>x</mi>
+    <mn>1</mn></msub> <mo>·</mo> <msub><mi>y</mi> <mn>1</mn></msub> <mo>+</mo> <msub><mi>x</mi>
+    <mn>2</mn></msub> <mo>·</mo> <msub><mi>y</mi> <mn>2</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Therefore, with <math alttext="upper P equals left-parenthesis p comma 1 minus
+    p right-parenthesis Superscript upper T"><mrow><mi>P</mi> <mo>=</mo> <msup><mrow><mo>(</mo><mi>p</mi><mo>,</mo><mn>1</mn><mo>-</mo><mi>p</mi><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> and <math alttext="upper S 1 equals left-parenthesis
+    upper S 1 Superscript u Baseline comma upper S 1 Superscript d Baseline right-parenthesis
+    Superscript upper T"><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>)</mo></mrow> <mi>T</mi></msup></mrow></math> , the expectation is
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E Superscript upper P Baseline left-parenthesis upper
+    S 1 right-parenthesis equals left-parenthesis upper P comma upper S 1 right-parenthesis
+    equals left-parenthesis StartBinomialOrMatrix p Choose 1 minus p EndBinomialOrMatrix
+    comma StartBinomialOrMatrix upper S 1 Superscript u Baseline Choose upper S 1
+    Superscript d Baseline EndBinomialOrMatrix right-parenthesis equals p dot upper
+    S 1 Superscript u Baseline plus left-parenthesis 1 minus p right-parenthesis dot
+    upper S 1 Superscript d" display="block"><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo>
+    <mrow><mo>(</mo> <mi>P</mi> <mo>,</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mfenced separators="" open="(" close=")"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>p</mi></mtd></mtr>
+    <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>p</mi></mrow></mtd></mtr></mtable></mfenced>
+    <mo>,</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mfenced>
+    <mo>=</mo> <mi>p</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Working with `ndarray` objects in Python, the dot product is defined as a function
+    provided by the `NumPy` package:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The previously defined probability measure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The price of the financial asset today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The vector of the uncertain price in one year.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dot product of the two vectors calculating the expectation value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Expected Return
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Under uncertainty, the notions of return and rate of return need to be adjusted.
+    In such a case, the *expected return* of a financial asset is given as the expectation
+    of the price in one year minus the price today. This can be seen by taking the
+    expectation of the uncertain return <math alttext="upper R equals left-parenthesis
+    upper R Superscript u Baseline comma upper R Superscript d Baseline right-parenthesis
+    Superscript upper T"><mrow><mi>R</mi> <mo>=</mo> <msup><mrow><mo>(</mo><msup><mi>R</mi>
+    <mi>u</mi></msup> <mo>,</mo><msup><mi>R</mi> <mi>d</mi></msup> <mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> and rearranging as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column bold upper E Superscript upper
+    P Baseline left-parenthesis upper R right-parenthesis 2nd Column equals 3rd Column
+    left-parenthesis StartBinomialOrMatrix p Choose 1 minus p EndBinomialOrMatrix
+    comma StartBinomialOrMatrix upper R Superscript u Baseline Choose upper R Superscript
+    d Baseline EndBinomialOrMatrix right-parenthesis 2nd Row 1st Column Blank 2nd
+    Column equals 3rd Column left-parenthesis StartBinomialOrMatrix p Choose 1 minus
+    p EndBinomialOrMatrix comma StartBinomialOrMatrix upper S 1 Superscript u Baseline
+    minus upper S 0 Choose upper S 1 Superscript d Baseline minus upper S 0 EndBinomialOrMatrix
+    right-parenthesis 3rd Row 1st Column Blank 2nd Column equals 3rd Column p dot
+    left-parenthesis upper S 1 Superscript u Baseline minus upper S 0 right-parenthesis
+    plus left-parenthesis 1 minus p right-parenthesis dot left-parenthesis upper S
+    1 Superscript d Baseline minus upper S 0 right-parenthesis 4th Row 1st Column
+    Blank 2nd Column equals 3rd Column p dot upper S 1 Superscript u plus left-parenthesis
+    1 minus p right-parenthesis dot upper S 1 Superscript d minus upper S 0 5th Row
+    1st Column Blank 2nd Column equals 3rd Column bold upper E Superscript upper P
+    Baseline left-parenthesis upper S 1 right-parenthesis minus upper S 0 EndLayout"
+    display="block"><mtable><mtr><mtd><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo>
+    <mi>R</mi> <mo>)</mo></mrow></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mfenced
+    separators="" open="(" close=")"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>p</mi></mtd></mtr>
+    <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>p</mi></mrow></mtd></mtr></mtable></mfenced>
+    <mo>,</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msup><mi>R</mi> <mi>u</mi></msup></mtd></mtr>
+    <mtr><mtd><msup><mi>R</mi> <mi>d</mi></msup></mtd></mtr></mtable></mfenced></mfenced></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mfenced separators="" open="(" close=")"><mfenced
+    open="(" close=")"><mtable><mtr><mtd><mi>p</mi></mtd></mtr> <mtr><mtd><mrow><mn>1</mn>
+    <mo>-</mo> <mi>p</mi></mrow></mtd></mtr></mtable></mfenced> <mo>,</mo> <mfenced
+    open="(" close=")"><mtable><mtr><mtd><mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></mtd></mtr> <mtr><mtd><mrow><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup> <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></mtd></mtr></mtable></mfenced></mfenced></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mi>p</mi> <mo>·</mo> <mrow><mo>(</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>)</mo></mrow> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>p</mi>
+    <mo>)</mo></mrow> <mo>·</mo> <mrow><mo>(</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mi>p</mi> <mo>·</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>p</mi> <mo>)</mo></mrow> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow> <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With the assumptions from before, one gets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo>
+    <mi>R</mi> <mo>)</mo></mrow> <mo>=</mo> <mn>0.4</mn> <mo>·</mo> <mrow><mo>(</mo>
+    <mn>20</mn> <mo>-</mo> <mn>10</mn> <mo>)</mo></mrow> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mn>0.4</mn> <mo>)</mo></mrow> <mo>·</mo> <mrow><mo>(</mo>
+    <mn>5</mn> <mo>-</mo> <mn>10</mn> <mo>)</mo></mrow> <mo>=</mo> <mn>11</mn> <mo>-</mo>
+    <mn>10</mn> <mo>=</mo> <mn>1</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *expected rate of return* then simply is the expected return divided by
+    the price today
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E Superscript upper P Baseline left-parenthesis r
+    right-parenthesis equals StartFraction bold upper E Superscript upper P Baseline
+    left-parenthesis upper R right-parenthesis Over upper S 0 EndFraction" display="block"><mrow><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo> <mi>r</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo><mi>R</mi><mo>)</mo></mrow></mrow> <msub><mi>S</mi>
+    <mn>0</mn></msub></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: which can also be derived step by step with similar transformations as for the
+    expected return. In what follows, the expected rate of return is symbolized by
+    <math alttext="mu identical-to bold upper E Superscript upper P Baseline left-parenthesis
+    r right-parenthesis"><mrow><mi>μ</mi> <mo>≡</mo> <msup><mi>𝐄</mi> <mi>P</mi></msup>
+    <mrow><mo>(</mo> <mi>r</mi> <mo>)</mo></mrow></mrow></math> for brevity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The calculation of expected return and rate of return can be modeled in Python
+    by two simple functions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Definition of expected return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected return for the previously defined financial asset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Definition of the expected rate of return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected rate of return calculated for that asset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Volatility
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In finance, *risk and expected return* is the dominating pair of concepts. Risk
+    can be measured in many ways, while the *volatility* as measured by the standard
+    deviation of the rates of return is probably the most common measure. In the present
+    context, the *variance* of the return rates of a financial asset is defined by
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column sigma squared left-parenthesis
+    r right-parenthesis 2nd Column equals 3rd Column bold upper E Superscript upper
+    P Baseline left-parenthesis left-parenthesis r minus mu right-parenthesis squared
+    right-parenthesis 2nd Row 1st Column Blank 2nd Column equals 3rd Column left-parenthesis
+    StartBinomialOrMatrix p Choose 1 minus p EndBinomialOrMatrix comma StartBinomialOrMatrix
+    left-parenthesis r Superscript u Baseline minus mu right-parenthesis squared Choose
+    left-parenthesis r Superscript d Baseline minus mu right-parenthesis squared EndBinomialOrMatrix
+    right-parenthesis EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mrow><mo>(</mo> <mi>r</mi> <mo>)</mo></mrow></mrow></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mfenced separators="" open="("
+    close=")"><msup><mrow><mo>(</mo><mi>r</mi><mo>-</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mfenced></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd> <mtd><mfenced
+    separators="" open="(" close=")"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>p</mi></mtd></mtr>
+    <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>p</mi></mrow></mtd></mtr></mtable></mfenced>
+    <mo>,</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msup><mrow><mo>(</mo><msup><mi>r</mi>
+    <mi>u</mi></msup> <mo>-</mo><mi>μ</mi><mo>)</mo></mrow> <mn>2</mn></msup></mtd></mtr>
+    <mtr><mtd><msup><mrow><mo>(</mo><msup><mi>r</mi> <mi>d</mi></msup> <mo>-</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mtd></mtr></mtable></mfenced></mfenced></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: with <math alttext="r Superscript omega Baseline identical-to left-parenthesis
+    upper S 1 Superscript omega Baseline minus upper S 0 right-parenthesis slash upper
+    S 0 comma omega element-of normal upper Omega"><mrow><msup><mi>r</mi> <mi>ω</mi></msup>
+    <mo>≡</mo> <mrow><mo>(</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>ω</mi></msubsup>
+    <mo>-</mo> <msub><mi>S</mi> <mn>0</mn></msub> <mo>)</mo></mrow> <mo>/</mo> <msub><mi>S</mi>
+    <mn>0</mn></msub> <mo>,</mo> <mi>ω</mi> <mo>∈</mo> <mi>Ω</mi></mrow></math> .
+    The *volatility* is defined as the standard deviation of the return rates, which
+    is the square root of the variance
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma left-parenthesis r right-parenthesis equals StartRoot sigma
+    squared left-parenthesis r right-parenthesis EndRoot" display="block"><mrow><mi>σ</mi>
+    <mrow><mo>(</mo> <mi>r</mi> <mo>)</mo></mrow> <mo>=</mo> <msqrt><mrow><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mrow><mo>(</mo> <mi>r</mi> <mo>)</mo></mrow></mrow></msqrt></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Python functions modeling these two risk measures are given in the following,
+    as is a helper function to calculate the return rates vector:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized calculation of the rates of return vector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies the function to the financial asset from before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected rate of return via the dot product…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …printed out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The definition of the variance of the rates of return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function applied to the rates of return vector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The definition of the volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](ch02_split_000.xhtml#co_two_state_economy_CO11-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: And applied to the rates of return vector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectors, Matrices, and NumPy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Finance as an applied mathematical discipline relies heavily on linear algebra
+    and probability theory. In the discrete model economy, both mathematical disciplines
+    can be efficiently handled in Python by using the `NumPy` package with its powerful
+    `ndarray` object. This is not only true from a modeling point of view but also
+    from handling, calculation, optimization, visualization, and other points of view.
+    Basically all examples in this book will support these claims.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Contingent Claims
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Suppose now that a *contingent claim* is traded in the economy. This is a financial
+    asset—formalized by some contract—that offers a state-contingent payoff one year
+    from now. Such a contingent claim can have an arbitrary state-contingent payoff
+    or one that is derived from the payoff of other financial assets. In the latter
+    case, one generally speaks of *derivative assets* or *derivative instruments*.
+    Formally, a contingent claim is a function <math alttext="upper C 1 colon normal
+    upper Omega right-arrow double-struck upper R Subscript 0 Baseline comma omega
+    right-arrow from bar upper C 1 left-parenthesis omega right-parenthesis"><mrow><msub><mi>C</mi>
+    <mn>1</mn></msub> <mo>:</mo> <mi>Ω</mi> <mo>→</mo> <msub><mi>ℝ</mi> <mrow><mo>≥</mo><mn>0</mn></mrow></msub>
+    <mo>,</mo> <mi>ω</mi> <mo>↦</mo> <msub><mi>C</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ω</mi> <mo>)</mo></mrow></mrow></math> mapping events to (non-negative) real
+    numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Assume that two financial assets are traded in the economy: a risk-less bond
+    with price process <math alttext="upper B equals left-parenthesis upper B 0 comma
+    upper B 1 right-parenthesis"><mrow><mi>B</mi> <mo>=</mo> <mo>(</mo> <msub><mi>B</mi>
+    <mn>0</mn></msub> <mo>,</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>)</mo></mrow></math>
+    and a risky stock with price process'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper S equals left-parenthesis upper S 0 comma left-parenthesis
+    upper S 1 Superscript u Baseline comma upper S 1 Superscript d Baseline right-parenthesis
+    Superscript upper T Baseline right-parenthesis" display="block"><mrow><mi>S</mi>
+    <mo>=</mo> <mfenced separators="" open="(" close=")"><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>,</mo> <msup><mrow><mo>(</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>)</mo></mrow>
+    <mi>T</mi></msup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *call option* on the stock has a payoff in one year of <math alttext="upper
+    C 1 left-parenthesis upper S 1 left-parenthesis omega right-parenthesis right-parenthesis
+    equals max left-parenthesis upper S 1 left-parenthesis omega right-parenthesis
+    minus upper K comma 0 right-parenthesis"><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ω</mi>
+    <mo>)</mo></mrow> <mo>)</mo></mrow> <mo>=</mo> <mo movablelimits="true" form="prefix">max</mo>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ω</mi>
+    <mo>)</mo></mrow> <mo>-</mo> <mi>K</mi> <mo>,</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></math>
+    and <math alttext="omega element-of normal upper Omega"><mrow><mi>ω</mi> <mo>∈</mo>
+    <mi>Ω</mi></mrow></math> . <math><mrow><mi>K</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math>
+    is called the *strike price* of the option.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In probability theory, a contingent claim is usually called a *random variable*
+    whose defining characteristic is that it maps elements of the state space to real
+    numbers—potentially via other random variables, as is the case for derivative
+    assets. In that sense, the price of the stock in one year <math><mrow><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>:</mo><mi>Ω</mi><mo>→</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub>
+    <mo>,</mo><mi>ω</mi><mo>↦</mo><msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo><mi>ω</mi><mo>)</mo></mrow></mrow></math>
+    is also a random variable.^([4](ch02_split_001.xhtml#idm44853713184344))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For the sake of illustration, the following Python code visualizes the payoff
+    of a call option on a segment of the real line. In the economy, there are, of
+    course, only two states—and therewith two values—of relevance. [Figure 2-1](ch02_split_001.xhtml#call_option)
+    shows the payoff function graphically:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates an `ndarray` object with numbers from 0 to 19.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the first few numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the strike price for the call option.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates in vectorized fashion the call option payoff values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows these values—many values are 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the main plotting subpackage from [`matplotlib`](http://matplotlib.org).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the call option payoff against the stock values, sets the line width to
+    3 pixels, and defines a label as a string object with `Latex` code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Puts the legend in the optimal location (least overlap with plot elements).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a label on the `x` axis…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](Images/10.png)](ch02_split_001.xhtml#co_two_state_economy_CO12-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and on the `y` axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0201](Images/ftwp_0201.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-1\. Payoff of the call option
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Replication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When introducing a contingent claim into the economy, an important question
+    that arises is whether the payoff of the contingent claim is redundant or not.
+    Mathematically, one speaks of the payoff vector of the contingent claim being
+    *linearly dependent* or *linearly independent*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The payoff of the call option is said to be linearly dependent—or redundant—when
+    a solution to the following problem exists
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="b dot StartBinomialOrMatrix upper B 1 Choose upper B 1 EndBinomialOrMatrix
+    plus s dot StartBinomialOrMatrix upper S 1 Superscript u Baseline Choose upper
+    S 1 Superscript d Baseline EndBinomialOrMatrix equals StartBinomialOrMatrix upper
+    C 1 Superscript u Baseline Choose upper C 1 Superscript d EndBinomialOrMatrix"
+    display="block"><mrow><mi>b</mi> <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd></mtr> <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd></mtr></mtable></mfenced>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: with <math alttext="b comma s element-of double-struck upper R"><mrow><mi>b</mi>
+    <mo>,</mo> <mi>s</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This problem can be represented as a *system of linear equations*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout Enlarged left-brace 1st Row  b dot upper B 1 plus
+    s dot upper S 1 Superscript u Baseline equals upper C 1 Superscript u Baseline
+    2nd Row  b dot upper B 1 plus s dot upper S 1 Superscript d Baseline equals upper
+    C 1 Superscript d EndLayout" display="block"><mfenced separators="" open="{" close=""><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>=</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>=</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mtd></mtr></mtable></mfenced></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: With <math alttext="upper S 1 Superscript u Baseline not-equals upper S 1 Superscript
+    d"><mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>≠</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup></mrow></math> , solutions are given by
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="s Superscript asterisk Baseline equals StartFraction upper C
+    1 Superscript u Baseline minus upper C 1 Superscript d Baseline Over upper S 1
+    Superscript u Baseline minus upper S 1 Superscript d Baseline EndFraction" display="block"><mrow><msup><mi>s</mi>
+    <mo>*</mo></msup> <mo>=</mo> <mfrac><mrow><msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>-</mo><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow> <mrow><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="b Superscript asterisk Baseline equals StartFraction 1 Over upper
+    B 1 EndFraction StartFraction upper C 1 Superscript d Baseline dot upper S 1 Superscript
+    u Baseline minus upper C 1 Superscript u Baseline dot upper S 1 Superscript d
+    Baseline Over upper S 1 Superscript u Baseline minus upper S 1 Superscript d Baseline
+    EndFraction" display="block"><mrow><msup><mi>b</mi> <mo>*</mo></msup> <mo>=</mo>
+    <mfrac><mn>1</mn> <msub><mi>B</mi> <mn>1</mn></msub></mfrac> <mfrac><mrow><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>d</mi></msubsup> <mo>·</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>-</mo><msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>·</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup></mrow> <mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>-</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assume as before that two financial assets are traded, a risk-less bond <math
+    alttext="upper B equals left-parenthesis 10 comma 11 right-parenthesis"><mrow><mi>B</mi>
+    <mo>=</mo> <mo>(</mo> <mn>10</mn> <mo>,</mo> <mn>11</mn> <mo>)</mo></mrow></math>
+    and a risky stock <math alttext="upper S equals left-parenthesis 10 comma left-parenthesis
+    20 comma 5 right-parenthesis Superscript upper T Baseline right-parenthesis"><mrow><mi>S</mi>
+    <mo>=</mo> <mo>(</mo> <mn>10</mn> <mo>,</mo> <msup><mrow><mo>(</mo><mn>20</mn><mo>,</mo><mn>5</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup> <mo>)</mo></mrow></math> . Assume further <math alttext="upper
+    K equals 15"><mrow><mi>K</mi> <mo>=</mo> <mn>15</mn></mrow></math> such that <math
+    alttext="upper C 1 equals left-parenthesis 5 comma 0 right-parenthesis Superscript
+    upper T"><mrow><msub><mi>C</mi> <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><mn>5</mn><mo>,</mo><mn>0</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> . The optimal numerical solutions are then
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="s Superscript asterisk Baseline equals StartFraction 5 minus
+    0 Over 20 minus 5 EndFraction equals one-third" display="block"><mrow><msup><mi>s</mi>
+    <mo>*</mo></msup> <mo>=</mo> <mfrac><mrow><mn>5</mn><mo>-</mo><mn>0</mn></mrow>
+    <mrow><mn>20</mn><mo>-</mo><mn>5</mn></mrow></mfrac> <mo>=</mo> <mfrac><mn>1</mn>
+    <mn>3</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="b Superscript asterisk Baseline equals one-eleventh dot StartFraction
+    0 dot 20 minus 5 dot 5 Over 20 minus 5 EndFraction equals negative five-thirty-thirds"
+    display="block"><mrow><msup><mi>b</mi> <mo>*</mo></msup> <mo>=</mo> <mfrac><mn>1</mn>
+    <mn>11</mn></mfrac> <mo>·</mo> <mfrac><mrow><mn>0</mn><mo>·</mo><mn>20</mn><mo>-</mo><mn>5</mn><mo>·</mo><mn>5</mn></mrow>
+    <mrow><mn>20</mn><mo>-</mo><mn>5</mn></mrow></mfrac> <mo>=</mo> <mo>-</mo> <mfrac><mn>5</mn>
+    <mn>33</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In words, buying one-third of the stock and selling <math alttext="five-thirty-thirds"><mfrac><mn>5</mn>
+    <mn>33</mn></mfrac></math> of the bond short perfectly replicates the payoff of
+    the call option. Therefore, the payoff of the call option is linearly dependent
+    given the payoff vectors of the bond and the stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technically, *short selling* implies borrowing the respective number of units
+    of the financial asset today from another agent and immediately selling the units
+    in the market. In one year, the borrowing agent buys the exact number of units
+    of the financial asset back in the market at the then-current price and transfers
+    them back to the other agent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The analysis here assumes that all financial assets—like money—are infinitely
+    divisible, which might not be the case in practice. It also assumes that short
+    selling of all traded financial assets is possible, which might not be too unrealistic
+    given market practice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a preparation for the implementation in Python, consider yet another way
+    of formulating the replication problem. To this end, the mathematical concept
+    of a *matrix* is needed. While a vector is a one-dimensional object, a matrix
+    is a two-dimensional object. For the purposes of this section, consider a square
+    matrix <math alttext="script upper M"><mi>ℳ</mi></math> with four elements—implying
+    <math alttext="script upper M element-of double-struck upper R Superscript 2 times
+    2"><mrow><mi>ℳ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow></msup></mrow></math>
+    —with
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper M equals Start 2 By 2 Matrix 1st Row 1st Column
+    upper B 1 2nd Column upper S 1 Superscript u Baseline 2nd Row 1st Column upper
+    B 1 2nd Column upper S 1 Superscript d EndMatrix" display="block"><mrow><mi>ℳ</mi>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd>
+    <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The future payoff vectors of the bond and the stock represent the values in
+    the first and second column of the matrix, respectively. The first row contains
+    the payoff of both financial assets in the state <math alttext="u"><mi>u</mi></math>
+    , while the second row contains the payoffs from the <math alttext="d"><mi>d</mi></math>
+    state. With these conventions, the replication problem can be represented in *matrix
+    form* as
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper M dot phi equals upper C 1" display="block"><mrow><mi>ℳ</mi>
+    <mo>·</mo> <mi>ϕ</mi> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where <math alttext="phi element-of double-struck upper R squared"><mrow><mi>ϕ</mi>
+    <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mrow></math> is the vector containing
+    the bond and stock portfolio positions for replication <math alttext="phi identical-to
+    left-parenthesis b comma s right-parenthesis Superscript upper T"><mrow><mi>ϕ</mi>
+    <mo>≡</mo> <msup><mrow><mo>(</mo><mi>b</mi><mo>,</mo><mi>s</mi><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> . <math alttext="phi"><mi>ϕ</mi></math> is usually
+    simply called a *portfolio* or *trading strategy*. Therefore:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Start 2 By 2 Matrix 1st Row 1st Column upper B 1 2nd Column upper
+    S 1 Superscript u Baseline 2nd Row 1st Column upper B 1 2nd Column upper S 1 Superscript
+    d Baseline EndMatrix dot StartBinomialOrMatrix b Choose s EndBinomialOrMatrix
+    equals StartBinomialOrMatrix upper C 1 Superscript u Baseline Choose upper C 1
+    Superscript d EndBinomialOrMatrix" display="block"><mrow><mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>·</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mi>b</mi></mtd></mtr> <mtr><mtd><mi>s</mi></mtd></mtr></mtable></mfenced>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>C</mi> <mn>1</mn>
+    <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this context, *matrix multiplication* is defined by
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Start 2 By 2 Matrix 1st Row 1st Column upper B 1 2nd Column upper
+    S 1 Superscript u Baseline 2nd Row 1st Column upper B 1 2nd Column upper S 1 Superscript
+    d Baseline EndMatrix dot StartBinomialOrMatrix b Choose s EndBinomialOrMatrix
+    identical-to StartBinomialOrMatrix upper B 1 dot b plus upper S 1 Superscript
+    u Baseline dot s Choose upper B 1 dot b plus upper S 1 Superscript d Baseline
+    dot s EndBinomialOrMatrix" display="block"><mrow><mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>·</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mi>b</mi></mtd></mtr> <mtr><mtd><mi>s</mi></mtd></mtr></mtable></mfenced>
+    <mo>≡</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mrow><msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>·</mo> <mi>b</mi> <mo>+</mo> <msubsup><mi>S</mi> <mn>1</mn>
+    <mi>u</mi></msubsup> <mo>·</mo> <mi>s</mi></mrow></mtd></mtr> <mtr><mtd><mrow><msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>·</mo> <mi>b</mi> <mo>+</mo> <msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup> <mo>·</mo> <mi>s</mi></mrow></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: which shows the equivalence between this way of representing the replication
+    problem and the one from before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `ndarray` class allows for a modeling of matrices in Python. The `NumPy`
+    package provides in the subpackage `np.linalg` a wealth of functions for linear
+    algebra operations, among which there is also a function to solve systems of linear
+    equations in matrix form—exactly what is needed here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the price process for the risk-less bond.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the price process for the risky stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a matrix—i.e., a two-dimensional `ndarray` object—with the future payoff
+    vectors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the matrix with the numerical values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the strike price for the call option and…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …calculates the values for the payoff vector in one year.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the numerical values of the payoff vector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](ch02_split_001.xhtml#co_two_state_economy_CO13-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Solves the replication problem in matrix form to obtain the optimal portfolio
+    positions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arbitrage Pricing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: How much does it cost to replicate the payoff of the call option? Once the portfolio
+    to accomplish the replication is derived, this question is easy to answer. Define
+    the value of the replication portfolio today by <math alttext="upper V 0 left-parenthesis
+    phi right-parenthesis"><mrow><msub><mi>V</mi> <mn>0</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow></mrow></math> . It is given by the dot product
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper V 0 left-parenthesis phi right-parenthesis identical-to
+    left-parenthesis StartBinomialOrMatrix b Choose s EndBinomialOrMatrix comma StartBinomialOrMatrix
+    upper B 0 Choose upper S 0 EndBinomialOrMatrix right-parenthesis equals b dot
+    upper B 0 plus s dot upper S 0" display="block"><mrow><msub><mi>V</mi> <mn>0</mn></msub>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≡</mo> <mfenced separators=""
+    open="(" close=")"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>b</mi></mtd></mtr>
+    <mtr><mtd><mi>s</mi></mtd></mtr></mtable></mfenced> <mo>,</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><msub><mi>B</mi> <mn>0</mn></msub></mtd></mtr> <mtr><mtd><msub><mi>S</mi>
+    <mn>0</mn></msub></mtd></mtr></mtable></mfenced></mfenced> <mo>=</mo> <mi>b</mi>
+    <mo>·</mo> <msub><mi>B</mi> <mn>0</mn></msub> <mo>+</mo> <mi>s</mi> <mo>·</mo>
+    <msub><mi>S</mi> <mn>0</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: or in numbers
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper V 0 left-parenthesis phi right-parenthesis equals b dot
+    upper B 0 plus s dot upper S 0 equals StartFraction 10 Over 3 EndFraction minus
+    StartFraction 50 Over 33 EndFraction equals 1.818181" display="block"><mrow><msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>b</mi>
+    <mo>·</mo> <msub><mi>B</mi> <mn>0</mn></msub> <mo>+</mo> <mi>s</mi> <mo>·</mo>
+    <msub><mi>S</mi> <mn>0</mn></msub> <mo>=</mo> <mfrac><mn>10</mn> <mn>3</mn></mfrac>
+    <mo>-</mo> <mfrac><mn>50</mn> <mn>33</mn></mfrac> <mo>=</mo> <mn>1</mn> <mo>.</mo>
+    <mn>818181</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The uncertain value of the replication portfolio in one year <math alttext="upper
+    V 1 left-parenthesis phi right-parenthesis"><mrow><msub><mi>V</mi> <mn>1</mn></msub>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></math> can be represented
+    via matrix multiplication as
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals Start
+    2 By 2 Matrix 1st Row 1st Column upper B 1 2nd Column upper S 1 Superscript u
+    Baseline 2nd Row 1st Column upper B 1 2nd Column upper S 1 Superscript d Baseline
+    EndMatrix dot StartBinomialOrMatrix b Choose s EndBinomialOrMatrix equals StartBinomialOrMatrix
+    5 Choose 0 EndBinomialOrMatrix" display="block"><mrow><msub><mi>V</mi> <mn>1</mn></msub>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>·</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mi>b</mi></mtd></mtr> <mtr><mtd><mi>s</mi></mtd></mtr></mtable></mfenced>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mn>5</mn></mtd></mtr>
+    <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Together, one has the *value process* of the portfolio as <math alttext="upper
+    V left-parenthesis phi right-parenthesis equals left-parenthesis upper V 0 left-parenthesis
+    phi right-parenthesis comma upper V 1 left-parenthesis phi right-parenthesis right-parenthesis"><mrow><mi>V</mi>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mo>(</mo> <msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>,</mo> <msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>)</mo></mrow></math>
+    , or <math alttext="upper V equals left-parenthesis upper V 0 comma upper V 1
+    right-parenthesis"><mrow><mi>V</mi> <mo>=</mo> <mo>(</mo> <msub><mi>V</mi> <mn>0</mn></msub>
+    <mo>,</mo> <msub><mi>V</mi> <mn>1</mn></msub> <mo>)</mo></mrow></math> for short,
+    if there is no ambiguity regarding the portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Having a portfolio available that perfectly replicates the future payoff of
+    a contingent claim raises the next question: what if the price of the contingent
+    claim today differs from the costs of setting up the replication portfolio? The
+    answer is simple but serious: then there exists an *arbitrage* or *arbitrage opportunity*
+    in the economy. An arbitrage is a trading strategy <math alttext="phi"><mi>ϕ</mi></math>
+    that creates a risk-less profit out of an investment of zero. Formally, <math
+    alttext="phi"><mi>ϕ</mi></math> is an arbitrage if'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper V 0 left-parenthesis phi right-parenthesis equals 0"><mrow><msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn></mrow></math>
+    and <math alttext="bold upper E Superscript upper P Baseline left-parenthesis
+    upper V 1 left-parenthesis phi right-parenthesis right-parenthesis greater-than
+    0"><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mfenced separators="" open="(" close=")"><msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mfenced> <mo>></mo>
+    <mn>0</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: or
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper V 0 left-parenthesis phi right-parenthesis greater-than
+    0"><mrow><msub><mi>V</mi> <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow>
+    <mo>></mo> <mn>0</mn></mrow></math> and <math alttext="upper V 1 left-parenthesis
+    phi right-parenthesis equals 0"><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that the price of the call option is <math alttext="upper C 0 equals
+    2"><mrow><msub><mi>C</mi> <mn>0</mn></msub> <mo>=</mo> <mn>2</mn></mrow></math>
+    , which is higher than the cost to set up the replication portfolio. A trading
+    strategy that sells the call option in the market for 2 and buys the replication
+    portfolio for 1.81818 yields an immediate profit of the difference. In one year,
+    the payoff of the replication portfolio and of the call option cancel each other
+    out
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="minus StartBinomialOrMatrix upper C 1 Superscript u Baseline
+    Choose upper C 1 Superscript d Baseline EndBinomialOrMatrix plus b Superscript
+    asterisk Baseline StartBinomialOrMatrix upper B 1 Choose upper B 1 EndBinomialOrMatrix
+    plus s Superscript asterisk Baseline StartBinomialOrMatrix upper S 1 Superscript
+    u Baseline Choose upper S 1 Superscript d Baseline EndBinomialOrMatrix equals
+    StartBinomialOrMatrix 0 Choose 0 EndBinomialOrMatrix" display="block"><mrow><mo>-</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced>
+    <mo>+</mo> <msup><mi>b</mi> <mo>*</mo></msup> <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd></mtr> <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd></mtr></mtable></mfenced>
+    <mo>+</mo> <msup><mi>s</mi> <mo>*</mo></msup> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: by the definition of the replication portfolio. In the other case, when the
+    price of the call option today is lower than the price of the replication portfolio,
+    say <math alttext="upper C 0 equals"><mrow><msub><mi>C</mi> <mn>0</mn></msub>
+    <mo>=</mo></mrow></math> 1.5, a trading strategy buying the call option and selling
+    the replication portfolio yields a risk-less profit amounting to the difference
+    between the market price of the call option and the cost to set up the replication
+    portfolio. Of course, the risk-less profits in both cases can be increased by
+    simply multiplying the positions by a positive factor greater than one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A model for an economy that allows for arbitrage opportunities can be considered
+    not viable. Therefore, the only price that is consistent with the absence of arbitrage
+    is <math alttext="upper C 0 equals"><mrow><msub><mi>C</mi> <mn>0</mn></msub> <mo>=</mo></mrow></math>
+    1.818181\. One calls this price the *arbitrage price* of the call option. Whenever
+    there is a portfolio <math alttext="phi"><mi>ϕ</mi></math> replicating the payoff
+    of a contingent claim <math alttext="upper V 1 left-parenthesis phi right-parenthesis
+    equals upper C 1"><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
+    , then the arbitrage price of the contingent claim is <math alttext="upper C 0
+    equals upper V 0 left-parenthesis phi right-parenthesis"><mrow><msub><mi>C</mi>
+    <mn>0</mn></msub> <mo>=</mo> <msub><mi>V</mi> <mn>0</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: Formally, the arbitrage price is the dot product of the replication portfolio
+    and the price vector of the replicating financial assets
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper C 0 identical-to upper V 0 left-parenthesis phi right-parenthesis
+    equals left-parenthesis phi Superscript asterisk Baseline comma StartBinomialOrMatrix
+    upper B 0 Choose upper S 0 EndBinomialOrMatrix right-parenthesis equals b Superscript
+    asterisk Baseline dot upper B 0 plus s Superscript asterisk Baseline dot upper
+    S 0" display="block"><mrow><msub><mi>C</mi> <mn>0</mn></msub> <mo>≡</mo> <msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mfenced
+    separators="" open="(" close=")"><msup><mi>ϕ</mi> <mo>*</mo></msup> <mo>,</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi> <mn>0</mn></msub></mtd></mtr>
+    <mtr><mtd><msub><mi>S</mi> <mn>0</mn></msub></mtd></mtr></mtable></mfenced></mfenced>
+    <mo>=</mo> <msup><mi>b</mi> <mo>*</mo></msup> <mo>·</mo> <msub><mi>B</mi> <mn>0</mn></msub>
+    <mo>+</mo> <msup><mi>s</mi> <mo>*</mo></msup> <mo>·</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: giving rise to an arbitrage-free price process for the contingent claim of <math
+    alttext="upper C equals left-parenthesis upper C 0 comma upper C 1 right-parenthesis"><mrow><mi>C</mi>
+    <mo>=</mo> <mo>(</mo> <msub><mi>C</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In Python, this is a single calculation given the previous definitions and
+    calculations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: Market Completeness
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Does arbitrage pricing work for every contingent claim? Yes, at least for those
+    that are replicable by portfolios of financial assets that are traded in the economy.
+    The *set of attainable contingent claims* <math alttext="double-struck upper A"><mi>𝔸</mi></math>
+    comprises all those contingent claims that are replicable by trading in the financial
+    assets. It is given by the *span*, which is the set of all linear combinations
+    of the future price vectors of the traded financial assets
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><mi>𝔸</mi> <mo>=</mo> <mfenced separators="" open="{"
+    close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msubsup><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: if short-selling is prohibited and
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="double-struck upper A equals StartSet script upper M dot phi
+    comma phi element-of double-struck upper R squared EndSet" display="block"><mrow><mi>𝔸</mi>
+    <mo>=</mo> <mfenced separators="" open="{" close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi>
+    <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: if it is allowed in unlimited fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider the risk-less bond and the risky stock from before with price processes
+    <math alttext="upper B equals left-parenthesis upper B 0 comma upper B 1 right-parenthesis"><mrow><mi>B</mi>
+    <mo>=</mo> <mo>(</mo> <msub><mi>B</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></math> and <math alttext="upper S equals left-parenthesis
+    upper S 0 comma left-parenthesis upper S 1 Superscript u Baseline comma upper
+    S 1 Superscript d Baseline right-parenthesis Superscript upper T Baseline right-parenthesis"><mrow><mi>S</mi>
+    <mo>=</mo> <mfenced separators="" open="(" close=")"><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>,</mo> <msup><mrow><mo>(</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>)</mo></mrow>
+    <mi>T</mi></msup></mfenced></mrow></math> , respectively, where <math><mrow><msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>,</mo><msub><mi>S</mi> <mn>1</mn></msub> <mo>∈</mo><msubsup><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mrow></math> and <math alttext="upper
+    S 1 Superscript u Baseline not-equals upper S 1 Superscript d"><mrow><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>≠</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
+    . It is then easy to show that the replication problem
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper M dot phi equals upper C 1" display="block"><mrow><mi>ℳ</mi>
+    <mo>·</mo> <mi>ϕ</mi> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: has a unique solution for any <math><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>∈</mo><msubsup><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mrow></math>
+    . The solution is given by
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="phi Superscript asterisk Baseline equals StartBinomialOrMatrix
+    b Superscript asterisk Baseline Choose s Superscript asterisk EndBinomialOrMatrix"
+    display="block"><mrow><msup><mi>ϕ</mi> <mo>*</mo></msup> <mo>=</mo> <mfenced separators=""
+    open="(" close=")"><mtable><mtr><mtd><msup><mi>b</mi> <mo>*</mo></msup></mtd></mtr>
+    <mtr><mtd><msup><mi>s</mi> <mo>*</mo></msup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and consequently as
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="phi Superscript asterisk Baseline equals StartBinomialOrMatrix
+    StartFraction 1 Over upper B 1 EndFraction StartFraction upper C 1 Superscript
+    d Baseline dot upper S 1 Superscript u Baseline minus upper C 1 Superscript u
+    Baseline dot upper S 1 Superscript d Baseline Over upper S 1 Superscript u Baseline
+    minus upper S 1 Superscript d Baseline EndFraction Choose StartFraction upper
+    C 1 Superscript u Baseline minus upper C 1 Superscript d Baseline Over upper S
+    1 Superscript u Baseline minus upper S 1 Superscript d Baseline EndFraction EndBinomialOrMatrix"
+    display="block"><mrow><msup><mi>ϕ</mi> <mo>*</mo></msup> <mo>=</mo> <mfenced separators=""
+    open="(" close=")"><mtable><mtr><mtd><mrow><mfrac><mn>1</mn> <msub><mi>B</mi>
+    <mn>1</mn></msub></mfrac> <mfrac><mrow><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>·</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>·</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow>
+    <mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup></mrow></mfrac></mrow></mtd></mtr> <mtr><mtd><mfrac><mrow><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow>
+    <mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup></mrow></mfrac></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: which was derived in the context of the replication of the special call option
+    payoff. The solution carries over to the general case since no special assumptions
+    have been made regarding the payoff other than <math><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>∈</mo><msubsup><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mrow></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since *every* contingent claim can be replicated by a portfolio consisting of
+    a position in the risk-less bond and the risky stock, one speaks of a *complete
+    market model*. Therefore, every contingent claim can be priced by replication
+    and arbitrage. Formally, the only requirement is that the price vectors of the
+    two financial assets in one year be linearly independent. This implies that
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Start 2 By 2 Matrix 1st Row 1st Column upper B 1 2nd Column upper
+    S 1 Superscript u Baseline 2nd Row 1st Column upper B 1 2nd Column upper S 1 Superscript
+    d Baseline EndMatrix dot StartBinomialOrMatrix b Choose s EndBinomialOrMatrix
+    equals StartBinomialOrMatrix 0 Choose 0 EndBinomialOrMatrix" display="block"><mrow><mfenced
+    open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd>
+    <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced>
+    <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mi>b</mi></mtd></mtr>
+    <mtr><mtd><mi>s</mi></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: has only the unique solution <math alttext="phi Superscript asterisk Baseline
+    equals left-parenthesis 0 comma 0 right-parenthesis Superscript upper T"><mrow><msup><mi>ϕ</mi>
+    <mo>*</mo></msup> <mo>=</mo> <msup><mrow><mo>(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> and no other solution. In fact, all replication
+    problems for arbitrary contingent claims have unique solutions under market completeness.
+    The payoff vectors of the two traded financial assets span the <math alttext="double-struck
+    upper R squared"><msup><mi>ℝ</mi> <mn>2</mn></msup></math> since they form a *basis*
+    of the *vector space* <math alttext="double-struck upper R squared"><msup><mi>ℝ</mi>
+    <mn>2</mn></msup></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The spanning property can be visualized by the use of Python and the [`matplotlib`](https://matplotlib.org)
+    package. To this end, 1,000 random portfolio compositions are simulated. The first
+    restriction is that the portfolio positions should be positive and add up to 1\.
+    [Figure 2-2](ch02_split_001.xhtml#comp_01) shows the result:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the seed for the random number generator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of values to be simulated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulates the bond position for values between 0 and 1 by the means of a uniform
+    distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the stock position as the difference between 1 and the bond position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the portfolio payoff vectors for all random portfolio compositions
+    and collects them in a `list` object; this Python idiom is called a `list` comprehension.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function returns an `ndarray` version of the results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The calculation is initiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](ch02_split_001.xhtml#co_two_state_economy_CO14-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The results are plotted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0202](Images/ftwp_0202.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-2\. The random portfolios spanning a one-dimensional line only
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 2-3](ch02_split_001.xhtml#comp_02) shows the graphical results in the
+    case where the portfolio positions do not need to add up to 1:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The stock position is freely simulated for values between 0 and 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The portfolio payoff vectors are calculated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0203](Images/ftwp_0203.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-3\. The random portfolios spanning a two-dimensional area (rhomb)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Finally, [Figure 2-4](ch02_split_001.xhtml#comp_03) allows for positive as
+    well as negative portfolio positions for both the bond and the stock. The resulting
+    portfolio payoff vectors cover an (elliptic) area around the origin:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Positive and negative portfolio positions are simulated by the means of the
+    standard normal distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0204](Images/ftwp_0204.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-4\. The random portfolios spanning a two-dimensional area (around the
+    origin)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: If <math alttext="b"><mi>b</mi></math> and <math alttext="s"><mi>s</mi></math>
+    are allowed to take on arbitrary values on the real line, <math alttext="b comma
+    s element-of double-struck upper R"><mrow><mi>b</mi> <mo>,</mo> <mi>s</mi> <mo>∈</mo>
+    <mi>ℝ</mi></mrow></math> , the resulting portfolios cover the vector space <math
+    alttext="double-struck upper R squared"><msup><mi>ℝ</mi> <mn>2</mn></msup></math>
+    completely. As pointed out previously, the payoff vectors of the traded financial
+    assets span <math alttext="double-struck upper R squared"><msup><mi>ℝ</mi> <mn>2</mn></msup></math>
+    in that case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arrow-Debreu Securities
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: An *Arrow-Debreu security* is defined by the fact that it pays exactly one unit
+    of currency in a specified future state. In a model economy with two different
+    future states only, there can only be two different such securities. An Arrow-Debreu
+    security is simply a special case of a contingent claim such that the replication
+    argument from before applies. In other words, since the market is complete, Arrow-Debreu
+    securities can be replicated by portfolios in the bond and stock. Therefore, both
+    replication problems have (unique) solutions, and both securities have unique
+    arbitrage prices. The two replication problems are
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper M dot phi equals StartBinomialOrMatrix 1 Choose
+    0 EndBinomialOrMatrix" display="block"><mrow><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mn>1</mn></mtd></mtr>
+    <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper M dot phi equals StartBinomialOrMatrix 0 Choose
+    1 EndBinomialOrMatrix" display="block"><mrow><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mn>0</mn></mtd></mtr>
+    <mtr><mtd><mn>1</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why are these securities important? Mathematically, the two payoff vectors form
+    a *standard basis* or *natural basis* for the <math alttext="double-struck upper
+    R squared"><msup><mi>ℝ</mi> <mn>2</mn></msup></math> vector space. This in turn
+    implies that any vector of this space can be uniquely expressed (replicated) as
+    a linear combination of the vectors that form the standard basis. Financially,
+    replacing the original future price vectors of the bond and the stock with Arrow-Debreu
+    securities as a basis for the model economy significantly simplifies the replication
+    problem for all other contingent claims.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The process is to first derive the replication portfolios for the two Arrow-Debreu
+    securities and the resulting arbitrage prices for both. Other contingent claims
+    are then replicated and priced based on the standard basis and the arbitrage prices
+    of the two securities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Consider the two Arrow-Debreu securities with price processes <math alttext="gamma
+    Superscript u Baseline equals left-parenthesis gamma 0 Superscript u Baseline
+    comma left-parenthesis 1 comma 0 right-parenthesis Superscript upper T Baseline
+    right-parenthesis"><mrow><msup><mi>γ</mi> <mi>u</mi></msup> <mo>=</mo> <mrow><mo>(</mo>
+    <msubsup><mi>γ</mi> <mn>0</mn> <mi>u</mi></msubsup> <mo>,</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup> <mo>)</mo></mrow></mrow></math> and <math alttext="gamma Superscript
+    d Baseline equals left-parenthesis gamma 0 Superscript d Baseline comma left-parenthesis
+    0 comma 1 right-parenthesis Superscript upper T Baseline right-parenthesis"><mrow><msup><mi>γ</mi>
+    <mi>d</mi></msup> <mo>=</mo> <mrow><mo>(</mo> <msubsup><mi>γ</mi> <mn>0</mn> <mi>d</mi></msubsup>
+    <mo>,</mo> <msup><mrow><mo>(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup> <mo>)</mo></mrow></mrow></math> and define:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper M Superscript gamma Baseline equals Start 2 By 2 Matrix
+    1st Row 1st Column 1 2nd Column 0 2nd Row 1st Column 0 2nd Column 1 EndMatrix"
+    display="block"><mrow><msup><mi>M</mi> <mi>γ</mi></msup> <mo>=</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>1</mn></mtd> <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd>
+    <mtd><mn>1</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Consider a general contingent claim with future payoff vector:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper C 1 equals StartBinomialOrMatrix upper C 1 Superscript
+    u Baseline Choose upper C 1 Superscript d EndBinomialOrMatrix" display="block"><mrow><msub><mi>C</mi>
+    <mn>1</mn></msub> <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>C</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The replication portfolio <math alttext="phi Superscript gamma"><msup><mi>ϕ</mi>
+    <mi>γ</mi></msup></math> for the contingent claim then is trivially given by <math
+    alttext="phi Superscript gamma Baseline equals left-parenthesis upper C 1 Superscript
+    u Baseline comma upper C 1 Superscript d Baseline right-parenthesis Superscript
+    upper T"><mrow><msup><mi>ϕ</mi> <mi>γ</mi></msup> <mo>=</mo> <msup><mrow><mo>(</mo><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>,</mo><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>)</mo></mrow> <mi>T</mi></msup></mrow></math> since:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column upper V 1 left-parenthesis phi
+    Superscript gamma Baseline right-parenthesis 2nd Column equals 3rd Column script
+    upper M Superscript gamma Baseline dot phi Superscript gamma 2nd Row 1st Column
+    Blank 2nd Column equals 3rd Column Start 2 By 2 Matrix 1st Row 1st Column 1 2nd
+    Column 0 2nd Row 1st Column 0 2nd Column 1 EndMatrix dot StartBinomialOrMatrix
+    upper C 1 Superscript u Choose upper C 1 Superscript d EndBinomialOrMatrix 3rd
+    Row 1st Column Blank 2nd Column equals 3rd Column StartBinomialOrMatrix upper
+    C 1 Superscript u Choose upper C 1 Superscript d EndBinomialOrMatrix EndLayout"
+    display="block"><mtable><mtr><mtd><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <msup><mi>ϕ</mi> <mi>γ</mi></msup> <mo>)</mo></mrow></mrow></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><msup><mi>ℳ</mi> <mi>γ</mi></msup> <mo>·</mo> <msup><mi>ϕ</mi> <mi>γ</mi></msup></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mfenced open="(" close=")"><mtable><mtr><mtd><mn>1</mn></mtd>
+    <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd> <mtd><mn>1</mn></mtd></mtr></mtable></mfenced>
+    <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>C</mi> <mn>1</mn>
+    <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mfenced open="(" close=")"><mtable><mtr><mtd><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msubsup><mi>C</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Consequently, the arbitrage price for the contingent claim is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper C 0 equals upper V 0 left-parenthesis phi Superscript gamma
+    Baseline right-parenthesis equals upper C 1 Superscript u Baseline dot gamma 0
+    Superscript u Baseline plus upper C 1 Superscript d Baseline dot gamma 0 Superscript
+    d" display="block"><mrow><msub><mi>C</mi> <mn>0</mn></msub> <mo>=</mo> <msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <msup><mi>ϕ</mi> <mi>γ</mi></msup> <mo>)</mo></mrow>
+    <mo>=</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>·</mo> <msubsup><mi>γ</mi>
+    <mn>0</mn> <mi>u</mi></msubsup> <mo>+</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>·</mo> <msubsup><mi>γ</mi> <mn>0</mn> <mi>d</mi></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This illustrates how the introduction of Arrow-Debreu securities simplifies
+    contingent claim replication and arbitrage pricing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Martingale Pricing
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'A *martingale measure* <math><mrow><mi>Q</mi><mo>:</mo><mi>℘</mi><mrow><mo>(</mo><mi>Ω</mi><mo>)</mo></mrow><mo>→</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math> is a special kind of probability
+    measure. It makes the discounted price process of a financial asset a *martingale*.
+    For the stock to be a martingale under <math alttext="upper Q"><mi>Q</mi></math>
+    , the following relationship must hold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper S 0 equals StartFraction 1 Over 1 plus i EndFraction dot
+    bold upper E Superscript upper Q Baseline left-parenthesis upper S 1 right-parenthesis"
+    display="block"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>=</mo> <mfrac><mn>1</mn>
+    <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac> <mo>·</mo> <msup><mi>𝐄</mi>
+    <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If <math alttext="i equals StartFraction upper B 1 minus upper B 0 Over upper
+    B 0 EndFraction"><mrow><mi>i</mi> <mo>=</mo> <mfrac><mrow><msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>-</mo><msub><mi>B</mi> <mn>0</mn></msub></mrow> <msub><mi>B</mi> <mn>0</mn></msub></mfrac></mrow></math>
+    , the relationship is trivially satisfied for the risk-less bond:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper B 0 equals StartFraction 1 Over 1 plus i EndFraction dot
+    bold upper E Superscript upper Q Baseline left-parenthesis upper B 1 right-parenthesis
+    equals StartFraction 1 Over 1 plus i EndFraction dot upper B 1" display="block"><mrow><msub><mi>B</mi>
+    <mn>0</mn></msub> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One also speaks of the fact that the price processes drift (on average) with
+    the risk-less interest rate under the martingale measure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout Enlarged left-brace 1st Row  upper B 0 dot left-parenthesis
+    1 plus i right-parenthesis equals upper B 1 2nd Row  upper S 0 dot left-parenthesis
+    1 plus i right-parenthesis equals bold upper E Superscript upper Q Baseline left-parenthesis
+    upper S 1 right-parenthesis EndLayout" display="block"><mfenced separators=""
+    open="{" close=""><mtable><mtr><mtd columnalign="left"><mrow><msub><mi>B</mi>
+    <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>B</mi> <mn>1</mn></msub></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>·</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></mrow></mtd></mtr></mtable></mfenced></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Denote <math alttext="q identical-to upper Q left-parenthesis u right-parenthesis"><mrow><mi>q</mi>
+    <mo>≡</mo> <mi>Q</mi> <mo>(</mo> <mi>u</mi> <mo>)</mo></mrow></math> . One gets
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="q dot upper S 1 Superscript u Baseline plus left-parenthesis
+    1 minus q right-parenthesis dot upper S 1 Superscript d Baseline equals upper
+    S 0 dot left-parenthesis 1 plus i right-parenthesis" display="block"><mrow><mi>q</mi>
+    <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>q</mi> <mo>)</mo></mrow> <mo>·</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup> <mo>=</mo> <msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'or after some simple manipulations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="q equals StartFraction upper S 0 dot left-parenthesis 1 plus
+    i right-parenthesis minus upper S 1 Superscript d Baseline Over upper S 1 Superscript
+    u Baseline minus upper S 1 Superscript d Baseline EndFraction" display="block"><mrow><mi>q</mi>
+    <mo>=</mo> <mfrac><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>i</mi><mo>)</mo></mrow><mo>-</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>d</mi></msubsup></mrow> <mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>-</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given previous assumptions, for <math alttext="q"><mi>q</mi></math> to define
+    a valid probability measure, <math alttext="upper S 1 Superscript u Baseline greater-than
+    upper S 0 dot left-parenthesis 1 plus i right-parenthesis greater-than upper S
+    1 Superscript d"><mrow><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>></mo>
+    <msub><mi>S</mi> <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo>
+    <mi>i</mi> <mo>)</mo></mrow> <mo>></mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
+    must hold. If so, one gets a new probability space <math alttext="left-parenthesis
+    normal upper Omega comma normal script upper P left-parenthesis normal upper Omega
+    right-parenthesis comma upper Q right-parenthesis"><mrow><mo>(</mo> <mi>Ω</mi>
+    <mo>,</mo> <mi>℘</mi> <mo>(</mo> <mi>Ω</mi> <mo>)</mo> <mo>,</mo> <mi>Q</mi> <mo>)</mo></mrow></math>
+    , where <math alttext="upper Q"><mi>Q</mi></math> replaces <math alttext="upper
+    P"><mi>P</mi></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: What if these relationships for <math alttext="upper S 1"><msub><mi>S</mi> <mn>1</mn></msub></math>
+    do not hold? Then a *simple arbitrage* is either to buy the risky asset in the
+    case <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis
+    less-than-or-equal-to upper S 1 Superscript d"><mrow><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow>
+    <mo>≤</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math> or
+    simply sell it in the other case, <math alttext="upper S 0 dot left-parenthesis
+    1 plus i right-parenthesis greater-than-or-equal-to upper S 1 Superscript u"><mrow><msub><mi>S</mi>
+    <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi>
+    <mo>)</mo></mrow> <mo>≥</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mrow></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: If equality holds in these relationships, one also speaks of a *weak arbitrage*
+    since the risk-less profit can only be expected on average and not with certainty.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Assuming the numerical price processes from before, the calculation of <math
+    alttext="q"><mi>q</mi></math> in Python means just an arithmetic operation on
+    floating point numbers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: First Fundamental Theorem of Asset Pricing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The considerations at the end of the previous section hint to a relationship
+    between martingale measures on the one hand and arbitrage on the other. A central
+    result in mathematical finance that relates these seemingly unrelated concepts
+    formally is the *First Fundamental Theorem of Asset Pricing*. Pioneering work
+    in this regard has been published by Cox and Ross (1976), Harrison and Kreps (1979),
+    and Harrison and Pliska (1981).
+  prefs: []
+  type: TYPE_NORMAL
+- en: First Fundamental Theorem of Asset Pricing (1FTAP)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following statements are equivalent:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A martingale measure exists.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The economy is arbitrage-free.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Given the calculations and the discussion from before, the theorem is easy to
+    prove for the model economy with the risk-less bond and the risky stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First, statement 1 implies statement 2: if the martingale measure exists, the
+    price processes do not allow for simple (weak) arbitrages. Since the two future
+    price vectors are linearly independent, every contingent claim can be replicated
+    by trading in the two financial assets, implying unique arbitrage prices. Therefore,
+    no arbitrages exist.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second, statement 2 implies statement 1: if the model economy is arbitrage-free,
+    a martingale measure exists, as shown previously.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pricing by Expectation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A corollary of the 1FTAP is that any attainable contingent claim <math alttext="upper
+    C 1 element-of double-struck upper A"><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>∈</mo> <mi>𝔸</mi></mrow></math> can be priced by taking the expectation under
+    the martingale measure of its future payoff and discounting with the risk-less
+    interest rate. The arbitrage price of the call option is known through replication.
+    Assuming the same numerical price processes for the traded financial assets and
+    the same numerical future payoff vector for the call option, the *martingale price*
+    of the call option is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mtable><mtr><mtd><msub><mi>C</mi> <mn>0</mn></msub></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mrow><mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <mrow><mo>(</mo> <mi>q</mi> <mo>·</mo> <msubsup><mi>C</mi> <mn>1</mn>
+    <mi>u</mi></msubsup> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>q</mi>
+    <mo>)</mo></mrow> <mo>·</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mfrac><mn>1</mn>
+    <mrow><mn>1</mn><mo>+</mo><mn>0</mn><mo>.</mo><mn>1</mn></mrow></mfrac> <mo>·</mo>
+    <mrow><mo>(</mo> <mn>0.4</mn> <mo>·</mo> <mn>5</mn> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mn>0.4</mn> <mo>)</mo></mrow> <mo>·</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mn>1</mn> <mo>.</mo> <mn>818181</mn></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In other words, the discounted price process of the call option—and any other
+    contingent claim—is a martingale under the martingale measure such that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout Enlarged left-brace 1st Row  upper B 0 dot left-parenthesis
+    1 plus i right-parenthesis equals upper B 1 2nd Row  upper S 0 dot left-parenthesis
+    1 plus i right-parenthesis equals bold upper E Superscript upper Q Baseline left-parenthesis
+    upper S 1 right-parenthesis 3rd Row  upper C 0 dot left-parenthesis 1 plus i right-parenthesis
+    equals bold upper E Superscript upper Q Baseline left-parenthesis upper C 1 right-parenthesis
+    EndLayout" display="block"><mfenced separators="" open="{" close=""><mtable><mtr><mtd
+    columnalign="left"><mrow><msub><mi>B</mi> <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>B</mi>
+    <mn>1</mn></msub></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><msub><mi>S</mi>
+    <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo>
+    <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><msub><mi>C</mi> <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo> <msup><mi>𝐄</mi>
+    <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>C</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></mfenced></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In Python, martingale pricing boils down to the evaluation of a dot product:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the martingale measure as the tuple `Q`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the martingale pricing formula.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second Fundamental Theorem of Asset Pricing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There is another important result, often called the *Second Fundamental Theorem
+    of Asset Pricing*, which relates the uniqueness of the martingale measure with
+    market completeness.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second Fundamental Theorem of Asset Pricing (2FTAP)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following statements are equivalent:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The martingale measure is unique.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The market model is complete.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The result also follows for the simple model economy from previous discussions.
+    A more detailed analysis of market completeness takes place in [Chapter 3](ch03.xhtml#three_state_economy).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mean-Variance Portfolios
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A major breakthrough in finance has been the formalization and quantification
+    of portfolio investing through the *mean-variance portfolio theory* (MVP) as pioneered
+    by Markowitz (1952). To some extent this approach can be considered to be the
+    beginning of quantitative finance, initiating a trend that brought more and more
+    mathematics to the financial field.
+  prefs: []
+  type: TYPE_NORMAL
+- en: MVP reduces a financial asset to the first and second moment of its returns,
+    namely the *mean* as the expected rate of return and the *variance* of the rates
+    of return or the *volatility*, defined as the standard deviation of the rates
+    of return. Although the approach is generally called “mean-variance,” it is often
+    the combination “mean-volatility” that is used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider the risk-less bond and risky stock from before with price processes
+    <math alttext="upper B equals left-parenthesis upper B 0 comma upper B 1 right-parenthesis"><mrow><mi>B</mi>
+    <mo>=</mo> <mo>(</mo> <msub><mi>B</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></math> and <math alttext="upper S equals left-parenthesis
+    upper S 0 comma left-parenthesis upper S 1 Superscript u Baseline comma upper
+    S 1 Superscript d Baseline right-parenthesis Superscript upper T Baseline right-parenthesis"><mrow><mi>S</mi>
+    <mo>=</mo> <mfenced separators="" open="(" close=")"><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>,</mo> <msup><mrow><mo>(</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>)</mo></mrow>
+    <mi>T</mi></msup></mfenced></mrow></math> and the future price matrix <math alttext="script
+    upper M"><mi>ℳ</mi></math> , for which the two columns are given by the future
+    price vectors of the two financial assets. What is the expected rate of return
+    and the volatility of a portfolio <math alttext="phi"><mi>ϕ</mi></math> that consists
+    of <math alttext="b"><mi>b</mi></math> percent invested in the bond and <math
+    alttext="s"><mi>s</mi></math> percent invested the stock? Note that now a situation
+    is assumed for which <math alttext="b plus s equals 1"><mrow><mi>b</mi> <mo>+</mo>
+    <mi>s</mi> <mo>=</mo> <mn>1</mn></mrow></math> , with <math><mrow><mi>b</mi><mo>,</mo><mi>s</mi><mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math> , holds. This can, of course, be
+    relaxed but simplifies the exposition in this section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *expected portfolio payoff* is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column bold upper E Superscript upper
+    P Baseline left-parenthesis script upper M dot phi right-parenthesis 2nd Column
+    equals 3rd Column p dot left-parenthesis b dot upper B 1 plus s dot upper S 1
+    Superscript u Baseline right-parenthesis plus left-parenthesis 1 minus p right-parenthesis
+    dot left-parenthesis b dot upper B 1 plus s dot upper S 1 Superscript d Baseline
+    right-parenthesis 2nd Row 1st Column Blank 2nd Column equals 3rd Column p dot
+    left-parenthesis b dot upper B 1 right-parenthesis plus left-parenthesis 1 minus
+    p right-parenthesis dot left-parenthesis b dot upper B 1 right-parenthesis plus
+    p dot left-parenthesis s dot upper S 1 Superscript u Baseline right-parenthesis
+    plus left-parenthesis 1 minus p right-parenthesis left-parenthesis s dot upper
+    S 1 Superscript d Baseline right-parenthesis 3rd Row 1st Column Blank 2nd Column
+    equals 3rd Column b dot bold upper E Superscript upper P Baseline left-parenthesis
+    upper B 1 right-parenthesis plus s dot bold upper E Superscript upper P Baseline
+    left-parenthesis upper S 1 right-parenthesis 4th Row 1st Column Blank 2nd Column
+    equals 3rd Column b dot upper B 1 plus s dot bold upper E Superscript upper P
+    Baseline left-parenthesis upper S 1 right-parenthesis EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo> <mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mrow><mi>p</mi> <mo>·</mo> <mrow><mo>(</mo> <mi>b</mi>
+    <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>+</mo> <mi>s</mi> <mo>·</mo>
+    <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>)</mo></mrow> <mo>+</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo>)</mo></mrow> <mo>·</mo>
+    <mrow><mo>(</mo> <mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>+</mo>
+    <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>)</mo></mrow></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mi>p</mi> <mo>·</mo> <mrow><mo>(</mo> <mi>b</mi>
+    <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo>)</mo></mrow> <mo>·</mo> <mrow><mo>(</mo>
+    <mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>+</mo>
+    <mi>p</mi> <mo>·</mo> <mrow><mo>(</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>)</mo></mrow> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo>)</mo></mrow> <mrow><mo>(</mo> <mi>s</mi>
+    <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup> <mo>)</mo></mrow></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mi>b</mi> <mo>·</mo> <msup><mi>𝐄</mi> <mi>P</mi></msup>
+    <mrow><mo>(</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>+</mo>
+    <mi>s</mi> <mo>·</mo> <msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>+</mo>
+    <mi>s</mi> <mo>·</mo> <msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In words, the expected portfolio payoff is simply <math alttext="b"><mi>b</mi></math>
+    times the risk-less bond payoff plus <math alttext="s"><mi>s</mi></math> times
+    the expected stock payoff.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining <math alttext="script upper R element-of double-struck upper R Superscript
+    2 times 2"><mrow><mi>ℛ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow></msup></mrow></math>
+    to be the *rates of return matrix* with
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper R equals Start 2 By 2 Matrix 1st Row 1st Column
+    i 2nd Column r 1 Superscript u Baseline 2nd Row 1st Column i 2nd Column r 1 Superscript
+    d EndMatrix" display="block"><mrow><mi>ℛ</mi> <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mi>i</mi></mtd>
+    <mtd><msubsup><mi>r</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><mi>i</mi></mtd>
+    <mtd><msubsup><mi>r</mi> <mn>1</mn> <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: one gets for the expected portfolio rate of return
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column bold upper E Superscript upper
+    P Baseline left-parenthesis script upper R dot phi right-parenthesis 2nd Column
+    equals 3rd Column b dot bold upper E Superscript upper P Baseline left-parenthesis
+    i right-parenthesis plus s dot bold upper E Superscript upper P Baseline left-parenthesis
+    r 1 right-parenthesis 2nd Row 1st Column Blank 2nd Column equals 3rd Column b
+    dot i plus s dot mu EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo> <mi>ℛ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mrow><mi>b</mi> <mo>·</mo> <msup><mi>𝐄</mi> <mi>P</mi></msup>
+    <mrow><mo>(</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>+</mo> <mi>s</mi> <mo>·</mo>
+    <msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo> <msub><mi>r</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><mi>b</mi>
+    <mo>·</mo> <mi>i</mi> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mi>μ</mi></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In words, the expected portfolio rate of return is <math alttext="b"><mi>b</mi></math>
+    times the risk-less interest rate plus <math alttext="s"><mi>s</mi></math> times
+    the expected rate of return of the stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next step is to calculate the *portfolio variance*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column sigma squared left-parenthesis
+    script upper R dot phi right-parenthesis 2nd Column equals 3rd Column double-struck
+    upper E Superscript upper P Baseline left-parenthesis left-parenthesis r minus
+    bold upper E Superscript upper P Baseline left-parenthesis script upper R dot
+    phi right-parenthesis right-parenthesis squared right-parenthesis 2nd Row 1st
+    Column Blank 2nd Column equals 3rd Column left-parenthesis StartBinomialOrMatrix
+    p Choose 1 minus p EndBinomialOrMatrix comma StartBinomialOrMatrix left-parenthesis
+    b dot i plus s dot r 1 Superscript u Baseline minus b dot i minus s dot mu right-parenthesis
+    squared Choose left-parenthesis b dot i plus s dot r 1 Superscript d Baseline
+    minus b dot i minus s dot mu right-parenthesis squared EndBinomialOrMatrix right-parenthesis
+    3rd Row 1st Column Blank 2nd Column equals 3rd Column left-parenthesis StartBinomialOrMatrix
+    p Choose 1 minus p EndBinomialOrMatrix comma StartBinomialOrMatrix left-parenthesis
+    s dot r 1 Superscript u Baseline minus s dot mu right-parenthesis squared Choose
+    left-parenthesis s dot r 1 Superscript d Baseline minus s dot mu right-parenthesis
+    squared EndBinomialOrMatrix right-parenthesis 4th Row 1st Column Blank 2nd Column
+    equals 3rd Column s squared dot sigma squared left-parenthesis r 1 right-parenthesis
+    EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>σ</mi> <mn>2</mn></msup>
+    <mrow><mo>(</mo> <mi>ℛ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mrow><msup><mi>𝔼</mi> <mi>P</mi></msup> <mfenced separators=""
+    open="(" close=")"><msup><mfenced separators="" open="(" close=")"><mi>r</mi><mo>-</mo><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo><mi>ℛ</mi><mo>·</mo><mi>ϕ</mi><mo>)</mo></mrow></mfenced>
+    <mn>2</mn></msup></mfenced></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd> <mtd><mfenced
+    separators="" open="(" close=")"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>p</mi></mtd></mtr>
+    <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>p</mi></mrow></mtd></mtr></mtable></mfenced>
+    <mo>,</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msup><mrow><mo>(</mo><mi>b</mi><mo>·</mo><mi>i</mi><mo>+</mo><mi>s</mi><mo>·</mo><msubsup><mi>r</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><mi>b</mi><mo>·</mo><mi>i</mi><mo>-</mo><mi>s</mi><mo>·</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mtd></mtr> <mtr><mtd><msup><mrow><mo>(</mo><mi>b</mi><mo>·</mo><mi>i</mi><mo>+</mo><mi>s</mi><mo>·</mo><msubsup><mi>r</mi>
+    <mn>1</mn> <mi>d</mi></msubsup> <mo>-</mo><mi>b</mi><mo>·</mo><mi>i</mi><mo>-</mo><mi>s</mi><mo>·</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mtd></mtr></mtable></mfenced></mfenced></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mfenced separators="" open="(" close=")"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>p</mi></mtd></mtr>
+    <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>p</mi></mrow></mtd></mtr></mtable></mfenced>
+    <mo>,</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msup><mrow><mo>(</mo><mi>s</mi><mo>·</mo><msubsup><mi>r</mi>
+    <mn>1</mn> <mi>u</mi></msubsup> <mo>-</mo><mi>s</mi><mo>·</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mtd></mtr> <mtr><mtd><msup><mrow><mo>(</mo><mi>s</mi><mo>·</mo><msubsup><mi>r</mi>
+    <mn>1</mn> <mi>d</mi></msubsup> <mo>-</mo><mi>s</mi><mo>·</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mtd></mtr></mtable></mfenced></mfenced></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><msup><mi>s</mi> <mn>2</mn></msup> <mo>·</mo> <msup><mi>σ</mi> <mn>2</mn></msup>
+    <mrow><mo>(</mo> <msub><mi>r</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In words, the portfolio variance is <math alttext="s squared"><msup><mi>s</mi>
+    <mn>2</mn></msup></math> times the stock variance, which makes intuitive sense
+    since the bond is risk-less and should not contribute to the portfolio variance.
+    It immediately follows the nice proportionality result for the *portfolio volatility*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column sigma left-parenthesis script
+    upper R dot phi right-parenthesis 2nd Column equals 3rd Column StartRoot sigma
+    squared left-parenthesis script upper R dot phi right-parenthesis EndRoot 2nd
+    Row 1st Column Blank 2nd Column equals 3rd Column StartRoot s squared dot sigma
+    squared left-parenthesis r 1 right-parenthesis EndRoot 3rd Row 1st Column Blank
+    2nd Column equals 3rd Column s dot sigma left-parenthesis r 1 right-parenthesis
+    EndLayout" display="block"><mtable><mtr><mtd><mrow><mi>σ</mi> <mo>(</mo> <mi>ℛ</mi>
+    <mo>·</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><msqrt><mrow><msup><mi>σ</mi>
+    <mn>2</mn></msup> <mrow><mo>(</mo> <mi>ℛ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></msqrt></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><msqrt><mrow><msup><mi>s</mi> <mn>2</mn></msup>
+    <mo>·</mo> <msup><mi>σ</mi> <mn>2</mn></msup> <mrow><mo>(</mo> <msub><mi>r</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></msqrt></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>s</mi> <mo>·</mo> <mi>σ</mi> <mo>(</mo> <msub><mi>r</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The whole analysis is straightforward to implement in Python. First, some preliminaries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The matrix with the future prices of the financial assets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The vector with the prices of the financial assets today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_001.xhtml#co_two_state_economy_CO18-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates in vectorized fashion the return matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_001.xhtml#co_two_state_economy_CO18-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the results of the calculation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_001.xhtml#co_two_state_economy_CO18-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the probability measure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With these definitions, expected portfolio return and volatility are calculated
+    as dot products:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected returns of the bond and the stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An example allocation for the stock in percent (decimals).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting portfolio with a normalized weight of 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected portfolio return given the allocations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The value lies between the risk-less return and the stock return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The volatility of the portfolio; the Python code here only applies due to <math
+    alttext="p equals"><mrow><mi>p</mi> <mo>=</mo></mrow></math> 0.5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](ch02_split_001.xhtml#co_two_state_economy_CO19-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Again, the value lies between the volatility of the bond (= 0) and the volatility
+    of the stock (= 0.75).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Varying the weight of the stock in the portfolio leads to different risk-return
+    combinations. [Figure 2-5](ch02_split_001.xhtml#mvp_01) shows the expected portfolio
+    return and volatility for different values of <math alttext="s"><mi>s</mi></math>
+    between 0 and 1\. As the plot illustrates, both the expected portfolio return
+    (from 0.1 to 0.25) and the volatility (from 0.0 to 0.75) increase linearly with
+    increasing allocation <math alttext="s"><mi>s</mi></math> of the stock:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](ch02_split_001.xhtml#co_two_state_economy_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates an `ndarray` object with 24 evenly spaced intervals between 0 and
+    1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](ch02_split_001.xhtml#co_two_state_economy_CO20-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates for every element in `values` the expected portfolio return and stores
+    them in a `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](ch02_split_001.xhtml#co_two_state_economy_CO20-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates for every element in `values` the portfolio volatility and stores
+    them in another `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0205](Images/ftwp_0205.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-5\. Expected portfolio return and volatility for different allocations
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Note that the list comprehension `sigma = [s * R[:, 1].std() for s in values]`
+    in the previous code is short for the following code^([5](ch02_split_001.xhtml#idm44853704060072)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The typical graphic seen in the context of MVP is one that plots expected portfolio
+    return against portfolio volatility. [Figure 2-6](ch02_split_001.xhtml#mvp_02)
+    shows that an investor can expect a higher return the more risk (volatility) they
+    are willing to bear. The relationship is linear in the special case of this section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![ftwp 0206](Images/ftwp_0206.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-6\. Feasible combinations of expected portfolio return and volatility
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter introduces finance, starting with the very basics and illustrating
+    the central mathematical objects and financial notions with simple Python code
+    examples. The beauty is that fundamental ideas of finance—like arbitrage pricing
+    or the risk-return relationship—can be introduced and understood even in a static
+    two-state economy. Equipped with this basic understanding and some financial and
+    mathematical intuition, the transition to increasingly more realistic financial
+    models is significantly simplified. The subsequent chapter, for example, adds
+    a third future state to the state space to discuss issues arising in the context
+    of market incompleteness.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Cox, John and Stephen Ross. 1976\. “The Valuation of Options for Alternative
+    Stochastic Processes.” *Journal of Financial Economics* (3): 145–166.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Delbaen, Freddy and Walter Schachermayer. 2006\. *The Mathematics of Arbitrage*.
+    Berlin: Springer Verlag.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Guidolin, Massimo and Francesca Rinaldi. 2013\. “Ambiguity in Asset Pricing
+    and Portfolio Choice: A Review of the Literature.” *Theory and Decision* (74):
+    183–217\. [*https://ssrn.com/abstract=1673494*](https://ssrn.com/abstract=1673494).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Harrison, Michael and David Kreps. 1979\. “Martingales and Arbitrage in Multiperiod
+    Securities Markets.” *Journal of Economic Theory* (20): 381–408.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Harrison, Michael and Stanley Pliska. 1981\. “Martingales and Stochastic Integrals
+    in the Theory of Continuous Trading.” *Stochastic Processes and their Applications*
+    (11): 215–260.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Markowitz, Harry. 1952\. “Portfolio Selection.” *Journal of Finance* 7 (1):
+    77–91.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch02_split_000.xhtml#idm44853711197832-marker)) For details on the Fundamental
+    Theorems of Asset Pricing, refer to the seminal papers by Harrison and Kreps (1979)
+    and Harrison and Pliska (1981).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch02_split_000.xhtml#idm44853711142360-marker)) A more formal treatment
+    of the concept of an *economy* is found in [Chapter 5](ch05_split_000.xhtml#static_economy).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch02_split_000.xhtml#idm44853711101112-marker)) For details on the standard
+    data types in Python, refer to the [Built-in Types](https://oreil.ly/YTWep) documentation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch02_split_001.xhtml#idm44853713184344-marker)) For a formal definition
+    of a random variable, see [Chapter 5](ch05_split_000.xhtml#static_economy).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch02_split_001.xhtml#idm44853704060072-marker)) Refer to the [Data Structures
+    documentation](https://oreil.ly/0dbCi) for more on data structures and comprehension
+    idioms in Python.
+  prefs: []
+  type: TYPE_NORMAL

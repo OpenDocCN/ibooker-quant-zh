@@ -1,0 +1,1394 @@
+- en: Chapter 8\. Deep Learning for Time Series Prediction I
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Deep learning* is a slightly more complex and more detailed field than machine
+    learning. Machine learning and deep learning both fall under the umbrella of data
+    science. As you will see, deep learning is mostly about neural networks, a highly
+    sophisticated and powerful algorithm that has enjoyed a lot of coverage and hype,
+    and for good reason: it is very powerful and able to catch highly complex nonlinear
+    relationships between different variables.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The aim of this chapter is to explain the functioning of neural networks before
+    using them to predict financial time series in Python, just like you saw in [Chapter 7](ch07.html#ch07).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Walk Through Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Artificial neural networks* (ANNs) have their roots in the study of neurology,
+    where researchers sought to comprehend how the human brain and its intricate network
+    of interconnected neurons functioned. ANNs are designed to produce computational
+    representations of biological neural network behavior.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ANNs have been around since the 1940s, when academics first started looking
+    into ways to build computational models based on the human brain. Logician Walter
+    Pittsand neurophysiologist Warren McCulloch were among the early pioneers in this
+    subject. They published the idea of a computational model based on simplified
+    artificial neurons in a paper.^([1](ch08.html#id685))
+  prefs: []
+  type: TYPE_NORMAL
+- en: The development of artificial neural networks gained further momentum in the
+    1950s and 1960s when researchers like Frank Rosenblatt worked on the *perceptron*,
+    a type of artificial neuron that could learn from its inputs. Rosenblatt’s work
+    paved the way for the development of single-layer neural networks capable of pattern
+    recognition tasks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With the creation of multilayer neural networks, also known as *deep neural
+    networks*, and the introduction of more potent algorithms, artificial neural networks
+    made significant strides in the 1980s and 1990s. This innovation made it possible
+    for neural networks to learn hierarchical data representations, which enhanced
+    their performance on challenging tasks. Although multiple researchers contributed
+    to the development and advancement of artificial neural networks, one influential
+    figure is Geoffrey Hinton. Hinton, along with his collaborators, made significant
+    contributions to the field by developing new learning algorithms and architectures
+    for neural networks. His work on deep learning has been instrumental in the recent
+    resurgence and success of artificial neural networks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'An ANN consists of interconnected nodes, called artificial neurons, organized
+    into layers. The layers are typically divided into three types:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input layer
+  prefs: []
+  type: TYPE_NORMAL
+- en: The input layer receives input data, which could be numerical, categorical,
+    or even raw sensory data. Input layers are explanatory variables that are supposed
+    to be predictive in nature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hidden layers
+  prefs: []
+  type: TYPE_NORMAL
+- en: The hidden layers (one or more) process the input data through their interconnected
+    neurons. Each neuron in a layer receives inputs, performs a computation (discussed
+    later), and passes the output to the next layer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Output layer
+  prefs: []
+  type: TYPE_NORMAL
+- en: The output layer produces the final result or prediction based on the processed
+    information from the hidden layers. The number of neurons in the output layer
+    depends on the type of problem the network is designed to solve.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 8-1](#figure-8-1) shows an illustration of an artificial neural network
+    where the information flows from left to right. It begins with the two inputs
+    being connected to the four hidden layers where calculation is done before outputting
+    a weighted prediction in the output layer.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0801.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-1\. A simple illustration of an artificial neural network.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Each neuron in the ANN performs two main operations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The neuron receives inputs from the previous layer or directly from the input
+    data. Each input is multiplied by a weight value, which represents the strength
+    or importance of that connection. The weighted inputs are then summed together.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: After the weighted sum, an activation function (discussed in the next section)
+    is applied to introduce nonlinearity into the output of the neuron. The activation
+    function determines the neuron’s output value based on the summed inputs.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: During the training process, the ANN adjusts the weights of its connections
+    to improve its performance. This is typically done through an iterative optimization
+    algorithm, such as gradient descent, where the network’s performance is evaluated
+    using a defined loss function. The algorithm computes the gradient of the loss
+    function with respect to the network’s weights, allowing the weights to be updated
+    in a way that minimizes the error.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ANNs have the ability to learn and generalize from data, making them suitable
+    for tasks like pattern recognition and regression. With the advancements in deep
+    learning, ANNs with multiple hidden layers have shown exceptional performance
+    on complex tasks, leveraging their ability to learn hierarchical representations
+    and capture intricate patterns in the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: It is worth noting that the process from inputs to outputs is referred to as
+    *forward propagation*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Activation Functions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Activation functions* in neural networks introduce nonlinearity to the output
+    of a neuron, allowing neural networks to model complex relationships and learn
+    from nonlinear data. They determine the output of a neuron based on the weighted
+    sum of its inputs. Let’s discuss these activation functions in detail.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *sigmoid activation function* maps the input to a range between 0 and 1,
+    making it suitable for binary classification problems or as a smooth approximation
+    of a step function. The mathematical representation of the function is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper S left-parenthesis x right-parenthesis equals StartFraction
+    1 Over 1 plus e Superscript negative x Baseline EndFraction"><mrow><mi>S</mi>
+    <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi>
+    <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 8-2](#figure-8-2) shows the sigmoid function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0802.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-2\. Graph of the sigmoid function.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Among the advantages of the sigmoid activation function are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is a smooth as well as differentiable function that facilitates gradient-based
+    optimization algorithms.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It squashes the input to a bounded range, which can be interpreted as a probability
+    or confidence level.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'However, it has its limitations as well:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It suffers from the *vanishing gradient problem*, where gradients become very
+    small for extreme input values. This can hinder the learning process.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Outputs are not zero centered, making it less suitable for certain situations,
+    such as optimizing weights using symmetric update rules like the gradient descent.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The next activation function is the *hyperbolic tangent function* (tanh), which
+    you saw in [Chapter 4](ch04.html#ch04). The mathematical representation of the
+    function is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="t a n h left-parenthesis x right-parenthesis equals StartFraction
+    e Superscript x Baseline minus e Superscript negative x Baseline Over e Superscript
+    x Baseline plus e Superscript negative x Baseline EndFraction"><mrow><mi>t</mi>
+    <mi>a</mi> <mi>n</mi> <mi>h</mi> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><msup><mi>e</mi>
+    <mi>x</mi></msup> <mo>-</mo><msup><mi>e</mi> <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow>
+    <mrow><msup><mi>e</mi> <mi>x</mi></msup> <mo>+</mo><msup><mi>e</mi> <mrow><mo>-</mo><mi>x</mi></mrow></msup></mrow></mfrac></mstyle></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Among the advantages of the hyperbolic tangent function are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is similar to the sigmoid function but is zero centered, which helps alleviate
+    the issue of asymmetric updates in weight optimization.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Its nonlinearity can capture a wider range of data variations compared to the
+    sigmoid function.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The following are among its limitations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It suffers from the vanishing gradient problem, particularly in deep networks.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Outputs are still susceptible to saturation at the extremes, resulting in gradients
+    close to zero.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[Figure 8-3](#figure-8-3) shows the hyperbolic tangent function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0803.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-3\. Graph of the hyperbolic tangent function.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The next function is called the *ReLU activation function*. ReLU stands for
+    *rectified linear unit*. This function sets negative values to zero and keeps
+    the positive values unchanged. It is efficient and helps avoid the vanishing gradient
+    problem. The mathematical representation of the function is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="f left-parenthesis x right-parenthesis equals m a x left-parenthesis
+    0 comma x right-parenthesis"><mrow><mi>f</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo>
+    <mo>=</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>0</mn> <mo>,</mo> <mi>x</mi>
+    <mo>)</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Among the advantages of the ReLU function are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is simple to implement, as it only involves taking the maximum of 0 and the
+    input value. The simplicity of ReLU leads to faster computation and training compared
+    to more complex activation functions.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It helps mitigate the vanishing gradient problem that can occur during deep
+    neural network training. The derivative of ReLU is either 0 or 1, which means
+    that the gradients can flow more freely and avoid becoming exponentially small
+    as the network gets deeper.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Among the limitations of the function are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It outputs 0 for negative input values, which can lead to information loss.
+    In some cases, it may be beneficial to have activation functions that can produce
+    negative outputs as well.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is not a smooth function, because its derivative is discontinuous at 0\.
+    This can cause optimization difficulties in certain scenarios.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[Figure 8-4](#figure-8-4) shows the ReLU function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0804.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-4\. Graph of the ReLU function.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The final activation function to discuss is the *leaky ReLU activation function*.
+    This activation function is an extension of the ReLU function that introduces
+    a small slope for negative inputs. The mathematical representation of the function
+    is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="f left-parenthesis x right-parenthesis equals m a x left-parenthesis
+    0.01 x comma x right-parenthesis"><mrow><mi>f</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo>
+    <mo>=</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>0</mn> <mo lspace="0%"
+    rspace="0%">.</mo> <mn>01</mn> <mi>x</mi> <mo>,</mo> <mi>x</mi> <mo>)</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Leaky ReLU addresses the dead neuron problem in ReLU and allows some activation
+    for negative inputs, which can help with the flow of gradients during training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Among the advantages of the leaky ReLU function are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It overcomes the issue of dead neurons that can occur with ReLU. By introducing
+    a small slope for negative inputs, leaky ReLU ensures that even if a neuron is
+    not activated, it can still contribute to the gradient flow during training.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is a continuous function, even at negative input values. The nonzero slope
+    for negative inputs allows the activation function to have a defined derivative
+    throughout its input range.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The following are among the limitations of the function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The slope of the leaky part is a hyperparameter that needs to be set manually.
+    It requires careful tuning to strike a balance between avoiding dead neurons and
+    preventing too much leakage that may hinder the nonlinearity of the activation
+    function.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Although leaky ReLU provides a nonzero response for negative inputs, it does
+    not provide the same level of negative activation as some other activation functions,
+    such as the hyperbolic tangent (tanh) and sigmoid. In scenarios where a strong
+    negative activation response is desired, other activation functions might be more
+    suitable.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[Figure 8-5](#figure-8-5) shows the leaky ReLU function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your choice of activation function depends on the nature of the problem, the
+    architecture of the network, and the desired behavior of the neurons in the network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Activation functions typically take the weighted sum of inputs to a neuron and
+    apply a nonlinear transformation to it. The transformed value is then passed on
+    as the output of the neuron to the next layer of the network. The specific form
+    and behavior of activation functions can vary, but their overall purpose is to
+    introduce nonlinearities that allow the network to learn complex patterns and
+    relationships in the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0805.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-5\. Graph of the leaky ReLU function.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: To sum up, activation functions play a crucial role in ANNs by introducing nonlinearity
+    into the network’s computations. They are applied to the outputs of individual
+    neurons or intermediate layers and help determine whether a neuron should be activated
+    or not based on the input it receives. Without activation functions, the network
+    would only be able to learn linear relationships between the input and output.
+    However, most real-world problems (especially financial time series) involve complex,
+    nonlinear relationships, so activation functions are essential for enabling neural
+    networks to learn and represent such relationships effectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backpropagation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Backpropagation* is a fundamental algorithm used to train neural networks.
+    It allows the network to update its weights in a way that minimizes the difference
+    between the predicted output and the desired output.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Backpropagation is a shortened term for *backward propagation of errors.*
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Training neural networks involves the following steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Randomly initialize the weights and biases of the neural network. This allows
+    you to have a first step when you do not have initial information.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Perform *forward propagation*, a technique to calculate the predicted outputs
+    of the network for a given input. As a reminder, this step involves calculating
+    the weighted sum of inputs for each neuron, applying the activation function to
+    the weighted sum, passing the value to the next layer (if it’s not the last),
+    and continuing the process until reaching the output layer (prediction).
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Compare the predicted output with the actual output (test data) and calculate
+    the loss, which represents the difference between them. The choice of the loss
+    function (e.g., MAE or MSE) depends on the specific problem being solved.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Perform backpropagation to calculate the gradients of the loss with respect
+    to the weights and biases. In this step, the algorithm will start from the output
+    layer (the last layer) and go backward. It will compute the gradient of the loss
+    with respect to the output of each neuron in the current layer. Then it will calculate
+    the gradient of the loss with respect to the weighted sum of inputs for each neuron
+    in the current layer by applying the chain rule. After that, it will compute the
+    gradient of the loss with respect to the weights and biases of each neuron in
+    the current layer using the gradients from the previous steps. These steps are
+    repeated until the gradients are calculated for all layers.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Update the weights and biases of the network by using the calculated gradients
+    and a chosen optimization algorithm run on a specific number of batches of data,
+    which are controlled by the hyperparameter (referred to as the batch size). Updating
+    the weights is done by subtracting the product of the learning rate and the gradient
+    of the weights. Adjusting the biases is done by subtracting the product of the
+    learning rate and the gradient of the biases. Repeat the preceding steps until
+    the weights and biases are updated for all layers.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The algorithm then repeats steps 2–5 for a specified number of epochs or until
+    a convergence criterion is met. An *epoch* represents one complete pass through
+    the entire training dataset (the whole process entails passing through the training
+    dataset multiple times ideally).
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Once the training is completed, evaluate the performance of the trained neural
+    network on a separate validation or test dataset.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The *learning rate* is a hyperparameter that determines the step size at which
+    a neural network’s weights are updated during the training process. It controls
+    how quickly or slowly the model learns from the data it’s being trained on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *batch size* is a hyperparameter that determines the number of samples processed
+    before updating the model’s weights during each iteration of the training process.
+    In other words, it specifies how many training examples are used at a time to
+    calculate the gradients and update the weights.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Choosing an appropriate batch size is essential for efficient training and can
+    impact the convergence speed and memory requirements. There is no one-size-fits-all
+    answer to the ideal batch size, as it depends on various factors, such as the
+    dataset size, available computational resources, and the complexity of the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Commonly used batch sizes for training MLPs range from small values (such as
+    16, 32, or 64) to larger ones (such as 128, 256, or even larger). Smaller batch
+    sizes can offer more frequent weight updates and may help the model converge more
+    quickly, especially when the dataset is large or has a lot of variations. However,
+    smaller batch sizes may also introduce more noise and slower convergence due to
+    frequent updates with less accurate gradients. On the other hand, larger batch
+    sizes can provide more stable gradients and better utilization of parallel processing
+    capabilities, leading to faster training on modern hardware. However, they might
+    require more memory, and the updates are less frequent, which could slow down
+    convergence or make the training process less robust.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a general rule of thumb, you can start with a moderate batch size like 32
+    and experiment with different values to find the best trade-off between convergence
+    speed and computational efficiency for your specific MLP model and dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The backpropagation algorithm leverages the chain rule (refer to [Chapter 4](ch04.html#ch04)
+    for more information on calculus) to calculate the gradients by propagating the
+    errors backward through the network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By iteratively adjusting the weights based on the error propagated backward
+    through the network, backpropagation enables the network to learn and improve
+    its predictions over time. Backpropagation is a key algorithm in training neural
+    networks and has contributed to significant advancements in various fields.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Optimization Algorithms
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In neural networks, optimization algorithms, also known as *optimizers*, are
+    used to update the parameters (weights and biases) of the network during the training
+    process. These algorithms aim to minimize the loss function and find the optimal
+    values for the parameters that result in the best performance of the network.
+    There are several types of optimizers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gradient descent (GD)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gradient descent is the most fundamental optimization algorithm. It updates
+    the network’s weights and biases in the direction opposite to the gradient of
+    the loss function with respect to the parameters. It adjusts the parameters by
+    taking steps proportional to the negative of the gradient, multiplied by a learning
+    rate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stochastic gradient descent (SGD)
+  prefs: []
+  type: TYPE_NORMAL
+- en: SGD is a variant of gradient descent that randomly selects a single training
+    example or a mini batch of examples to compute the gradient and update the parameters.
+    It provides a computationally efficient approach and introduces noise in the training
+    process, which can help escape local optima.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adaptive moment estimation (Adam)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adam is an adaptive optimization algorithm that computes adaptive learning rates
+    for each parameter based on estimates of the first and second moments of the gradients.
+    Adam is widely used due to its effectiveness and efficiency in various applications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Root mean square propagation (RMSprop)
+  prefs: []
+  type: TYPE_NORMAL
+- en: The purpose of RMSprop is to address some of the limitations of the standard
+    gradient descent algorithm, such as slow convergence and oscillations in different
+    directions. RMSprop adjusts the learning rate for each parameter based on the
+    average of the recent squared gradients. It calculates an exponentially weighted
+    moving average of the squared gradients over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each optimizer has its own characteristics, advantages, and limitations, and
+    their performance can vary depending on the dataset and the network architecture.
+    Experimentation and tuning are often necessary to determine the best optimizer
+    for a specific task.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regularization Techniques
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Regularization techniques* in neural networks are methods used to prevent
+    overfitting, which can lead to poor performance and reduced ability of the model
+    to make accurate predictions on new examples. Regularization techniques help to
+    control the complexity of a neural network and improve its ability to generalize
+    to unseen data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Dropout* is a regularization technique commonly used in neural networks to
+    prevent overfitting (refer to [Chapter 7](ch07.html#ch07) for detailed information
+    on overfitting). It involves randomly omitting (dropping) a fraction of the neurons
+    during training by setting their outputs to zero. This temporarily removes the
+    neurons and their corresponding connections from the network, forcing the remaining
+    neurons to learn more robust and independent representations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key idea behind dropout is that it acts as a form of model averaging or
+    ensemble learning. By randomly dropping out neurons, the network becomes less
+    reliant on specific neurons or connections and learns more robust features. Dropout
+    also helps prevent co-adaptation, where certain neurons rely heavily on others,
+    reducing their individual learning capability. As a result, dropout can improve
+    the network’s generalization ability and reduce overfitting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Early stopping* is a technique that also prevents overfitting by monitoring
+    the model’s performance on a validation set during training. It works by stopping
+    the training process when the model’s performance on the validation set starts
+    to deteriorate. The idea behind early stopping is that as the model continues
+    to train, it may start to overfit the training data, causing a decrease in performance
+    on unseen data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The training process is typically divided into epochs, where each epoch represents
+    a complete pass over the training data. During training, the model’s performance
+    on the validation set is evaluated after each epoch. If the validation loss or
+    a chosen metric starts to worsen consistently for a certain number of epochs,
+    training is stopped, and the model’s parameters from the epoch with the best performance
+    are used as the final model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Early stopping helps prevent overfitting by finding the optimal point at which
+    the model has learned the most useful patterns without memorizing noise or irrelevant
+    details from the training data. Both dropout and early stopping are key regularization
+    techniques that help prevent overfitting and help stabilize the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multilayer Perceptrons
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A *multilayer perceptron* (MLP) is a type of ANN that consists of multiple layers
+    of artificial neurons, or nodes, arranged in a sequential manner. It is a *feedforward
+    neural network*, meaning that information flows through the network in one direction,
+    from the input layer to the output layer, without any loops or feedback connections
+    (you will learn more about this later in [“Recurrent Neural Networks”](#recurrent_neural_networks)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The basic building block of an MLP is a *perceptron*, an artificial neuron that
+    takes multiple inputs, applies weights to those inputs, performs a weighted sum,
+    and passes the result through an activation function to produce an output (basically,
+    the neuron that you have seen already). An MLP contains multiple perceptrons organized
+    in layers. It typically consists of an input layer, one or more hidden layers
+    (the more layers, the deeper the learning process up to a certain point), and
+    an output layer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The term *perceptron* is sometimes used more broadly to refer to a single-layer
+    neural network based on a perceptron-like architecture. In this context, the term
+    *perceptron* can be used interchangeably with *neural network* or *single-layer
+    perceptron*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a reminder, the input layer receives the raw input data, such as features
+    from a dataset (e.g., the stationary values of a moving average). The hidden layers,
+    which are intermediate layers between the input and output layers, perform complex
+    transformations on the input data. Each neuron in a hidden layer takes inputs
+    from all neurons in the previous layer, applies weights, performs the weighted
+    sum, and passes the result through an activation function. The output layer produces
+    the final output of the network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: MLPs are trained using backpropagation, which adjusts the weights of the neurons
+    in the network to minimize the difference between the predicted output and the
+    desired output. They are known for their ability to learn complex, nonlinear relationships
+    in data, making them suitable for a wide range of tasks, including pattern recognition.
+    [Figure 8-6](#figure-8-6) shows an example of a deep MLP architecture.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0806.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-6\. A simple illustration of an MLP with two hidden layers.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: At this stage, you should understand that deep learning is basically neural
+    networks with many hidden layers that add to the complexity of the learning process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: It is important to download *master_function.py* from this book’s [GitHub repository](https://oreil.ly/5YGHI)
+    to access the functions seen in this book. After downloading it, you must set
+    your Python’s interpreter directory as the path where *master_function.py* is
+    stored.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The aim of this section is to create an MLP to forecast daily S&P 500 returns.
+    Import the required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now import the historical data and transform it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Set the hyperparameters for the model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Use the data preprocessing function to create the four required arrays:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following code block shows how to build the MLP architecture in *keras*.
+    Make sure you understand the notes in the code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: When creating a `Dense` layer, you need to specify the `input_dim` parameter
+    in the first layer of your neural network. For subsequent `Dense` layers, the
+    `input_dim` is automatically inferred from the previous layer’s output.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s plot the results and analyze the performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 8-7](#figure-8-7) shows the evolution of the forecasting task from
+    the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0807.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-7\. Training data followed by test data (dashed line) and the predicted
+    data (thin line); the vertical dashed line represents the start of the test period.
+    The model used is the MLP regression algorithm.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The results are extremely volatile when changing the hyperparameters. This
+    is why using sophisticated models on complex data requires a lot of tweaks and
+    optimizations. Consider the following improvements to enhance the results of the
+    model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Select relevant features (inputs) that capture the underlying patterns and characteristics
+    of the financial time series. This can involve calculating technical indicators
+    (e.g., moving averages and the RSI) or deriving other meaningful variables from
+    the data.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Review the architecture of the model. Consider increasing the number of layers
+    or neurons to provide the model with more capacity to learn complex patterns.
+    Experiment with different activation functions and regularization techniques such
+    as dropout and early stopping (see [Chapter 9](ch09.html#ch09) for an application
+    of regularization techniques).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Fine-tune the hyperparameters of your MLP model. Parameters like the batch size
+    and the number of epochs can significantly impact the model’s ability to converge
+    and generalize.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Combine multiple MLP models into an ensemble. This can involve training several
+    models with different initializations or using different subsets of the data.
+    Aggregating their predictions can lead to better results than using a single model.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'As the model trains, the loss function should decrease due to the learning
+    process. This can be seen using the following code (to be run after compiling
+    the model):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: The previous code block plots the loss at the end of every epoch, thus creating
+    a dynamic loss curve visualized in real time. Notice how it falls until reaching
+    a plateau where it struggles to decrease. [Figure 8-8](#figure-8-8) shows the
+    decreasing loss function across epochs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0808.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-8\. Loss value across epochs.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Recurrent Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A *recurrent neural network* (RNN) is a type of artificial neural network that
+    is designed to process sequential data or data with temporal dependencies. Unlike
+    feedforward neural networks, which process data in a single pass from input to
+    output, RNNs maintain internal memory or hidden states to capture information
+    from previous inputs and utilize it in the processing of subsequent inputs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key feature of an RNN is the presence of *recurrent connections*, which
+    create a loop in the network. This loop allows the network to persist information
+    across time steps, making it well suited for tasks that involve sequential or
+    time-dependent data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At each time step, an RNN takes an input vector and combines it with the previous
+    hidden state. It then applies activation functions to compute the new hidden state
+    and produces an output. This process is repeated for each time step, with the
+    hidden state being updated and passed along as information flows through the network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The recurrent connections enable RNNs to capture dependencies and patterns in
+    sequential data. They can model the context and temporal dynamics of the data,
+    making them useful in time series prediction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, traditional RNNs suffer from the vanishing gradient problem, where
+    the gradients that are backpropagated through the recurrent connections can become
+    very small or very large, leading to difficulties in training the network. The
+    vanishing gradient problem is resolved in the next section with an enhanced type
+    of neural network. For now, let’s focus on RNNs and their specificities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 8-9](#figure-8-9) shows an example of an RNN architecture.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0809.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-9\. A simple illustration of an RNN with two hidden layers.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Let’s deploy an RNN algorithm to forecast S&P 500 daily returns. As usual,
+    import the required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now set the hyperparameters of the model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following code block shows how to build the RNN architecture in *keras*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let’s plot the results and analyze the performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 8-10](#figure-8-10) shows the evolution of the forecasting task from
+    the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0810.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-10\. Training data followed by test data (dashed line) and the predicted
+    data (thin line); the vertical dashed line represents the start of the test period.
+    The model used is the RNN regression algorithm.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Tip
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: A good task for you to do is to create an optimization function that loops around
+    different hyperparameters and selects the best ones or averages the best ones.
+    This way, you may be able to obtain a robust model based on the ensembling technique.
+    You can also backtest different markets and different time horizons. Note that
+    these techniques are valid not only for financial time series, but for all types
+    of time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In summary, RNNs are neural networks that can process sequential data by maintaining
+    internal memory and capturing temporal dependencies. They are powerful models
+    for tasks involving time series or sequential data. As a reminder, stationarity
+    is an essential property for successful time series forecasting. A stationary
+    time series exhibits constant mean, variance, and autocovariance over time. RNNs
+    (among other deep learning models) assume that the underlying time series is stationary,
+    which means the statistical properties of the data do not change over time. If
+    the time series is nonstationary, it may contain trends, seasonality, or other
+    patterns that can affect the performance of RNNs. The optimization and enhancement
+    recommendations on MLPs are also valid on RNNs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Long Short-Term Memory
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Long short-term memory* (LSTM) is a type of RNN that addresses the vanishing
+    gradient problem and allows the network to capture long-term dependencies in sequential
+    data. LSTMs were introduced by Hochreiter and Schmidhuber in 1997.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: LSTMs are designed to overcome the limitations of traditional RNNs when dealing
+    with long sequences of data. They achieve this by incorporating specialized memory
+    cells that can retain information over extended time periods. The key idea behind
+    LSTMs is the use of a gating mechanism that controls the flow of information through
+    the memory cells.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The LSTM architecture consists of memory cells, input gates, forget gates,
+    and output gates. The memory cells store and update information at each time step,
+    while the gates regulate the flow of information. Here’s how LSTMs work:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input gate
+  prefs: []
+  type: TYPE_NORMAL
+- en: The input gate determines which information from the current time step should
+    be stored in the memory cell. It takes the current input and the previous hidden
+    state as inputs, and then it applies a sigmoid activation function to generate
+    a value between 0 and 1 for each component of the memory cell.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forget gate
+  prefs: []
+  type: TYPE_NORMAL
+- en: The forget gate determines which information from the previous memory cell should
+    be forgotten. It takes the current input and the previous hidden state as inputs,
+    and then it applies a sigmoid activation function to produce a forget vector.
+    This vector is then multiplied element-wise with the previous memory cell values,
+    allowing the LSTM to forget irrelevant information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Update
+  prefs: []
+  type: TYPE_NORMAL
+- en: The update step combines the information from the input gate and the forget
+    gate. It takes the current input and the previous hidden state as inputs, and
+    then it applies a tanh activation function. The resulting vector is then multiplied
+    element-wise with the input gate output, and the product is added to the product
+    of the forget gate and the previous memory cell values. This update operation
+    determines which new information to store in the memory cell.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Output gate
+  prefs: []
+  type: TYPE_NORMAL
+- en: The output gate determines the output of the LSTM at the current time step.
+    It takes the current input and the previous hidden state as inputs, and then it
+    applies a sigmoid activation function. The updated memory cell values are passed
+    through a hyperbolic tangent (tanh) activation function and then multiplied element-wise
+    with the output gate. The resulting vector becomes the current hidden state and
+    is also the output of the LSTM at that time step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The gating mechanisms in LSTMs allow them to selectively remember or forget
+    information over long sequences, making them well suited for tasks involving long-term
+    dependencies. By addressing the vanishing gradient problem and capturing long-term
+    dependencies, LSTMs have become a popular choice for sequential data processing
+    and have been instrumental in advancing the field of deep learning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Theoretically, RNNs are capable of learning long-term dependencies, but in practice,
+    they do not, hence the need for LSTMs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As usual, let’s apply LSTMs to the same time series problem. Note, however,
+    that the results do not mean anything since the explanatory variables are arbitrary
+    and the hyperparameters are not tuned. The aim of doing such exercises is to understand
+    the code and the logic behind the algorithm. Afterward, it will be up to you to
+    select the inputs and the variables that you deem worthy to be tested out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Import the required libraries as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now set the hyperparameters of the model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The LSTM model requires three-dimensional arrays of features. This can be done
+    using the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following code block shows how to build the LSTM architecture in *keras*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let’s plot the results and analyze the performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 8-11](#figure-8-11) shows the evolution of the forecasting task from
+    the last values of `y_train` to the first values of `y_test` and `y_predicted`.
+    Note that the hyperparameters are the same as the ones used in the RNN model.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0811.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-11\. Training data followed by test data (dashed line) and the predicted
+    data (thin line); the vertical dashed line represents the start of the test period.
+    The model used is the LSTM regression algorithm.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: It is worth seeing how well the algorithm is fitted to the training data. [Figure 8-12](#figure-8-12)
+    shows the values from `y_predicted_train` and `y_train`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0812.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-12\. In-sample predictions using the LSTM regression algorithm.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In the context of LSTMs, a three-dimensional array represents the shape of
+    the input data that is fed into the models. It is typically used to accommodate
+    sequential or time series data in the form of input sequences. The dimensions
+    of a three-dimensional array have specific meanings:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dimension 1 (samples)
+  prefs: []
+  type: TYPE_NORMAL
+- en: This dimension represents the number of samples or examples in the dataset.
+    Each sample corresponds to a specific sequence or time series instance. For example,
+    if you have 1,000 time series sequences in your dataset, dimension 1 would be
+    1,000.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dimension 2 (time steps)
+  prefs: []
+  type: TYPE_NORMAL
+- en: This dimension represents the number of time steps or data points in each sequence.
+    It defines the length of the input sequence that the LSTM or RNN model processes
+    at each time step. For instance, if your input sequences have a length of 10 time
+    steps, dimension 2 would be 10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dimension 3 (features)
+  prefs: []
+  type: TYPE_NORMAL
+- en: This dimension represents the number of features or variables associated with
+    each time step in the sequence. It defines the dimensionality of each time step’s
+    data. In the case of univariate time series data, where only a single value is
+    considered at each time step, dimension 3 would typically be 1\. For multivariate
+    time series, where multiple variables are observed at each time step, dimension
+    3 would be greater than 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s take a quick break and discuss an interesting topic. Using simple linear
+    algorithms to model complex, nonlinear relationships is most likely to give bad
+    results. At the same time, using extremely complex methods such as LSTMs on simple
+    and predictable data may not be necessary even though it may provide positive
+    results. [Figure 8-13](#figure-8-13) shows an ascending time series that looks
+    like it’s oscillating in regular intervals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0813.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-13\. A generated ascending time series with oscillating properties.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Believe it or not, linear regression can actually model this raw time series
+    quite well. By assuming an autoregressive model with 100 features (which means
+    that to predict the next value, the model looks at the last 100 values), the linear
+    regression algorithm can be trained on in-sample data and output the out-of-sample
+    results shown in [Figure 8-14](#figure-8-14).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0814.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-14\. Prediction over the ascending time series using linear regression.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: But let’s take its first order difference and make it stationary. Take a look
+    at [Figure 8-15](#figure-8-15), which shows a stationary time series created from
+    differencing the time series shown in [Figure 8-13](#figure-8-13).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0815.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-15\. A generated ascending time series with oscillating properties
+    (differenced).
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The linear regression algorithm can be trained on in-sample data and output
+    the out-of-sample results shown in [Figure 8-16](#figure-8-16) with extreme accuracy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0816.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-16\. Prediction over the differenced time series using linear regression.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Another way of assessing the goodness of fit of a linear regression model is
+    to use R². Also known as the *coefficient of determination*, *R²* is a statistical
+    measure that indicates the proportion of the variance in the dependent variable
+    that can be explained by the independent variable(s) in a regression model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: R² ranges from 0 to 1 and is often expressed as a percentage. A value of 0 indicates
+    that the independent variable(s) cannot explain any of the variability in the
+    dependent variable, while a value of 1 indicates that the independent variable(s)
+    can completely explain the variability in the dependent variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In simple terms, R² represents the proportion of the dependent variable’s variability
+    that can be attributed to the independent variable(s) included in the model. It
+    provides a measure of how well the regression model fits the observed data. However,
+    it does not indicate the causal relationship between variables or the overall
+    quality of the model. It is also worth noting that R² is the squared correlation
+    between the two variables. The R² metric for the differenced time series is 0.935,
+    indicating extremely good fit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In parallel, using an MLP with some optimization also yields good results. [Figure 8-17](#figure-8-17)
+    shows the results of the differenced values when using a simple MLP model (with
+    two hidden layers, each containing 24 neurons and a batch size of 128 run through
+    50 epochs).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0817.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-17\. Prediction over the differenced time series using MLP.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: However, the added complexity of using a deep learning method to predict such
+    a simple time series may not be worth it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Temporal Convolutional Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Convolutional neural networks* (CNNs) are a class of deep learning models
+    designed to process structured grid-like data, with a particular emphasis on images
+    and other grid-like data such as time series (less commonly used) and audio spectrograms.
+    CNNs are good at learning and extracting hierarchical patterns and features from
+    input data, making them powerful tools for tasks like image recognition, object
+    detection, image segmentation, and more.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The core building blocks of CNNs are the *convolutional layers*. These layers
+    perform convolution operations by applying a set of learnable filters to input
+    data, resulting in feature maps that capture relevant spatial patterns and local
+    dependencies. Another important concept with CNNs is *pooling layers,* which downsample
+    the feature maps produced by convolutional layers. Common pooling operations include
+    *max pooling* (selecting the maximum value in a neighborhood) and *average pooling*
+    (computing the average value). Pooling helps reduce spatial dimensions, extract
+    dominant features, and improve computational efficiency.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: A CNN that is specifically used for time series forecasting is often referred
+    to as a 1D-CNN or a *temporal convolutional network*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The term *1D-CNN* indicates that the convolutional operations are applied along
+    the temporal dimension of the input data, which is characteristic of time series
+    data. This distinguishes it from traditional CNNs that operate on spatial dimensions
+    in tasks such as image recognition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A typical CNN architecture consists of three main components: an input layer,
+    several alternating convolutional and pooling layers, and fully connected layers
+    at the end. Convolutional layers are responsible for feature extraction, while
+    pooling layers downsample the data. The fully connected layers provide the final
+    predictions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: CNN architectures can vary greatly depending on the specific task. These architectures
+    often employ additional techniques such as dropout regularization to improve performance
+    and address challenges like overfitting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'CNNs can be used for time series prediction by leveraging their ability to
+    capture local patterns and extract relevant features from the input data. The
+    framework of the process is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: CNNs use convolutional layers to perform localized feature extraction. The convolutional
+    layers consist of a set of learnable filters that are convolved with the input
+    data. Each filter extracts different features from the input data by applying
+    element-wise multiplications and summations in a sliding window manner. The result
+    is a feature map that highlights important patterns or features at different locations
+    in the input data.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Pooling layers are often employed after convolutional layers to reduce the spatial
+    dimensionality of the feature maps. Max pooling is a common technique, where the
+    maximum value within a local neighborhood is selected, effectively downsampling
+    the feature map. Pooling helps in capturing the most salient features while reducing
+    the computational complexity and enhancing the network’s ability to generalize.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: After the convolutional and pooling layers, the resulting feature maps are typically
+    flattened into a one-dimensional vector. This flattening operation transforms
+    the spatially distributed features into a linear sequence, which can then be passed
+    to fully connected layers.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Fully connected layers receive the flattened feature vector as input and learn
+    to map it to the desired output. These layers enable the network to learn complex
+    combinations of features and model the nonlinear relationships between input features
+    and target predictions. The last fully connected layer typically represents the
+    output layer, which predicts the target values for the time series.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Before moving to the algorithm creation steps, let’s review some key concepts
+    seen with CNNs. In time series forecasting with CNNs, *filters* are applied along
+    the temporal dimension of the input data. Instead of considering spatial features
+    as in image data, the filters are designed to capture temporal patterns or dependencies
+    within the time series. Each filter slides across the time series, processing
+    a subset of consecutive time steps at a time. The filter learns to detect specific
+    temporal patterns or features in the input data. For example, it might capture
+    short-term trends, seasonality, or recurring patterns that are relevant for the
+    forecasting task. Multiple filters can be used in each convolutional layer, allowing
+    the network to learn a diverse set of temporal features. Each filter captures
+    different aspects of the time series, enabling the model to capture complex temporal
+    relationships.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another concept is the *kernel size*, which refers to the length or the number
+    of consecutive time steps that the filter considers during the convolution operation.
+    It defines the receptive field of the filter and influences the size of the extracted
+    temporal patterns. The choice of kernel size depends on the characteristics of
+    the time series data and the patterns to be captured. Smaller kernel sizes, such
+    as 3 or 5, focus on capturing short-term patterns, while larger kernel sizes,
+    such as 7 or 10, are suitable for capturing longer-term dependencies. Experimentation
+    with different kernel sizes can help identify the optimal receptive field that
+    captures the relevant temporal patterns for accurate forecasting. It’s common
+    to have multiple convolutional layers with different kernel sizes to capture patterns
+    at various temporal scales.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now let’s see how to create a temporal CNN to forecast S&P 500 returns using
+    its lagged values. Import the required libraries as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, set the hyperparameters of the model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Reshape the features arrays into three-dimensional data structures:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now create the architecture of the temporal convolutional network (TCN) and
+    run the algorithm:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let’s plot the results and analyze the performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 8-18](#figure-8-18) shows the evolution of the forecasting task from
+    the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0818.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-18\. Training data followed by test data (dashed line) and the predicted
+    data (thin line); the vertical dashed line represents the start of the test period.
+    The model used is the CNN regression algorithm.
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: It is important to use performance metrics that reflect your choice and to search
+    for a better algorithm. Accuracy may be one of the base metrics to give you a
+    quick glance at the predictive abilities of your model, but on its own, it is
+    not enough. The results seen in this chapter reflect only the training using the
+    selected hyperparameters. Optimization will allow you to achieve very good results
+    on certain models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: There is no strict rule defining the number of hidden layers required to consider
+    a neural network as deep. However, a common convention is that a neural network
+    with two or more hidden layers is typically considered a deep neural network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Applying deep learning algorithms to time series data can offer several benefits
+    and challenges. Deep learning algorithms have shown great utility in time series
+    analysis by effectively capturing complex patterns, extracting meaningful features,
+    and making accurate predictions. However, their success relies heavily on the
+    quality of the data and the chosen features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The utility of applying deep learning algorithms on time series data stems from
+    their ability to automatically learn hierarchical representations and model intricate
+    temporal dependencies. They can handle nonlinear relationships and capture both
+    local and global patterns, making them suitable for a wide range of time series
+    tasks like forecasting, anomaly detection, classification, and signal processing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, applying deep learning algorithms to time series can present challenges:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data quality
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep learning models heavily rely on large amounts of high-quality, labeled
+    data for training. Insufficient or noisy data can hinder the performance of the
+    models, leading to inaccurate predictions or unreliable insights. Data preprocessing,
+    cleaning, and addressing missing values become crucial steps to ensure the quality
+    of the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Feature engineering
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep learning models can automatically learn relevant features from the data.
+    However, the choice and extraction of informative features can significantly impact
+    the model’s performance. Domain knowledge, data exploration, and feature engineering
+    techniques are important in selecting or transforming features that enhance the
+    model’s ability to capture relevant patterns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model complexity
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep learning models are typically complex with a large number of parameters.
+    Training such models requires substantial computational resources, longer training
+    times, and careful hyperparameter tuning. Overfitting, where the model memorizes
+    the training data without generalizing well to unseen data, is also a common challenge.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Interpretability
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep learning models are often considered mystery boxes, making it challenging
+    to interpret the learned representations and understand the reasoning behind predictions.
+    This can be a concern in domains where interpretability and explainability are
+    crucial, such as finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To overcome these challenges and harness the power of deep learning algorithms
+    for time series analysis, careful consideration of data quality, appropriate feature
+    engineering, model architecture selection, regularization techniques, and interpretability
+    approaches are essential. It is crucial to understand the specific characteristics
+    and requirements of the time series data and the task at hand to choose and tailor
+    the deep learning approach accordingly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([1](ch08.html#id685-marker)) W. S. McCulloch and W. Pitts, “A Logical Calculus
+    of the Ideas Immanent in Nervous Activity,” *Bulletin of Mathematical Biophysics*
+    5 (1943): 115–33.'
+  prefs: []
+  type: TYPE_NORMAL

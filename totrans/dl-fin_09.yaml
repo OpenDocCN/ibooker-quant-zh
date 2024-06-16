@@ -1,0 +1,1106 @@
+- en: Chapter 9\. Deep Learning for Time Series Prediction II
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter presents a few techniques and methods to complement the forecasting
+    task of machine and deep learning algorithms. It is composed of different topics
+    that each discuss a way to improve and optimize the process. At this point, you
+    should have a sound understanding of the basics of machine and deep learning models,
+    and you know how to code a basic algorithm that predicts the returns of a financial
+    time series (or any stationary time series). This chapter bridges the gap between
+    the basic knowledge and the advanced knowledge required to elevate the algorithms
+    to a functional level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fractional Differentiation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In his book *Advances in Financial Machine Learning*, Marcos López de Prado
+    describes a technique to transform nonstationary data into stationary data. This
+    is referred to as fractional differentiation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Fractional differentiation* is a mathematical technique used to transform
+    a time series into a stationary series while preserving some of its memory. It
+    extends the concept of *differencing* (or taking the returns), which is commonly
+    used to remove trends and make time series stationary.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In traditional differencing, the data sequence is differenced by a whole number,
+    typically 1, which involves subtracting the previous value from the current value.
+    This helps eliminate trends and makes the series stationary. However, in some
+    cases, the series may exhibit long-term dependencies or memory effects that are
+    not effectively captured by traditional differencing. These dependencies may help
+    in forecasting the time series, and if they are completely eliminated, that may
+    hinder the ability of the algorithm to perform well. These dependencies are referred
+    to as *memory*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Fractional differentiation addresses this limitation by allowing the differencing
+    parameter to be a fractional value. The fractional differencing operator effectively
+    applies a weighted sum of lagged values to each observation in the series, with
+    the weights determined by the fractional differencing parameter. This allows for
+    capturing long-term dependencies or memory effects in the series. Fractional differentiation
+    is particularly useful in financial time series analysis, where data often exhibits
+    long memory or persistent behavior. This can be implemented in Python. First,
+    `pip install` the required library from the prompt:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, import the required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: Let’s use the classic example that de Prado uses in his book, the S&P 500, to
+    prove that fractional differentiation transforms a nonstationary time series into
+    a stationary one with visible preserved memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code applies fractional differentiation and compares it to traditional
+    differencing:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-1](#figure-9-1) shows the three types of transformations. You can
+    notice the trending nature in the top panel with the nontransformed S&P 500 data.
+    You can also notice that in the middle panel, this trend is less visible but still
+    there. This is what fractional differentiation aims to do. By keeping a hint of
+    the market’s memory while rendering it stationary, this technique can help improve
+    some forecasting algorithms. The bottom panel shows normal differencing of the
+    price data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0901.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-1\. Fractional differentiation on S&P 500 (order = 0.48)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 9-1](#figure-9-1) was generated using this code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Let’s make sure that the fractionally differentiated data is indeed stationary
+    by applying the augmented Dickey—Fuller (ADF) test (you used this test in [Chapter 3](ch03.html#ch03)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The output of the previous code block is as follows (assuming a 5% significance
+    level):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'As the results show, the data is indeed stationary. Let’s look at another example.
+    The following code imports the daily values of the EURUSD:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-2](#figure-9-2) compares the EURUSD with fractional differentiation
+    (0.20) applied onto it, with the regular differencing shown in the bottom panel.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0902.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-2\. Fractional differentiation on the EURUSD (order = 0.20)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The results of the ADF test are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: As a comparison, [Figure 9-3](#figure-9-3) compares the same dataset with fractional
+    differentiation (0.30) applied onto it, with the regular differencing shown in
+    the bottom panel.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0903.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-3\. Fractional differentiation on EURUSD (order = 0.30)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Approaching an order of 1.00 intuitively makes the fractional differentiation
+    approach a normal integer differencing. Similarly, approaching an order of 0.00
+    makes the fractional differentiation approach the untransformed data series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 9-3](#figure-9-3) shows a more stationary EURUSD series in the middle
+    panel than [Figure 9-2](#figure-9-2) does, and this is because the order of fractional
+    differentiation is increased. This is why the ADF test result for the fractional
+    differentiation of order = 0.30 is 0.002, which is much lower than the ADF test
+    result when order = 0.20 (which is at 0.043).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In summary, fractional differentiation is a valuable tool for time series prediction
+    as it captures long-term dependencies, handles nonstationarity, adapts to various
+    dynamics, and preserves integral properties. Its ability to capture complex patterns
+    and improve forecasting accuracy makes it a good fit for modeling and predicting
+    a wide range of real-world time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forecasting Threshold
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The *forecasting threshold* is the minimum required percentage prediction to
+    validate a signal. This means that the forecasting threshold technique is a filter
+    that removes low conviction predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Objectively, low conviction predictions are below a certain percentage. A hypothetical
+    example is shown in [Table 9-1](#table-9-1). The threshold is ±1%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 9-1\. Table of forecasts
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Time | Forecast | Status |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 0.09% | Dismissed |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2 | –0.60% | Dismissed |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 3 | –1.50% | Taken |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 4 | 1.00% | Taken |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 5 | 2.33% | Taken |'
+  prefs: []
+  type: TYPE_TB
+- en: At time 1, the trading signal is bullish, with an expectation of a 0.09% rise
+    in the hypothetical financial instrument. As this prediction is below the threshold
+    of 1.00%, the trade is not taken. At time 2, the same intuition is applied, as
+    the bearish signal is below the threshold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rest of the signals are taken since they are equal to or greater than the
+    threshold (in terms of magnitude). The aim of this section is to develop a multilayer
+    perceptron (MLP) model and keep only the predictions that respect a certain threshold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As usual, start by importing the required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, set the hyperparameters and import the data using `mass_import()`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Import and preprocess the data, then design the MLP architecture:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The next step is to fit and predict the data and retain the predictions that
+    satisfy the threshold you have defined in the hyperparameters. This is done using
+    the function `forecasting_threshold()`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-4](#figure-9-4) shows the comparison chart between the real values
+    and the predicted values. Flat observations on the predictions indicate the absence
+    of signals that are lower than the required threshold—in this case, 0.0015.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0904.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-4\. Predicting with the forecasting threshold
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The threshold can be found in many ways, notably:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The fixed numerical technique
+  prefs: []
+  type: TYPE_NORMAL
+- en: As you saw in the previous example, this technique assumes a fixed arbitrary
+    number to be used as a threshold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The volatility-based technique
+  prefs: []
+  type: TYPE_NORMAL
+- en: With this technique, you use a volatility indicator such as a rolling standard
+    deviation of prices to set a variable threshold at each time step. This technique
+    has the benefit of using up-to-date volatility information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The statistical technique
+  prefs: []
+  type: TYPE_NORMAL
+- en: With this technique, you look at the real values from the training set (not
+    the test set) and select a certain quantile (e.g., the 75% quantile) as a minimum
+    threshold to validate the signals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To summarize, using the forecasting threshold may help select the trades with
+    the highest conviction and can also help minimize transaction costs since the
+    algorithms assume trading all the time, which is not recommended. This assumes
+    adding a new state to the algorithm, which gives a total of three:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bullish signal
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithm predicts a higher value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bearish signal
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithm predicts a lower value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Neutral signal
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithm does not have any directional conviction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Continuous Retraining
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Retraining* refers to the act of training the algorithm every time new data
+    comes in. This means that when dealing with a daily time series, the retraining
+    is done every day while incorporating the latest daily inputs.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The continuous retraining technique deserves to be tested, and that is the
+    aim of this section. The architecture of the algorithm will follow this framework:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Train the data on the training test.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: For each prediction made, rerun the algorithm and include the new real inputs
+    in the training set.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: One big limitation of the continuous retraining technique is the speed of the
+    algorithm, as it has to retrain at every time step. If you have 1,000 instances
+    of test data where every training requires a few minutes, then the backtesting
+    process becomes drastically slow. This is especially an issue with deep learning
+    algorithms such as LSTM, which may take a long time to train.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The main reason for applying continuous retraining is because of *concept drift*,
+    which is the change in the data’s inner dynamics and structures that may invalidate
+    the function found in the training phase. Basically, financial time series do
+    not exhibit static relationships; rather, they change over time. Therefore, continuous
+    retraining aims to update the models by always using the latest data to train.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Continuous retraining does not need to be done at every time step. You can set
+    *n* periods for the retraining. For example, if you select 10, then the model
+    retrains after each group of 10 new values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To simplify things, this section shows the code for the continuous retraining
+    (every day) using a linear regression model on the weekly EURUSD values at every
+    time step. You can do the same thing with other models; you just have to change
+    the lines of code where the model is imported and designed. First, import the
+    required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Import the data and set the hyperparameters of the algorithm:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Create the continuous retraining loop as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Plot the predicted values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-5](#figure-9-5) shows the result.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a simple comparison, the same backtest was done on the model with no retraining.
+    The latter got a 48.55% test set accuracy compared to the 48.92% test set accuracy
+    for the same model with retraining.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Continuous retraining is not a guarantee for better results, but it makes sense
+    to update the model every once in a while due to changing market dynamics. The
+    frequency at which you should update the model may be subjective.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0905.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-5\. Predicting using the continuous retraining technique
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Time Series Cross Validation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Cross validation* is a technique used in machine learning to assess the performance
+    of a model. It involves splitting the available data into subsets for training
+    and evaluation. In the case of time series data, where the order of observations
+    is important (due to the sequential nature of the data), a traditional *k*-fold
+    cross validation approach may not be suitable. Instead, time series cross validation
+    techniques are used, such as the *rolling window* and *expanding window* methods.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In traditional *k-fold cross validation*, the data is randomly split into *k*
+    equally sized folds. Each fold is used as a validation set, while the remaining
+    *k – 1* folds are combined for training the model. The process is repeated *k*
+    times, with each fold serving as the validation set once. Finally, the performance
+    metrics are averaged across the *k* iterations to assess the model’s performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike traditional *k*-fold cross validation, time series cross validation methods
+    respect the temporal order of data points. Two commonly used techniques for time
+    series cross validation are the rolling window and expanding window methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In *rolling window cross validation*, a fixed-size training window is moved
+    iteratively over the time series data. At each step, the model is trained on the
+    observations within the window and evaluated on the subsequent window. This process
+    is repeated until the end of the data is reached. The window size can be defined
+    based on a specific time duration or a fixed number of observations. [Figure 9-6](#figure-9-6)
+    shows an illustration of rolling window cross validation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0906.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-6\. Rolling window cross validation
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In *expanding window cross validation*, the training set starts with a small
+    initial window and expands over time, incorporating additional data points at
+    each step. The model is trained on the available data up to a specific point and
+    evaluated on the subsequent time period. Similar to the rolling window approach,
+    this process is repeated until the end of the data is reached. [Figure 9-7](#figure-9-7)
+    shows an illustration of expanding window cross validation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0907.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-7\. Expanding window cross validation
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: During each iteration of time series cross validation, the model’s performance
+    is measured using appropriate evaluation metrics. The performance results obtained
+    from each iteration can be aggregated and summarized to assess the model’s overall
+    performance on the time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multiperiod Forecasting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Multiperiod forecasting* (MPF) is a technique that aims to forecast more than
+    just the next period. It aims to generate a path with *n* periods as defined by
+    the user. There are two ways to approach MPF:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recursive model
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *recursive model* uses the prediction as an input for the next prediction.
+    As you may have already guessed, the recursive model may quickly get off track
+    due to the exponentially rising error term from predicting while using predictions
+    as inputs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Direct model
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *direct model* trains the model from the beginning into outputting multiple
+    forecasts in their respective time periods. This model is likely to be more robust
+    than the recursive model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s start with the recursive model. Mathematically speaking, its most basic
+    form can be represented as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P r e d i c t i o n Subscript i Baseline equals f x left-parenthesis
+    upper P r e d i c t i o n Subscript i minus 1 Baseline comma period period period
+    comma upper P r e d i c t i o n Subscript i minus n Baseline right-parenthesis"><mrow><mi>P</mi>
+    <mi>r</mi> <mi>e</mi> <mi>d</mi> <mi>i</mi> <mi>c</mi> <mi>t</mi> <mi>i</mi> <mi>o</mi>
+    <msub><mi>n</mi> <mi>i</mi></msub> <mo>=</mo> <mi>f</mi> <mi>x</mi> <mrow><mo>(</mo>
+    <mi>P</mi> <mi>r</mi> <mi>e</mi> <mi>d</mi> <mi>i</mi> <mi>c</mi> <mi>t</mi> <mi>i</mi>
+    <mi>o</mi> <msub><mi>n</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mo lspace="0%" rspace="0%">.</mo> <mo lspace="0%" rspace="0%">.</mo>
+    <mo lspace="0%" rspace="0%">.</mo> <mo>,</mo> <mi>P</mi> <mi>r</mi> <mi>e</mi>
+    <mi>d</mi> <mi>i</mi> <mi>c</mi> <mi>t</mi> <mi>i</mi> <mi>o</mi> <msub><mi>n</mi>
+    <mrow><mi>i</mi><mo>-</mo><mi>n</mi></mrow></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section will use weather data and an economic indicator to apply the deep
+    learning algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first step in predictive analysis is to get to know the data, so let’s see
+    what the algorithm will aim to forecast. The first time series is the average
+    daily temperature in Basel, Switzerland, since 2005\. [Figure 9-8](#figure-9-8)
+    shows the time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second time series is the Institute for Supply Management’s Purchasing Managers’
+    Index (ISM PMI), a widely recognized economic indicator in the United States that
+    provides insight into the health of the manufacturing sector and the overall economy.
+    The index is based on a monthly survey of purchasing managers from various industries,
+    including manufacturing, and assesses key factors such as new orders, production,
+    employment, supplier deliveries, and inventories.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0908.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-8\. A sample from the dataset showing the seasonal nature of temperature
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The index is reported as a percentage, with a value above 50 indicating expansion
+    in the manufacturing sector and a value below 50 suggesting contraction. A higher
+    PMI typically indicates positive economic growth, while a lower PMI may signal
+    economic slowdown or recessionary conditions. The ISM PMI is closely monitored
+    by policymakers, investors, and businesses as it can offer valuable insights into
+    economic trends and potential shifts in the business cycle. [Figure 9-9](#figure-9-9)
+    shows the ISM PMI historical observations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The aim of the forecast is to test the algorithm’s ability to push through the
+    noise and model the original mean-reverting nature of the ISM PMI. Let’s start
+    with the recursive model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The framework for the recursive model is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Train the data on the training set using the usual 80/20 split.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Forecast the first observation using the inputs needed from the test set.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Forecast the second observation using the last prediction in step 2 and the
+    required data from the test set while dropping the first observation.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Repeat step 3 until reaching the desired number of predictions. At some point,
+    a prediction is made by solely looking at previous predictions.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0909.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-9\. A sample from the imported dataset showing the mean-reverting nature
+    of the ISM PMI
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Up until now, you have been evaluating accuracy using `ca⁠lc⁠ul⁠ate_​ac⁠cur⁠acy()`,
+    which works when you are predicting positive or negative values (such as EURUSD
+    price changes). When dealing with multiperiod forecasting of values that do not
+    hover around zero, it is better to calculate the directional accuracy, which is
+    basically the same calculation but does not hover around zero. For this, the function
+    `calculate_directional_accuracy()` is used. Remember that the functions can be
+    found in *master_function.py* in the book’s [GitHub repository](https://oreil.ly/5YGHI).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s start with the average temperature in Basel. Import the dataset using
+    the following code (make sure you download the historical observations data from
+    the [GitHub repository](https://oreil.ly/5YGHI)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, preprocess the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Design the architecture of the MLP with multiple hidden layers. Then, fit and
+    predict on a recursive basis:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `recursive_mpf()` function takes the following arguments:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The test set features that will continuously be updated. They are represented
+    by the variable `x_test`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The test set dependent variables. They are represented by the variable `y_test`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The number of lags. This variable is represented by `num_lags`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The fitted model as defined by the variable `model`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The type of architecture as represented by the argument `architecture`. It can
+    either be `MLP` for two-dimensional arrays or `LSTM` for three-dimensional arrays.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[Figure 9-10](#figure-9-10) shows the predictions versus the real values (the
+    dashed time series after the cutoff line). Notice how the deep neural network
+    re-creates the seasonal characteristics of the time series (albeit with some imperfections)
+    and projects it well into the future with no required knowledge along the way.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0910.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-10\. Multiperiod forecasts versus real values
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Many machine and deep learning algorithms are able to model this relationship
+    well. This example used MLPs, but this does not undermine other models, even simple
+    ones such as linear regression. A good task for you would be to try applying the
+    same example using a model of your choice (such as LSTM) and comparing the results.
+    If you are using an LSTM model, make sure you set `architecture = 'LSTM'`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now apply the same process on the second time series. You only need to change
+    the name of the imported file and the hyperparameters (as you see fit):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-11](#figure-9-11) shows the predictions (dashed line) versus the
+    real values.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0911.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-11\. Forecasting multiple periods ahead; predicted data in thin solid
+    line and test data in dashed line
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The trained model is not too complex so as to avoid overfitting. However, it
+    does manage to time turning points quite well during the first projections. Naturally,
+    over time, this ability slowly fades away. Tweaking the hyperparameters is the
+    key to achieving good directional accuracy. Start with the following hyperparameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The second MPF technique trains the model from the beginning into outputting
+    multiple forecasts in their respective time periods. Mathematically, it can be
+    represented as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper P r e d i c t i o n Subscript i Baseline
+    equals f x left-parenthesis r e a l i n p u t Subscript i minus 1 Baseline comma
+    period period period comma i n p u t Subscript i minus n Baseline right-parenthesis
+    2nd Row  upper P r e d i c t i o n Subscript i plus 1 Baseline equals f x left-parenthesis
+    r e a l i n p u t Subscript i minus 1 Baseline comma period period period comma
+    i n p u t Subscript i minus n Baseline right-parenthesis 3rd Row  upper P r e
+    d i c t i o n Subscript i plus 2 Baseline equals f x left-parenthesis r e a l
+    i n p u t Subscript i minus 1 Baseline comma period period period comma i n p
+    u t Subscript i minus n Baseline right-parenthesis EndLayout"><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>P</mi> <mi>r</mi> <mi>e</mi> <mi>d</mi> <mi>i</mi>
+    <mi>c</mi> <mi>t</mi> <mi>i</mi> <mi>o</mi> <msub><mi>n</mi> <mi>i</mi></msub>
+    <mo>=</mo> <mi>f</mi> <mi>x</mi> <mrow><mo>(</mo> <mi>r</mi> <mi>e</mi> <mi>a</mi>
+    <mi>l</mi> <mi>i</mi> <mi>n</mi> <mi>p</mi> <mi>u</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mo lspace="0%" rspace="0%">.</mo> <mo lspace="0%" rspace="0%">.</mo>
+    <mo lspace="0%" rspace="0%">.</mo> <mo>,</mo> <mi>i</mi> <mi>n</mi> <mi>p</mi>
+    <mi>u</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>-</mo><mi>n</mi></mrow></msub>
+    <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>P</mi>
+    <mi>r</mi> <mi>e</mi> <mi>d</mi> <mi>i</mi> <mi>c</mi> <mi>t</mi> <mi>i</mi> <mi>o</mi>
+    <msub><mi>n</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>=</mo>
+    <mi>f</mi> <mi>x</mi> <mrow><mo>(</mo> <mi>r</mi> <mi>e</mi> <mi>a</mi> <mi>l</mi>
+    <mi>i</mi> <mi>n</mi> <mi>p</mi> <mi>u</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mo lspace="0%" rspace="0%">.</mo> <mo lspace="0%" rspace="0%">.</mo>
+    <mo lspace="0%" rspace="0%">.</mo> <mo>,</mo> <mi>i</mi> <mi>n</mi> <mi>p</mi>
+    <mi>u</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>-</mo><mi>n</mi></mrow></msub>
+    <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>P</mi>
+    <mi>r</mi> <mi>e</mi> <mi>d</mi> <mi>i</mi> <mi>c</mi> <mi>t</mi> <mi>i</mi> <mi>o</mi>
+    <msub><mi>n</mi> <mrow><mi>i</mi><mo>+</mo><mn>2</mn></mrow></msub> <mo>=</mo>
+    <mi>f</mi> <mi>x</mi> <mrow><mo>(</mo> <mi>r</mi> <mi>e</mi> <mi>a</mi> <mi>l</mi>
+    <mi>i</mi> <mi>n</mi> <mi>p</mi> <mi>u</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mo lspace="0%" rspace="0%">.</mo> <mo lspace="0%" rspace="0%">.</mo>
+    <mo lspace="0%" rspace="0%">.</mo> <mo>,</mo> <mi>i</mi> <mi>n</mi> <mi>p</mi>
+    <mi>u</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>-</mo><mi>n</mi></mrow></msub>
+    <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The framework for the recursive model is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Create a function that relates the desired number of inputs to the desired number
+    of outputs. This means that the last layer of the neural network will contain
+    a number of outputs equal to the number of forecasting periods you want to project
+    into the future.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Train the model to predict multiple outputs at every time step based on the
+    inputs from the same time step.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Let’s continue with the ISM PMI. As usual, import the required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Import and preprocess the data while setting the hyperparameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `direct_mpf()` function takes the following arguments:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dataset represented by the variable `data`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The number of lags represented by the variable `num_lags`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The split represented by the variable `train_test_split`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The number of observations to project represented by the variable `forecast_horizon`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Prepare the arrays, design the architecture, and predict the data for a horizon
+    of 18 months (since the ISM PMI is a monthly indicator):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-12](#figure-9-12) shows the predicted data and the test data at this
+    point.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0912.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-12\. Multiperiod forecasts of model versus real values, with some optimization
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The interpretation of the model at the time of the forecast was for a consecutive
+    drop in the ISM PMI for 18 months. The model seems to have done a good job at
+    predicting this direction. Note that you may get different results due to the
+    random initialization of the algorithm, which may impact its convergence to a
+    minimum loss function. You can use `random_state` to get the same results every
+    time (you saw this in [Chapter 7](ch07.html#ch07)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The ISM PMI has a positive correlation with the US gross domestic product (GDP)
+    and a slight positive correlation with the S&P 500\. To be more precise, bottoms
+    in the ISM PMI have coincided with bottoms in the equity markets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Out of curiosity, let’s try running the model on very simple and basic hyperparameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: Obviously, with one lag, the model will only take into account the previous
+    value to learn how to predict the future. The hidden layers will only contain
+    two neurons each and will run for only 10 epochs using a batch size of 1\. Naturally,
+    you would not expect satisfying results by using these hyperparameters. [Figure 9-13](#figure-9-13)
+    compares the predicted values to the real values. Notice the huge discrepancy
+    as the model does not pick on the magnitude or the direction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0913.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-13\. Multiperiod forecasts of the model versus real values, using basic
+    hyperparameters
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: This is why hyperparameter optimization is important and a certain degree of
+    complexity is needed. After all, these time series are not simple and carry a
+    significant amount of noise in them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, let’s have a look at the results of running the following hyperparameters
+    on Basel’s temperature data, as you saw at the beginning of this section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-14](#figure-9-14) compares the predicted values to the real values
+    using the temperature time series. The number of predicted observations is 500.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0914.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-14\. Multiperiod forecasts of the model versus real values, using the
+    temperature time series
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Which prediction technique to use depends on your preferences and needs. It
+    is worth mentioning an additional MPF technique referred to as the *multioutput
+    model*, which is a one-shot forecast of a number of values. This means that the
+    model is trained over the training set with the aim of producing an instant predefined
+    number of outputs (predictions). Obviously, this model may be computationally
+    expensive and would require a sizable amount of data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying Regularization to MLPs
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[Chapter 8](ch08.html#ch08) discussed two regularization concepts regarding
+    deep learning:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dropout as a regularization technique that randomly deactivates neurons during
+    training to prevent overfitting
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Early stopping as a method to prevent overfitting by monitoring the model’s
+    performance and stopping training when performance starts to degrade
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Another regularization technique worth discussing is *batch normalization*,
+    a technique used in deep learning to improve the training and generalization of
+    neural networks. It normalizes the inputs of each layer within a mini batch during
+    training, which helps in stabilizing and accelerating the learning process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The main idea behind batch normalization is to ensure that the inputs to a
+    layer have zero mean and unit variance. This normalization is applied independently
+    to each feature (or neuron) within the layer. The process can be summarized in
+    the following steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For each feature in a mini batch, calculate the mean and variance across all
+    the samples in the batch.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Subtract the mean and divide by the standard deviation (the square root of the
+    variance) for each feature.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: After normalization, the features are scaled and shifted by learnable parameters.
+    These parameters allow the model to learn the optimal scale and shift for each
+    normalized feature.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'This section presents a simple forecasting task using LSTMs with the addition
+    of the three regularization techniques. The time series is the S&P 500’s 20-day
+    rolling autocorrelation data. Import the required libraries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Import and preprocess the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Calculate the 20-day autocorrelation of the close prices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In Python, a `lambda` function, also known as an *anonymous* function, is a
+    small, unnamed function that can have any number of arguments but can only have
+    one expression. These functions are often used for creating simple, inline functions
+    without needing to define a full function using the `def` keyword. Here’s a simple
+    example to illustrate how `lambda` works:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: The output will be the float 5.0 stored in `result`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `apply()` function is a method that is available in *pandas*. It is primarily
+    used to apply a given function along an axis of a dataframe.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before continuing, try plotting the S&P 500 price data versus its 20-day autocorrelation
+    that you just calculated. Use this code to generate [Figure 9-15](#figure-9-15):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![](assets/dlff_0915.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-15\. The S&P 500 versus its 20-day price autocorrelation (lag = 1)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'What you should retain from the chart and from the intuition of autocorrelation
+    is that whenever autocorrelation approaches 1.00, the current trend may break,
+    thus leading to a market correction. This is not a perfect assumption, but you
+    can follow these basic rules to interpret the rolling autocorrelation observations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A trending market (bullish or bearish) will have its autocorrelation approach
+    1.00 sooner or later. When this happens, it may signal a pause in the underlying
+    trend, or in rarer occasions, a full reversal.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A sideways (ranging) market will have a low autocorrelation. If the autocorrelation
+    approaches historical lows, then it may mean that the market is ready to trend.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Let’s now continue building the algorithm. The next step is to set the hyperparameters
+    and prepare the arrays:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Transform the input arrays into three-dimensional structures so that they are
+    processed into the LSTM architecture with no issues:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Design the LSTM architecture and add the dropout layer and batch normalization.
+    Add the early stopping implementation while setting `restore_best_weights` to
+    `True` so as to keep the best parameters for the prediction over the test data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Predict and plot the results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-16](#figure-9-16) shows the predictions versus the real values. The
+    model has stopped the training before reaching 100 epochs due to the callback
+    from the early stopping mechanism.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_0916.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-16\. Predicting correlation
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The results are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: It’s important to note that using indicators such as rolling autocorrelation
+    should be done with caution. They provide insights into historical patterns, but
+    they don’t guarantee future performance. Additionally, the effectiveness of rolling
+    autocorrelation as a technical indicator depends on the nature of the data and
+    the context in which it’s being used. You can try applying the MPF method on the
+    autocorrelation data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Other regularization techniques that exist include the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: L1 and L2 regularization
+  prefs: []
+  type: TYPE_NORMAL
+- en: Also known as *weight decay*, L1 and L2 regularization add a penalty term to
+    the loss function based on the magnitude of the weights. *L1 regularization* adds
+    the absolute values of the weights to the loss, which encourages sparsity in the
+    model. *L2 regularization* adds the squared values of the weights, which discourages
+    large weight values and tends to distribute the influence of features more evenly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: DropConnect
+  prefs: []
+  type: TYPE_NORMAL
+- en: This technique is similar to dropout but is applied to connections rather than
+    neurons. This technique randomly drops connections between layers during training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Weight constraints
+  prefs: []
+  type: TYPE_NORMAL
+- en: Limiting the magnitude of weight values can prevent the model from learning
+    complex patterns from noise and helps regularize the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adversarial training
+  prefs: []
+  type: TYPE_NORMAL
+- en: Training the model using adversarial examples can improve its robustness by
+    making it more resistant to small perturbations in the input data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using these regularization techniques doesn’t guarantee a better result than
+    using the model without them. However, deep learning best practices encourage
+    such techniques to avoid more serious problems like overfitting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: When manually uploading an Excel file (using *pandas*, for example) that contains
+    historical data, make sure that it has a shape of `(n, )` and not a shape of `(n,
+    1)`. This ensures that when you use the `data_preprocessing()` function, the four
+    training/test arrays will be created with the proper dimensions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To transform an `(n, 1)` array to `(n, )`, use the following syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'To transform an `(n, )` array to `(n, 1)`, use the following syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter presented a few techniques that may improve the different machine
+    and deep learning algorithms. I like to refer to such techniques as *satellites*
+    since they hover around the main component, that is, neural networks. Optimizations
+    and enhancements are crucial to the success of the analysis. For example, some
+    markets may benefit from the forecasting threshold technique and fractional differentiation.
+    Trial and error is key to understanding your data, and as you begin [Chapter 10](ch10.html#ch10)
+    and learn about reinforcement learning, you will see that trial and error is not
+    just a human task. It can also be a computer task.
+  prefs: []
+  type: TYPE_NORMAL

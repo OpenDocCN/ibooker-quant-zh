@@ -1,0 +1,1541 @@
+- en: Chapter 2\. Introduction to Time Series Modeling
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Market behavior is examined using large amounts of past data, such as high-frequency
+    bid-ask quotes of currencies or stock prices. It is the abundance of data that
+    makes possible the empirical study of the market. Although it is not possible
+    to run controlled experiments, it is possible to extensively test on historical
+    data.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Sergio Focardi (1997)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Some models account better for some phenomena; certain approaches capture the
+    characteristics of an event in a solid way. Time series modeling is a good example
+    of this because the vast majority of financial data has a time dimension, which
+    makes time series applications a necessary tool for finance. In simple terms,
+    the ordering of the data and its correlation is important.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter of the book will discuss classical time series models and compare
+    the performance of these models. Deep learning–based time series analysis will
+    be introduced in [Chapter 3](ch03.html#chapter_3); this is an entirely different
+    approach in terms of data preparation and model structure. The classical models
+    include the moving average (MA), autoregressive (AR), and autoregressive integrated
+    moving average (ARIMA) models. What is common across these models is the information
+    carried by the historical observations. If these historical observations are obtained
+    from error terms, we refer to this as a *moving average*; if these observations
+    come out of time series itself, it is called *autoregressive*. The other model,
+    ARIMA, is an extension of these models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is a formal definition of *time series* from Brockwell and Davis (2016):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A time series is a set of observations <math alttext="upper X Subscript t"><msub><mi>X</mi>
+    <mi>t</mi></msub></math> , each one being recorded at a specific time *t*. A discrete-time
+    time series… is one in which the set <math alttext="upper T 0"><msub><mi>T</mi>
+    <mn>0</mn></msub></math> of times at which observations are made is a discrete
+    set, as is the case, for example, when observations are made at fixed time intervals.
+    Continuous time series are obtained when observations are recorded continuously
+    over some time interval.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Let’s observe what data with time dimension looks like. [Figure 2-1](#raw_oil_price)
+    exhibits the oil prices for the period of 1980–2020, and the following Python
+    code shows us a way of producing this plot:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Extracting data from Quandl database
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![raw_oil](assets/mlfr_0201.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-1\. Oil prices between 1980 and 2020
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: An API is a tool designed for retrieving data using code. We will make use of
+    different APIs throughout the book. In the preceding practice, Quandl API is used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Quandl API allows us to access financial, economic, and alternative data from
+    the Quandl website. To get your Quandl API, please visit the [Quandl website](https://oreil.ly/1IFDc)
+    first and follow the necessary steps to get your own API key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As can be understood from the definition provided previously, time series models
+    can be applicable to diverse areas such as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Health care
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Finance
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Economics
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Network analysis
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Astronomy
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Weather
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The superiority of the time series approach comes from the idea that correlations
+    of observations in time better explain the current value. Having data with a correlated
+    structure in time implies a violation of the famous identically and independently
+    distributed (IID) assumption, which is at the heart of many models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So, due to the correlation in time, the dynamics of a contemporaneous stock
+    price can be better understood by its own historical values. How can we comprehend
+    the dynamics of the data? This is a question that we can address by elaborating
+    the components of time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Time Series Components
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Time series has four components: trend, seasonality, cyclicality, and residual.
+    In Python, we can easily visualize the components of a time series with the `seasonal_decompose`
+    function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Denoting ticker of S&P 500
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the start and end dates
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accessing the closing price of S&P 500
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the top panel of [Figure 2-2](#time_series_decompose), we see the plot of
+    raw data, and in the second panel, trend can be observed showing upward movement.
+    In the third panel, seasonality is exhibited, and finally residual is presented
+    showing erratic fluctuations. You might wonder where the cyclicality component
+    is; noise and the cyclical component are put together under the residual component.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Becoming familiar with time series components is important for further analysis
+    so that we are able to understand characteristics of the data and propose a suitable
+    model. Let’s start with the trend component.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![decomp](assets/mlfr_0202.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-2\. Time series decomposition of S&P 500
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Trend
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Trend* indicates a general tendency of an increase or decrease during a given
+    time period. Generally speaking, trend is present when the starting and ending
+    points are different or have upward/downward slope in a time series. The following
+    code shows what a trend looks like:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Aside from the period in which the S&P 500 index price plunges, we see a clear
+    upward trend in [Figure 2-3](#raw_sp_price) between 2010 and 2020.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![raw_sp](assets/mlfr_0203.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-3\. S&P 500 price
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'A line plot is not the only option for understanding trend. Rather, we have
+    some other strong tools for this task. So, at this point, it is worthwhile to
+    talk about two important statistical concepts:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Autocorrelation function
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Partial autocorrelation function
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The autocorrelation function (ACF) is a statistical tool to analyze the relationship
+    between the current value of a time series and its lagged values. Graphing ACF
+    enables us to readily observe the serial dependence in a time series:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="ModifyingAbove rho With caret left-parenthesis h right-parenthesis
+    equals StartFraction Cov left-parenthesis upper X Subscript t Baseline comma upper
+    X Subscript t minus h Baseline right-parenthesis Over Var left-parenthesis upper
+    X Subscript t Baseline right-parenthesis EndFraction" display="block"><mrow><mover
+    accent="true"><mi>ρ</mi> <mo>^</mo></mover> <mrow><mo>(</mo> <mi>h</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mrow><mtext>Cov</mtext><mo>(</mo><msub><mi>X</mi> <mi>t</mi></msub>
+    <mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi></mrow></msub>
+    <mo>)</mo></mrow> <mrow><mtext>Var</mtext><mo>(</mo><msub><mi>X</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-4](#acf) denotes the ACF plot. The vertical lines represent the correlation
+    coefficients; the first line denotes the correlation of the series with its 0
+    lag—that is, it is the correlation with itself. The second line indicates the
+    correlation between series value at time *t* - 1 and *t*. In light of these, we
+    can conclude that the S&P 500 shows a serial dependence. There appears to be a
+    strong dependence between the current value and lagged values of S&P 500 data
+    because the correlation coefficients, represented by lines in the ACF plot, decay
+    in a slow fashion.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is how we can plot the ACF in Python:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting ACF
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![acf_sp](assets/mlfr_0204.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-4\. ACF plot of the S&P 500
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Now the question is, what are the likely sources of autocorrelations? Here
+    are some causes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The primary source of autocorrelation is “carryover,” meaning that the preceding
+    observation has an impact on the current one.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Model misspecification.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Measurement error, which is basically the difference between observed and actual
+    values.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Dropping a variable, which has an explanatory power.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Partial autocorrelation function (PACF) is another method of examining the relationship
+    between <math alttext="upper X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math>
+    and <math alttext="upper X Subscript t minus p Baseline comma p element-of double-struck
+    upper Z"><mrow><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>p</mi></mrow></msub>
+    <mo>,</mo> <mi>p</mi> <mo>∈</mo> <mi>ℤ</mi></mrow></math> . ACF is commonly considered
+    as a useful tool in the MA(q) model simply because PACF does not decay fast but
+    approaches toward 0\. However, the pattern of ACF is more applicable to MA. PACF,
+    on the other hand, works well with the AR(p) process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: PACF provides information on the correlation between the current value of a
+    time series and its lagged values, controlling for the other correlations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is not easy to figure out what is going on at first glance. Let me give you
+    an example. Suppose that we want to compute the partial correlation <math alttext="upper
+    X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math> and <math alttext="upper
+    X Subscript t minus h"><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi></mrow></msub></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Put mathematically:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign ModifyingAbove rho With caret left-parenthesis h
+    right-parenthesis equals StartFraction Cov left-parenthesis upper X Subscript
+    t Baseline comma upper X Subscript t minus h Baseline vertical-bar upper X Subscript
+    t minus 1 Baseline comma upper X Subscript t minus 2 Baseline ellipsis upper X
+    Subscript t minus h minus 1 Baseline right-parenthesis Over StartRoot Var left-parenthesis
+    upper X Subscript t Baseline vertical-bar upper X Subscript t minus 1 Baseline
+    comma upper X Subscript t minus 2 Baseline comma ellipsis comma upper X Subscript
+    t minus h minus 1 Baseline right-parenthesis Var left-parenthesis upper X Subscript
+    t minus h Baseline vertical-bar upper X Subscript t minus 1 Baseline comma upper
+    X Subscript t minus 2 Baseline comma ellipsis comma upper X Subscript t minus
+    h minus 1 Baseline right-parenthesis EndRoot EndFraction dollar-sign"><mrow><mover
+    accent="true"><mi>ρ</mi> <mo>^</mo></mover> <mrow><mo>(</mo> <mi>h</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mrow><mtext>Cov</mtext><mo>(</mo><msub><mi>X</mi> <mi>t</mi></msub>
+    <mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi></mrow></msub>
+    <mo>|</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>...</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <msqrt><mrow><mtext>Var</mtext><mrow><mo>(</mo><msub><mi>X</mi>
+    <mi>t</mi></msub> <mo>|</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>,</mo><mo>...</mo><mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow><mtext>Var</mtext><mrow><mo>(</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi></mrow></msub>
+    <mo>|</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>,</mo><mo>...</mo><mo>,</mo><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>h</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></msqrt></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where *h* is the lag. Take a look at the Python code for a PACF plot of the
+    S&P 500 in the following snippet:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting PACF
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-5](#pacf) exhibits the PACF of raw S&P 500 data. In interpreting
+    the PACF, we focus on the spikes outside the dark region representing confidence
+    interval. [Figure 2-5](#pacf) exhibits some spikes at different lags, but lag
+    10 is outside the confidence interval. So it may be wise to select a model with
+    10 lags to include all the lags up to lag 10.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As discussed, PACF measures the correlation between current values of series
+    and lagged values in a way to isolate in-between effects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![partial autocorrelation SP](assets/mlfr_0205.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-5\. PACF plot of the S&P 500
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Seasonality
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Seasonality exists if there are regular fluctuations over a given period of
+    time. For instance, energy usages can show a seasonality characteristic. To be
+    more specific, energy usage goes up and down during certain periods over a year.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To show how we can detect the seasonality component, let’s use the Federal
+    Reserve Economic Database (FRED), which includes more than 500,000 economic data
+    series from over 80 sources covering many areas, such as banking, employment,
+    exchange rates, gross domestic product, interest rates, trade and international
+    transactions, and so on:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accessing the energy capacity utilization from the FRED for the period of 2010–2020
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-6](#energy_seasonality) indicates periodic ups and downs over a nearly
+    10-year period with high-capacity utilization during the first months of every
+    year and then going down toward the end of year, confirming that there is seasonality
+    in energy-capacity utilization.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![energy_seas](assets/mlfr_0206.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-6\. Seasonality in energy capacity utilization
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: An ACF plot can also provide information about the seasonality as the periodic
+    ups and downs can be observable using ACF, too. [Figure 2-7](#energy_acf) shows
+    the correlation structure in the presence of seasonality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![energy_acf](assets/mlfr_0207.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-7\. ACF of energy capacity utilization
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Cyclicality
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: What if data does not show fixed period movements? At this point, cyclicality
+    comes into the picture. It exists when higher periodic variation than the trend
+    emerges. Some confuse cyclicality and seasonality in a sense that they both exhibit
+    expansion and contraction. We can, however, think of cyclicality as business cycles,
+    which take a long time to complete their cycles and the ups and downs are over
+    a long horizon. So cyclicality is different from seasonality in the sense that
+    there is no fluctuation in a fixed period. An example of cyclicality may be house
+    purchases (or sales) depending on mortgage rate. That is, when a mortgage rate
+    is cut (or raised), it leads to a boost for house purchases (or sales).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Residual
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Residual is known as an irregular component of time series. Technically speaking,
+    residual is equal to the difference between observations and related fitted values.
+    We can think of it as a leftover from the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As we have discussed before, time series models lack some core assumptions,
+    but this does not necessarily mean that time series models are free from assumptions.
+    I would like to stress the most prominent one, which is called *stationarity*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stationarity means that statistical properties such as mean, variance, and covariance
+    of the time series do not change over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are two forms of stationarity:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Weak stationarity
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Time series <math alttext="upper X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math>
+    is said to be stationarity if:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math>
+    has finite variance, <math alttext="double-struck upper E left-parenthesis upper
+    X Subscript t Superscript 2 Baseline right-parenthesis less-than normal infinity
+    comma for-all t element-of double-struck upper Z"><mrow><mi>𝔼</mi> <mo>(</mo>
+    <msubsup><mi>X</mi> <mi>t</mi> <mn>2</mn></msubsup> <mo>)</mo> <mo><</mo> <mi>∞</mi>
+    <mo>,</mo> <mo>∀</mo> <mi>t</mi> <mo>∈</mo> <mi>ℤ</mi></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The mean value of <math alttext="upper X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math>
+    is constant and does solely depend on time, <math alttext="double-struck upper
+    E left-parenthesis upper X Subscript t Baseline right-parenthesis equals mu comma
+    t for-all element-of double-struck upper Z"><mrow><mi>𝔼</mi> <mo>(</mo> <msub><mi>X</mi>
+    <mi>t</mi></msub> <mo>)</mo> <mo>=</mo> <mi>μ</mi> <mo>,</mo> <mi>t</mi> <mo>∀</mo>
+    <mo>∈</mo> <mi>ℤ</mi></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Covariance structure, <math alttext="gamma left-parenthesis t comma t plus
+    h right-parenthesis"><mrow><mi>γ</mi> <mo>(</mo> <mi>t</mi> <mo>,</mo> <mi>t</mi>
+    <mo>+</mo> <mi>h</mi> <mo>)</mo></mrow></math> , depends on the time difference
+    only:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign gamma left-parenthesis h right-parenthesis equals
+    gamma Subscript h Baseline plus gamma left-parenthesis t plus h comma t right-parenthesis
+    dollar-sign"><mrow><mi>γ</mi> <mrow><mo>(</mo> <mi>h</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <msub><mi>γ</mi> <mi>h</mi></msub> <mo>+</mo> <mi>γ</mi> <mrow><mo>(</mo> <mi>t</mi>
+    <mo>+</mo> <mi>h</mi> <mo>,</mo> <mi>t</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In other words, time series should have finite variance with constant mean and
+    a covariance structure that is a function of the time difference.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strong stationarity
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the joint distribution of <math alttext="upper X Subscript t Baseline 1 Baseline
+    comma upper X Subscript t Baseline 2 Baseline comma period period period upper
+    X Subscript t k Baseline"><mrow><msub><mi>X</mi> <mrow><mi>t</mi><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>X</mi> <mrow><mi>t</mi><mn>2</mn></mrow></msub> <mo>,</mo>
+    <mo>.</mo> <mo>.</mo> <mo>.</mo> <msub><mi>X</mi> <mrow><mi>t</mi><mi>k</mi></mrow></msub></mrow></math>
+    is the same with the shifted version of set <math alttext="upper X Subscript t
+    Baseline 1 plus h Baseline comma upper X Subscript t Baseline 2 plus h Baseline
+    comma period period period upper X Subscript t k plus h Baseline"><mrow><msub><mi>X</mi>
+    <mrow><mi>t</mi><mn>1</mn><mo>+</mo><mi>h</mi></mrow></msub> <mo>,</mo> <msub><mi>X</mi>
+    <mrow><mi>t</mi><mn>2</mn><mo>+</mo><mi>h</mi></mrow></msub> <mo>,</mo> <mo>.</mo>
+    <mo>.</mo> <mo>.</mo> <msub><mi>X</mi> <mrow><mi>t</mi><mi>k</mi><mo>+</mo><mi>h</mi></mrow></msub></mrow></math>
+    , it is referred to as strong stationarity. Thus, strong stationarity implies
+    that distribution of random variables of a random process is the same with a shifting
+    time index.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The question is now why do we need stationarity? The reason is twofold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, in the estimation process, it is essential to have some distribution
+    as time goes on. In other words, if distribution of a time series changes over
+    time, it becomes unpredictable and cannot be modeled.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The ultimate aim of time series models is forecasting. To do that, we should
+    estimate the coefficients first, which corresponds to learning in ML. Once we
+    learn and conduct forecasting analysis, we assume that the distribution of the
+    data in the estimation stays the same in a way that we have the same estimated
+    coefficients. If this is not the case, we should reestimate the coefficients because
+    we are unable to forecast with the previous estimated coefficients.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having structural breaks, such as a financial crisis, generates a shift in distribution.
+    We need to take care of this period cautiously and separately.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The other reason for having stationarity is, by assumption, some statistical
+    models require stationary data, but that does not mean that some models requires
+    stationary only. Instead, all models require stationarity but even if you feed
+    the model with nonstationary data, some models, by design, turn it into stationary
+    data and process it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-4](#acf) showed the slow-decaying lags amounting to nonstationary
+    because persistence of the high correlation between lags of the time series continues.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are, by and large, two ways to detect nonstationarity: visualization
+    and statistical methods. The latter, of course, is a better and more robust way
+    of detecting the nonstationarity. However, to improve our understanding, let’s
+    start with the ACF. Slow-decaying ACF implies that the data is nonstationary because
+    it presents a strong correlation in time. That is what I observe in S&P 500 data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We first need to check and see if the data is stationary or not. Visualization
+    is a good but ultimately inadequate tool for this task. Instead, a more powerful
+    statistical method is needed, and the augmented Dickey-Fuller (ADF) test provides
+    this. Assuming that the confidence interval is set to 95%, the following result
+    indicates that the data is not stationary:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ADF test for stationarity
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Test statistic and p-value of ADF test
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Taking the difference is an efficient technique for removing the stationarity.
+    This just means subtracting the current value of the series from its first lagged
+    value, i.e., <math alttext="x Subscript t Baseline minus x Subscript t minus 1"><mrow><msub><mi>x</mi>
+    <mi>t</mi></msub> <mo>-</mo> <msub><mi>x</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math>
+    , and the following Python code presents how to apply this technique (and creates
+    Figures [2-8](#detrendedSP500) and [2-9](#diff_acfSP500)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Taking the difference of S&P 500 prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ADF test result based on differenced S&P 500 data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![differenced SP](assets/mlfr_0208.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-8\. Detrended S&P 500 price
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: After taking the first difference, we rerun the ADF test to see if it worked,
+    and yes, it does. The very low p-value of ADF tells me that S&P 500 data is stationary
+    now.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This can be observed from the line plot provided in [Figure 2-8](#detrendedSP500).
+    Unlike the raw S&P 500 plot, this plot exhibits fluctuations around the mean with
+    similar volatility, meaning that we have a stationary series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-9](#diff_acfSP500) shows that there is only one statistical significant
+    correlation structure at lag 7.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Needless to say, trend is not the only indicator of nonstationarity. Seasonality
+    is another source of it, and now we are about to learn a method to deal with it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![differenced_acf](assets/mlfr_0209.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-9\. Detrended S&P 500 price
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: First, take a look at the ACF of energy capacity utilization in [Figure 2-7](#energy_acf),
+    which shows periodic ups and downs, a sign of nonstationarity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To get rid of seasonality, we first apply the *resample* method to calculate
+    annual mean, which is used as the denominator in the following formula:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Seasonal Index equals StartFraction Value of a Seasonal Time
+    Series Over Seasonal Average EndFraction" display="block"><mrow><mtext>Seasonal</mtext>
+    <mtext>Index</mtext> <mo>=</mo> <mfrac><mrow><mtext>Value</mtext><mtext>of</mtext><mtext>a</mtext><mtext>Seasonal</mtext><mtext>Time</mtext><mtext>Series</mtext></mrow>
+    <mrow><mtext>Seasonal</mtext><mtext>Average</mtext></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Thus, the result of the application, *seasonal index*, gives us the deseasonalized
+    time series. The following code shows us how we code this formula in Python:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating quarterly mean of energy utilization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining the years in which seasonality analysis is run
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Computing the numerator of *Seasonal Index* formula
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_introduction_to_time_series_modeling_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Concatenating the deseasonalized energy utilization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_introduction_to_time_series_modeling_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Computing *Seasonal Index* using the predefined formula
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-10](#deseasonalized_acf_energy) suggests that there is a statistically
+    significant correlation at lag 1 and 2, but ACF does not show any periodic characteristics,
+    which is another way of saying deseasonalization.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Similarly, in [Figure 2-11](#deseasonalized_pacf_energy), although there is
+    a spike at some lags, PACF does not show any periodic ups and downs. So we can
+    say that the data is deseasonalized using the Seasonal Index Formula.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What we have now are the less periodic ups and down in energy-capacity utilization,
+    meaning that the data turns out to be deseasonalized.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, we are ready to move forward and discuss the time series models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![deseasonalized energy acf](assets/mlfr_0210.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-10\. Deseasonalized ACF of energy utilization
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![deseasonalized energy pacf](assets/mlfr_0211.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-11\. Deseasonalized PACF of energy utilization
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Time Series Models
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Traditional time series models are univariate models, and they follow these
+    phases:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identification
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this process, we explore the data using ACF and PACF, identifying patterns
+    and conducting statistical tests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimation
+  prefs: []
+  type: TYPE_NORMAL
+- en: We estimate coefficients via the proper optimization technique.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Diagnostics
+  prefs: []
+  type: TYPE_NORMAL
+- en: After estimation, we need to check if information criteria or ACF/PACF suggest
+    that the model is valid. If so, we move on to the forecasting stage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forecast
+  prefs: []
+  type: TYPE_NORMAL
+- en: This part is more about the performance of the model. In forecasting, we predict
+    future values based on our estimation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-12](#modeling1) shows the modeling process. Accordingly, subsequent
+    to identifying the variables and the estimation process, the model is run. Only
+    after running proper diagnostics are we able to perform the forecast analysis.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![modeling1](assets/mlfr_0212.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-12\. Modeling process
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In modeling data with a time dimension, we should consider correlation in adjacent
+    points in time. This consideration takes us to time series modeling. My aim in
+    modeling time series is to fit a model and comprehend statistical character of
+    a time series, which fluctuates randomly in time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recall the discussion about the IID process, which is the most basic time series
+    model and is sometimes referred to as *white noise*. Let’s touch on the concept
+    of white noise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: White Noise
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The time series <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    is said to be white noise if it satisfies the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="epsilon Subscript t Baseline tilde upper W upper N left-parenthesis
+    0 comma sigma Subscript epsilon Superscript 2 Baseline right-parenthesis" display="block"><mrow><msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>∼</mo> <mi>W</mi> <mi>N</mi> <mrow><mo>(</mo> <mn>0</mn>
+    <mo>,</mo> <msubsup><mi>σ</mi> <mrow><mi>ϵ</mi></mrow> <mn>2</mn></msubsup> <mo>)</mo></mrow></mrow></math><math
+    alttext="Corr left-parenthesis epsilon Subscript t Baseline comma epsilon Subscript
+    s Baseline right-parenthesis equals 0 comma for-all t not-equals s" display="block"><mrow><mtext>Corr</mtext>
+    <mo>(</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>ϵ</mi> <mi>s</mi></msub>
+    <mo>)</mo> <mo>=</mo> <mn>0</mn> <mo>,</mo> <mo>∀</mo> <mi>t</mi> <mo>≠</mo> <mi>s</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In other words, <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    has mean of 0 and a constant variance. Moreover, there is no correlation between
+    successive terms of <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    . Well, it is easy to say that the white noise process is stationary and that
+    the plot of white noise exhibits fluctuations around mean in a random fashion
+    in time. However, as the white noise is formed by an uncorrelated sequence, it
+    is not an appealing model from a forecasting standpoint. Uncorrelated sequences
+    prevent us from forecasting future values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As we can observe from the following code snippet and [Figure 2-13](#WN), white
+    noise oscillates around mean and is completely erratic:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![WN process](assets/mlfr_0213.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-13\. White noise process
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: From this point on, we need to identify the optimum number of lags before running
+    the time series model. As you can imagine, deciding the optimal number of lags
+    is a challenging task. The most widely used methods are ACF, PACF, and *information
+    criteria*. ACF and PACF have already been discussed; see the following sidebar
+    for more about information criteria, and specifically the Aikake information criterion
+    (AIC).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Please note that you need to treat the AIC with caution if the proposed model
+    is finite dimensional. This fact is well put by Hurvich and Tsai (1989):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the true model is infinite dimensional, a case which seems most realistic
+    in practice, AIC provides an asymptotically efficient selection of a finite dimensional
+    approximating model. If the true model is finite dimensional, however, the asymptotically
+    efficient methods, e.g., Akaike’s FPE (Akaike 1970), AIC, and Parzen’s CAT (Parzen
+    1977), do not provide consistent model order selections.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Let’s get started visiting classical time series models with the moving average
+    model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Moving Average Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'MA and residuals are closely related models. MA can be considered a smoothing
+    model, as it tends to take into account the lag values of residual. For the sake
+    of simplicity, let us start with MA(1):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper X Subscript t Baseline equals epsilon Subscript t Baseline
+    plus alpha epsilon Subscript t minus 1" display="block"><mrow><msub><mi>X</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo> <mi>α</mi>
+    <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: As long as <math alttext="alpha not-equals 0"><mrow><mi>α</mi> <mo>≠</mo> <mn>0</mn></mrow></math>
+    , it has nontrivial correlation structure. Intuitively, MA(1) tells us that the
+    time series has been affected by <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi>
+    <mi>t</mi></msub></math> and <math alttext="epsilon Subscript t minus 1"><msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></math> only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In general form, MA(q) becomes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper X Subscript t Baseline equals epsilon Subscript t Baseline
+    plus alpha 1 epsilon Subscript t minus 1 Baseline plus alpha 2 epsilon Subscript
+    t minus 2 Baseline ellipsis plus alpha Subscript q Baseline epsilon Subscript
+    t minus q" display="block"><mrow><msub><mi>X</mi> <mi>t</mi></msub> <mo>=</mo>
+    <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo> <msub><mi>α</mi> <mn>1</mn></msub>
+    <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>+</mo>
+    <msub><mi>α</mi> <mn>2</mn></msub> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>...</mo> <mo>+</mo> <msub><mi>α</mi> <mi>q</mi></msub> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mi>q</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: From this point on, to be consistent, we will model the data of two major tech
+    companies, namely Apple and Microsoft. Yahoo Finance provides a convenient tool
+    to access closing prices of the related stocks for the period between 01-01-2019
+    and 01-01-2021.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a first step, we dropped the missing values and checked if the data is stationary,
+    and it turns out neither Apple’s nor Microsoft’s stock prices have a stationary
+    structure as expected. Thus, taking the first difference to make these data stationary
+    and splitting the data as *train* and *test* are the steps to take at this point.
+    The following code (which produces [Figure 2-14](#acf_ma)) shows how we can do
+    this in Python:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving monthly closing stock prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Splitting data as 95% and 5%
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning 95% of the Apple stock price data to the train set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_introduction_to_time_series_modeling_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning 5% of the Apple stock price data to the test set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_introduction_to_time_series_modeling_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning 95% of the Microsoft stock price data to the train set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_introduction_to_time_series_modeling_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning 5% of the Microsoft stock price data to the test set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_introduction_to_time_series_modeling_CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Saving the data for future use
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![acf all](assets/mlfr_0214.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-14\. ACF after first difference
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Looking at the top panel of [Figure 2-14](#acf_ma), we can see that there are
+    significant spikes at some lags and, therefore, we’ll choose lag 9 for the short
+    MA model and 22 for the long MA for Apple. These imply that an order of 9 will
+    be our short-term order and 22 will be our long-term order in modeling MA:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Moving average with short window for Apple stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Moving average with long window for Apple stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Line plot of first differenced Apple stock prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_introduction_to_time_series_modeling_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualization of short-window MA result for Apple
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_introduction_to_time_series_modeling_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualization of long-window MA result for Apple
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 2-15](#ma_apple) exhibits the short-term MA model result with a solid
+    line and the long-term MA model result with a dash-dot marker. As expected, it
+    turns out that the short-term MA tends to be more responsive to daily changes
+    in Apple’s stock price compared to the long-term MA. This makes sense because
+    taking into account a long MA generates smoother predictions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ma apple](assets/mlfr_0215.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-15\. MA model prediction result for Apple
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In the next step, we try to predict Microsoft’s stock price using an MA model
+    with different window. But before proceeding, let me say that choosing the proper
+    window for short and long MA analysis is key to good modeling. In the bottom panel
+    of [Figure 2-14](#acf_ma), there seem to be significant spikes at 2 and 22, so
+    we’ll use these lags in our short and long MA analysis, respectively. After identifying
+    the window length, we’ll fit data to the MA model with the following application:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: Similarly, predictions based on short MA analysis tend to be more responsive
+    than those of the long MA model, as shown in [Figure 2-16](#ma_msft). But in Microsoft’s
+    case, the short-term MA prediction appears to be very close to the real data.
+    This is something we expect in time series models in that a window with a short-term
+    horizon is able to better capture the dynamics of the data, and this, in turn,
+    helps us obtain better predictive performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ma msft](assets/mlfr_0216.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-16\. MA model prediction result for Microsoft
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Autoregressive Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The dependence structure of successive terms is the most distinctive feature
+    of the AR model, in the sense that current value is regressed over its own lag
+    values in this model. So we basically forecast the current value of the time series
+    <math alttext="upper X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math>
+    by using a linear combination of its past values. Mathematically, the general
+    form of AR(p) can be written as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper X Subscript t Baseline equals c plus alpha 1 upper X Subscript
+    t minus 1 Baseline plus alpha 2 upper X Subscript t minus 2 Baseline ellipsis
+    plus alpha Subscript p Baseline upper X Subscript t minus p Baseline plus epsilon
+    Subscript t" display="block"><mrow><msub><mi>X</mi> <mi>t</mi></msub> <mo>=</mo>
+    <mi>c</mi> <mo>+</mo> <msub><mi>α</mi> <mn>1</mn></msub> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <msub><mi>α</mi> <mn>2</mn></msub> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>...</mo> <mo>+</mo> <msub><mi>α</mi> <mi>p</mi></msub> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>p</mi></mrow></msub>
+    <mo>+</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    denotes the residuals and *c* is the intercept term. The AR(p) model implies that
+    past values up to order *p* have somewhat explanatory power on <math alttext="upper
+    X Subscript t"><msub><mi>X</mi> <mi>t</mi></msub></math> . If the relationship
+    has shorter memory, then it is likely to model <math alttext="upper X Subscript
+    t"><msub><mi>X</mi> <mi>t</mi></msub></math> with a fewer number of lags.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We have discussed one of the main properties of time series, stationarity; the
+    other important property is *invertibility*. After introducing the AR model, it
+    is time to show the invertibility of the MA process. It is said to be invertible
+    if it can be converted to an infinite AR model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Under some circumstances, MA can be written as an infinite AR process. These
+    circumstances are having stationary covariance structure, deterministic part,
+    and invertible MA process. In doing so, we have another model called *infinite
+    AR* thanks to the assumption of <math alttext="StartAbsoluteValue alpha EndAbsoluteValue
+    less-than 1"><mrow><mo>|</mo> <mi>α</mi> <mo>|</mo> <mo><</mo> <mn>1</mn></mrow></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>X</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>+</mo> <mi>α</mi> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math><math
+    display="block"><mrow><mo>=</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo>
+    <mi>α</mi> <mrow><mo>(</mo> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>-</mo> <mi>α</mi> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math><math display="block"><mrow><mo>=</mo> <msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>+</mo> <mi>α</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>-</mo> <msup><mi>α</mi> <mn>2</mn></msup> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub></mrow></math><math
+    display="block"><mrow><mo>=</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo>
+    <mi>α</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>-</mo> <msup><mi>α</mi> <mn>2</mn></msup> <mrow><mo>(</mo> <msub><mi>X</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub> <mo>+</mo> <mi>α</mi> <msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow></msub> <mo>)</mo></mrow></mrow></math><math
+    display="block"><mrow><mo>=</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo>
+    <mi>α</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>-</mo> <msup><mi>α</mi> <mn>2</mn></msup> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <msup><mi>α</mi> <mn>3</mn></msup> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow></msub>
+    <mrow><mo>)</mo></mrow></mrow></math><math display="block"><mrow><mo>=</mo> <mo>...</mo></mrow></math><math
+    display="block"><mrow><mo>=</mo> <mi>α</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>-</mo> <msup><mi>α</mi> <mn>2</mn></msup> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <msup><mi>α</mi> <mn>3</mn></msup> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow></msub>
+    <mo>-</mo> <msup><mi>α</mi> <mn>4</mn></msup> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>4</mn></mrow></msub>
+    <mo>+</mo> <mo>...</mo> <mo>-</mo> <msup><mrow><mo>(</mo><mo>-</mo><mi>α</mi><mo>)</mo></mrow>
+    <mi>n</mi></msup> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mi>n</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'After doing the necessary math, the equation gets the following form:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msup><mi>α</mi> <mi>n</mi></msup> <msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>n</mi></mrow></msub> <mo>=</mo> <msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>-</mo> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow>
+    <mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></munderover> <msup><mi>α</mi> <mi>i</mi></msup>
+    <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>i</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this case, if <math alttext="StartAbsoluteValue alpha EndAbsoluteValue less-than
+    1"><mrow><mo>|</mo> <mi>α</mi> <mo>|</mo> <mo><</mo> <mn>1</mn></mrow></math>
+    , then <math alttext="n right-arrow normal infinity"><mrow><mi>n</mi> <mo>→</mo>
+    <mi>∞</mi></mrow></math> :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>𝔼</mi> <msup><mrow><mo>(</mo><msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>-</mo><munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow>
+    <mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></munderover> <msup><mi>α</mi> <mi>i</mi></msup>
+    <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>i</mi></mrow></msub> <mo>)</mo></mrow>
+    <mn>2</mn></msup> <mo>=</mo> <mi>𝔼</mi> <mrow><mo>(</mo> <msup><mi>α</mi> <mrow><mn>2</mn><mi>n</mi></mrow></msup>
+    <msubsup><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mi>n</mi></mrow> <mn>2</mn></msubsup>
+    <mo>→</mo> <mi>∞</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, the MA(1) process turns out to be:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>=</mo> <munderover><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow> <mi>∞</mi></munderover> <msup><mi>α</mi>
+    <mi>i</mi></msup> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>i</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Due to the duality between the AR and MA processes, it is possible to represent
+    AR(1) as infinite MA, MA( <math alttext="normal infinity"><mi>∞</mi></math> ).
+    In other words, the AR(1) process can be expressed as a function of past values
+    of innovations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>X</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>+</mo> <mi>θ</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math><math
+    display="block"><mrow><mo>=</mo> <mi>θ</mi> <mrow><mo>(</mo> <mi>θ</mi> <msub><mi>X</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub> <mo>+</mo> <msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>+</mo>
+    <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math><math display="block"><mrow><mo>=</mo>
+    <msup><mi>θ</mi> <mn>2</mn></msup> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <mi>θ</mi> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math><math display="block"><mrow><mo>=</mo>
+    <msup><mi>θ</mi> <mn>2</mn></msup> <mrow><mo>(</mo> <mi>θ</mi> <msub><mi>X</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow></msub> <mo>+</mo> <mi>θ</mi> <msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub> <mo>)</mo></mrow> <mi>θ</mi>
+    <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>+</mo>
+    <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math><math display="block"><mrow><msub><mi>X</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>ϵ</mi> <mi>t</mi></msub> <mo>+</mo> <msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>+</mo> <msup><mi>θ</mi>
+    <mn>2</mn></msup> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <mo>...</mo> <mo>+</mo> <msup><mi>θ</mi> <mi>t</mi></msup> <msub><mi>X</mi>
+    <mi>t</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: As <math alttext="n right-arrow normal infinity"><mrow><mi>n</mi> <mo>→</mo>
+    <mi>∞</mi></mrow></math> , <math alttext="theta Superscript t Baseline right-arrow
+    0"><mrow><msup><mi>θ</mi> <mi>t</mi></msup> <mo>→</mo> <mn>0</mn></mrow></math>
+    , so I can represent AR(1) as an infinite MA process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the following analysis, we run the AR model to predict Apple and Microsoft
+    stock prices. Unlike MA, partial ACF is a useful tool to find out the optimum
+    order in the AR model. This is because, in AR, we aim to find out the relationship
+    of a time series between two different times, say <math alttext="upper X Subscript
+    t"><msub><mi>X</mi> <mi>t</mi></msub></math> and <math alttext="upper X Subscript
+    t minus k"><msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub></math>
+    , and to do that we need to filter out the effect of other lags in between, resulting
+    in Figures [2-17](#pacf_appl) and [2-18](#pacf_msft):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pacf_appl](assets/mlfr_0217.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-17\. PACF for Apple
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pacf_msft](assets/mlfr_0218.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-18\. PACF for Microsoft
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In [Figure 2-17](#pacf_appl), obtained from the first differenced Apple stock
+    price, we observe a significant spike at lag 29, and in [Figure 2-18](#pacf_msft),
+    we have a similar spike at lag 26 for Microsoft. Thus, 29 and 26 are the lags
+    that we are going to use in modeling AR for Apple and Microsoft, respectively:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting Apple stock data with AR model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the stock prices for Apple
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Comparing the predicted and real observations
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_introduction_to_time_series_modeling_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turning array into dataframe to assign index
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_introduction_to_time_series_modeling_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning test data indices to predicted values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_introduction_to_time_series_modeling_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting Microsoft stock data with AR model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_introduction_to_time_series_modeling_CO11-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the stock prices for Microsoft
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_introduction_to_time_series_modeling_CO11-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turning the array into a dataframe to assign index
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_introduction_to_time_series_modeling_CO11-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assigning test data indices to predicted values
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code, resulting in [Figure 2-19](#ar_all), shows the predictions
+    based on the AR model. The solid lines represent the Apple and Microsoft stock
+    price predictions, and the dashed lines denote the real data. The result reveals
+    that the MA model outperforms the AR model in capturing the stock price:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![ar all](assets/mlfr_0219.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-19\. AR model prediction results
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Autoregressive Integrated Moving Average Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The ARIMA is a function of past values of a time series and white noise. ARIMA
+    has been proposed as a generalization of AR and MA, but they do not have an integration
+    parameter, which helps us to feed the model with the raw data. In this respect,
+    even if we include nonstationary data, ARIMA makes it stationary by properly defining
+    the integration parameter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARIMA has three parameters, namely *p*, *d*, and *q*. As should be familiar
+    from previous time series models, *p* and *q* refer to the order of AR and MA,
+    respectively. The *d* parameter controls for level difference. If *d* = 1, it
+    amounts to first difference, and if it has a value of 0, that means that the model
+    is ARIMA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is possible to have a *d* greater than 1, but it’s not as common as having
+    a *d* of 1\. The ARIMA (p, 1, q) equation has the following structure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper X Subscript t Baseline equals alpha 1 d upper
+    X Subscript t minus 1 Baseline plus alpha 2 d upper X Subscript t minus 2 Baseline
+    ellipsis plus alpha Subscript p Baseline d upper X Subscript t minus p Baseline
+    plus epsilon Subscript t Baseline plus beta 1 epsilon Subscript t minus 1 Baseline
+    plus beta 2 epsilon Subscript t minus 2 Baseline ellipsis plus beta Subscript
+    q Baseline epsilon Subscript t minus q dollar-sign"><mrow><msub><mi>X</mi> <mi>t</mi></msub>
+    <mo>=</mo> <msub><mi>α</mi> <mn>1</mn></msub> <mi>d</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <msub><mi>α</mi> <mn>2</mn></msub> <mi>d</mi> <msub><mi>X</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>...</mo> <mo>+</mo> <msub><mi>α</mi> <mi>p</mi></msub> <mi>d</mi> <msub><mi>X</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>p</mi></mrow></msub> <mo>+</mo> <msub><mi>ϵ</mi>
+    <mi>t</mi></msub> <mo>+</mo> <msub><mi>β</mi> <mn>1</mn></msub> <msub><mi>ϵ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>+</mo> <msub><mi>β</mi>
+    <mn>2</mn></msub> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>...</mo> <mo>+</mo> <msub><mi>β</mi> <mi>q</mi></msub> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mi>q</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *d* refers to difference.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As it is a widely embraced and applicable model, let’s discuss the pros and
+    cons of the ARIMA model to get more familiar with it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pros
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARIMA allows us to work with raw data without considering if it is stationary.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It performs well with high-frequency data.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is less sensitive to the fluctuation in the data compared to other models.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cons
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARIMA might fail in capturing seasonality.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It works better with long series and short-term (daily, hourly) data.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: As no automatic updating occurs in ARIMA, no structural break during the analysis
+    period should be observed.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Having no adjustment in the ARIMA process leads to instability.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Now, let’s see how ARIMA works using the same stocks, namely Apple and Microsoft.
+    But this time, a different short-term lag structure is used to compare the result
+    with the AR and MA models:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the ARIMA model for Apple stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the ARIMA model to Apple’s stock price
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the ARIMA model for Microsoft stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_introduction_to_time_series_modeling_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the ARIMA model to Microsoft’s stock price
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_introduction_to_time_series_modeling_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the Apple stock prices based on ARIMA
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_introduction_to_time_series_modeling_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the Microsoft stock prices based on ARIMA
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_introduction_to_time_series_modeling_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forming index for predictions
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next snippet, resulting in [Figure 2-20](#arima_all), shows the result
+    of the prediction based on Apple’s and Microsoft’s stock price, and as we employ
+    the short-term orders from the AR and MA model, the result is not completely different:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![arima all](assets/mlfr_0220.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-20\. ARIMA prediction results
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'At this point, it is worthwhile to discuss an alternative method for optimum
+    lag selection for time series models. AIC is the method that I apply here to select
+    the proper number of lags. Please note that, even though the result of AIC suggests
+    (4, 0, 4), the model does not converge with these orders. So, (4, 1, 4) is applied
+    instead:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_introduction_to_time_series_modeling_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining a range for AR and MA orders
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_introduction_to_time_series_modeling_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining a range difference term
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_introduction_to_time_series_modeling_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying iteration over *p*, *d*, and *q*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_introduction_to_time_series_modeling_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating an empty list to store AIC values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_introduction_to_time_series_modeling_CO13-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the ARIMA model to fit Apple data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_introduction_to_time_series_modeling_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the ARIMA model with all possible lags
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_introduction_to_time_series_modeling_CO13-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing AIC values into a list
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_introduction_to_time_series_modeling_CO13-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Printing the lowest AIC value for Apple data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_introduction_to_time_series_modeling_CO13-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring and fitting the ARIMA model with optimum orders
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_introduction_to_time_series_modeling_CO13-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the ARIMA model with all possible lags for Microsoft data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_introduction_to_time_series_modeling_CO13-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the ARIMA model to Microsoft data with optimum orders
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](assets/12.png)](#co_introduction_to_time_series_modeling_CO13-14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting Apple and Microsoft stock prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Orders identified for Apple and Microsoft are (4, 1, 4) and (4, 2, 4), respectively.
+    ARIMA does a good job in predicting the stock prices as shown below. However,
+    please note that improper identification of the orders results in a poor fit,
+    and this, in turn, produces predictions that are far from being satisfactory.
+    The following code, resulting in [Figure 2-21](#arima_all_2), shows these results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![arima all](assets/mlfr_0221.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 2-21\. ARIMA prediction results
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Time series analysis has a central role in financial analysis. This is simply
+    because most financial data has a time dimension, and this type of data should
+    be modeled cautiously. This chapter worked out a first attempt at modeling data
+    with a time dimension, and to do so, we employed classical time series models,
+    namely MA, AR, and finally, ARIMA. But do you think that’s the whole story? Absolutely
+    not! In the next chapter, we will see how a time series can be modeled using deep
+    learning models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Articles cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Cavanaugh, J. E., and A. A. Neath. 2019\. “The Akaike Information Criterion:
+    Background, Derivation, Properties, Application, Interpretation, and Refinements.”
+    *Wiley Interdisciplinary Reviews: Computational Statistics* 11 (3): e1460.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Hurvich, Clifford M., and Chih-Ling Tsai. 1989\. “Regression and Time Series
+    Model Selection in Small Samples.” *Biometrika* 76 (2): 297-30.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Books cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Brockwell, Peter J., and Richard A. Davis. 2016\. *Introduction to Time Series
+    and Forecasting*. Springer.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Focardi, Sergio M. 1997\. *Modeling the Market: New Theories and Techniques*.
+    The Frank J. Fabozzi Series, Vol. 14\. New York: John Wiley and Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

@@ -1,0 +1,899 @@
+- en: Chapter 12\. Execution and Deployment
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Considerable progress is needed before autonomous vehicles can operate reliably
+    in mixed urban traffic, heavy rain and snow, unpaved and unmapped roads, and where
+    wireless access is unreliable.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Todd Litman (2020)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: An investment firm that engages in algorithmic trading shall have in place effective
+    systems and risk controls suitable to the business it operates to ensure that
+    its trading systems are resilient and have sufficient capacity, are subject to
+    appropriate trading thresholds and limits and prevent the sending of erroneous
+    orders or the systems otherwise functioning in a way that may create or contribute
+    to a disorderly market.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: MiFID II (Article 17)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Chapter 11](ch11.xhtml#risk_management) trains a trading bot in the form of
+    a financial Q-learning agent based on historical data. It introduces event-based
+    backtesting as an approach flexible enough to account for typical risk measures,
+    such as trailing stop loss orders or take profit targets. However, all this happens
+    asynchronously in a sandbox environment based on historical data only. As with
+    an autonomous vehicle (AV), there is the problem of deploying the AI in the real
+    world. For an AV this means combining the AI with the car hardware and deploying
+    the AV on test and public streets. For a trading bot this means connecting the
+    trading bot with a trading platform and deploying it such that orders are executed
+    automatically. In other words, the algorithmic side is clear—execution and deployment
+    now need to be added to implement algorithmic trading.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter introduces the [Oanda](http://oanda.com) trading platform for algorithmic
+    trading. Therefore, the focus is on the [v20 API](https://oreil.ly/TbGKN) of the
+    platform and not on applications that provide users with an interface for manual
+    trading. To simplify the code, the wrapper package [`tpqoa`](https://oreil.ly/72pWe)
+    is introduced and used. It relies on the [`v20`](https://oreil.ly/H_pIj) Python
+    package from Oanda and provides a more Pythonic user interface.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Oanda Account”](#ed_account) details the prerequisites to use a *demo account*
+    with Oanda. [“Data Retrieval”](#ed_data_retrieval) shows how to retrieve historical
+    and real-time (streaming) data from the API. [“Order Execution”](#ed_execution)
+    deals with the execution of buy and sell orders, potentially including other orders,
+    such as trailing stop loss orders. [“Trading Bot”](#ed_trading_bot) trains a trading
+    bot based on historical intraday data from Oanda and backtests its performance
+    in vectorized fashion. Finally, [“Deployment”](#ed_deployment) shows how to deploy
+    the trading bot in real-time and an automated fashion.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oanda Account
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The code in this chapter relies on the Python wrapper package [`tpqoa`](https://oreil.ly/72pWe).
+    This package can be installed via `pip` as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'To make use of this package, a demo account with [Oanda](http://oanda.com)
+    is sufficient. Once the account is open, an *access token* is generated on the
+    account page (after login). The access token and the *account id* (also found
+    on the account page) are then stored in a configuration text file as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'If the name of the configuration file is *aiif.cfg* and if it is stored in
+    the current working directory, then the `tpqoa` package can be used as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Risk Disclaimers and Disclosures
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Oanda is a platform for *foreign exchange* (FX) and *contracts for difference*
+    (CFD) trading. These instruments involve considerable risks, in particular when
+    traded with leverage. It is strongly recommended that you read all relevant risk
+    disclaimers and disclosures from Oanda on its [website](http://oanda.com) carefully
+    before moving on (check for the appropriate jurisdiction).
+  prefs: []
+  type: TYPE_NORMAL
+- en: All code and examples presented in this chapter are for technical illustration
+    only and do not constitute any investment advice or similar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data Retrieval
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'As usual, some Python imports and configurations come first:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Depending on the relevant jurisdiction of the account, Oanda offers a number
+    of tradable FX and CFD instruments. The following Python code retrieves the available
+    instruments for a given account:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `tpqoa` package
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an API object given the account credentials
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the list of available instruments in the format `(display_name,` `technical_name)`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_execution_and_deployment_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows a select few of these instruments
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oanda provides a wealth of historical data via its v20 API. The following examples
+    retrieve historical data for the EUR/USD currency pair—the granularity is set
+    to `D` (that is, *daily*).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 12-1](#figure_ed_01) plots the closing (ask) prices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the instrument…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …the starting date…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …the end date…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_execution_and_deployment_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …the granularity (`D` = daily)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_execution_and_deployment_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and the type of the price series (`A` = ask)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1201](Images/aiif_1201.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12-1\. Historical daily closing prices for EUR/USD from Oanda
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Intraday data is as easily retrieved and used as daily data, as the code that
+    follows shows. [Figure 12-2](#figure_ed_02) visualizes minute bar (mid) price
+    data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the granularity (`M1` = one minute)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and the type of the price series (`M` = mid)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1202](Images/aiif_1202.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12-2\. Historical one-minute bar closing prices for EUR/USD from Oanda
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Whereas historical data is important, for instance, to train and test a trading
+    bot, real-time (streaming) data is required to deploy such a bot for algorithmic
+    trading. `tpqoa` allows the synchronous streaming of real-time data for all available
+    instruments with a single method call. The method prints by default the time stamp
+    and the bid/ask prices. For algorithmic trading, this default behavior can be
+    adjusted, as [“Deployment”](#ed_deployment) shows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: Order Execution
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The AI of an AV needs to be able to control the physical vehicle. To this end
+    it sends different types of signals to the vehicle, for example, to accelerate,
+    break, turn left, or turn right. A trading bot needs to be able to place orders
+    with the trading platform. This section covers different types of orders, such
+    as market orders and stop loss orders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The most fundamental type of order is a *market order*. This order allows buying
+    or selling a financial instrument at the current market price (that is, the *ask
+    price* when buying and the *bid price* when selling). The following examples are
+    based on an account leverage of 20 and relatively small order sizes. Therefore,
+    liquidity issues, for example, do not play a role. When executing orders via the
+    Oanda v20 API, the API returns a detailed order object. First, a *buy market order*
+    is placed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a *buy market order* and prints the order object details
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows the `time`, `instrument`, `units`, `price`, and `pl` details
+    of the order
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second, the position is closed via a *sell market order* of the same size.
+    Whereas the first trade has a profit/loss (P&L) of zero by its nature—before accounting
+    for transaction costs—the second trade in general has a nonzero P&L:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Places a *sell market order* and prints the order object details
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows the `time`, `instrument`, `units`, `price`, and `pl` details
+    of the order
+  prefs: []
+  type: TYPE_NORMAL
+- en: Limit Orders
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers *market orders* as a type of base order only. With a market
+    order, buying or selling a financial instrument happens at the price that is current
+    when the order is placed. By contrast, a *limit order*, as the other main type
+    of base order, allows the placement of an order with a minimum price or a maximum
+    price. Only when the minimum/maximum price is reached is the order executed. Until
+    that point, no transaction takes place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, consider an example for the same combination of trades but this time
+    with a *stop loss* (SL) order. An SL order is treated as a separate (limit) order.
+    The following Python code places the orders and shows the details of the SL order
+    object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The SL distance is defined in currency units.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows the SL order object data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows some relevant details of the two order objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A *trailing stop loss* (TSL) order is handled in the same way. The only difference
+    is that there is no fixed price attached to a TSL order:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The TSL distance is defined in currency units.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows the TSL order object data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows some relevant details of the two order objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, here is a *take profit* (TP) order. This order requires a fixed TP
+    target price. Therefore, the following code uses the execution price from the
+    previous order to define the TP price in relative terms. Beyond this small difference,
+    the handling is again the same as before:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The TP target price is defined relative to the previous execution price.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows the TP order object data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects and shows some relevant details of the two order objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The code so far only deals with transaction details of single orders. However,
+    it is also of interest to have an overview of multiple *historical transactions*.
+    To this end, the following method call provides overview data for all the main
+    orders placed in this section, including P&L data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Yet another method call provides a snapshot of the *account details*. The details
+    shown are from an Oanda demo account that has been in use for quite some time
+    for technical testing purposes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: This concludes the discussion of the basics of executing orders with Oanda.
+    All elements are now together to support the deployment of a trading bot. The
+    remainder of this chapter trains a trading bot on Oanda data and deploys it in
+    automated fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trading Bot
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[Chapter 11](ch11.xhtml#risk_management) shows in detail how to train a deep
+    Q-learning trading bot and how to backtest it in vectorized and event-based fashion.
+    This section now repeats selected core steps in this regard based on historical
+    data from Oanda. [“Oanda Environment”](#ed_oanda_env) provides a Python module
+    that contains the environment class `OandaEnv` to work with Oanda data. It can
+    be used in the same way as the `Finance` class from [Chapter 11](ch11.xhtml#risk_management).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code instantiates the learning environment object. During
+    this step, the major data-related parameters driving the learning, validation,
+    and testing are fixed. The `OandaEnv` class allows the inclusion of leverage,
+    which is typical for FX and CFD trading. Leverage amplifies the realized returns,
+    thereby increasing the profit potential but also the loss risks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the granularity for the data to five seconds
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the price type to mid prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the set of features to be used
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_execution_and_deployment_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the window length for rolling statistics
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_execution_and_deployment_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the number of lags
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_execution_and_deployment_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the leverage
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_execution_and_deployment_CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the required minimum accuracy
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_execution_and_deployment_CO9-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the required minimum performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In a next step, the validation environment is instantiated, relying on the
+    parameters of the learning environment—apart from the time interval, for obvious
+    reasons. [Figure 12-3](#figure_ed_03) shows the closing prices of EUR/USD as used
+    in the learning, validation, and test environments (from left to right):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1203](Images/aiif_1203.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12-3\. Historical 30-second bar closing prices for EUR/USD from Oanda
+    (learning = left, validation = middle, testing = right)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Based on the Oanda environment, the trading bot from [Chapter 11](ch11.xhtml#risk_management)
+    can be trained and validated. The following Python code performs this task and
+    visualizes the performance results (see [Figure 12-4](#figure_ed_04)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `tradingbot` module from [Chapter 11](ch11.xhtml#risk_management)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trains and validates the trading bot based on Oanda data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the performance results
+  prefs: []
+  type: TYPE_NORMAL
+- en: As discussed in the previous two chapters, the training and validation performances
+    are just an indicator of the trading bot performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1204](Images/aiif_1204.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12-4\. Training and validation performance results of the trading bot
+    for Oanda data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The following code implements a vectorized backtest of the trading bot performance
+    for the test environment—again with the same parameters as the learning environment
+    apart from the time interval used. The code makes use of the function `backtest()`
+    as provided in the Python module presented in [“Vectorized Backtesting”](#ed_backtest).
+    The reported performance numbers include a leverage of 20\. This holds true for
+    both the gross performance of the passive benchmark investment and the trading
+    bot over time, as shown in [Figure 12-5](#figure_ed_05):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the total number of long and short positions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the number of trades required to implement the strategy
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the gross performance including leverage
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_execution_and_deployment_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the net performance including leverage
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_execution_and_deployment_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the gross performance over time including leverage
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1205](Images/aiif_1205.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12-5\. Gross performance of the passive benchmark investment and the
+    trading bot over time (including leverage)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Simplified Backtesting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The training and backtesting of the trading bot in this section happen under
+    assumptions that are not realistic. The trading strategy based on the 30-second
+    bars might lead to a large number of trades over a short period of time. Assuming
+    typical transaction costs (bid-ask spreads), such a strategy often is not economically
+    viable. Longer bars or a strategy with fewer trades would be more realistic. However,
+    to allow for a “quick” deployment demo in the next section, the training and backtest
+    are implemented intentionally on the relatively short 30-second bars.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deployment
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This section combines the major elements of the previous sections to deploy
+    the trained trading bot in automated fashion. This is comparable to the point
+    in time at which an AV is prepared to be deployed on the streets. The class `OandaTradingBot`
+    presented in the following code inherits from the `tpqoa` class and adds some
+    helper functions and the trading logic:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For demonstration, the normalization is done with the real-time data statistics.^([1](ch12.xhtml#idm45625242073656))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Collects the tick data and resamples it to the required granularity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Returns the current state of the financial market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_execution_and_deployment_CO12-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Collects the P&L figures for every trade.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_execution_and_deployment_CO12-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the cumulative P&L for all trades.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_execution_and_deployment_CO12-14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicts the market direction and derives the signal (position).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_execution_and_deployment_CO12-17)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether the conditions for a *long position* (buy order) are met.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_execution_and_deployment_CO12-18)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether the conditions for a *short position* (sell order) are met.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The application of this class is straightforward. First, an object is instantiated,
+    providing as the major input the trained trading bot `agent` from the previous
+    section. Second, the streaming for the instrument to be traded needs to be started.
+    Whenever new tick data arrives, the `.on_success()` method is called, which contains
+    the main logic for both the processing of the tick data and the placement of trades.
+    To speed things up a bit, the deployment example relies, as did the backtesting
+    before, on 30-second bars. In a production context, when managing real money,
+    a longer time interval might be the better choice—if only to reduce the number
+    of trades and therewith the transaction costs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the `OandaTradingBot` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Starts the streaming of the real-time data and the trading
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the final position after a certain number of ticks retrieved
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'During the deployment, P&L figures are collected in the `pl` attribute, which
+    is a `list` object. Once the trading has stopped, the P&L figures can be analyzed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: P&L figures for all trades
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cumulative P&L figures
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simple deployment example illustrates that one can trade algorithmically
+    and in automated fashion with a deep Q-learning trading bot in less than 100 lines
+    of Python code. The major prerequisite is the trained trading bot (i.e., an instance
+    of the `tradingbot` class). Many important aspects are intentionally left out
+    here. For example, in a production environment, one would probably like to persist
+    the data. One would also like to persist the order objects. Measures to make sure
+    that the socket connection is still alive are also important (for example, by
+    monitoring a heartbeat). Overall, security, reliability, logging, and monitoring
+    are not really addressed. Some more details in this regard are provided in Hilpisch
+    (2020).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Python script in [“Oanda Trading Bot”](#ed_otb) presents a standalone executable
+    version of the `OandaTradingBot` class. This represents a major step toward a
+    more robust deployment option as compared to an interactive context such as Jupyter
+    Notebook or Jupyter Lab. The script also includes functionality to add SL, TSL,
+    or TP orders for the execution. The script expects a pickled version of the `agent`
+    object in the current working directory. The following Python code pickles the
+    object for later usage by the script:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This chapter discusses central aspects of the execution of an algorithmic trading
+    strategy and the deployment of a trading bot. The Oanda trading platform provides
+    directly or indirectly with its v20 API all necessary capabilities to do the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieve historical data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Train and backtest a trading bot (deep Q-learning agent)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Stream real-time data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Place market (and limit) orders
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Make use of SL, TSL, and TP orders
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Deploy a trading bot in an automated manner
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The prerequisites to implement all these steps are a demo account with Oanda,
+    standard hardware and software (open source only), and a stable internet connection.
+    In other words, the barriers of entry to algorithmic trading for the purposes
+    of exploiting economic inefficiencies are pretty low. This is in stark contrast,
+    for example, to the training, design, and construction of AVs for deployment on
+    public streets—the budgets of companies in the AV space run into the billions
+    of dollars. In other words, the finance domain has distinctive advantages compared
+    to other industries and domains with regard to the real-world deployment of AI
+    agents, such as trading bots, as focused on in this and the previous chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2020\. *Python for Algorithmic Trading: From Idea to Cloud
+    Deployment.* Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Litman, Todd. 2020\. “Autonomous Vehicle Implementation Predictions.” *Victoria
+    Transport Policy Institute*. [*https://oreil.ly/ds7YM*](https://oreil.ly/ds7YM).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Code
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section contains code used and referenced in the main body of the chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oanda Environment
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python module with the `OandaEnv` class to train a trading
+    bot based on historical Oanda data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_execution_and_deployment_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the path for the data file
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_execution_and_deployment_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the filename of the data file
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_execution_and_deployment_CO15-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the data if a corresponding data file exists
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_execution_and_deployment_CO15-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the data for the API if no such file exists
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_execution_and_deployment_CO15-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writes the data as a `CSV` file to disk
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_execution_and_deployment_CO15-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the column with the closing prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_execution_and_deployment_CO15-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Renames the column to the instrument name (symbol)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_execution_and_deployment_CO15-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward for correct prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_execution_and_deployment_CO15-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward for the realized performance (return)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](Images/10.png)](#co_execution_and_deployment_CO15-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combined reward for prediction and performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized Backtesting
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python module with the helper function `backtest` to generate
+    the data to do a vectorized backtest for a deep Q-learning trading bot. The code
+    is also used in [Chapter 11](ch11.xhtml#risk_management):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: Oanda Trading Bot
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following is the Python script with the `OandaTradingBot` class and code
+    to deploy the class:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch12.xhtml#idm45625242073656-marker)) This little trick leads more quickly
+    to trades in this particular context given the data used. For real deployment,
+    the statistics from the learning environment data are to be used for the normalization.
+  prefs: []
+  type: TYPE_NORMAL

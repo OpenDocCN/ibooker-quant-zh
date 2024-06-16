@@ -1,0 +1,1785 @@
+- en: Chapter 10\. Automating Trading Operations
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: People worry that computers will get too smart and take over the world, but
+    the real problem is that they’re too stupid and they’ve already taken over the
+    world.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Pedro Domingos
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: “Now what?” you might think. The trading platform that allows one to retrieve
+    historical data and streaming data is available. It allows one to place buy and
+    sell orders and to check the account status. A number of different methods have
+    been introduced in this book to derive algorithmic trading strategies by predicting
+    the direction of market price movements. You may ask, “How, after all, can this
+    all be put together to work in automated fashion?” This cannot be answered in
+    any generality. However, this chapter addresses a number of topics that are important
+    in this context. The chapter assumes that a single automated, algorithmic trading
+    strategy is to be deployed. This simplifies, for example, aspects like capital
+    and risk management.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The chapter covers the following topics. [“Capital Management”](#auto_capital)
+    discusses the *Kelly criterion*. Depending on the strategy characteristics and
+    the trading capital available, the Kelly criterion helps with sizing the trades.
+    To gain confidence in an algorithmic trading strategy, the strategy needs to be
+    backtested thoroughly with regard to both performance and risk characteristics.
+    [“ML-Based Trading Strategy”](#auto_strat) backtests an example strategy based
+    on a classification algorithm from machine learning (ML), as introduced in [“Trading
+    Strategies”](ch01.html#trading_strategies). To deploy the algorithmic trading
+    strategy for automated trading, it needs to be translated into an online algorithm
+    that works with incoming streaming data in real time. [“Online Algorithm”](#auto_online)
+    covers the transformation of an *offline* algorithm into an *online* algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Infrastructure and Deployment”](#auto_infra_deploy) then sets out to make
+    sure that the automated, algorithmic trading strategy runs robustly and reliably
+    in the cloud. Not all topics of relevance can be covered in detail, but *cloud
+    deployment* seems to be the only viable option from an availability, performance,
+    and security point of view in this context. [“Logging and Monitoring”](#auto_logg_monit)
+    covers logging and monitoring. Logging is important in order to be able to analyze
+    the history and certain events during the deployment of an automated trading strategy.
+    Monitoring via socket communication, as introduced in [Chapter 7](ch07.html#realtime_sockets),
+    allows one to observe events remotely in real time. The chapter concludes with
+    [“Visual Step-by-Step Overview”](#viz_summary), which provides a visual summary
+    of the core steps for the automated deployment of algorithmic trading strategies
+    in the cloud.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Capital Management
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A central question in algorithmic trading is how much capital to deploy to a
+    given algorithmic trading strategy given the total available capital. The answer
+    to this question depends on the main goal one is trying to achieve by algorithmic
+    trading. Most individuals and financial institutions will agree that the *maximization
+    of long-term wealth* is a good candidate objective. This is what Edward Thorp
+    had in mind when he derived the *Kelly criterion* to investing, as described in
+    Rotando and Thorp (1992). Simply speaking, the Kelly criterion allows for an explicit
+    calculation of the fraction of the available capital a trader should deploy to
+    a strategy, given its statistical return characteristics.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Kelly Criterion in Binomial Setting
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The common way of introducing the theory of the Kelly criterion to investing
+    is on the basis of a coin tossing game or, more generally, a binomial setting
+    (only two outcomes are possible). This section follows that path. Assume a gambler
+    is playing a coin tossing game against an infinitely rich bank or casino. Assume
+    further that the probability for heads is some value <math alttext="p"><mi>p</mi></math>
+    for which the following holds:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="one-half less-than p less-than 1" display="block"><mrow><mfrac><mn>1</mn>
+    <mn>2</mn></mfrac> <mo><</mo> <mi>p</mi> <mo><</mo> <mn>1</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Probability for tails is defined by the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="q equals 1 minus p less-than one-half" display="block"><mrow><mi>q</mi>
+    <mo>=</mo> <mn>1</mn> <mo>-</mo> <mi>p</mi> <mo><</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The gambler can place bets <math alttext="b greater-than 0"><mrow><mi>b</mi>
+    <mo>></mo> <mn>0</mn></mrow></math> of arbitrary size, whereby the gambler wins
+    the same amount if right and loses it all if wrong. Given the assumptions about
+    the probabilities, the gambler would of course want to bet on heads.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Therefore, the expected value for this betting game <math alttext="upper B"><mi>B</mi></math>
+    (that is, the random variable representing this game) in a one-shot setting is
+    as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E left-parenthesis upper B right-parenthesis equals
+    p dot b minus q dot b equals left-parenthesis p minus q right-parenthesis dot
+    b greater-than 0" display="block"><mrow><mi>𝐄</mi> <mo>(</mo> <mi>B</mi> <mo>)</mo>
+    <mo>=</mo> <mi>p</mi> <mo>·</mo> <mi>b</mi> <mo>-</mo> <mi>q</mi> <mo>·</mo> <mi>b</mi>
+    <mo>=</mo> <mo>(</mo> <mi>p</mi> <mo>-</mo> <mi>q</mi> <mo>)</mo> <mo>·</mo> <mi>b</mi>
+    <mo>></mo> <mn>0</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A risk-neutral gambler with unlimited funds would like to bet as large an amount
+    as possible since this would maximize the expected payoff. However, trading in
+    financial markets is not a one-shot game in general. It is a repeated game. Therefore,
+    assume that <math alttext="b Subscript i"><msub><mi>b</mi> <mi>i</mi></msub></math>
+    represents the amount that is bet on day <math alttext="i"><mi>i</mi></math> and
+    that <math alttext="c 0"><msub><mi>c</mi> <mn>0</mn></msub></math> represents
+    the initial capital. The capital <math alttext="c 1"><msub><mi>c</mi> <mn>1</mn></msub></math>
+    at the end of day one depends on the betting success on that day and might be
+    either <math alttext="c 0 plus b 1"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo>
+    <msub><mi>b</mi> <mn>1</mn></msub></mrow></math> or <math alttext="c 0 minus b
+    1"><mrow><msub><mi>c</mi> <mn>0</mn></msub> <mo>-</mo> <msub><mi>b</mi> <mn>1</mn></msub></mrow></math>
+    . The expected value for a gamble that is repeated <math alttext="n"><mi>n</mi></math>
+    times then is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E left-parenthesis upper B Superscript n Baseline
+    right-parenthesis equals c 0 plus sigma-summation Underscript i equals 1 Overscript
+    n Endscripts left-parenthesis p minus q right-parenthesis dot b Subscript i" display="block"><mrow><mi>𝐄</mi>
+    <mrow><mo>(</mo> <msup><mi>B</mi> <mi>n</mi></msup> <mo>)</mo></mrow> <mo>=</mo>
+    <msub><mi>c</mi> <mn>0</mn></msub> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></munderover> <mrow><mo>(</mo> <mi>p</mi> <mo>-</mo> <mi>q</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <msub><mi>b</mi> <mi>i</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In classical economic theory, with risk-neutral, expected utility-maximizing
+    agents, a gambler would try to maximize the preceding expression. It is easily
+    seen that it is maximized by betting all available funds, <math alttext="b Subscript
+    i Baseline equals c Subscript i minus 1"><mrow><msub><mi>b</mi> <mi>i</mi></msub>
+    <mo>=</mo> <msub><mi>c</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math>
+    , like in the one-shot scenario. However, this in turn implies that a single loss
+    will wipe out all available funds and will lead to ruin (unless unlimited borrowing
+    is possible). Therefore, this strategy does not lead to a maximization of long-term
+    wealth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'While betting the maximum capital available might lead to sudden ruin, betting
+    nothing at all avoids any kind of loss but does not benefit from the advantageous
+    gamble either. This is where the Kelly criterion comes into play since it derives
+    the *optimal fraction* <math alttext="f Superscript asterisk"><msup><mi>f</mi>
+    <mo>*</mo></msup></math> of the available capital to bet per round of betting.
+    Assume that <math alttext="n equals h plus t"><mrow><mi>n</mi> <mo>=</mo> <mi>h</mi>
+    <mo>+</mo> <mi>t</mi></mrow></math> where <math alttext="h"><mi>h</mi></math>
+    stands for the number of heads observed during <math alttext="n"><mi>n</mi></math>
+    rounds of betting and where <math alttext="t"><mi>t</mi></math> stands for the
+    number of tails. With these definitions, the available capital after <math alttext="n"><mi>n</mi></math>
+    rounds is the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c Subscript n Baseline equals c 0 dot left-parenthesis 1 plus
+    f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus f right-parenthesis
+    Superscript t" display="block"><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mo>=</mo>
+    <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>h</mi></msup> <mo>·</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>t</mi></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In such a context, long-term wealth maximization boils down to maximizing the
+    average geometric growth rate per bet which is given as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column r Superscript g 2nd Column equals
+    log left-parenthesis StartFraction c Subscript n Baseline Over c 0 EndFraction
+    right-parenthesis Superscript 1 slash n Baseline 2nd Row 1st Column Blank 2nd
+    Column equals log left-parenthesis StartFraction c 0 dot left-parenthesis 1 plus
+    f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus f right-parenthesis
+    Superscript t Baseline Over c 0 EndFraction right-parenthesis Superscript 1 slash
+    n Baseline 3rd Row 1st Column Blank 2nd Column equals log left-parenthesis left-parenthesis
+    1 plus f right-parenthesis Superscript h Baseline dot left-parenthesis 1 minus
+    f right-parenthesis Superscript t Baseline right-parenthesis Superscript 1 slash
+    n Baseline 4th Row 1st Column Blank 2nd Column equals StartFraction h Over n EndFraction
+    log left-parenthesis 1 plus f right-parenthesis plus StartFraction t Over n EndFraction
+    log left-parenthesis 1 minus f right-parenthesis EndLayout" display="block"><mtable
+    displaystyle="true"><mtr><mtd columnalign="right"><msup><mi>r</mi> <mi>g</mi></msup></mtd>
+    <mtd columnalign="left"><mrow><mo>=</mo> <mo form="prefix">log</mo> <msup><mfenced
+    close=")" open="(" separators=""><mfrac><msub><mi>c</mi> <mi>n</mi></msub> <msub><mi>c</mi>
+    <mn>0</mn></msub></mfrac></mfenced> <mrow><mn>1</mn><mo>/</mo><mi>n</mi></mrow></msup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mo form="prefix">log</mo> <msup><mfenced
+    close=")" open="(" separators=""><mfrac><mrow><msub><mi>c</mi> <mn>0</mn></msub>
+    <mo>·</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>h</mi></msup> <mo>·</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>t</mi></msup></mrow> <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced>
+    <mrow><mn>1</mn><mo>/</mo><mi>n</mi></mrow></msup></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mo>=</mo> <mo form="prefix">log</mo> <msup><mfenced
+    close=")" open="(" separators=""><msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>h</mi></msup> <mo>·</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow>
+    <mi>t</mi></msup></mfenced> <mrow><mn>1</mn><mo>/</mo><mi>n</mi></mrow></msup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mi>h</mi> <mi>n</mi></mfrac>
+    <mo form="prefix">log</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo></mrow>
+    <mo>+</mo> <mfrac><mi>t</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The problem then formally is to maximize the *expected* average rate of growth
+    by choosing <math alttext="f"><mi>f</mi></math> optimally. With <math alttext="bold
+    upper E left-parenthesis h right-parenthesis equals n dot p"><mrow><mi>𝐄</mi>
+    <mo>(</mo> <mi>h</mi> <mo>)</mo> <mo>=</mo> <mi>n</mi> <mo>·</mo> <mi>p</mi></mrow></math>
+    and <math alttext="bold upper E left-parenthesis t right-parenthesis equals n
+    dot q"><mrow><mi>𝐄</mi> <mo>(</mo> <mi>t</mi> <mo>)</mo> <mo>=</mo> <mi>n</mi>
+    <mo>·</mo> <mi>q</mi></mrow></math> , one gets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column bold upper E left-parenthesis
+    r Superscript g Baseline right-parenthesis 2nd Column equals bold upper E left-parenthesis
+    StartFraction h Over n EndFraction log left-parenthesis 1 plus f right-parenthesis
+    plus StartFraction t Over n EndFraction log left-parenthesis 1 minus f right-parenthesis
+    right-parenthesis 2nd Row 1st Column Blank 2nd Column equals bold upper E left-parenthesis
+    p log left-parenthesis 1 plus f right-parenthesis plus q log left-parenthesis
+    1 minus f right-parenthesis right-parenthesis 3rd Row 1st Column Blank 2nd Column
+    equals p log left-parenthesis 1 plus f right-parenthesis plus q log left-parenthesis
+    1 minus f right-parenthesis 4th Row 1st Column Blank 2nd Column identical-to upper
+    G left-parenthesis f right-parenthesis EndLayout" display="block"><mtable displaystyle="true"><mtr><mtd
+    columnalign="right"><mrow><mi>𝐄</mi> <mo>(</mo> <msup><mi>r</mi> <mi>g</mi></msup>
+    <mo>)</mo></mrow></mtd> <mtd columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mfenced
+    close=")" open="(" separators=""><mfrac><mi>h</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>+</mo>
+    <mfrac><mi>t</mi> <mi>n</mi></mfrac> <mo form="prefix">log</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mfenced></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mo>(</mo> <mi>p</mi>
+    <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi> <mo>)</mo>
+    <mo>+</mo> <mi>q</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>f</mi> <mo>)</mo> <mo>)</mo></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>=</mo>
+    <mi>p</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>f</mi>
+    <mo>)</mo> <mo>+</mo> <mi>q</mi> <mo form="prefix">log</mo> <mo>(</mo> <mn>1</mn>
+    <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>≡</mo>
+    <mi>G</mi> <mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One can now maximize the term by choosing the optimal fraction <math alttext="f
+    Superscript asterisk"><msup><mi>f</mi> <mo>*</mo></msup></math> according to the
+    first order condition. The first derivative is given by the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column upper G prime left-parenthesis
+    f right-parenthesis 2nd Column equals StartFraction p Over 1 plus f EndFraction
+    minus StartFraction q Over 1 minus f EndFraction 2nd Row 1st Column Blank 2nd
+    Column equals StartFraction p minus p f minus q minus q f Over left-parenthesis
+    1 plus f right-parenthesis left-parenthesis 1 minus f right-parenthesis EndFraction
+    3rd Row 1st Column Blank 2nd Column equals StartFraction p minus q minus f Over
+    left-parenthesis 1 plus f right-parenthesis left-parenthesis 1 minus f right-parenthesis
+    EndFraction EndLayout" display="block"><mtable displaystyle="true"><mtr><mtd columnalign="right"><mrow><msup><mi>G</mi>
+    <mo>'</mo></msup> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd> <mtd
+    columnalign="left"><mrow><mo>=</mo> <mfrac><mi>p</mi> <mrow><mn>1</mn><mo>+</mo><mi>f</mi></mrow></mfrac>
+    <mo>-</mo> <mfrac><mi>q</mi> <mrow><mn>1</mn><mo>-</mo><mi>f</mi></mrow></mfrac></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mrow><mi>p</mi><mo>-</mo><mi>p</mi><mi>f</mi><mo>-</mo><mi>q</mi><mo>-</mo><mi>q</mi><mi>f</mi></mrow>
+    <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow></mfrac></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mrow><mi>p</mi><mo>-</mo><mi>q</mi><mo>-</mo><mi>f</mi></mrow>
+    <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>f</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow></mfrac></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From the first order condition, one gets the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper G prime left-parenthesis f right-parenthesis ModifyingAbove
+    equals With factorial 0 right double arrow f Superscript asterisk Baseline equals
+    p minus q" display="block"><mrow><msup><mi>G</mi> <mo>'</mo></msup> <mrow><mo>(</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mover accent="true"><mo>=</mo> <mo>!</mo></mover>
+    <mn>0</mn> <mo>⇒</mo> <msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo> <mi>p</mi>
+    <mo>-</mo> <mi>q</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: If one trusts this to be the maximum (and not the minimum), this result implies
+    that it is optimal to invest a fraction <math alttext="f Superscript asterisk
+    Baseline equals p minus q"><mrow><msup><mi>f</mi> <mo>*</mo></msup> <mo>=</mo>
+    <mi>p</mi> <mo>-</mo> <mi>q</mi></mrow></math> per round of betting. With, for
+    example, <math alttext="p equals"><mrow><mi>p</mi> <mo>=</mo></mrow></math> 0.55,
+    one has <math alttext="f Superscript asterisk Baseline equals"><mrow><msup><mi>f</mi>
+    <mo>*</mo></msup> <mo>=</mo></mrow></math> 0.55 - 0.45 = 0.1, or that the optimal
+    fraction is 10%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code formalizes these concepts and results through simulation.
+    First, some imports and configurations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The idea is to simulate, for example, 50 series with 100 coin tosses per series.
+    The Python code for this is straightforward:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the probability for heads.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the optimal fraction according to the Kelly criterion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of series to be simulated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of trials per series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The major part is the Python function `run_simulation()`, which achieves the
+    simulation according to the preceding assumptions. [Figure 10-1](#auto_plot_01)
+    shows the simulation results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an `ndarray` object to store the simulation results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Initializes the starting capital with 100.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Outer loop for the series simulations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Inner loop for the series itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulates the tossing of a coin.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_automating_trading_operations_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If `1` or heads…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_automating_trading_operations_CO2-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …then add the win to the capital.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_automating_trading_operations_CO2-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If `0` or tails…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_automating_trading_operations_CO2-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …subtract the loss from the capital.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_automating_trading_operations_CO2-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This runs the simulation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_automating_trading_operations_CO2-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots all 50 series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](assets/12.png)](#co_automating_trading_operations_CO2-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the average over all 50 series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1001](assets/pfat_1001.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-1\. 50 simulated series with 100 trials each (red line = average)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The following code repeats the simulation for different values of <math alttext="f"><mi>f</mi></math>
+    . As shown in [Figure 10-2](#auto_plot_02), a lower fraction leads to a lower
+    growth rate on average. Higher values might lead both to a higher average capital
+    at the end of the simulation ( <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
+    0.25) or lead to a much lower average capital ( <math alttext="f equals"><mrow><mi>f</mi>
+    <mo>=</mo></mrow></math> 0.5]). In both cases where the fraction <math alttext="f"><mi>f</mi></math>
+    is higher, the volatility increases considerably:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulation with <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
+    0.05.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulation with <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
+    0.25.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulation with <math alttext="f equals"><mrow><mi>f</mi> <mo>=</mo></mrow></math>
+    0.5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1002](assets/pfat_1002.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-2\. Average capital over time for different values of <math alttext="f"><mi>f</mi></math>
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Kelly Criterion for Stocks and Indices
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Assume now a stock market setting in which the relevant stock (index) can take
+    on only two values after a period of one year from today, given its known value
+    today. The setting is again binomial but this time a bit closer on the modeling
+    side to stock market realities.^([1](ch10.html#idm45785342245112)) Specifically,
+    assume the following holds true:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P left-parenthesis r Superscript upper S Baseline equals
+    mu plus sigma right-parenthesis equals upper P left-parenthesis r Superscript
+    upper S Baseline equals mu minus sigma right-parenthesis equals one-half" display="block"><mrow><mi>P</mi>
+    <mfenced close=")" open="(" separators=""><msup><mi>r</mi> <mi>S</mi></msup> <mo>=</mo>
+    <mi>μ</mi> <mo>+</mo> <mi>σ</mi></mfenced> <mo>=</mo> <mi>P</mi> <mfenced close=")"
+    open="(" separators=""><msup><mi>r</mi> <mi>S</mi></msup> <mo>=</mo> <mi>μ</mi>
+    <mo>-</mo> <mi>σ</mi></mfenced> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here, <math alttext="bold upper E left-parenthesis r Superscript upper S Baseline
+    right-parenthesis equals mu greater-than 0"><mrow><mi>𝐄</mi> <mo>(</mo> <msup><mi>r</mi>
+    <mi>S</mi></msup> <mo>)</mo> <mo>=</mo> <mi>μ</mi> <mo>></mo> <mn>0</mn></mrow></math>
+    is the the expected return of the stock over one year, and <math alttext="sigma
+    greater-than 0"><mrow><mi>σ</mi> <mo>></mo> <mn>0</mn></mrow></math> is the standard
+    deviation of returns (volatility). In a one-period setting, one gets the following
+    for the available capital after one year (with <math alttext="c 0"><msub><mi>c</mi>
+    <mn>0</mn></msub></math> and <math alttext="f"><mi>f</mi></math> defined as before):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c left-parenthesis f right-parenthesis equals c 0 dot left-parenthesis
+    1 plus left-parenthesis 1 minus f right-parenthesis dot r plus f dot r Superscript
+    upper S Baseline right-parenthesis" display="block"><mrow><mi>c</mi> <mrow><mo>(</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo>
+    <mfenced close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mi>r</mi> <mo>+</mo>
+    <mi>f</mi> <mo>·</mo> <msup><mi>r</mi> <mi>S</mi></msup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here, <math alttext="r"><mi>r</mi></math> is the constant short rate earned
+    on cash not invested in the stock. Maximizing the geometric growth rate means
+    maximizing the term:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper G left-parenthesis f right-parenthesis equals bold upper
+    E left-parenthesis log StartFraction c left-parenthesis f right-parenthesis Over
+    c 0 EndFraction right-parenthesis" display="block"><mrow><mi>G</mi> <mrow><mo>(</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="("
+    separators=""><mo form="prefix">log</mo> <mfrac><mrow><mi>c</mi><mo>(</mo><mi>f</mi><mo>)</mo></mrow>
+    <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Assume now that there are <math alttext="n"><mi>n</mi></math> relevant trading
+    days in the year so that for each such trading day <math alttext="i"><mi>i</mi></math>
+    the following holds true:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P left-parenthesis r Subscript i Superscript upper S Baseline
+    equals StartFraction mu Over n EndFraction plus StartFraction sigma Over StartRoot
+    n EndRoot EndFraction right-parenthesis equals upper P left-parenthesis r Subscript
+    i Superscript upper S Baseline equals StartFraction mu Over n EndFraction minus
+    StartFraction sigma Over StartRoot n EndRoot EndFraction right-parenthesis equals
+    one-half" display="block"><mrow><mi>P</mi> <mfenced close=")" open="(" separators=""><msubsup><mi>r</mi>
+    <mi>i</mi> <mi>S</mi></msubsup> <mo>=</mo> <mfrac><mi>μ</mi> <mi>n</mi></mfrac>
+    <mo>+</mo> <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced> <mo>=</mo>
+    <mi>P</mi> <mfenced close=")" open="(" separators=""><msubsup><mi>r</mi> <mi>i</mi>
+    <mi>S</mi></msubsup> <mo>=</mo> <mfrac><mi>μ</mi> <mi>n</mi></mfrac> <mo>-</mo>
+    <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced> <mo>=</mo> <mfrac><mn>1</mn>
+    <mn>2</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Note that volatility scales with the square root of the number of trading days.
+    Under these assumptions, the daily values scale up to the yearly ones from before
+    and one gets the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="c Subscript n Baseline left-parenthesis f right-parenthesis equals
+    c 0 dot product Underscript i equals 1 Overscript n Endscripts left-parenthesis
+    1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction r Over n
+    EndFraction plus f dot r Subscript i Superscript upper S Baseline right-parenthesis"
+    display="block"><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mrow><mo>(</mo> <mi>f</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>c</mi> <mn>0</mn></msub> <mo>·</mo> <munderover><mo>∏</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></munderover> <mfenced close=")"
+    open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac> <mo>+</mo>
+    <mi>f</mi> <mo>·</mo> <msubsup><mi>r</mi> <mi>i</mi> <mi>S</mi></msubsup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One now has to maximize the following quantity to achieve maximum long-term
+    wealth when investing in the stock:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column upper G Subscript n Baseline left-parenthesis
+    f right-parenthesis 2nd Column equals bold upper E left-parenthesis log StartFraction
+    c Subscript n Baseline left-parenthesis f right-parenthesis Over c 0 EndFraction
+    right-parenthesis 2nd Row 1st Column Blank 2nd Column equals bold upper E left-parenthesis
+    sigma-summation Underscript i equals 1 Overscript n Endscripts log left-parenthesis
+    1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction r Over n
+    EndFraction plus f dot r Subscript i Superscript upper S Baseline right-parenthesis
+    right-parenthesis 3rd Row 1st Column Blank 2nd Column equals one-half sigma-summation
+    Underscript i equals 1 Overscript n Endscripts log left-parenthesis 1 plus left-parenthesis
+    1 minus f right-parenthesis dot StartFraction r Over n EndFraction plus f dot
+    left-parenthesis StartFraction mu Over n EndFraction plus StartFraction sigma
+    Over StartRoot n EndRoot EndFraction right-parenthesis right-parenthesis 4th Row
+    1st Column Blank 2nd Column plus log left-parenthesis 1 plus left-parenthesis
+    1 minus f right-parenthesis dot StartFraction r Over n EndFraction plus f dot
+    left-parenthesis StartFraction mu Over n EndFraction minus StartFraction sigma
+    Over StartRoot n EndRoot EndFraction right-parenthesis right-parenthesis 5th Row
+    1st Column Blank 2nd Column equals StartFraction n Over 2 EndFraction log left-parenthesis
+    left-parenthesis 1 plus left-parenthesis 1 minus f right-parenthesis dot StartFraction
+    r Over n EndFraction plus f dot StartFraction mu Over n EndFraction right-parenthesis
+    squared minus StartFraction f squared sigma squared Over n EndFraction right-parenthesis
+    EndLayout" display="block"><mtable displaystyle="true"><mtr><mtd columnalign="right"><mrow><msub><mi>G</mi>
+    <mi>n</mi></msub> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow></mrow></mtd> <mtd
+    columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="(" separators=""><mo
+    form="prefix">log</mo> <mfrac><mrow><msub><mi>c</mi> <mi>n</mi></msub> <mrow><mo>(</mo><mi>f</mi><mo>)</mo></mrow></mrow>
+    <msub><mi>c</mi> <mn>0</mn></msub></mfrac></mfenced></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mo>=</mo> <mi>𝐄</mi> <mfenced close=")" open="(" separators=""><munderover><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></munderover> <mo form="prefix">log</mo>
+    <mfenced close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi>
+    <mi>n</mi></mfrac> <mo>+</mo> <mi>f</mi> <mo>·</mo> <msubsup><mi>r</mi> <mi>i</mi>
+    <mi>S</mi></msubsup></mfenced></mfenced></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mo>=</mo>
+    <mfrac><mn>1</mn> <mn>2</mn></mfrac> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>n</mi></munderover> <mo form="prefix">log</mo> <mfenced close=")" open="("
+    separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>f</mi>
+    <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac> <mo>+</mo> <mi>f</mi>
+    <mo>·</mo> <mfenced close=")" open="(" separators=""><mfrac><mi>μ</mi> <mi>n</mi></mfrac>
+    <mo>+</mo> <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mfenced></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>+</mo> <mo form="prefix">log</mo> <mfenced
+    close=")" open="(" separators=""><mn>1</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn>
+    <mo>-</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>·</mo> <mfrac><mi>r</mi> <mi>n</mi></mfrac>
+    <mo>+</mo> <mi>f</mi> <mo>·</mo> <mfenced close=")" open="(" separators=""><mfrac><mi>μ</mi>
+    <mi>n</mi></mfrac> <mo>-</mo> <mfrac><mi>σ</mi> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mfenced></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mo>=</mo> <mfrac><mi>n</mi> <mn>2</mn></mfrac>
+    <mo form="prefix">log</mo> <mfenced close=")" open="(" separators=""><msup><mfenced
+    close=")" open="(" separators=""><mn>1</mn><mo>+</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>f</mi><mo>)</mo></mrow><mo>·</mo><mfrac><mi>r</mi>
+    <mi>n</mi></mfrac><mo>+</mo><mi>f</mi><mo>·</mo><mfrac><mi>μ</mi> <mi>n</mi></mfrac></mfenced>
+    <mn>2</mn></msup> <mo>-</mo> <mfrac><mrow><msup><mi>f</mi> <mn>2</mn></msup> <msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mfenced></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using a [Taylor series expansion](https://oreil.ly/xX4tA), one finally arrives
+    at the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper G Subscript n Baseline left-parenthesis f right-parenthesis
+    equals r plus left-parenthesis mu minus r right-parenthesis dot f minus StartFraction
+    sigma squared Over 2 EndFraction dot f squared plus script upper O left-parenthesis
+    StartFraction 1 Over StartRoot n EndRoot EndFraction right-parenthesis" display="block"><mrow><msub><mi>G</mi>
+    <mi>n</mi></msub> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>r</mi>
+    <mo>+</mo> <mrow><mo>(</mo> <mi>μ</mi> <mo>-</mo> <mi>r</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <mi>f</mi> <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac>
+    <mo>·</mo> <msup><mi>f</mi> <mn>2</mn></msup> <mo>+</mo> <mi>𝒪</mi> <mfenced close=")"
+    open="(" separators=""><mfrac><mn>1</mn> <msqrt><mi>n</mi></msqrt></mfrac></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Or for infinitely many trading points in time (that is, for continuous trading),
+    one arrives at the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper G Subscript normal infinity Baseline left-parenthesis f
+    right-parenthesis equals r plus left-parenthesis mu minus r right-parenthesis
+    dot f minus StartFraction sigma squared Over 2 EndFraction dot f squared" display="block"><mrow><msub><mi>G</mi>
+    <mi>∞</mi></msub> <mrow><mo>(</mo> <mi>f</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>r</mi>
+    <mo>+</mo> <mrow><mo>(</mo> <mi>μ</mi> <mo>-</mo> <mi>r</mi> <mo>)</mo></mrow>
+    <mo>·</mo> <mi>f</mi> <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac>
+    <mo>·</mo> <msup><mi>f</mi> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The optimal fraction <math alttext="f Superscript asterisk"><msup><mi>f</mi>
+    <mo>*</mo></msup></math> then is given through the first order condition by the
+    following expression:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="f Superscript asterisk Baseline equals StartFraction mu minus
+    r Over sigma squared EndFraction" display="block"><mrow><msup><mi>f</mi> <mo>*</mo></msup>
+    <mo>=</mo> <mfrac><mrow><mi>μ</mi><mo>-</mo><mi>r</mi></mrow> <msup><mi>σ</mi>
+    <mn>2</mn></msup></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This represents the expected excess return of the stock over the risk-free rate
+    divided by the variance of the returns. This expression looks similar to the Sharpe
+    ratio but is different.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A real-world example shall illustrate the application of the preceding formula
+    and its role in leveraging equity deployed to trading strategies. The trading
+    strategy under consideration is simply a *passive long position in the S&P 500
+    index*. To this end, base data is quickly retrieved and required statistics are
+    easily derived:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: The statistical properties of the S&P 500 index over the period covered suggest
+    an optimal fraction of about 4.5 to be invested in the long position in the index.
+    In other words, for every dollar available, 4.5 dollars shall be invested, implying
+    a *leverage ratio* of 4.5 in accordance with the optimal Kelly fraction or, in
+    this case, the optimal Kelly *factor*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Everything being equal, the Kelly criterion implies a higher leverage when
+    the expected return is higher and the volatility (variance) is lower:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the annualized return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the annualized volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets the risk-free rate to 0 (for simplicity).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the optimal Kelly fraction to be invested in the strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code simulates the application of the Kelly criterion
+    and the optimal leverage ratio. For simplicity and comparison reasons, the initial
+    equity is set to 1 while the initially invested total capital is set to <math
+    alttext="1 dot f Superscript asterisk"><mrow><mn>1</mn> <mo>·</mo> <msup><mi>f</mi>
+    <mo>*</mo></msup></mrow></math> . Depending on the performance of the capital
+    deployed to the strategy, the total capital itself is adjusted daily according
+    to the available equity. After a loss, the capital is reduced; after a profit,
+    the capital is increased. The evolution of the equity position compared to the
+    index itself is shown in [Figure 10-3](#auto_plot_03):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates a new column for `equity` and sets the initial value to 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates a new column for `capital` and sets the initial value to <math alttext="1
+    dot f Superscript asterisk"><mrow><mn>1</mn> <mo>·</mo> <msup><mi>f</mi> <mo>*</mo></msup></mrow></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picks the right `DatetimeIndex` value for the previous values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the new capital position given the return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the equity value according to the capital position performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_automating_trading_operations_CO5-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the capital position given the new equity position and the fixed leverage
+    ratio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_automating_trading_operations_CO5-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulates the Kelly criterion based strategy for half of <math alttext="f"><mi>f</mi></math>
+    …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_automating_trading_operations_CO5-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …for two thirds of <math alttext="f"><mi>f</mi></math> …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_automating_trading_operations_CO5-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and <math alttext="f"><mi>f</mi></math> itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1003](assets/pfat_1003.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-3\. Gross performance of S&P 500 compared to equity position given
+    different values of <math alttext="f"><mi>f</mi></math>
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'As [Figure 10-3](#auto_plot_03) illustrates, applying the optimal Kelly leverage
+    leads to a rather erratic evolution of the equity position (high volatility),
+    which is intuitively plausible, given the leverage ratio of 4.59\. One would expect
+    the volatility of the equity position to increase with increasing leverage. Therefore,
+    practitioners often do not use “full Kelly” (4.6), but rather “half Kelly” (2.3).
+    In the current example, this is reduced to:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="one-half dot f Superscript asterisk Baseline almost-equals 2.3"
+    display="block"><mrow><mfrac><mn>1</mn> <mn>2</mn></mfrac> <mo>•</mo> <msup><mi>f</mi>
+    <mo>*</mo></msup> <mo>≈</mo> <mn>2.3</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Against this background, [Figure 10-3](#auto_plot_03) also shows the evolution
+    of the equity position for values lower than “full Kelly.” The risk indeed reduces
+    with lower values of latexmath:[$f$].
+  prefs: []
+  type: TYPE_NORMAL
+- en: ML-Based Trading Strategy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[Chapter 8](ch08.html#trading_oanda) introduces the Oanda trading platform,
+    its RESTful API and the Python wrapper package `tpqoa`. This section combines
+    an ML-based approach for predicting the direction of market price movements with
+    historical data from the Oanda v20 RESTful API to backtest an algorithmic trading
+    strategy for the EUR/USD currency pair. It uses vectorized backtesting, taking
+    into account this time the bid-ask spread as proportional transactions costs.
+    It also adds, compared to the plain vectorized backtesting approach introduced
+    in [Chapter 4](ch04.html#vectorized_backtesting), a more in-depth analysis of
+    the risk characteristics of the trading strategy tested.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized Backtesting
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The backtest is based on intraday data, more specifically on bars of 10 minutes
+    in length. The following code connects to the Oanda v20 API and retrieves 10-minute
+    bar data for one week. [Figure 10-4](#auto_plot_04) visualizes the mid close prices
+    over the period for which data is retrieved:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Connects to the API and retrieves the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the average bid-ask spread.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO6-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean closing price for the data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO6-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the average proportional transactions costs given the average spread
+    and the average mid closing price.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1004](assets/pfat_1004.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-4\. EUR/USD exchange rate (10-minute bars)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The ML-based strategy uses a number of time series features, such as the log
+    return and the minimum and the maximum of the closing price. In addition, the
+    features data is lagged. In other words, the ML algorithm shall learn from historical
+    patterns as embodied by the lagged features data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the window length for certain features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns from the closing prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the time series momentum as the mean of the recent log returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the simple moving average.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_automating_trading_operations_CO7-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling maximum value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_automating_trading_operations_CO7-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the rolling minimum value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_automating_trading_operations_CO7-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds the lagged features data to the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_automating_trading_operations_CO7-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the labels data as the market direction (`+1` or *up* and `-1` or *down*).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_automating_trading_operations_CO7-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows a small sub-set from the resulting lagged features data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the features and label data, different supervised learning algorithms
+    could now be applied. In what follows, a so-called *AdaBoost algorithm* for classification
+    is used from the `scikit-learn` ML package (see [`AdaBoostClassifier`](https://oreil.ly/WIANy)).
+    The idea of boosting in the context of classification is to use an *ensemble*
+    of base classifiers to arrive at a superior predictor that is supposed to be less
+    prone to overfitting (see [“Data Snooping and Overfitting”](ch04.html#data_snooping)).
+    As the base classifier, a *decision tree classification algorithm* from `scikit-learn`
+    is used (see [`DecisionTreeClassifier`](https://oreil.ly/wb-wh)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The code trains and tests the algorithmic trading strategy based on a sequential
+    train-test split. The accuracy scores of the model for the training and test data
+    are both significantly above 50%. Instead of accuracy scores, one would also speak
+    in a financial trading context of the *hit ratio* of the trading strategy (that
+    is, the number of winning trades compared to all trades). Since the hit ratio
+    is significantly greater than 50%, this might indicate—in the context of the Kelly
+    criterion—a statistical edge compared to a random walk setting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies major parameters for the ML algorithm (see the references for the
+    model classes provided previously).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO8-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the base classification algorithm (decision tree).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO8-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the AdaBoost classification algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO8-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies Gaussian normalization to the *training* features data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO8-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model based on the training data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_automating_trading_operations_CO8-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the accuracy of the predictions from the trained model *in-sample* (training
+    data set).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_automating_trading_operations_CO8-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies Gaussian normalization to the *testing* features data set (using the
+    parameters from the training features data set).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_automating_trading_operations_CO8-14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the predictions for the test data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_automating_trading_operations_CO8-15)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the accuracy of the predictions from the trained model *out-of-sample*
+    (test data set).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is well known that the hit ratio is only one side of the coin of success
+    in financial trading. The other side comprises, among other things, getting the
+    important trades right, as well as the transactions costs implied by the trading
+    strategy.^([2](ch10.html#idm45785339950712)) To this end, only a formal vectorized
+    backtesting approach allows one to judge the quality of the trading strategy.
+    The following code takes into account the proportional transaction costs based
+    on the average bid-ask spread. [Figure 10-5](#auto_plot_05) compares the performance
+    of the algorithmic trading strategy (without and with proportional transaction
+    costs) to the performance of the passive benchmark investment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the log returns for the ML-based algorithmic trading strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the number of trades implied by the trading strategy based on changes
+    in the position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Whenever a trade takes place, the proportional transaction costs are subtracted
+    from the strategy’s log return on that day.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1005](assets/pfat_1005.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-5\. Gross performance of EUR/USD exchange rate and algorithmic trading
+    strategy (before and after transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Vectorized backtesting has its limits with regard to how close to market realities
+    strategies can be tested. For example, it does not allow one to include fixed
+    transaction costs per trade directly. One could, as an approximation, take a multiple
+    of the average proportional transaction costs (based on average position sizes)
+    to account indirectly for fixed transactions costs. However, this would not be
+    precise in general. If a higher degree of precision is required, other approaches,
+    such as *event-based backtesting* (see [Chapter 6](ch06.html#event_based_backtesting))
+    with explicit loops over every bar of the price data, need to be applied.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Optimal Leverage
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Equipped with the trading strategy’s log returns data, the mean and variance
+    values can be calculated in order to derive the optimal leverage according to
+    the Kelly criterion. The code that follows scales the numbers to annualized values,
+    although this does not change the optimal leverage values according to the Kelly
+    criterion since the mean return and the variance scale with the same factor:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Annualized mean returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Annualized variances.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Annualized volatilities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Optimal leverage according to the Kelly criterion (“full Kelly”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Optimal leverage according to the Kelly criterion (“half Kelly”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using the “half Kelly” criterion, the optimal leverage for the trading strategy
+    is above 50\. With a number of brokers, such as Oanda, and certain financial instruments,
+    such as foreign exchange pairs and contracts for difference (CFDs), such leverage
+    ratios are feasible, even for retail traders. [Figure 10-6](#auto_plot_06) shows,
+    in comparison, the performance of the trading strategy with transaction costs
+    for different leverage values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scales the strategy returns for different leverage values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1006](assets/pfat_1006.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-6\. Gross performance of the algorithmic trading strategy for different
+    leverage values
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Leverage increases risks associated with trading strategies significantly. Traders
+    should read the risk disclaimers and regulations carefully. A positive backtesting
+    performance is also no guarantee whatsoever for future performances. All results
+    shown are illustrative only and are meant to demonstrate the application of programming
+    and analytics approaches. In some jurisdictions, such as in Germany, leverage
+    ratios are capped for retail traders based on different groups of financial instruments.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Risk Analysis
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Since leverage increases the risk associated with a certain trading strategy
+    considerably, a more in-depth risk analysis seems in order. The risk analysis
+    that follows assumes a leverage ratio of 30\. First, the maximum drawdown and
+    the longest drawdown period shall be calculated. *Maximum drawdown* is the largest
+    loss (dip) after a recent high. Accordingly, the *longest drawdown period* is
+    the longest period that the trading strategy needs to get back to a recent high.
+    The analysis assumes that the initial equity position is 3,333 EUR leading to
+    an initial position size of 100,000 EUR for a leverage ratio of 30\. It also assumes
+    that there are no adjustments with regard to the equity over time, no matter what
+    the performance is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial equity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The relevant log returns time series…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …scaled by the initial equity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cumulative maximum values over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The drawdown values over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_automating_trading_operations_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The maximum drawdown value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_automating_trading_operations_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The point in time when it happens.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Technically, a new high is characterized by a drawdown value of 0\. The drawdown
+    period is the time between two such highs. [Figure 10-7](#auto_plot_07) visualizes
+    both the maximum drawdown and the drawdown periods:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifies highs for which the drawdown must be 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the `timedelta` values between all highs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The longest drawdown period in *seconds*…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …transformed to *hours*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another important risk measure is *value-at-risk* (VaR). It is quoted as a currency
+    amount and represents the maximum loss to be expected given both a certain time
+    horizon and a confidence level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1007](assets/pfat_1007.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-7\. Maximum drawdown (vertical line) and drawdown periods (horizontal
+    lines)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The following code derives VaR values based on the log returns of the equity
+    position for the leveraged trading strategy over time for different confidence
+    levels. The time interval is fixed to the bar length of ten minutes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the percentile values to be used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the VaR values given the percentile values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Translates the percentile values into confidence levels and the VaR values (negative
+    values) to positive values for printing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, the following code calculates the VaR values for a time horizon of
+    *one hour* by resampling the original `DataFrame` object. In effect, the VaR values
+    are increased for all confidence levels:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resamples the data from 10-minute to 1-hour bars.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the VaR values given the percentile values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Persisting the Model Object
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Once the algorithmic trading strategy is accepted based on the backtesting,
+    leveraging, and risk analysis results, the model object and other relevant algorithm
+    components might be persisted for later use in deployment. It embodies now the
+    ML-based trading strategy or the trading algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: Online Algorithm
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The trading algorithm tested so far is an *offline algorithm*. Such algorithms
+    use a complete data set to solve a problem at hand. The problem has been to train
+    an AdaBoost classification algorithm based on a decision tree as the base classifier,
+    a number of different time series features, and directional label data. In practice,
+    when deploying the trading algorithm in financial markets, it must consume data
+    piece by piece as it arrives to predict the direction of the market movement for
+    the next time interval (bar). This section makes use of the persisted model object
+    from the previous section and embeds it into a streaming data context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The code that transforms the *offline* trading algorithm into an *online* trading
+    algorithm mainly addresses the following issues:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tick data
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tick data arrives in real time and is to be processed in real time, such as
+    to be collected in a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resampling
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tick data is to be resampled to the appropriate bar length given the trading
+    algorithm. For illustration, a shorter bar length is used for resampling than
+    for the training and backtesting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trading algorithm generates a prediction for the direction of the market
+    movement over the relevant time interval that by nature lies in the future.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Orders
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the current position and the prediction (“signal”) generated by the algorithm,
+    an order is placed or the position is kept unchanged.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Chapter 8](ch08.html#trading_oanda), and in particular [“Working with Streaming
+    Data”](ch08.html#oanda_streaming), shows how to retrieve tick data from the Oanda
+    API in real time. The basic approach is to redefine the `.on_success()` method
+    of the `tpqoa.tpqoa` class to implement the trading logic.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First, the persisted trading algorithm is loaded; it represents the trading
+    logic to be followed. It consists of the trained model itself and the parameters
+    for the normalization of the features data, which are integral parts of the algorithm:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In the following code, the new class `MLTrader`, which inherits from `tpqoa.tpqoa`
+    and which, via the `.on_success()` and additional helper methods, transforms the
+    trading algorithm into a real-time context. It is the transformation of the *offline
+    algorithm* to a so-called *online algorithm*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trained AdaBoost model object and the normalization parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of units traded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO16-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial, neutral position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_automating_trading_operations_CO16-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The bar length on which the algorithm is implemented.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_automating_trading_operations_CO16-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The length of the window for selected features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_automating_trading_operations_CO16-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of lags (must be in line with algorithm training).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_automating_trading_operations_CO16-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The method that generates the lagged features data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_automating_trading_operations_CO16-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The redefined method that embodies the trading logic.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_automating_trading_operations_CO16-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Check for a long signal and long trade.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_automating_trading_operations_CO16-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Check for a short signal and short trade.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With the new class `MLTrader`, automated trading is made simple. A few lines
+    of code are enough in an interactive context. The parameters are set such that
+    the first order is placed after a short while. In reality, however, all parameters
+    must, of course, be in line with original ones from the research and backtesting
+    phase. They could, for example, also be persisted on disk and be read with the
+    algorithm:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_automating_trading_operations_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the trading object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_automating_trading_operations_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Starts the streaming, data processing, and trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_automating_trading_operations_CO17-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes out the final open position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The preceding code generates an output similar to the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: Infrastructure and Deployment
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Deploying an automated algorithmic trading strategy with real funds requires
+    an appropriate infrastructure. Among other things, the infrastructure should satisfy
+    the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reliability
+  prefs: []
+  type: TYPE_NORMAL
+- en: The infrastructure on which to deploy an algorithmic trading strategy should
+    allow for high availability (for example, 99.9% or higher) and should otherwise
+    take care of reliability (automatic backups, redundancy of drives and web connections,
+    and so on).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: Depending on the amount of data being processed and the computational demand
+    the algorithms generate, the infrastructure must have enough CPU cores, working
+    memory (RAM), and storage (SSD). In addition, the web connections should be fast
+    enough.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Security
+  prefs: []
+  type: TYPE_NORMAL
+- en: The operating system and the applications that run on it should be protected
+    by strong passwords, as well as SSL encryption and hard drive encryption. The
+    hardware should be protected from fire, water, and unauthorized physical access.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basically, these requirements can only be fulfilled by renting an appropriate
+    infrastructure from a professional data center or a cloud provider. Own investments
+    in the physical infrastructure to satisfy the aforementioned requirements can
+    in general only be justified by the bigger, or even the biggest, players in the
+    financial markets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: From a development and testing point of view, even the smallest Droplet (cloud
+    instance) from DigitalOcean ([*http://digitalocean.com*](http://digitalocean.com))
+    is enough to get started. At the time of writing, such a Droplet costs 5 USD per
+    month and is billed by the hour, created within minutes, and destroyed within
+    seconds.^([3](ch10.html#idm45785334066856))
+  prefs: []
+  type: TYPE_NORMAL
+- en: How to set up a Droplet with DigitalOcean is explained in detail in [Chapter 2](ch02.html#python_environment)
+    (specifically in [“Using Cloud Instances”](ch02.html#cloud_instance)), with Bash
+    scripts that can be adjusted to reflect individual requirements regarding Python
+    packages, for example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although the development and testing of automated algorithmic trading strategies
+    is possible from a local computer (desktop, notebook, or similar), it is not appropriate
+    for the deployment of automated strategies trading real money. A simple loss of
+    the web connection or a brief power outage might bring down the whole algorithm,
+    leaving, for example, unintended open positions in the portfolio. As another example,
+    it would cause one to miss out on real-time tick data and end up with corrupted
+    data sets, potentially leading to wrong signals and unintended trades and positions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Logging and Monitoring
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Assume now that the automated algorithmic trading strategy is to be deployed
+    on a remote server (virtual cloud instance or dedicated server). Further assume
+    that all required Python packages have been installed (see [“Using Cloud Instances”](ch02.html#cloud_instance))
+    and that, for instance, `Jupyter Lab` is running securely (see [Running a notebook
+    server](https://oreil.ly/cnBHE)). What else needs to be considered from the algorithmic
+    traders’ point of view if they do not want to sit all day in front of the screen
+    being logged in to the server?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This section addresses two important topics in this regard: *logging* and *real-time
+    monitoring*. Logging persists information and events on disk for later inspection.
+    It is standard practice in software application development and deployment. However,
+    here the focus might be put instead on the financial side, logging important financial
+    data and event information for later inspection and analysis. The same holds true
+    for real-time monitoring making use of socket communication. Via sockets, a constant
+    real-time stream of important financial aspects can be created that can then be
+    retrieved and processed on a local computer, even if the deployment happens in
+    the cloud.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Automated Trading Strategy”](#auto_script) presents a Python script implementing
+    all these aspects and making use of the code from [“Online Algorithm”](#auto_online).
+    The script brings the code in a shape that allows, for example, the *deployment*
+    of the algorithmic trading strategy—sbased on the persisted algorithm object—son
+    a remote server. It adds both *logging and monitoring* capabilities based on a
+    custom function that, among other things, makes use of `ZeroMQ` (see [*http://zeromq.org*](http://zeromq.org))
+    for socket communication. In combination with the short script from [“Strategy
+    Monitoring”](#auto_monitor), this allows for a remote real-time monitoring of
+    the activity on a remote server.^([4](ch10.html#idm45785334006200))'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'When the script from [“Automated Trading Strategy”](#auto_script) is executed,
+    either locally or remotely, the output that is logged and sent via the socket
+    looks as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: Running the script from [“Strategy Monitoring”](#auto_monitor) locally then
+    allows for the real-time retrieval and processing of such information. Of course,
+    it is easy to adjust the logging and streaming data to one’s own requirements.^([5](ch10.html#idm45785336429992))
+    Furthermore, the trading script and the whole logic can be adjusted to include
+    such elements as stop losses or take profit targets programmatically.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trading currency pairs and/or CFDs is associated with a number of financial
+    risks. Implementing an algorithmic trading strategy for such instruments automatically
+    leads to a number of additional risks. Among them are flaws in the trading and/or
+    execution logic, as well as technical risks including problems associated with
+    socket communication, delayed retrieval, or even loss of tick data during the
+    deployment. Therefore, before one deploys a trading strategy in automated fashion
+    one should make sure that all associated market, execution, operational, technical,
+    and other risks have been identified, evaluated, and properly addressed. The code
+    presented in this chapter is only for technical illustration purposes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visual Step-by-Step Overview
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This final section provides a step-by-step overview in screenshots. While the
+    previous sections are based on the FXCM trading platform, the visual overview
+    is based on the Oanda trading platform.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring Oanda Account
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The first step is to set up an account with Oanda (or any other trading platform
+    to this end) and to set the correct leverage ratio for the account according to
+    the Kelly criterion and as shown in [Figure 10-8](#auto_00).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1008](assets/pfat_1008.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-8\. Setting leverage on Oanda
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Setting Up the Hardware
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The second step is to create a DigitalOcean droplet, as shown in [Figure 10-9](#auto_01).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1009](assets/pfat_1009.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-9\. DigitalOcean droplet
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Setting Up the Python Environment
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The third step is to put all the software on the droplet (see [Figure 10-10](#auto_02))
+    in order to set up the infrastructure. When it all works fine, you can create
+    a new Jupyter Notebook and start your interactive Python session (see [Figure 10-11](#auto_03)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1010](assets/pfat_1010.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-10\. Installing Python and packages
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pfat 1011](assets/pfat_1011.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-11\. Testing Jupyter Lab
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Uploading the Code
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The fourth step is to upload the Python scripts for automated trading and real-time
+    monitoring, as shown in [Figure 10-12](#auto_04). The configuration file with
+    the account credentials also needs to be uploaded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1012](assets/pfat_1012.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-12\. Uploading Python code files
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Running the Code
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The fifth step is to run the Python script for automated trading, as shown in
+    [Figure 10-13](#auto_05). [Figure 10-14](#auto_06) shows a trade that the Python
+    script has initiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1013](assets/pfat_1013.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-13\. Running the Python script
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pfat 1014](assets/pfat_1014.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-14\. A trade initiated by the Python script
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Real-Time Monitoring
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The final step is to run the monitoring script locally (provided you have set
+    the correct IP in the local script), as seen in [Figure 10-15](#auto_07). In practice,
+    this means that you can monitor locally in real time what exactly is happening
+    on your cloud instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 1015](assets/pfat_1015.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-15\. Local real-time monitoring via socket
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter is about the deployment of an algorithmic trading strategy in automated
+    fashion, based on a classification algorithm from machine learning to predict
+    the direction of market movements. It addresses such important topics as capital
+    management (based on the Kelly criterion), vectorized backtesting for performance
+    and risk, the transformation of offline to online trading algorithms, an appropriate
+    infrastructure for deployment, and logging and monitoring during deployment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The topic of this chapter is complex and requires a broad skill set from the
+    algorithmic trading practitioner. On the other hand, having RESTful APIs for algorithmic
+    trading available, such as the one from Oanda, simplifies the automation task
+    considerably since the core part boils down mainly to making use of the capabilities
+    of the Python wrapper package `tpqoa` for tick data retrieval and order placement.
+    Around this core, elements to mitigate operational and technical risks should
+    be added as far as appropriate and possible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Rotando, Louis, and Edward Thorp. 1992\. “The Kelly Criterion and the Stock
+    Market.” *The American Mathematical Monthly* 99 (10): 922-931.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Hung, Jane. 2010\. “Betting with the Kelly Criterion.” [*http://bit.ly/betting_with_kelly*](http://bit.ly/betting_with_kelly).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Script
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section contains Python scripts used in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Automated Trading Strategy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following Python script contains the code for the automated deployment
+    of the ML-based trading strategy, as discussed and backtested in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Strategy Monitoring
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The following Python script contains code to remotely monitor the execution
+    of the Python script from [“Automated Trading Strategy”](#auto_script).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch10.html#idm45785342245112-marker)) The exposition follows Hung (2010).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch10.html#idm45785339950712-marker)) It is a stylized empirical fact that
+    it is of paramount importance for the investment and trading performance to get
+    the largest market movements right (that is, the biggest winner *and* loser movements).
+    This aspect is neatly illustrated in [Figure 10-5](#auto_plot_05), which shows
+    that the trading strategy gets a large downwards movement in the underlying instrument
+    correct, leading to a larger jump for the trading strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch10.html#idm45785334066856-marker)) Use the link [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up)
+    to get a 10 USD bonus on DigitalOcean when signing up for a new account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch10.html#idm45785334006200-marker)) The logging approach used here is
+    pretty simple in the form of a simple text file. It is easy to change the logging
+    and persisting of, say, the relevant financial data in the form of a database
+    or appropriate binary storage formats, such as `HDF5` (see [Chapter 3](ch03.html#financial_data)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch10.html#idm45785336429992-marker)) Note that the socket communication,
+    as implemented in the two scripts, is not encrypted and is sending plain text
+    over the web, which might represent a security risk in production.
+  prefs: []
+  type: TYPE_NORMAL

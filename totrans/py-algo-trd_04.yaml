@@ -1,0 +1,1624 @@
+- en: Chapter 4\. Mastering Vectorized Backtesting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[T]hey were silly enough to think you can look at the past to predict the future.^([1](ch04.html#idm45785385873496))'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '*The Economist*'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Developing ideas and hypotheses for an algorithmic trading program is generally
+    the more creative and sometimes even fun part in the preparation stage. Thoroughly
+    testing them is generally the more technical and time consuming part. This chapter
+    is about the vectorized backtesting of different algorithmic trading strategies.
+    It covers the following types of strategies (refer also to [“Trading Strategies”](ch01.html#trading_strategies)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple moving averages (SMA) based strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: The basic idea of SMA usage for buy and sell signal generation is already decades
+    old. SMAs are a major tool in the so-called technical analysis of stock prices.
+    A signal is derived, for example, when an SMA defined on a shorter time window—say
+    42 days—crosses an SMA defined on a longer time window—say 252 days.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Momentum strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: These are strategies that are based on the hypothesis that recent performance
+    will persist for some additional time. For example, a stock that is downward trending
+    is assumed to do so for longer, which is why such a stock is to be shorted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mean-reversion strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: The reasoning behind mean-reversion strategies is that stock prices or prices
+    of other financial instruments tend to revert to some mean level or to some trend
+    level when they have deviated too much from such levels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The chapter proceeds as follows. [“Making Use of Vectorization”](#using_vectorization)
+    introduces vectorization as a useful technical approach to formulate and backtest
+    trading strategies. [“Strategies Based on Simple Moving Averages”](#simple_moving_averages)
+    is the core of this chapter and covers vectorized backtesting of SMA-based strategies
+    in some depth. [“Strategies Based on Momentum”](#momentum_trading) introduces
+    and backtests trading strategies based on the so-called time series momentum (“recent
+    performance”) of a stock. [“Strategies Based on Mean Reversion”](#mean_reversion)
+    finishes the chapter with coverage of mean-reversion strategies. Finally, [“Data
+    Snooping and Overfitting”](#data_snooping) discusses the pitfalls of data snooping
+    and overfitting in the context of the backtesting of algorithmic trading strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The major goal of this chapter is to master the vectorized implementation approach,
+    which packages like `NumPy` and `pandas` allow for, as an efficient and fast backtesting
+    tool. To this end, the approaches presented make a number of simplifying assumptions
+    to better focus the discussion on the major topic of vectorization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Vectorized backtesting should be considered in the following cases:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple trading strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: The vectorized backtesting approach clearly has limits when it comes to the
+    modeling of algorithmic trading strategies. However, many popular, simple strategies
+    can be backtested in vectorized fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Interactive strategy exploration
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized backtesting allows for an agile, interactive exploration of trading
+    strategies and their characteristics. A few lines of code generally suffice to
+    come up with first results, and different parameter combinations are easily tested.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualization as major goal
+  prefs: []
+  type: TYPE_NORMAL
+- en: The approach lends itself pretty well for visualizations of the used data, statistics,
+    signals, and performance results. A few lines of Python code are generally enough
+    to generate appealing and insightful plots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Comprehensive backtesting programs
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized backtesting is pretty fast in general, allowing one to test a great
+    variety of parameter combinations in a short amount of time. When speed is key,
+    the approach should be considered.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Making Use of Vectorization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Vectorization*, or *array programming*, refers to a programming style where
+    operations on scalars (that is, integer or floating point numbers) are generalized
+    to vectors, matrices, or even multidimensional arrays. Consider a vector of integers
+    <math alttext="v equals left-parenthesis 1 comma 2 comma 3 comma 4 comma 5 right-parenthesis
+    Superscript upper T"><mrow><mi>v</mi> <mo>=</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>4</mn><mo>,</mo><mn>5</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> represented in Python as a `list` object `v =
+    [1, 2, 3, 4, 5]`. Calculating the scalar product of such a vector and, say, the
+    number `2` requires in pure Python a `for` loop or something similar, such as
+    a list comprehension, which is just different syntax for a `for` loop:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In principle, Python allows one to multiply a `list` object by an integer,
+    but Python’s data model gives back another `list` object in the example case containing
+    two times the elements of the original object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: Vectorization with NumPy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The `NumPy` package for numerical computing (cf. [`NumPy` home page](http://numpy.org))
+    introduces vectorization to Python. The major class provided by `NumPy` is the
+    `ndarray` class, which stands for *n-dimensional array*. An instance of such an
+    object can be created, for example, on the basis of the `list` object `v`. Scalar
+    multiplication, linear transformations, and similar operations from linear algebra
+    then work as desired:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `NumPy` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an `ndarray` object based on the `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the data stored as `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looks up the type of the object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Achieves a scalar multiplication in vectorized fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_mastering_vectorized_backtesting_CO1-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Achieves a linear transformation in vectorized fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The transition from a one-dimensional array (a vector) to a two-dimensional
+    array (a matrix) is natural. The same holds true for higher dimensions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a one-dimensional `ndarray` object and reshapes it to two dimensions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the square of every element of the object in vectorized fashion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In addition, the `ndarray` class provides certain methods that allow vectorized
+    operations. They often also have counterparts in the form of so-called universal
+    functions that `NumPy` provides:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean of all elements by a method call.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean of all elements by a universal function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean along the first axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean along the second axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a financial example, consider the function `generate_sample_data()` in [“Python
+    Scripts”](ch03.html#sample_data) that uses an Euler discretization to generate
+    sample paths for a geometric Brownian motion. The implementation makes use of
+    multiple vectorized operations that are combined to a single line of code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: See the [Appendix A](app01.html#python_numpy_pandas) for more details of vectorization
+    with `NumPy`. Refer to Hilpisch (2018) for a multitude of applications of vectorization
+    in a financial context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard instruction set and data model of Python does not generally allow
+    for vectorized numerical operations. `NumPy` introduces powerful vectorization
+    techniques based on the regular array class `ndarray` that lead to concise code
+    that is close to mathematical notation in, for example, linear algebra regarding
+    vectors and matrices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorization with pandas
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The `pandas` package and the central `DataFrame` class make heavy use of `NumPy`
+    and the `ndarray` class. Therefore, most of the vectorization principles seen
+    in the `NumPy` context carry over to `pandas`. The mechanics are best explained
+    again on the basis of a concrete example. To begin with, define a two-dimensional
+    `ndarray` object first:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'For the creation of a `DataFrame` object, generate a `list` object with column
+    names and a `DatetimeIndex` object next, both of appropriate size given the `ndarray`
+    object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `pandas` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a `list` object out of the `str` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `pandas` `DatetimeIndex` object is created that has a “business day” frequency
+    and goes over five periods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `DataFrame` object is instantiated based on the `ndarray` object `a` with
+    column labels and index values specified.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In principle, vectorization now works similarly to `ndarray` objects. One difference
+    is that aggregation operations default to column-wise results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the scalar product for the `DataFrame` object (treated as a matrix).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the sum *per column*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean *per column*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Column-wise operations can be implemented by referencing the respective column
+    names, either by the bracket notation or the dot notation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the element-wise sum over columns `a` and `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates a linear transform involving all three columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similarly, conditions yielding Boolean results vectors and SQL-like selections
+    based on such conditions are straightforward to implement:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Which element in column `a` is greater than five?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Select all those rows where the element in column `a` is greater than five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For a vectorized backtesting of trading strategies, comparisons between two
+    columns or more are typical:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For which date is the element in column `c` greater than in column `b`?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Condition comparing a linear combination of columns `a` and `b` with column
+    `c`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorization with `pandas` is a powerful concept, in particular for the implementation
+    of financial algorithms and the vectorized backtesting, as illustrated in the
+    remainder of this chapter. For more on the basics of vectorization with `pandas`
+    and financial examples, refer to Hilpisch (2018, ch. 5).
+  prefs: []
+  type: TYPE_NORMAL
+- en: While `NumPy` brings general vectorization approaches to the numerical computing
+    world of Python, `pandas` allows vectorization over time series data. This is
+    really helpful for the implementation of financial algorithms and the backtesting
+    of algorithmic trading strategies. By using this approach, you can expect concise
+    code, as well as a faster code execution, in comparison to standard Python code,
+    making use of `for` loops and similar idioms to accomplish the same goal.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strategies Based on Simple Moving Averages
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Trading based on simple moving averages (SMAs) is a decades old strategy that
+    has its origins in the technical stock analysis world. Brock et al. (1992), for
+    example, empirically investigate such strategies in systematic fashion. They write:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The term “technical analysis” is a general heading for a myriad of trading
+    techniques….In this paper, we explore two of the simplest and most popular technical
+    rules: moving average-oscillator and trading-range break (resistance and support
+    levels). In the first method, buy and sell signals are generated by two moving
+    averages, a long period, and a short period….Our study reveals that technical
+    analysis helps to predict stock changes.'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Getting into the Basics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'This sub-section focuses on the basics of backtesting trading strategies that
+    make use of two SMAs. The example to follow works with end-of-day (EOD) closing
+    data for the EUR/USD exchange rate, as provided in the *csv* file under the [EOD
+    data file](https://oreil.ly/AzE-p). The data in the data set is from the Refinitiv
+    Eikon Data API and represents EOD values for the respective instruments (`RICs`):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the data from the remotely stored `CSV` file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the meta information for the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transforms the `Series` object to a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Renames the only column to `price`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the meta information for the new `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The calculation of SMAs is made simple by the `rolling()` method, in combination
+    with a deferred calculation operation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a column with 42 days of SMA values. The first 41 values will be `NaN`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a column with 252 days of SMA values. The first 251 values will be `NaN`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints the final five rows of the data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A visualization of the original time series data in combination with the SMAs
+    best illustrates the results (see [Figure 4-1](#sma_plot_1)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: The next step is to generate signals, or rather market positionings, based on
+    the relationship between the two SMAs. The rule is to *go long whenever the shorter
+    SMA is above the longer one and vice versa*. For our purposes, we indicate a long
+    position by 1 and a short position by –1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0401](assets/pfat_0401.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-1\. The EUR/USD exchange rate with two SMAs
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Being able to directly compare two columns of the `DataFrame` object makes
+    the implementation of the rule an affair of a single line of code only. The positioning
+    over time is illustrated in [Figure 4-2](#sma_plot_2):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the trading rule in vectorized fashion. `np.where()` produces `+1`
+    for rows where the expression is `True` and `-1` for rows where the expression
+    is `False`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deletes all rows of the data set that contain at least one `NaN` value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the positioning over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0402](assets/pfat_0402.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-2\. Market positioning based on the strategy with two SMAs
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'To calculate the performance of the strategy, calculate the log returns based
+    on the original financial time series next. The code to do this is again rather
+    concise due to vectorization. [Figure 4-3](#sma_plot_3) shows the histogram of
+    the log returns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns in vectorized fashion over the `price` column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the log returns as a histogram (frequency distribution).
+  prefs: []
+  type: TYPE_NORMAL
+- en: To derive the strategy returns, multiply the `position` column—shifted by one
+    trading day—with the `returns` column. Since log returns are additive, calculating
+    the sum over the columns `returns` and `strategy` provides a first comparison
+    of the performance of the strategy relative to the base investment itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0403](assets/pfat_0403.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-3\. Frequency distribution of EUR/USD log returns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Comparing the returns shows that the strategy books a win over the passive
+    benchmark investment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the log returns of the strategy given the positionings and market returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sums up the single log return values for both the stock and the strategy (for
+    illustration only).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies the exponential function to the sum of the log returns to calculate
+    the *gross performance*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Calculating the cumulative sum over time with `cumsum` and, based on this,
+    the cumulative returns by applying the exponential function `np.exp()` gives a
+    more comprehensive picture of how the strategy compares to the performance of
+    the base financial instrument over time. [Figure 4-4](#sma_plot_4) shows the data
+    graphically and illustrates the outperformance in this particular case:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0404](assets/pfat_0404.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-4\. Gross performance of EUR/USD compared to the SMA-based strategy
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Average, annualized risk-return statistics for both the stock and the strategy
+    are easy to calculate:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the annualized mean return in both log and regular space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the annualized standard deviation in both log and regular space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Other risk statistics often of interest in the context of trading strategy
+    performances are the *maximum drawdown* and the *longest drawdown period*. A helper
+    statistic to use in this context is the cumulative maximum gross performance as
+    calculated by the `cummax()` method applied to the gross performance of the strategy.
+    [Figure 4-5](#sma_plot_5) shows the two time series for the SMA-based strategy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a new column, `cumret`, with the gross performance over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO15-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines yet another column with the running maximum value of the gross performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the two new columns of the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0405](assets/pfat_0405.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-5\. Gross performance and cumulative maximum performance of the SMA-based
+    strategy
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The maximum drawdown is then simply calculated as the maximum of the difference
+    between the two relevant columns. The maximum drawdown in the example is about
+    18 percentage points:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the element-wise difference between the two columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO16-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picks out the maximum value from all differences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The determination of the longest drawdown period is a bit more involved. It
+    requires those dates at which the gross performance equals its cumulative maximum
+    (that is, where a new maximum is set). This information is stored in a temporary
+    object. Then the differences in days between all such dates are calculated and
+    the longest period is picked out. Such periods can be only one day long or more
+    than 100 days. Here, the longest drawdown period lasts for 596 days—a pretty long
+    period:^([2](ch04.html#idm45785380499832))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Where are the differences equal to zero?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the `timedelta` values between all index values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO17-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picks out the maximum `timedelta` value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized backtesting with `pandas` is generally a rather efficient endeavor
+    due to the capabilities of the package and the main `DataFrame` class. However,
+    the interactive approach illustrated so far does not work well when one wishes
+    to implement a larger backtesting program that, for example, optimizes the parameters
+    of an SMA-based strategy. To this end, a more general approach is advisable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`pandas` proves to be a powerful tool for the vectorized analysis of trading
+    strategies. Many statistics of interest, such as log returns, cumulative returns,
+    annualized returns and volatility, maximum drawdown, and maximum drawdown period,
+    can in general be calculated by a single line or just a few lines of code. Being
+    able to visualize results by a simple method call is an additional benefit.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generalizing the Approach
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[“SMA Backtesting Class”](#sma_vector_backtester) presents a Python code that
+    contains a class for the vectorized backtesting of SMA-based trading strategies.
+    In a sense, it is a generalization of the approach introduced in the previous
+    sub-section. It allows one to define an instance of the `SMAVectorBacktester`
+    class by providing the following parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`symbol`: `RIC` (instrument data) to be used'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`SMA1`: for the time window in days for the *shorter* SMA'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`SMA2`: for the time window in days for the *longer* SMA'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`start`: for the start date of the data selection'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`end`: for the end date of the data selection'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The application itself is best illustrated by an interactive session that makes
+    use of the class. The example first replicates the backtest implemented previously
+    based on EUR/USD exchange rate data. It then optimizes the SMA parameters for
+    maximum gross performance. Based on the optimal parameters, it plots the resulting
+    gross performance of the strategy compared to the base instrument over the relevant
+    period of time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This imports the module as `SMA`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An instance of the main class is instantiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the SMA-based strategy, given the parameters during instantiation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO18-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `optimize_parameters()` method takes as input parameter ranges with step
+    sizes and determines the optimal combination by a brute force approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO18-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `plot_results()` method plots the strategy performance compared to the benchmark
+    instrument, given the currently stored parameter values (here from the optimization
+    procedure).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The gross performance of the strategy with the original parametrization is 1.24
+    or 124%. The optimized strategy yields an absolute return of 1.44 or 144% for
+    the parameter combination `SMA1 = 48` and `SMA2 = 238`. [Figure 4-6](#sma_plot_6)
+    shows the gross performance over time graphically, again compared to the performance
+    of the base instrument, which represents the benchmark.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0406](assets/pfat_0406.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-6\. Gross performance of EUR/USD and the optimized SMA strategy
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Strategies Based on Momentum
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: There are two basic types of momentum strategies. The first type is *cross-sectional*
+    momentum strategies. Selecting from a larger pool of instruments, these strategies
+    buy those instruments that have recently outperformed relative to their peers
+    (or a benchmark) and sell those instruments that have underperformed. The basic
+    idea is that the instruments continue to outperform and underperform, respectively—at
+    least for a certain period of time. Jegadeesh and Titman (1993, 2001) and Chan
+    et al. (1996) study these types of trading strategies and their potential sources
+    of profit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Cross-sectional momentum strategies have traditionally performed quite well.
+    Jegadeesh and Titman (1993) write:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This paper documents that strategies which buy stocks that have performed well
+    in the past and sell stocks that have performed poorly in the past generate significant
+    positive returns over 3- to 12-month holding periods.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'The second type is *time series* momentum strategies. These strategies buy
+    those instruments that have recently performed well and sell those instruments
+    that have recently performed poorly. In this case, the benchmark is the past returns
+    of the instrument itself. Moskowitz et al. (2012) analyze this type of momentum
+    strategy in detail across a wide range of markets. They write:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rather than focus on the relative returns of securities in the cross-section,
+    time series momentum focuses purely on a security’s own past return….Our finding
+    of time series momentum in virtually every instrument we examine seems to challenge
+    the “random walk” hypothesis, which in its most basic form implies that knowing
+    whether a price went up or down in the past should not be informative about whether
+    it will go up or down in the future.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Getting into the Basics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Consider end-of-day closing prices for the gold price in USD (`XAU=`):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The most simple time series momentum strategy is to buy the stock if the last
+    return was positive and to sell it if it was negative. With `NumPy` and `pandas`
+    this is easy to formalize; just take the sign of the last available return as
+    the market position. [Figure 4-7](#mom_plot_1) illustrates the performance of
+    this strategy. The strategy does significantly underperform the base instrument:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a new column with the sign (that is, 1 or –1) of the relevant log return;
+    the resulting values represent the market positionings (long or short).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the strategy log returns given the market positionings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO19-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots and compares the strategy performance with the benchmark instrument.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0407](assets/pfat_0407.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-7\. Gross performance of gold price (USD) and momentum strategy (last
+    return only)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Using a rolling time window, the time series momentum strategy can be generalized
+    to more than just the last return. For example, the average of the *last three
+    returns* can be used to generate the signal for the positioning. [Figure 4-8](#mom_plot_2)
+    shows that the strategy in this case does much better, both in absolute terms
+    and relative to the base instrument:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This time, the mean return over a rolling window of three days is taken.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, the performance is quite sensitive to the time window parameter. Choosing,
+    for example, the last two returns instead of three leads to a much worse performance,
+    as shown in [Figure 4-9](#mom_plot_3).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0408](assets/pfat_0408.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-8\. Gross performance of gold price (USD) and momentum strategy (last
+    three returns)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pfat 0409](assets/pfat_0409.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-9\. Gross performance of gold price (USD) and momentum strategy (last
+    two returns)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Time series momentum might be expected intraday, as well. Actually, one would
+    expect it to be more pronounced intraday than interday. [Figure 4-10](#mom_plot_4)
+    shows the gross performance of five time series momentum strategies for one, three,
+    five, seven, and nine return observations, respectively. The data used is intraday
+    stock price data for Apple Inc., as retrieved from the Eikon Data API. The figure
+    is based on the code that follows. Basically all strategies outperform the stock
+    over the course of this intraday time window, although some only slightly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the intraday data from a `CSV` file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO21-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the intraday log returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO21-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a `list` object to select the columns to be plotted later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO21-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives positionings according to the momentum strategy parameter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO21-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the resulting strategy log returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_mastering_vectorized_backtesting_CO21-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends the column name to the `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_mastering_vectorized_backtesting_CO21-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots all relevant columns to compare the strategies’ performances to the benchmark
+    instrument’s performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0410](assets/pfat_0410.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-10\. Gross intraday performance of the Apple stock and five momentum
+    strategies (last one, three, five, seven, and nine returns)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 4-11](#mom_plot_5) shows the performance of the same five strategies
+    for the S&P 500 index. Again, all five strategy configurations outperform the
+    index and all show a positive return (before transaction costs).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0411](assets/pfat_0411.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-11\. Gross intraday performance of the S&P 500 index and five momentum
+    strategies (last one, three, five, seven, and nine returns)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Generalizing the Approach
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[“Momentum Backtesting Class”](#mom_vector_backtester) presents a Python module
+    containing the `MomVectorBacktester` class, which allows for a bit more standardized
+    backtesting of momentum-based strategies. The class has the following attributes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`symbol`: `RIC` (instrument data) to be used'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`start`: for the start date of the data selection'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`end`: for the end date of the data selection'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`amount`: for the initial amount to be invested'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`tc`: for the proportional transaction costs per trade'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Compared to the `SMAVectorBacktester` class, this one introduces two important
+    generalizations: the fixed amount to be invested at the beginning of the backtesting
+    period and proportional transaction costs to get closer to market realities cost-wise.
+    In particular, the addition of transaction costs is important in the context of
+    time series momentum strategies that often lead to a large number of transactions
+    over time.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The application is as straightforward and convenient as before. The example
+    first replicates the results from the interactive session before, but this time
+    with an initial investment of 10,000 USD. [Figure 4-12](#mom_plot_6) visualizes
+    the performance of the strategy, taking the mean of the last three returns to
+    generate signals for the positioning. The second case covered is one with proportional
+    transaction costs of 0.1% per trade. As [Figure 4-13](#mom_plot_7) illustrates,
+    even small transaction costs deteriorate the performance significantly in this
+    case. The driving factor in this regard is the relatively high frequency of trades
+    that the strategy requires:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the module as `Mom`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an object of the backtesting class defining the starting capital
+    to be 10,000 USD and the proportional transaction costs to be zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO22-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Backtests the momentum strategy based on a time window of *three days*: the
+    strategy outperforms the benchmark passive investment.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO22-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This time, proportional transaction costs of 0.1% are assumed per trade.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO22-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In that case, the strategy basically loses all the outperformance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0412](assets/pfat_0412.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-12\. Gross performance of the gold price (USD) and the momentum strategy
+    (last three returns, no transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pfat 0413](assets/pfat_0413.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-13\. Gross performance of the gold price (USD) and the momentum strategy
+    (last three returns, transaction costs of 0.1%)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Strategies Based on Mean Reversion
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Roughly speaking, mean-reversion strategies rely on a reasoning that is the
+    opposite of momentum strategies. If a financial instrument has performed “too
+    well” relative to its trend, it is shorted, and vice versa. To put it differently,
+    while (time series) momentum strategies assume a *positive correlation* between
+    returns, mean-reversion strategies assume a *negative correlation*. Balvers et
+    al. (2000) write:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mean reversion refers to a tendency of asset prices to return to a trend path.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Working with a simple moving average (SMA) as a proxy for a “trend path,” a
+    mean-reversion strategy in, say, the EUR/USD exchange rate can be backtested in
+    a similar fashion as the backtests of the SMA- and momentum-based strategies.
+    The idea is to define a threshold for the distance between the current stock price
+    and the SMA, which signals a long or short position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Getting into the Basics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The examples that follow are for two different financial instruments for which
+    one would expect significant mean reversion since they are both based on the gold
+    price:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`GLD` is the symbol for SPDR Gold Shares, which is the largest physically backed
+    exchange traded fund (ETF) for gold (cf. [SPDR Gold Shares home page](http://spdrgoldshares.com)).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`GDX` is the symbol for the VanEck Vectors Gold Miners ETF, which invests in
+    equity products to track the NYSE Arca Gold Miners Index (cf. [VanEck Vectors
+    Gold Miners overview page](https://oreil.ly/CmPBA)).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The example starts with `GDX` and implements a mean-reversion strategy on the
+    basis of an SMA of 25 days and a threshold value of 3.5 for the absolute deviation
+    of the current price to deviate from the SMA to signal a positioning. [Figure 4-14](#mr_plot_1)
+    shows the differences between the current price of `GDX` and the SMA, as well
+    as the positive and negative threshold value to generate sell and buy signals,
+    respectively:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The SMA parameter is defined…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and SMA (“trend path”) is calculated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO23-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The threshold for the signal generation is defined.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO23-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The distance is calculated for every point in time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO23-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The distance values are plotted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0414](assets/pfat_0414.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-14\. Difference between current price of `GDX` and SMA, as well as
+    threshold values for generating mean-reversion signals
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Based on the differences and the fixed threshold values, positionings can again
+    be derived in vectorized fashion. [Figure 4-15](#mr_plot_2) shows the resulting
+    positionings:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the distance value is greater than the threshold value, go short (set –1
+    in the new column `position`), otherwise set `NaN`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO24-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the distance value is lower than the negative threshold value, go long (set
+    1), otherwise keep the column `position` unchanged.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO24-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If there is a change in the sign of the distance value, go market neutral (set
+    0), otherwise keep the column `position` unchanged.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO24-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forward fill all `NaN` positions with the previous values; replace all remaining
+    `NaN` values by 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO24-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plot the resulting positionings from the index position `SMA` on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0415](assets/pfat_0415.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-15\. Positionings generated for `GDX` based on the mean-reversion strategy
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The final step is to derive the strategy returns that are shown in [Figure 4-16](#mr_plot_3).
+    The strategy outperforms the `GDX` ETF by quite a margin, although the particular
+    parametrization leads to long periods with a neutral position (neither long or
+    short). These neutral positions are reflected in the flat parts of the strategy
+    curve in [Figure 4-16](#mr_plot_3):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0416](assets/pfat_0416.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-16\. Gross performance of the `GDX` ETF and the mean-reversion strategy
+    (SMA = 25, threshold = 3.5)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Generalizing the Approach
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As before, the vectorized backtesting is more efficient to implement based on
+    a respective Python class. The class `MRVectorBacktester` presented in [“Mean
+    Reversion Backtesting Class”](#mr_vector_backtester) inherits from the `MomVectorBacktester`
+    class and just replaces the `run_strategy()` method to accommodate for the specifics
+    of the mean-reversion strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The example now uses `GLD` and sets the proportional transaction costs to 0.1%.
+    The initial amount to invest is again set to 10,000 USD. The SMA is 43 this time,
+    and the threshold value is set to 7.5\. [Figure 4-17](#mr_plot_4) shows the performance
+    of the mean-reversion strategy compared to the `GLD` ETF:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the module as `MR`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO25-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an object of the `MRVectorBacktester` class with 10,000 USD initial
+    capital and 0.1% proportional transaction costs per trade; the strategy significantly
+    outperforms the benchmark instrument in this case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtests the mean-reversion strategy with an `SMA` value of 43 and a `threshold`
+    value of 7.5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO25-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the cumulative performance of the strategy against the base instrument.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0417](assets/pfat_0417.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-17\. Gross performance of the `GLD` ETF and the mean-reversion strategy
+    (SMA = 43, threshold = 7.5, transaction costs of 0.1%)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Data Snooping and Overfitting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The emphasis in this chapter, as well as in the rest of this book, is on the
+    technological implementation of important concepts in algorithmic trading by using
+    Python. The strategies, parameters, data sets, and algorithms used are sometimes
+    arbitrarily chosen and sometimes purposefully chosen to make a certain point.
+    Without a doubt, when discussing technical methods applied to finance, it is more
+    exciting and motivating to see examples that show “good results,” even if they
+    might not generalize on other financial instruments or time periods, for example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The ability to show examples with good results often comes at the cost of *data
+    snooping*. According to White (2000), data snooping can be defined as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data snooping occurs when a given set of data is used more than once for purposes
+    of inference or model selection.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In other words, a certain approach might be applied multiple or even many times
+    on the same data set to arrive at satisfactory numbers and plots. This, of course,
+    is intellectually dishonest in trading strategy research because it pretends that
+    a trading strategy has some economic potential that might not be realistic in
+    a real-world context. Because the focus of this book is the use of Python as a
+    programming language for algorithmic trading, the data snooping approach might
+    be justifiable. This is in analogy to a mathematics book which, by way of an example,
+    solves an equation that has a unique solution that can be easily identified. In
+    mathematics, such straightforward examples are rather the exception than the rule,
+    but they are nevertheless frequently used for didactical purposes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Another problem that arises in this context is *overfitting*. Overfitting in
+    a trading context can be described as follows (see the [Man Institute on Overfitting](https://oreil.ly/uYIGs)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overfitting is when a model describes noise rather than signal. The model may
+    have good performance on the data on which it was tested, but little or no predictive
+    power on new data in the future. Overfitting can be described as finding patterns
+    that aren’t actually there. There is a cost associated with overfitting—an overfitted
+    strategy will underperform in the future.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Even a simple strategy, such as the one based on two SMA values, allows for
+    the backtesting of thousands of different parameter combinations. Some of those
+    combinations are almost certain to show good performance results. As Bailey et
+    al. (2015) discuss in detail, this easily leads to backtest overfitting with the
+    people responsible for the backtesting often not even being aware of the problem.
+    They point out:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recent advances in algorithmic research and high-performance computing have
+    made it nearly trivial to test millions and billions of alternative investment
+    strategies on a finite dataset of financial time series….[I]t is common practice
+    to use this computational power to calibrate the parameters of an investment strategy
+    in order to maximize its performance. But because the signal-to-noise ratio is
+    so weak, often the result of such calibration is that parameters are chosen to
+    profit from past noise rather than future signal. The outcome is an overfit backtest.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The problem of the validity of empirical results, in a statistical sense, is
+    of course not constrained to strategy backtesting in a financial context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Ioannidis (2005), referring to medical publications, emphasizes probabilistic
+    and statistical considerations when judging the reproducibility and validity of
+    research results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is increasing concern that in modern research, false findings may be the
+    majority or even the vast majority of published research claims. However, this
+    should not be surprising. It can be proven that most claimed research findings
+    are false….As has been shown previously, the probability that a research finding
+    is indeed true depends on the prior probability of it being true (before doing
+    the study), the statistical power of the study, and the level of statistical significance.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Against this background, if a trading strategy in this book is shown to perform
+    well given a certain data set, combination of parameters, and maybe a specific
+    machine learning algorithm, this neither constitutes any kind of recommendation
+    for the particular configuration nor allows it to draw more general conclusions
+    about the quality and performance potential of the strategy configuration at hand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You are, of course, encouraged to use the code and examples presented in this
+    book to explore your own algorithmic trading strategy ideas and to implement them
+    in practice based on your own backtesting results, validations, and conclusions.
+    After all, proper and diligent strategy research is what financial markets will
+    compensate for, not brute-force driven data snooping and overfitting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Vectorization is a powerful concept in scientific computing, as well as for
+    financial analytics, in the context of the backtesting of algorithmic trading
+    strategies. This chapter introduces vectorization both with `NumPy` and `pandas`
+    and applies it to backtest three types of trading strategies: strategies based
+    on simple moving averages, momentum, and mean reversion. The chapter admittedly
+    makes a number of simplifying assumptions, and a rigorous backtesting of trading
+    strategies needs to take into account more factors that determine trading success
+    in practice, such as data issues, selection issues, avoidance of overfitting,
+    or market microstructure elements. However, the major goal of the chapter is to
+    focus on the concept of vectorization and what it can do in algorithmic trading
+    from a technological and implementation point of view. With regard to all concrete
+    examples and results presented, the problems of data snooping, overfitting, and
+    statistical significance need to be considered.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'For the basics of vectorization with `NumPy` and `pandas`, refer to these books:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'McKinney, Wes. 2017\. *Python for Data Analysis*. 2nd ed. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VanderPlas, Jake. 2016\. *Python Data Science Handbook*. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For the use of `NumPy` and `pandas` in a financial context, refer to these
+    books:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2015\. *Derivatives Analytics with Python: Data Analysis, Models,
+    Simulation, Calibration, and Hedging*. Wiley Finance.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '⸻. 2017\. *Listed Volatility and Variance Derivatives: A Python-Based Guide*.
+    Wiley Finance.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '⸻. 2018\. *Python for Finance: Mastering Data-Driven Finance*. 2nd ed. Sebastopol:
+    O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For the topics of data snooping and overfitting, refer to these papers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Bailey, David, Jonathan Borwein, Marcos López de Prado, and Qiji Jim Zhu. 2015\.
+    “The Probability of Backtest Overfitting.” *Journal of Computational Finance*
+    20, (4): 39-69\. [*https://oreil.ly/sOHlf*](https://oreil.ly/sOHlf).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Ioannidis, John. 2005\. “Why Most Published Research Findings Are False.” *PLoS
+    Medicine* 2, (8): 696-701.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'White, Halbert. 2000\. “A Reality Check for Data Snooping.” *Econometrica*
+    68, (5): 1097-1126.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For more background information and empirical results about trading strategies
+    based on simple moving averages, refer to these sources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Brock, William, Josef Lakonishok, and Blake LeBaron. 1992\. “Simple Technical
+    Trading Rules and the Stochastic Properties of Stock Returns.” *Journal of Finance*
+    47, (5): 1731-1764.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Droke, Clif. 2001\. *Moving Averages Simplified.* Columbia: Marketplace Books.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The book by Ernest Chan covers in detail trading strategies based on momentum,
+    as well as on mean reversion. The book is also a good source for the pitfalls
+    of backtesting trading strategies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chan, Ernest. 2013\. *Algorithmic Trading: Winning Strategies and Their Rationale*.
+    Hoboken et al: John Wiley & Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'These research papers analyze characteristics and sources of profit for *cross-sectional
+    momentum* strategies, the traditional approach to momentum-based trading:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chan, Louis, Narasimhan Jegadeesh, and Josef Lakonishok. 1996\. “Momentum Strategies.”
+    *Journal of Finance* 51, (5): 1681-1713.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Jegadeesh, Narasimhan, and Sheridan Titman. 1993\. “Returns to Buying Winners
+    and Selling Losers: Implications for Stock Market Efficiency.” *Journal of Finance*
+    48, (1): 65-91.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Jegadeesh, Narasimhan, and Sheridan Titman. 2001\. “Profitability of Momentum
+    Strategies: An Evaluation of Alternative Explanations.” *Journal of Finance* 56,
+    (2): 599-720.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The paper by Moskowitz et al. provides an analysis of so-called *time series
+    momentum* strategies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Moskowitz, Tobias, Yao Hua Ooi, and Lasse Heje Pedersen. 2012\. “Time Series
+    Momentum.” *Journal of Financial Economics* 104: 228-250.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'These papers empirically analyze mean reversion in asset prices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Balvers, Ronald, Yangru Wu, and Erik Gilliland. 2000\. “Mean Reversion across
+    National Stock Markets and Parametric Contrarian Investment Strategies.” *Journal
+    of Finance* 55, (2): 745-772.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Kim, Myung Jig, Charles Nelson, and Richard Startz. 1991\. “Mean Reversion
+    in Stock Prices? A Reappraisal of the Empirical Evidence.” *Review of Economic
+    Studies* 58: 515-528.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Spierdijk, Laura, Jacob Bikker, and Peter van den Hoek. 2012\. “Mean Reversion
+    in International Stock Markets: An Empirical Analysis of the 20th Century.” *Journal
+    of International Money and Finance* 31: 228-249.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Scripts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section presents Python scripts referenced and used in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SMA Backtesting Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following presents Python code with a class for the vectorized backtesting
+    of strategies based on *simple moving averages*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: Momentum Backtesting Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following presents Python code with a class for the vectorized backtesting
+    of strategies based on *time series momentum*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: Mean Reversion Backtesting Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The following presents Python code with a class for the vectorized backtesting
+    of strategies based on *mean reversion*:.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '^([1](ch04.html#idm45785385873496-marker)) Source: “Does the Past Predict the
+    Future?” *The Economist*, September 23, 2009.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch04.html#idm45785380499832-marker)) For more on the `datetime` and `timedelta`
+    objects, refer to Appendix C of Hilpisch (2018).
+  prefs: []
+  type: TYPE_NORMAL

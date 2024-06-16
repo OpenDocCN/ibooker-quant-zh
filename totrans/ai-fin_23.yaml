@@ -1,0 +1,213 @@
+- en: Appendix C. Convolutional Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[Part III](part03.xhtml#part_statistical_inefficiencies) focuses on dense neural
+    networks (DNNs) and recurrent neural networks (RNNs) as two standard types of
+    neural networks. The charm of DNNs lies in the fact that they are good universal
+    approximators. The examples in the book for reinforcement learning, for instance,
+    make use of DNNs to approximate the optimal action policy. On the other hand,
+    RNNs are specifically designed to handle sequential data, such as time series
+    data. This is helpful when trying, for example, to predict future values of financial
+    time series.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, *convolutional neural networks* (CNNs) are another standard type of
+    neural network that is widely used in practice. They have been particularly successful,
+    among other domains, in computer vision. CNNs were able to set new benchmarks
+    in a number of standard tests and challenges, such as the ImageNet Challenge;
+    for more on this, see *The Economist* (2016) or Gerrish (2018). Computer vision
+    in turn is important in such domains as autonomous vehicles or security and surveillance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This brief appendix illustrates the application of a CNN to the prediction of
+    financial time series data. For details on CNNs, see Chollet (2017, ch. 5) and
+    Goodfellow et al. (2016, ch. 9).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Features and Labels Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The following Python code first takes care of the required imports and customizations.
+    It then imports the data set that contains end-of-day (EOD) data for a number
+    of financial instruments. This data set is used throughout the book for different
+    examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves and selects the financial time series data
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next step is to generate the features data, lag the data, split it into
+    training and test data sets, and finally normalize it based on the statistics
+    of the training data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple moving average feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_convolutional_neural_networks_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling minimum value feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_convolutional_neural_networks_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling maximum value feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_convolutional_neural_networks_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Time series momentum feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_convolutional_neural_networks_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling volatility feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_convolutional_neural_networks_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gaussian normalization of training data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_convolutional_neural_networks_CO2-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gaussian normalization of test data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: Training the Model
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The implementation of CNNs is similar to that of DNNs. First, the Python code
+    that follows takes care of the imports from `Keras` and the definition of the
+    function to set all relevant seed values of the random number generators:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following Python code implements and trains a simple CNN. At the core of
+    the model is a *one-dimensional convolutional layer* that is suited for time series
+    data (see [Keras convolutional layers](https://oreil.ly/AXQ33) for details):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure C-1](#figure_cnn_01) presents the performance metrics for the training
+    and validation data sets over the different training epochs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1701](Images/aiif_1701.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure C-1\. Performance metrics for the training and validation of the CNN
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Testing the Model
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Finally, the Python code that follows applies the trained model to the test
+    data set. The CNN model outperforms the passive benchmark investment significantly.
+    However, taking into account transaction costs in the form of typical (retail)
+    bid-ask spreads, it eats up larger parts of the outperformance. [Figure C-2](#figure_cnn_02)
+    visualizes the performances over time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_convolutional_neural_networks_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The accuracy ratio out-of-sample
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_convolutional_neural_networks_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The positions (long/short) based on the predictions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_convolutional_neural_networks_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of trades resulting from the positions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_convolutional_neural_networks_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proportional transaction costs for given bid-ask spread
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_convolutional_neural_networks_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The strategy performance *before* transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_convolutional_neural_networks_CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The strategy performance *after* transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1702](Images/aiif_1702.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure C-2\. Gross performance of passive benchmark investment and CNN strategy
+    (before/after transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this appendix:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chollet, François. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Economist, The*. 2016\. “From Not Working to Neural Networking.” *The Economist*
+    Special Report, June 23, 2016\. [*https://oreil.ly/6VvlS*](https://oreil.ly/6VvlS).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Gerrish, Sean. 2018\. *How Smart Machines Think*. Cambridge: MIT Press.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
+    Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

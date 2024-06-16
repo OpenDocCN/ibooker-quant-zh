@@ -1,0 +1,940 @@
+- en: Chapter 6\. AI-First Finance
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A computation takes information and transforms it, implementing what mathematicians
+    call a *function*….If you’re in possession of a function that inputs all the world’s
+    financial data and outputs the best stocks to buy, you’ll soon be extremely rich.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Max Tegmark (2017)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter sets out to combine data-driven finance with the machine learning
+    approach from the previous chapter. It only represents the beginning of this endeavor
+    in that, for the first time, neural networks are used to discover statistical
+    inefficiencies. [“Efficient Markets”](#aiff_efficiency) discusses the efficient
+    market hypothesis and uses OLS regression to illustrate it based on financial
+    time series data. [“Market Prediction Based on Returns Data”](#aiff_returns) for
+    the first time applies neural networks, alongside OLS regression, to predict the
+    future direction of a financial instrument’s price (“market direction”). The analysis
+    relies on returns data only. [“Market Prediction with More Features”](#aiff_features)
+    adds more features to the mix, such as typical financial indicators. In this context,
+    first results indicate that statistical inefficiencies might indeed be present.
+    This is confirmed in [“Market Prediction Intraday”](#aiff_intraday), which works
+    with intraday data as compared to end-of-day data. Finally, [“Conclusions”](#aiff_effectiveness)
+    discusses the effectiveness of big data in combination with AI in certain domains
+    and argues that AI-first, theory-free finance might represent a way out of the
+    theory fallacies in traditional finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Efficient Markets
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: One of the hypotheses with the strongest empirical support is the *efficient
+    market hypothesis* (EMH). It is also called the *random walk hypothesis* (RWH).^([1](ch06.xhtml#idm45625304814120))
+    Simply speaking, the hypothesis says that the prices of financial instruments
+    at a certain point in time reflect all available information at this point in
+    time. If the EMH holds true, a discussion about whether the price of a stock is
+    too high or too low would be pointless. The price of a stock, given the EMH, is
+    at all times exactly on its appropriate level given the available information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Lots of effort has been put into refining and formalizing the idea of efficient
+    markets since the formulation and first discussions of the EMH in the 1960s. The
+    definitions as presented in Jensen (1978) are still used today. Jensen defines
+    an efficient market as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A market is efficient with respect to an information set <math alttext="theta
+    Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math> if it is impossible to
+    make economic profits by trading on the basis of information set <math alttext="theta
+    Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math> . By economic profits,
+    we mean the risk adjusted returns net of all costs.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'In this context, Jensen distinguishes three forms of market efficiency:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Weak form of EMH
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case, the information set <math alttext="theta Subscript t"><msub><mi>θ</mi>
+    <mi>t</mi></msub></math> only encompasses the past price and return history of
+    the market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Semi-strong form of EMH
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case, the information set <math alttext="theta Subscript t"><msub><mi>θ</mi>
+    <mi>t</mi></msub></math> is taken to be all publicly available information, including
+    not only the past price and return history but also financial reports, news articles,
+    weather data, and so on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strong form of EMH
+  prefs: []
+  type: TYPE_NORMAL
+- en: This case is given when the information set <math alttext="theta Subscript t"><msub><mi>θ</mi>
+    <mi>t</mi></msub></math> includes all information available to anyone (that is,
+    even private information).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'No matter which form is assumed, the implications of the EMH are far reaching.
+    In his pioneering article on the EMH, Fama (1965) concludes the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For many years, economists, statisticians, and teachers of finance have been
+    interested in developing and testing models of stock price behavior. One important
+    model that has evolved from this research is the theory of random walks. This
+    theory casts serious doubt on many other methods for describing and predicting
+    stock price behavior—methods that have considerable popularity outside the academic
+    world. For example, we shall see later that, if the random-walk theory is an accurate
+    description of reality, then the various “technical” or “chartist” procedures
+    for predicting stock prices are completely without value.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In other words, if the EMH holds true, then any kind of research or data analysis
+    for the purposes of achieving above-market returns should be useless in practice.
+    On the other hand, a multitrillion-dollar asset management industry has evolved
+    that promises such above-market returns due to rigorous research and the active
+    management of capital. In particular, the hedge fund industry is based on promises
+    to deliver *alpha*—that is, returns that are above-market and even independent,
+    at least to a large extent, of the market returns. How hard it is to live up to
+    such a promise is shown by the data from a recent study by [Preqin](https://oreil.ly/C38Tl).
+    The study reports a drop in the Preqin All-Strategies Hedge Fund index of –3.42%
+    for the year 2018\. Close to 40% of all hedge funds covered by the study experienced
+    losses of 5% or greater for that year.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If a stock price (or the price of any other financial instrument) follows a
+    standard random walk, then the returns are normally distributed with zero mean.
+    The stock price goes up with 50% probability and down with 50% probability. In
+    such a context, the best predictor of tomorrow’s stock price, in a least-squares
+    sense, is today’s stock price. This is due to the Markov property of random walks,
+    namely that the distribution of the future stock prices is independent of the
+    history of the price process; it only depends on the current price level. Therefore,
+    in the context of a random walk, the analysis of the historical prices (or returns)
+    is useless for predicting future prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Against this background, a semiformal test for efficient markets can be implemented
+    as follows.^([2](ch06.xhtml#idm45625303735832)) Take a financial time series,
+    lag the price data multiple times, and use the lagged price data as features data
+    for an OLS regression that uses the current price level as the labels data. This
+    is similar in spirit to charting techniques that rely on historical price formations
+    to predict future prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code implements such an analysis based on lagged price
+    data for a number of financial instruments—both tradable ones and nontradable
+    ones. First, import the data and its visualization (see [Figure 6-1](#figure_aiff_01)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the data into a `DataFrame` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the normalized time series data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0601](Images/aiif_0601.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-1\. Normalized time series data (end-of-day)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Second, the price data for all financial time series is lagged and stored in
+    `DataFrame` objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of lags (in trading days)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a column name
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Lags the price data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds the column name to a `list` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_ai_first_finance_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deletes all incomplete data rows
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_ai_first_finance_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the lagged data for every financial time series
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_ai_first_finance_CO2-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores the results in a `dict` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_ai_first_finance_CO2-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows a sample of the lagged price data
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Third, with the data prepared, the OLS regression analysis is straightforward
+    to conduct. [Figure 6-2](#figure_aiff_02) shows the average optimal regression
+    results. Without a doubt, the price data that is lagged by only one day has the
+    highest explanatory power. Its weight is close to 1, supporting the idea that
+    the best predictor for tomorrow’s price of a financial instrument is its price
+    today. This also holds true for the single regression results obtained per financial
+    time series:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gets the data for the current time series
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the regression analysis
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores the optimal regression parameters in a `dict` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combines the optimal results into a single `ndarray` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_ai_first_finance_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Puts the results into a `DataFrame` object and shows them
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_ai_first_finance_CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the average optimal regression parameters (weights) for every lag
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0602](Images/aiif_0602.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6-2\. Average optimal regression parameters for the lagged prices
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Given this semiformal analysis, there seems to be strong supporting evidence
+    for the EMH in its weak form, at least. It is noteworthy that the OLS regression
+    analysis as implemented here violates several assumptions. Among those is that
+    the features are assumed to be noncorrelated among each other, whereas they should
+    ideally be highly correlated with the labels data. However, the lagged price data
+    leads to highly correlated features. The following Python code presents the correlation
+    data, which shows a close-to-perfect correlation between all features. This explains
+    why only one feature (“lag 1”) is enough to accomplish the approximation and prediction
+    based on the OLS regression approach. Adding more, highly correlated features
+    does not yield any improvements. Another fundamental assumption violated is the
+    *stationarity* of the time series data, which the following code also tests for:^([3](ch06.xhtml#idm45625303250520))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the correlations between the lagged time series
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tests for stationarity using the [Augmented Dickey-Fuller](https://oreil.ly/rfdaC)
+    test
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In summary, if the EMH holds true, active or algorithmic portfolio management
+    or trading would not make economic sense. Simply investing in a stock or an efficient
+    portfolio in the MVP sense, say, and passively holding the investment over a long
+    period would yield without any effort at least the same, if not superior, returns.
+    According to the CAPM and the MVP, the higher the risk the investor is willing
+    to bear, the higher the expected return should be. In fact, as Copeland et al.
+    (2005, ch. 10) point out, the CAPM and the EMH form a joint hypothesis about financial
+    markets: if the EMH is rejected, then the CAPM must be rejected as well, since
+    its derivation assumes the EMH to hold true.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market Prediction Based on Returns Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As [Chapter 2](ch02.xhtml#superintelligence) shows, ML and, in particular, DL
+    algorithms have generated breakthroughs in recent years in fields that have proven
+    resistant over pretty long periods of time to standard statistical or mathematical
+    methods. What about the financial markets? Might ML and DL algorithms be capable
+    of discovering inefficiencies where traditional financial econometrics methods,
+    such as OLS regression, fail? Of course, there are no simple and concise answers
+    to these questions yet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, some concrete examples might shed light on possible answers. To this
+    end, the same data as in the previous section is used to derive log returns from
+    the price data. The idea is to compare the performance of OLS regression to the
+    performance of neural networks in predicting the next day’s direction of movement
+    for the different time series. The goal at this stage is to discover *statistical
+    inefficiencies* as compared to *economic inefficiencies*. Statistical inefficiencies
+    are given when a model is able to predict the direction of the future price movement
+    with a certain edge (say, the prediction is correct in 55% or 60% of the cases).
+    Economic inefficiencies would only be given if the statistical inefficiencies
+    can be exploited profitably through a trading strategy that takes into account,
+    for example, transaction costs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first step in the analysis is to create data sets with lagged log returns
+    data. The normalized lagged log returns data is also tested for stationarity (given),
+    and the features are tested for correlation (not correlated). Since the following
+    analyses rely on time-series-related data only, they are dealing with *weak form
+    market efficiency*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the log returns from the price data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Lags the log returns data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies *Gaussian normalization* to the features data^([4](ch06.xhtml#idm45625301826344))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows a sample of the lagged returns data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_ai_first_finance_CO5-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tests for stationarity of the time series data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_ai_first_finance_CO5-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the correlation data for the features
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First, the OLS regression is implemented and the predictions resulting from
+    the regression are generated. The analysis is implemented on the complete data
+    set. It shall show how well the algorithms perform in-sample. The accuracy with
+    which OLS regression predicts the next day’s direction of movement is slightly,
+    or even a few percentage points, above 50% with one exception:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The regression step
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The prediction step
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The accuracy of the prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second, the same analysis is done again but this time with a neural network
+    from `scikit-learn` as the model for learning and predicting. The prediction accuracy
+    in-sample is significantly above 50% throughout and above 60% in a few cases:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model instantiation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model fitting
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prediction step
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accuracy calculation
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Third, the same analysis again but with a neural network from the `Keras` package.
+    The accuracy results are similar to those from the `MLPRegressor`, but with a
+    higher average accuracy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model creation function
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model instantiation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model fitting
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prediction step
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_ai_first_finance_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accuracy calculation
+  prefs: []
+  type: TYPE_NORMAL
+- en: This simple example shows that neural networks can outperform OLS regression
+    significantly *in-sample* in predicting the next day’s direction of price movements.
+    However, how does the picture change when testing for the *out-of-sample* performance
+    of the two model types?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To this end, the analyses are repeated, but the training (fitting) step is
+    implemented on the first 80% of the data while the performance is tested on the
+    remaining 20%. OLS regression is implemented first. Out-of-sample OLS regression
+    shows similar accuracy levels as in-sample—around 50%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the *training* data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the *test* data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The performance of the `MLPRegressor` model is out-of-sample much worse when
+    compared to the in-sample numbers and similar to the OLS regression results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The same holds true for the `Sequential` model from `Keras` for which the out-of-sample
+    numbers also show accuracy values between a few percentage points above and below
+    the 50% threshold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: Weak Form Market Efficiency
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Although the labeling as *weak form* market efficiency might suggest otherwise,
+    it is the hardest form in the sense that only time-series-related data can be
+    used to identify statistical inefficiencies. With the semi-strong form, any other
+    source of publicly available data could be added to improve prediction accuracy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on the approaches chosen in this section, markets seem to be at least
+    efficient in the weak form. Just analyzing historical return patterns based on
+    OLS regression or neural networks might not be enough to discover statistical
+    inefficiencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are two major elements of the approach chosen in this section that can
+    be adjusted in the hope of improving prediction results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Features
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to vanilla price-and-returns data, other features can be added to
+    the data, such as technical indicators (for example, simple moving averages, or
+    SMAs for short). The hope is, in the technical chartist’s tradition, that such
+    indicators improve the prediction accuracy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bar length
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead of working with end-of-day data, intraday data might allow for higher
+    prediction accuracies. Here, the hope is that one is more likely to discover statistical
+    inefficiencies during the day as compared to at end of day, when all market participants
+    in general pay the highest attention to making their final trades—by taking into
+    account all available information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following two sections address these elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market Prediction with More Features
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In trading, there is a long tradition of using technical indicators to generate,
+    based on observed patterns, buy or sell signals. Such technical indicators, basically
+    of any kind, can also be used as features for the training of neural networks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code uses an SMA, rolling minimum and maximum values,
+    momentum, and rolling volatility as features:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple moving average (SMA)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling minimum
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling maximum
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Momentum as average of log returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_ai_first_finance_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rolling volatility
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_ai_first_finance_CO10-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Direction as binary feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technical Indicators as Features
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As the preceding examples show, basically any traditional technical indicator
+    used for investing or intraday trading can be used as a feature to train ML algorithms.
+    In that sense, AI and ML do not necessarily render such indicators obsolete, rather
+    they can indeed enrich the ML-driven derivation of trading strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In-sample, the performance of the `MLPClassifier` model is now much better
+    when taking into account the new features and normalizing them for training. The
+    `Sequential` model of `Keras` reaches accuracies of around 70% for the number
+    of epochs trained. From experience, these can be easily increased by increasing
+    the number of epochs and/or the capacity of the neural network:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes the features data
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Are these improvements to be transferred to the out-of-sample prediction accuracies?
+    The following Python code repeats the analysis, this time with the training and
+    test split as used before. Unfortunately, the picture is mixed at best. The numbers
+    do not represent real improvements when compared to the approach, relying only
+    on lagged returns data as features. For selected instruments, there seems to be
+    an edge of a few percentage points in the prediction accuracy compared to the
+    50% benchmark. For others, however, the accuracy is still below 50%—as illustrated
+    for the `MLPClassifier` model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Training data set statistics are used for normalization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The good in-sample performance and the not-so-good out-of-sample performance
+    suggest that overfitting of the neural network might play a crucial role. One
+    approach to avoid overfitting is to use ensemble methods that combine multiple
+    trained models of the same type to come up with a more robust meta model and better
+    out-of-sample predictions. One such method is called *bagging*. `scikit-learn`
+    has an implementation of this approach in the form of the [`BaggingClassifier`
+    class](https://oreil.ly/gQLFZ). Using multiple estimators allows for training
+    every one of them without exposing them to the complete training data set or all
+    features. This should help in avoiding overfitting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code implements a bagging approach based on a number of
+    base estimators of the same type (`MLPClassifier`). The prediction accuracies
+    are now consistently above 50%. Some accuracy values are above 55%, which can
+    be considered pretty high in this context. Overall, bagging seems to avoid, at
+    least to some extent, overfitting and seems to improve the predictions noticeably:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_ai_first_finance_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The base estimator
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_ai_first_finance_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of estimators used
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_ai_first_finance_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Maximum percentage of training data used per estimator
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_ai_first_finance_CO13-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Maximum number of features used per estimator
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_ai_first_finance_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Whether to bootstrap (reuse) data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_ai_first_finance_CO13-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Whether to bootstrap (reuse) features
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_ai_first_finance_CO13-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of parallel jobs
+  prefs: []
+  type: TYPE_NORMAL
+- en: End-of-Day Market Efficiency
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The efficient market hypothesis dates back to the 1960s and 1970s, periods during
+    which end-of-day data was basically the only available time series data. Back
+    in those days (and still today), it could be assumed that market players paid
+    particularly close attention to their positions and trades the closer the end
+    of the trading session came. This might be more true for stocks, say, and a bit
+    less so for currencies, which are traded in principle around the clock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market Prediction Intraday
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter has not produced conclusive evidence, but the analyses implemented
+    so far point more in the direction that markets are weakly efficient on an end-of-day
+    basis. What about intraday markets? Are there more consistent statistical inefficiencies
+    to be spotted? To work toward an answer of this question, another data set is
+    necessary. The following Python code uses a data set that is composed of the same
+    instruments as in the end-of-day data set, but now contains hourly closing prices.
+    Since trading hours might differ from instrument to instrument, the data set is
+    incomplete. This is no problem, though, since the analyses are implemented time
+    series by time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The technical implementation for the hourly data is essentially the same as
+    before, relying on the same code as the end-of-day analysis:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The prediction accuracies intraday are again distributed around 50% with a
+    relatively wide spread for the single neural network. On the positive side, some
+    accuracy values are above 55%. The bagging meta model shows a more consistent
+    out-of-sample performance, though, with many of the observed accuracy values a
+    few percentage points above the 50% benchmark:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: Intraday Market Efficiency
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Even if markets are *weakly efficient on an end-of-day basis*, they can nevertheless
+    be *weakly inefficient intraday*. Such statistical inefficiencies might result
+    from temporary imbalances, buy or sell pressures, market overreactions, technically
+    driven buy or sell orders, and so on. The central question is whether such statistical
+    inefficiencies, once discovered, can be exploited profitably via specific trading
+    strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In their widely cited article “The Unreasonable Effectiveness of Data,” Halevy
+    et al. (2009) point out that economists suffer from what they call *physics envy*.
+    By that, they mean the inability to explain human behavior in the same mathematically
+    elegant way that physicists are able to describe even complex real-world phenomena.
+    One such example is Albert Einstein’s probably best-known formula <math alttext="upper
+    E equals m c squared"><mrow><mi>E</mi> <mo>=</mo> <mi>m</mi> <msup><mi>c</mi>
+    <mn>2</mn></msup></mrow></math> , which equates energy with the mass of an object
+    times the speed of light squared.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In economics and finance, researchers for decades have tried to emulate the
+    physical approach in deriving and proving simple, elegant equations to explain
+    economic and financial phenomena. But as [Chapter 3](ch03.xhtml#normative_finance)
+    and [Chapter 4](ch04.xhtml#data_driven_finance) together show, many of the most
+    elegant financial theories have hardly any supporting evidence in the real financial
+    world in which the simplifying assumptions, such as normal distributions and linear
+    relationships, do not hold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As Halevy et al. (2009) explain in their article, there might be domains, such
+    as natural languages and the rules they follow, that defy the derivation and formulation
+    of concise, elegant theories. Researchers might simply need to rely on complex
+    theories and models that are driven by data. For language in particular, the World
+    Wide Web represents a treasure trove of *big data*. And big data seems to be required
+    to train ML and DL algorithms on certain tasks, such as natural language processing
+    or translation on a human level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After all, finance might be a discipline that has more in common with natural
+    language than with physics. Maybe there are, after all, no simple, elegant formulas
+    that describe important financial phenomena, such as the daily change in a currency
+    rate or the price of a stock.^([5](ch06.xhtml#idm45625297652504)) Maybe the truth
+    might be found only in the big data that nowadays is available in programmatic
+    fashion to financial researchers and academics alike.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter presents the beginning of the quest to uncover the truth, to discover
+    the holy grail of finance: proving that markets are not that efficient after all.
+    The relatively simple neural network approaches of this chapter only rely on time-series-related
+    features for the training. The labels are simple and straightforward: whether
+    the market (financial instrument’s price) goes up or down. The goal is to discover
+    *statistical inefficiencies* in predicting the future market direction. This in
+    turn represents the first step in exploiting such inefficiencies economically
+    through an implementable trading strategy.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Agrawal et al. (2018) explain in detail, with many examples, that predictions
+    themselves are only one side of the coin. Decision and implementation rules that
+    specify in detail how a certain prediction is dealt with are equally important.
+    The same holds true in an algorithmic trading context: the signal (prediction)
+    is only the beginning. The hard part is to optimally execute an appropriate trade,
+    to monitor active trades, to implement appropriate risk measures—such as stop
+    loss and take profit orders—and so on.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In its quest for statistical inefficiencies, this chapter relies on data and
+    neural networks only. There is no theory involved, and there are no assumptions
+    about how market participants might behave, or similar reasonings. The major modeling
+    effort is done with regard to preparing the features, which of course represent
+    what the modeler considers important. One implicit assumption in the approach
+    taken is that statistical inefficiencies can be discovered based on time-series-related
+    data only. This is to say that markets are not even weakly efficient—the most
+    difficult form of the three to disprove.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Relying on financial data only and applying general ML and DL algorithms and
+    models to it are what this book considers *AI-first finance*. No theories needed,
+    no modeling of human behavior, no assumptions about distributions or the nature
+    of relationships—just data and algorithms. In that sense, AI-first finance could
+    also be labeled *theory-free* or *model-free finance*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018\. *Prediction Machines:
+    The Simple Economics of Artificial Intelligence.* Boston: Harvard Business Review
+    Press.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Copeland, Thomas, Fred Weston, and Kuldeep Shastri. 2005\. *Financial Theory
+    and Corporate Policy*. 4th ed. Boston: Pearson.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Fama, Eugene. 1965\. “Random Walks in Stock Market Prices.” *Financial Analysts
+    Journal* (September/October): 55-59.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Halevy, Alon, Peter Norvig, and Fernando Pereira. 2009\. “The Unreasonable Effectiveness
+    of Data.” *IEEE Intelligent Systems*, Expert Opinion.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance.*
+    2nd ed. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Jensen, Michael. 1978\. “Some Anomalous Evidence Regarding Market Efficiency.”
+    *Journal of Financial Economics* 6 (2/3): 95-101.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Tegmark, Max. 2017\. *Life 3.0: Being Human in the Age of Artificial Intelligence*.
+    United Kingdom: Penguin Random House.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Tsay, Ruey S. 2005\. *Analysis of Financial Time Series.* Hoboken: Wiley.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch06.xhtml#idm45625304814120-marker)) For the purposes of this chapter
+    and the book, the two hypotheses are treated as equal, although the RWH is somewhat
+    stronger than the EMH. See, for instance, Copeland et al. (2005, ch. 10).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch06.xhtml#idm45625303735832-marker)) See also Hilpisch (2018, ch. 15).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([3](ch06.xhtml#idm45625303250520-marker)) For details on *stationarity* in
+    financial time series, see Tsay (2005, sec. 2.1). Tsay points out: “The foundation
+    of time series analysis is stationarity.”'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch06.xhtml#idm45625301826344-marker)) Another term for the approach is
+    *z-score normalization*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch06.xhtml#idm45625297652504-marker)) There are, of course, more simple
+    financial aspects that allow the modeling by a simple formula. An example might
+    be the derivation of a continuous discount factor <math alttext="upper D"><mi>D</mi></math>
+    for a period of two years <math alttext="upper T equals 2"><mrow><mi>T</mi> <mo>=</mo>
+    <mn>2</mn></mrow></math> if the relevant log return is <math alttext="r equals"><mrow><mi>r</mi>
+    <mo>=</mo></mrow></math> 0.01\. It is given by <math alttext="upper D left-parenthesis
+    r comma upper T right-parenthesis equals exp left-parenthesis minus r upper T
+    right-parenthesis equals exp left-parenthesis"><mrow><mi>D</mi> <mo>(</mo> <mi>r</mi>
+    <mo>,</mo> <mi>T</mi> <mo>)</mo> <mo>=</mo> <mo form="prefix">exp</mo> <mo>(</mo>
+    <mo>-</mo> <mi>r</mi> <mi>T</mi> <mo>)</mo> <mo>=</mo> <mo form="prefix">exp</mo>
+    <mo>(</mo></mrow></math> -0.01 <math alttext="dot 2 right-parenthesis equals"><mrow><mo>·</mo>
+    <mn>2</mn> <mo>)</mo> <mo>=</mo></mrow></math> 0.9802\. AI or ML cannot offer
+    any benefits here.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,590 @@
+- en: Chapter 7\. Dense Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[I]f you’re trying to predict the movements of a stock on the stock market
+    given its recent price history, you’re unlikely to succeed, because price history
+    doesn’t contain much predictive information.'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: François Chollet (2017)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter is about important aspects of *dense neural networks*. Previous
+    chapters have already made use of this type of neural network. In particular,
+    the `MLPClassifier` and `MLPRegressor` models from `scikit-learn` and the `Sequential`
+    model from `Keras` for classification and estimation are dense neural networks
+    (DNNs). This chapter exclusively focuses on `Keras` since it gives more freedom
+    and flexibility in modeling DNNs.^([1](ch07.xhtml#idm45625297582184))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“The Data”](#dnn_data) introduces the foreign exchange (FX) data set that
+    the other sections in this chapter use. [“Baseline Prediction”](#dnn_baseline)
+    generates a baseline, in-sample prediction on the new data set. Normalization
+    of training and test data is introduced in [“Normalization”](#dnn_normalization).
+    As means to avoid overfitting, [“Dropout”](#dnn_dropouts) and [“Regularization”](#dnn_regularization)
+    discuss dropout and regularization as popular methods. Bagging, as another method
+    to avoid overfitting and already used in [Chapter 6](ch06.xhtml#ai_first_finance),
+    is revisited in [“Bagging”](#dnn_bagging). Finally, [“Optimizers”](#dnn_optimizers)
+    compares the performance of different optimizers that can be used with `Keras`
+    DNN models.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although the introductory quote for the chapter might give little reason for
+    hope, the main goal for this chapter—as well as for [Part III](part03.xhtml#part_statistical_inefficiencies)
+    as a whole—is to discover statistical inefficiencies in financial markets (time
+    series) by applying neural networks. The numerical results presented in this chapter,
+    such as prediction accuracies of 60% and more in certain cases, indicate that
+    at least some hope is justified.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[Chapter 6](ch06.xhtml#ai_first_finance) discovers hints for statistical inefficiencies
+    for, among other time series, the intraday price series of the EUR/USD currency
+    pair. This chapter and the following ones focus on foreign exchange (FX) as an
+    asset class and specifically on the EUR/USD currency pair. Among other reasons,
+    economically exploiting statistical inefficiencies for FX is in general not as
+    involved as for other asset classes, such as for volatility products like the
+    VIX volatility index. Free and comprehensive data availability is also often given
+    for FX. The following data set is from the Refinitiv Eikon Data API. The data
+    set has been retrieved via the API. The data set contains open, high, low, and
+    close values. [Figure 7-1](#figure_dnn_01) visualizes the closing prices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the data into a `DataFrame` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects, resamples, and plots the closing prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0701](Images/aiif_0701.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-1\. Mid-closing prices for EUR/USD (intraday)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Baseline Prediction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Based on the new data set, the prediction approach from [Chapter 6](ch06.xhtml#ai_first_finance)
+    is repeated. First is the creation of the lagged features:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Slightly adjusted function from [Chapter 6](ch06.xhtml#ai_first_finance)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, a look at the labels data. A major problem in classification that can
+    arise depending on the data set available is *class imbalance*. This means, in
+    the context of binary labels, that the frequency of one particular class compared
+    to the other class might be higher. This might lead to situations in which the
+    neural network simply predicts the class with the higher frequency since this
+    already can lead to low loss and high accuracy values. Applying appropriate weights,
+    one can make sure that both classes gain equal importance during the DNN training
+    step:^([2](ch07.xhtml#idm45625295132152))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the frequency of the two classes
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates appropriate weights to reach an equal weighting
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_dense_neural_networks_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: With the calculated weights, both classes gain equal weight
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Third is the creation of the DNN model with `Keras` and the training of the
+    model on the complete data set. The baseline performance in-sample is around 60%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python random number seed
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`NumPy` random number seed'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_dense_neural_networks_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`TensorFlow` random number seed'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_dense_neural_networks_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Default optimizer (see [*https://oreil.ly/atpu8*](https://oreil.ly/atpu8))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_dense_neural_networks_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: First layer
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_dense_neural_networks_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Additional layers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_dense_neural_networks_CO4-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Output layer
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_dense_neural_networks_CO4-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Loss function (see [*https://oreil.ly/cVGVf*](https://oreil.ly/cVGVf))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_dense_neural_networks_CO4-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Optimizer to be used
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](Images/10.png)](#co_dense_neural_networks_CO4-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Additional metrics to be collected
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The same holds true for the performance of the model out-of-sample. It is still
+    well above 60%. This can be considered already quite good:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Splits the whole data set…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …into the training data set…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_dense_neural_networks_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and the test data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_dense_neural_networks_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the *in-sample* performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_dense_neural_networks_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the *out-of-sample* performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 7-2](#figure_dnn_02) shows how the accuracy on the training and validation
+    data sub-sets changes over the training epochs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0702](Images/aiif_0702.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-2\. Training and validation accuracy values
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The analysis in this section sets the stage for the more elaborate use of DNNs
+    with `Keras`. It presents a baseline market prediction approach. The following
+    sections add different elements that are primarily supposed to improve the out-of-sample
+    model performance and to avoid overfitting of the model to the training data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The baseline prediction in [“Baseline Prediction”](#dnn_baseline) takes the
+    lagged features as they are. In [Chapter 6](ch06.xhtml#ai_first_finance), the
+    features data is normalized by subtracting the mean of the training data for every
+    feature and dividing it by the standard deviation of the training data. This normalization
+    technique is called *Gaussian normalization* and proves often, if not always,
+    to be an important aspect when training a neural network. As the following Python
+    code and its results illustrate, the in-sample performance increases significantly
+    when working with normalized features data. The out-of-sample performance also
+    slightly increases. However, there is no guarantee that the out-of-sample performance
+    increases through features normalization:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the mean and standard deviation for all *training features*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes the *training data* set based on Gaussian normalization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_dense_neural_networks_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the *in-sample* performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_dense_neural_networks_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes the *test data* set based on Gaussian normalization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_dense_neural_networks_CO6-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the *out-of-sample* performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A major problem that often arises is *overfitting*. It is impressively visualized
+    in [Figure 7-3](#figure_dnn_03), which shows a steadily improving training accuracy
+    while the validation accuracy decreases slowly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0703](Images/aiif_0703.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-3\. Training and validation accuracy values (normalized features data)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Three candidate methods to avoid overfitting are *dropout*, *regularization*,
+    and *bagging*. The following sections discuss these methods. The impact of the
+    chosen optimizer is also discussed later in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dropout
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The idea of *dropout* is that neural networks should not use all hidden units
+    during the training stage. The analogy to the human brain is that a human being
+    regularly forgets information that was previously learned. This, so to say, keeps
+    the human brain “open minded.” Ideally, a neural network should behave similarly:
+    the connections in the DNN should not become too strong in order to avoid overfitting
+    to the training data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Technically, a `Keras` model has additional layers between the hidden layers
+    that manage the dropout. The major parameter is the rate with which the hidden
+    units of a layer get dropped. These drops in general happen in randomized fashion.
+    This can be avoided by fixing the `seed` parameter. While the in-sample performance
+    decreases, the out-of-sample performance slightly decreases as well. However,
+    the difference between the two performance measures is smaller, which is in general
+    a desirable situation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds dropout after each layer
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As [Figure 7-4](#figure_dnn_04) illustrates, the training accuracy and validation
+    accuracy now do not drift apart as fast as before:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0704](Images/aiif_0704.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-4\. Training and validation accuracy values (with dropout)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Intentional Forgetting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Dropout in the `Sequential` model of `Keras` emulates what all human beings
+    experience: forgetting previously memorized information. This is accomplished
+    by deactivating certain hidden units of a hidden layer during training. In effect,
+    this often avoids, to a larger extent, overfitting a neural network to the training
+    data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regularization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Another means to avoid overfitting is *regularization*. With regularization,
+    large weights in the neural network get penalized in the calculation of the loss
+    (function). This avoids the situation where certain connections in the DNN become
+    too strong and dominant. Regularization can be introduced in a `Keras` DNN through
+    a parameter in the `Dense` layers. Depending on the regularization parameter chosen,
+    training and test accuracy can be kept quite close together. Two regularizers
+    are in general used, one based on the linear norm, `l1`, and one based on the
+    Euclidean norm, `l2`. The following Python code adds regularization to the model
+    creation function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regularization is added to each layer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 7-5](#figure_dnn_05) shows the training and validation accuracy under
+    regularization. The two performance measures are much closer together than previously
+    seen:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0705](Images/aiif_0705.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-5\. Training and validation accuracy values (with regularization)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Of course, dropout and regularization can be used together. The idea is that
+    the two measures combined even better avoid overfitting and bring the in-sample
+    and out-of-sample accuracy values closer together. And indeed the difference between
+    the two measures is lowest in this case:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dropout is added to the model creation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regularization is added to the model creation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 7-6](#figure_dnn_06) shows the training and validation accuracy when
+    combining dropout with regularization. The difference between training and validation
+    data accuracy over the training epochs is some four percentage points only on
+    average:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0706](Images/aiif_0706.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-6\. Training and validation accuracy values (with dropout and regularization)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Penalizing Large Weights
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Regularization avoids overfitting by penalizing large weights in a neural network.
+    Single weights cannot get that large enough to dominate a neural network. The
+    penalties keep weights on a comparable level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bagging
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The bagging method to avoid overfitting is already used in [Chapter 6](ch06.xhtml#ai_first_finance),
+    although only for the `scikit-learn` `MLPRegressor` model. There is also a wrapper
+    for a `Keras` DNN classification model to expose it in `scikit-learn` fashion,
+    namely the `KerasClassifier` class. The following Python code combines the `Keras`
+    DNN modeling based on the wrapper with the `BaggingClassifier` from `scikit-learn`.
+    The in-sample and out-of-sample performance measures are relatively high, around
+    70%. However, the result is driven by the class imbalance, as addressed previously,
+    and as reflected here in the high frequency of the `0` predictions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The base estimator, here a `Keras` `Sequential` model, is instantiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `BaggingClassifier` model is instantiated for a number of equal base estimators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Distributing Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Bagging, in a sense, distributes learning among a number of neural networks
+    (or other models) in that each neural network, for example, only sees certain
+    parts of the training data set and only a selection of the features. This avoids
+    the risk that a single neural network overfits the complete training data set.
+    The prediction is based on all selectively trained neural networks together.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Optimizers
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The `Keras` package offers a selection of optimizers that can be used in combination
+    with the `Sequential` model (see [*https://oreil.ly/atpu8*](https://oreil.ly/atpu8)).
+    Different optimizers might show different performances, with regard to both the
+    time the training takes and the prediction accuracy. The following Python code
+    uses different optimizers and benchmarks their performance. In all cases, the
+    default parametrization of `Keras` is used. The out-of-sample performance does
+    not vary that much. However, the in-sample performance, given the different optimizers,
+    varies by a wide margin:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_dense_neural_networks_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the DNN model for the given optimizer
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_dense_neural_networks_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model with the given optimizer
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_dense_neural_networks_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the *in-sample* performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_dense_neural_networks_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the *out-of-sample* performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter dives deeper into the world of DNNs and uses `Keras` as the primary
+    package. `Keras` offers a high degree of flexibility in composing DNNs. The results
+    in this chapter are promising in that both in-sample and out-of-sample performance—with
+    regard to the prediction accuracy—are consistently 60% and higher. However, prediction
+    accuracy is just one side of the coin. An appropriate trading strategy must be
+    available and implementable to economically profit from the predictions, or “signals.”
+    This topic of paramount importance in the context of algorithmic trading is discussed
+    in detail in [Part IV](part04.xhtml#part_economic_inefficiencies). The next two
+    chapters first illustrate the use of different neural networks (recurrent and
+    convolutional neural networks) and learning techniques (reinforcement learning).
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '`Keras` is a powerful and comprehensive package for deep learning with TensforFlow
+    as its primary backend. The project is also evolving fast. Make sure to stay up
+    to date via the [main project page](http://keras.io). The major resources about
+    `Keras` in book form are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chollet, Francois. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
+    Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch07.xhtml#idm45625297582184-marker)) See Chollet (2017) for more details
+    and background information on the `Keras` package. See Goodfellow et al. (2016)
+    for a comprehensive treatment of neural networks and related methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch07.xhtml#idm45625295132152-marker)) See this [blog post](https://oreil.ly/3X1Qk),
+    which discusses solutions to class imbalance with `Keras`.
+  prefs: []
+  type: TYPE_NORMAL

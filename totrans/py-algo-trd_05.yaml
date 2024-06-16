@@ -1,0 +1,1764 @@
+- en: Chapter 5\. Predicting Market Movements with Machine Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Skynet begins to learn at a geometric rate. It becomes self-aware at 2:14 a.m.
+    Eastern time, August 29th.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The Terminator (*Terminator 2*)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Recent years have seen tremendous progress in the areas of machine learning,
+    deep learning, and artificial intelligence. The financial industry in general
+    and algorithmic traders around the globe in particular also try to benefit from
+    these technological advances.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter introduces techniques from statistics, like *linear regression*,
+    and from machine learning, like *logistic regression*, to predict future price
+    movements based on past returns. It also illustrates the use of *neural networks*
+    to predict stock market movements. This chapter, of course, cannot replace a thorough
+    introduction to machine learning, but it can show, from a practitioner’s point
+    of view, how to concretely apply certain techniques to the price prediction problem.
+    For more details, refer to Hilpisch (2020).^([1](ch05.html#idm45785375631928))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter covers the following types of trading strategies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Linear regression-based strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: Such strategies use linear regression to extrapolate a trend or to derive a
+    financial instrument’s direction of future price movement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Machine learning-based strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: In algorithmic trading it is generally enough to predict the direction of movement
+    for a financial instrument as opposed to the absolute magnitude of that movement.
+    With this reasoning, the prediction problem basically boils down to a *classification
+    problem* of deciding whether there will be an upwards or downwards movement. Different
+    machine learning algorithms have been developed to attack such classification
+    problems. This chapter introduces logistic regression, as a typical baseline algorithm,
+    for classification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep learning-based strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep learning has been popularized by such technological giants as Facebook.
+    Similar to machine learning algorithms, deep learning algorithms based on neural
+    networks allow one to attack classification problems faced in financial market
+    prediction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The chapter is organized as follows. [“Using Linear Regression for Market Movement
+    Prediction”](#linear_regression) introduces linear regression as a technique to
+    predict index levels and the direction of price movements. [“Using Machine Learning
+    for Market Movement Prediction”](#machine_learning_scikit) focuses on machine
+    learning and introduces `scikit-learn` on the basis of linear regression. It mainly
+    covers logistic regression as an alternative linear model explicitly applicable
+    to classification problems. [“Using Deep Learning for Market Movement Prediction”](#deep_learning)
+    introduces `Keras` to predict the direction of stock market movements based on
+    neural network algorithms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The major goal of this chapter is to provide practical approaches to predict
+    future price movements in financial markets based on past returns. The basic assumption
+    is that the efficient market hypothesis does not hold universally and that, similar
+    to the reasoning behind the technical analysis of stock price charts, the history
+    might provide some insights about the future that can be mined with statistical
+    techniques. In other words, it is assumed that certain patterns in financial markets
+    repeat themselves such that past observations can be leveraged to predict future
+    price movements. More details are covered in Hilpisch (2020).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using Linear Regression for Market Movement Prediction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Ordinary least squares (OLS) and linear regression are decades-old statistical
+    techniques that have proven useful in many different application areas. This section
+    uses linear regression for price prediction purposes. However, it starts with
+    a quick review of the basics and an introduction to the basic approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Quick Review of Linear Regression
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Before applying linear regression, a quick review of the approach based on
+    some randomized data might be helpful. The example code uses `NumPy` to first
+    generate an `ndarray` object with data for the independent variable `x`. Based
+    on this data, randomized data (“noisy data”) for the dependent variable `y` is
+    generated. `NumPy` provides two functions, `polyfit` and `polyval`, for a convenient
+    implementation of OLS regression based on simple monomials. For a linear regression,
+    the highest degree for the monomials to be used is set to `1`. [Figure 5-1](#lr_plot_1)
+    shows the data and the regression line:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports `NumPy`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports `matplotlib`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates an evenly spaced grid of floats for the `x` values between 0 and 10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the seed values for all relevant random number generators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the randomized data for the `y` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_predicting_market_movements_with_machine_learning_CO1-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: OLS regression of degree 1 (that is, linear regression) is conducted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_predicting_market_movements_with_machine_learning_CO1-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the optimal parameter values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_predicting_market_movements_with_machine_learning_CO1-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a new figure object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_predicting_market_movements_with_machine_learning_CO1-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the original data set as dots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_predicting_market_movements_with_machine_learning_CO1-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the regression line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_predicting_market_movements_with_machine_learning_CO1-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the legend.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0501](assets/pfat_0501.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-1\. Linear regression illustrated based on randomized data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The interval for the dependent variable `x` is <math display="inline"><mrow><mi>x</mi><mo>∈</mo><mo>[</mo><mn>0</mn><mo>,</mo><mn>10</mn><mo>]</mo></mrow></math>.
+    Enlarging the interval to, say, <math display="inline"><mrow><mi>x</mi><mo>∈</mo><mo>[</mo><mn>0</mn><mo>,</mo><mn>20</mn><mo>]</mo></mrow></math>
+    allows one to “predict” values for the dependent variable `y` beyond the domain
+    of the original data set by an extrapolation given the optimal regression parameters.
+    [Figure 5-2](#lr_plot_2) visualizes the extrapolation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates an enlarged domain for the `x` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0502](assets/pfat_0502.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-2\. Prediction (extrapolation) based on linear regression
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The Basic Idea for Price Prediction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Price prediction based on time series data has to deal with one special feature:
+    the time-based ordering of the data. Generally, the ordering of the data is not
+    important for the application of linear regression. In the first example in the
+    previous section, the data on which the linear regression is implemented could
+    have been compiled in completely different orderings, while keeping the `x` and
+    `y` pairs constant. Independent of the ordering, the optimal regression parameters
+    would have been the same.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, in the context of predicting tomorrow’s index level, for example, it
+    seems to be of paramount importance to have the historic index levels in the correct
+    order. If this is the case, one would then try to predict tomorrow’s index level
+    given the index level of today, yesterday, the day before, etc. The number of
+    days used as input is generally called *lags*. Using today’s index level and the
+    two more from before therefore translates into *three lags*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next example casts this idea again into a rather simple context. The data
+    the example uses are the numbers from 0 to 11:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Assume three lags for the regression. This implies three independent variables
+    for the regression and one dependent one. More concretely, 0, 1, and 2 are values
+    of the independent variables, while 3 would be the corresponding value for the
+    dependent variable. Moving forward on step (“in time”), the values are 1, 2, and
+    3, as well as 4\. The final combination of values is 8, 9, and 10 with 11\. The
+    problem, therefore, is to cast this idea formally into a linear equation of the
+    form <math alttext="upper A dot x equals b"><mrow><mi>A</mi> <mo>·</mo> <mi>x</mi>
+    <mo>=</mo> <mi>b</mi></mrow></math> where <math alttext="upper A"><mi>A</mi></math>
+    is a matrix and <math alttext="x"><mi>x</mi></math> and <math alttext="b"><mi>b</mi></math>
+    are vectors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the number of lags.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an `ndarray` object with the appropriate dimensions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the target values (dependent variable).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Iterates over the numbers from `0` to `lags - 1`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the basis vectors (independent variables)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_predicting_market_movements_with_machine_learning_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the transpose of the `ndarray` object `m`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the transposed `ndarray` object `m`, the first three columns contain the
+    values for the three independent variables. They together form the matrix <math
+    alttext="upper A"><mi>A</mi></math> . The fourth and final column represents the
+    vector <math alttext="b"><mi>b</mi></math> . As a result, linear regression then
+    yields the missing vector <math alttext="x"><mi>x</mi></math> . Since there are
+    now more independent variables, `polyfit` and `polyval` do not work anymore. However,
+    there is a function in the `NumPy` sub-package for linear algebra (`linalg`) that
+    allows one to solve general least-squares problems: `lstsq`. Only the first element
+    of the results array is needed since it contains the optimal regression parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the linear OLS regression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the optimal parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `dot` product yields the prediction results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This basic idea easily carries over to real-world financial time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting Index Levels
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The next step is to translate the basic approach to time series data for a
+    real financial instrument, like the EUR/USD exchange rate:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `pandas` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves end-of-day (EOD) data and stores it in a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The time series data for the specified symbol is selected from the original
+    `DataFrame`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Renames the single column to `price`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Formally, the Python code from the preceding simple example hardly needs to
+    be changed to implement the regression-based prediction approach. Just the data
+    object needs to be replaced:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Takes the `price` column and shifts it by `lag`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The optimal regression parameters illustrate what is typically called the *random
+    walk hypothesis*. This hypothesis states that stock prices or exchange rates,
+    for example, follow a random walk with the consequence that the best predictor
+    for tomorrow’s price is today’s price. The optimal parameters seem to support
+    such a hypothesis since today’s price almost completely explains the predicted
+    price level for tomorrow. The four other values hardly have any weight assigned.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-3](#lr_plot_3) shows the EUR/USD exchange rate and the predicted
+    values. Due to the sheer amount of data for the multi-year time window, the two
+    time series are indistinguishable in the plot:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the prediction values as the `dot` product.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the `price` and `prediction` columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0503](assets/pfat_0503.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-3\. EUR/USD exchange rate and predicted values based on linear regression
+    (five lags)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Zooming in by plotting the results for a much shorter time window allows one
+    to better distinguish the two time series. [Figure 5-4](#lr_plot_4) shows the
+    results for a three months time window. This plot illustrates that the prediction
+    for tomorrow’s rate is roughly today’s rate. The prediction is more or less a
+    shift of the original rate to the right by one trading day:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: Applying linear OLS regression to predict rates for EUR/USD based on historical
+    rates provides support for the random walk hypothesis. The results of the numerical
+    example show that today’s rate is the best predictor for tomorrow’s rate in a
+    least-squares sense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0504](assets/pfat_0504.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-4\. EUR/USD exchange rate and predicted values based on linear regression
+    (five lags, three months only)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Predicting Future Returns
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'So far, the analysis is based on absolute rate levels. However, (log) returns
+    might be a better choice for such statistical applications due to, for example,
+    their characteristic of making the time series data stationary. The code to apply
+    linear regression to the returns data is almost the same as before. This time
+    it is not only today’s return that is relevant to predict tomorrow’s return, but
+    the regression results are also completely different in nature:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deletes all lines with `NaN` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Takes the `returns` column for the lagged data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-5](#lr_plot_5) shows the returns data and the prediction values.
+    As the figure impressively illustrates, linear regression obviously cannot predict
+    the magnitude of future returns to some significant extent:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0505](assets/pfat_0505.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-5\. EUR/USD log returns and predicted values based on linear regression
+    (five lags)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: From a trading point of view, one might argue that it is not the magnitude of
+    the forecasted return that is relevant, but rather whether the direction is forecasted
+    correctly or not. To this end, a simple calculation yields an overview. Whenever
+    the linear regression gets the direction right, meaning that the sign of the forecasted
+    return is correct, the product of the market return and the predicted return is
+    positive and otherwise negative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the example case, the prediction is 1,250 times correct and 1,242 wrong,
+    which translates into a hit ratio of about 49.9%, or almost exactly 50%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the product of the market and predicted return, takes the sign of
+    the results and counts the values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the counts for the two possible values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the hit ratio defined as the number of correct predictions given
+    all predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting Future Market Direction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The question that arises is whether one can improve on the hit ratio by directly
+    implementing the linear regression based on the sign of the log returns that serve
+    as the dependent variable values. In theory at least, this simplifies the problem
+    from predicting an absolute return value to the sign of the return value. The
+    only change in the Python code to implement this reasoning is to use the sign
+    values (that is, `1.0` or `-1.0` in Python) for the regression step. This indeed
+    increases the number of hits to 1,301 and the hit ratio to about 51.9%—an improvement
+    of two percentage points:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This directly uses the sign of the return to be predicted for the regression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Also, for the prediction step, only the sign is relevant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized Backtesting of Regression-Based Strategy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The hit ratio alone does not tell too much about the economic potential of a
+    trading strategy using linear regression in the way presented so far. It is well
+    known that the ten best and worst days in the markets for a given period of time
+    considerably influence the overall performance of investments.^([2](ch05.html#idm45785373157144))
+    In an ideal world, a long-short trader would try, of course, to benefit from both
+    best and worst days by going long and short, respectively, on the basis of appropriate
+    market timing indicators. Translated to the current context, this implies that,
+    in addition to the hit ratio, the quality of the market timing matters. Therefore,
+    a backtesting along the lines of the approach in [Chapter 4](ch04.html#vectorized_backtesting)
+    can give a better picture of the value of regression for prediction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Given the data that is already available, vectorized backtesting boils down
+    to two lines of Python code including visualization. This is due to the fact that
+    the prediction values already reflect the market positions (long or short). [Figure 5-6](#lr_plot_6)
+    shows that, in-sample, the strategy under the current assumptions outperforms
+    the market significantly (ignoring, among other things, transaction costs):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multiplies the prediction values (positionings) by the market returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the gross performance of the base instrument and the strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the gross performance of the base instrument and the strategy over time
+    (in-sample, no transaction costs).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0506](assets/pfat_0506.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-6\. Gross performance of EUR/USD and the regression-based strategy
+    (five lags)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The hit ratio of a prediction-based strategy is only one side of the coin when
+    it comes to overall strategy performance. The other side is how well the strategy
+    gets the market timing right. A strategy correctly predicting the best and worst
+    days over a certain period of time might outperform the market even with a hit
+    ratio below 50%. On the other hand, a strategy with a hit ratio well above 50%
+    might still underperform the base instrument if it gets the rare, large movements
+    wrong.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generalizing the Approach
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[“Linear Regression Backtesting Class”](#lr_vector_backtester) presents a Python
+    module containing a class for the vectorized backtesting of the regression-based
+    trading strategy in the spirit of [Chapter 4](ch04.html#vectorized_backtesting).
+    In addition to allowing for an arbitrary amount to invest and proportional transaction
+    costs, it allows the *in-sample fitting* of the linear regression model and the
+    *out-of-sample evaluation*. This means that the regression model is fitted based
+    on one part of the data set, say for the years 2010 to 2015, and is evaluated
+    based on another part of the data set, say for the years 2016 and 2019\. For all
+    strategies that involve an optimization or fitting step, this provides a more
+    realistic view on the performance in practice since it helps avoid the problems
+    arising from data snooping and the overfitting of models (see also [“Data Snooping
+    and Overfitting”](ch04.html#data_snooping)).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-7](#lr_plot_7) shows that the regression-based strategy based on
+    five lags does outperform the EUR/USD base instrument for the particular configuration
+    also out-of-sample and before accounting for transaction costs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the module as `LR`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an object of the `LRVectorBacktester` class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trains and evaluates the strategy on the same data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Uses two different data sets for the training and evaluation steps.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the out of sample strategy performance compared to the market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0507](assets/pfat_0507.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-7\. Gross performance of EUR/USD and the regression-based strategy
+    (five lags, out-of-sample, before transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Consider the `GDX` ETF. The strategy configuration chosen shows an outperformance
+    out-of-sample and after taking transaction costs into account (see [Figure 5-8](#lr_plot_8)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Changes to the time series data for `GDX`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0508](assets/pfat_0508.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-8\. Gross performance of the `GDX` ETF and the regression-based strategy
+    (seven lags, out-of-sample, after transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Using Machine Learning for Market Movement Prediction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Nowadays, the Python ecosystem provides a number of packages in the machine
+    learning field. The most popular of these is `scikit-learn` (see [`scikit-learn`
+    home page](http://scikit-learn.org)), which is also one of the best documented
+    and maintained packages. This section first introduces the API of the package
+    based on linear regression, replicating some of the results of the previous section.
+    It then goes on to use logistic regression as a classification algorithm to attack
+    the problem of predicting the future market direction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Linear Regression with scikit-learn
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'To introduce the `scikit-learn` API, revisiting the basic idea behind the prediction
+    approach presented in this chapter is fruitful. Data preparation is the same as
+    with `NumPy` only:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Using `scikit-learn` for our purposes mainly consists of three steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Model selection*: a model is to be picked and instantiated.'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '*Model fitting*: the model is to be fitted to the data at hand.'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '*Prediction*: given the fitted model, the prediction is conducted.'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'To apply linear regression, this translates into the following code that makes
+    use of the `linear_model` sub-package for generalized linear models (see [`scikit-learn`
+    linear models page](https://oreil.ly/5XoG1)). By default, the `LinearRegression`
+    model fits an intercept value:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the generalized linear model classes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates a linear regression model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model to the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO14-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the optimal regression parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO14-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the intercept values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_predicting_market_movements_with_machine_learning_CO14-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicts the sought after values given the fitted model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Setting the parameter `fit_intercept` to `False` gives the exact same regression
+    results as with `NumPy` and `polyfit()`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forces a fit without intercept value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This example already illustrates quite well how to apply `scikit-learn` to the
+    prediction problem. Due to its consistent API design, the basic approach carries
+    over to other models, as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Simple Classification Problem
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In a classification problem, it has to be decided to which of a limited set
+    of categories (“classes”) a new observation belongs. A classical problem studied
+    in machine learning is the identification of handwritten digits from 0 to 9\.
+    Such an identification leads to a correct result, say 3\. Or it leads to a wrong
+    result, say 6 or 8, where all such wrong results are equally wrong. In a financial
+    market context, predicting the price of a financial instrument can lead to a numerical
+    result that is far off the correct one or that is quite close to it. Predicting
+    tomorrow’s market direction, there can only be a correct or a (“completely”) wrong
+    result. The latter is a *classification problem* with the set of categories limited
+    to, for example, “up” and “down” or “+1” and “–1” or “1” and “0.” By contrast,
+    the former problem is an *estimation problem*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A simple example for a classification problem is found on Wikipedia under [Logistic
+    Regression](https://oreil.ly/zg8gW). The data set relates the number of hours
+    studied to prepare for an exam by a number of students to the success of each
+    student in passing the exam or not. While the number of hours studied is a real
+    number (`float` object), the passing of the exam is either `True` or `False` (that
+    is, `1` or `0` in numbers). [Figure 5-9](#ml_plot_1) shows the data graphically:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of hours studied by the different students (sequence matters).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO16-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The success of each student in passing the exam (sequence matters).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO16-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the data set taking `hours` as `x` values and `success` as `y` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the limits of the y-axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0509](assets/pfat_0509.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-9\. Example data for classification problem
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The basic question typically raised in a such a context is: given a certain
+    number of hours studied by a student (not in the data set), will they pass the
+    exam or not? What answer could linear regression give? Probably not one that is
+    satisfying, as [Figure 5-10](#ml_plot_2) shows. Given different numbers of hours
+    studied, linear regression gives (prediction) values mainly between 0 and 1, as
+    well as lower and higher. But there can only be *failure* or *success* as the
+    outcome of taking the exam:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements a linear regression on the data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the regression line in addition to the data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0510](assets/pfat_0510.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-10\. Linear regression applied to the classification problem
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'This is where classification algorithms, like logistic regression and support
+    vector machines, come into play. For illustration, the application of logistic
+    regression suffices (see James et al. (2013, ch. 4) for more background information).
+    The respective class is also found in the `linear_model` sub-package. [Figure 5-11](#ml_plot_3)
+    shows the result of the following Python code. This time, there is a clear cut
+    (prediction) value for every different input value. The model predicts that students
+    who studied for 0 to 2 hours will fail. For all values equal to or higher than
+    2.75 hours, the model predicts that a student passes the exam:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the logistic regression model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reshapes the one-dimensional `ndarray` object to a two-dimensional one (required
+    by `scikit-learn`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the fitting step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO18-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the prediction step given the fitted model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0511](assets/pfat_0511.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-11\. Logistic regression applied to the classification problem
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'However, as [Figure 5-11](#ml_plot_3) shows, there is no guarantee that 2.75
+    hours or more lead to success. It is just “more probable” to succeed from that
+    many hours on than to fail. This probabilistic reasoning can also be analyzed
+    and visualized based on the same model instance, as the following code illustrates.
+    The dashed line in [Figure 5-12](#ml_plot_4) shows the probability for succeeding
+    (monotonically increasing). The dash-dotted line shows the probability for failing
+    (monotonically decreasing):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicts probabilities for succeeding and failing, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the probabilities for failing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO19-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the probabilities for succeeding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0512](assets/pfat_0512.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-12\. Probabilities for succeeding and failing, respectively, based
+    on logistic regression
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`scikit-learn` does a good job of providing access to a great variety of machine
+    learning models in a unified way. The examples show that the API for applying
+    logistic regression does not differ from the one for linear regression. `scikit-learn`,
+    therefore, is well suited to test a number of appropriate machine learning models
+    in a certain application scenario without altering the Python code very much.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equipped with the basics, the next step is to apply logistic regression to the
+    problem of predicting market direction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using Logistic Regression to Predict Market Direction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In machine learning, one generally speaks of *features* instead of *independent*
+    or *explanatory variables* as in a regression context. The simple classification
+    example has a single feature only: the number of hours studied. In practice, one
+    often has more than one feature that can be used for classification. Given the
+    prediction approach introduced in this chapter, one can identify a *feature* by
+    a *lag*. Therefore, working with three lags from the time series data means that
+    there are three features. As possible outcomes or categories, there are only `+1`
+    and `-1` for an upwards and a downwards movement, respectively. Although the wording
+    changes, the formalism stays the same, particularly with regard to deriving the
+    matrix, now called the *feature matrix*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code presents an alternative to creating a `pandas` `DataFrame`
+    based “feature matrix” to which the three step procedure applies equally well—if
+    not in a more Pythonic fashion. The feature matrix now is a sub-set of the columns
+    in the original data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an empty `list` object to collect column names.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO20-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a `str` object for the column name.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO20-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a new column to the `DataFrame` object with the respective lag data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO20-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends the column name to the `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO20-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Makes sure that the data set is complete.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Logistic regression improves the hit ratio compared to linear regression by
+    more than a percentage point to about 54.5%. [Figure 5-13](#ml_plot_5) shows the
+    performance of the strategy based on logistic regression-based predictions. Although
+    the hit ratio is higher, the performance is worse than with linear regression:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the model object using a `C` value that gives less weight to the
+    regularization term (see the [Generalized Linear Models page](https://oreil.ly/D819h)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model based on the sign of the returns to be predicted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO21-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates a new column in the `DataFrame` object and writes the prediction values
+    to it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO21-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the number of the resulting long and short positions, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO21-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the number of correct and wrong predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_predicting_market_movements_with_machine_learning_CO21-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The accuracy (hit ratio) is 53.3% in this case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_predicting_market_movements_with_machine_learning_CO21-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, the gross performance of the strategy…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_predicting_market_movements_with_machine_learning_CO21-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …is much higher when compared with the passive benchmark investment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0513](assets/pfat_0513.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-13\. Gross performance of `GLD` ETF and the logistic regression-based
+    strategy (3 lags, in-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Increasing the number of lags used from three to five decreases the hit ratio
+    but improves the gross performance of the strategy to some extent (in-sample,
+    before transaction costs). [Figure 5-14](#ml_plot_6) shows the resulting performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Increases the number of lags to five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model based on five lags.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO22-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are now significantly more short positions with the new parametrization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO22-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The accuracy (hit ratio) decreases to 53.1%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO22-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cumulative performance also increases significantly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0514](assets/pfat_0514.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-14\. Gross performance of `GLD` ETF and the logistic regression-based
+    strategy (five lags, in-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: You have to be careful to not fall into the overfitting trap here. A more realistic
+    picture is obtained by an approach that uses *training data* (= in-sample data)
+    for the *fitting* of the model and *test data* (= out-of-sample data) for the
+    *evaluation* of the strategy performance. This is done in the following section,
+    when the approach is generalized again in the form of a Python class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generalizing the Approach
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[“Classification Algorithm Backtesting Class”](#sci_vector_backtester) presents
+    a Python module with a class for the vectorized backtesting of strategies based
+    on linear models from `scikit-learn`. Although only linear and logistic regression
+    are implemented, the number of models is easily increased. In principle, the `ScikitVectorBacktester`
+    class could inherit selected methods from the `LRVectorBacktester` but it is presented
+    in a self-contained fashion. This makes it easier to enhance and reuse this class
+    for practical applications.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on the `ScikitBacktesterClass`, an out-of-sample evaluation of the logistic
+    regression-based strategy is possible. The example uses the EUR/USD exchange rate
+    as the base instrument.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-15](#ml_plot_7) illustrates that the strategy outperforms the base
+    instrument during the out-of-sample period (spanning the year 2019) however, without
+    considering transaction costs as before:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0515](assets/pfat_0515.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-15\. Gross performance of S&P 500 and the out-of-sample logistic regression-based
+    strategy (15 lags, no transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'As another example, consider the same strategy applied to the `GDX` ETF, for
+    which an out-of-sample outperformance (over the year 2018) is shown in [Figure 5-16](#ml_plot_8)
+    (before transaction costs):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0516](assets/pfat_0516.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-16\. Gross performance of `GDX` ETF and the logistic regression-based
+    strategy (10 lags, out-of-sample, no transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 5-17](#ml_plot_8_a) shows how the gross performance is diminished—leading
+    even to a net loss—when taking transaction costs into account, while keeping all
+    other parameters constant:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0517](assets/pfat_0517.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-17\. Gross performance of `GDX` ETF and the logistic regression-based
+    strategy (10 lags, out-of-sample, with transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Applying sophisticated machine learning techniques to stock market prediction
+    often yields promising results early on. In several examples, the strategies backtested
+    outperform the base instrument significantly in-sample. Quite often, such stellar
+    performances are due to a mix of simplifying assumptions and also due to an overfitting
+    of the prediction model. For example, testing the very same strategy instead of
+    in-sample on an out-of-sample data set and adding transaction costs—as two ways
+    of getting to a more realistic picture—often shows that the performance of the
+    considered strategy “suddenly” trails the base instrument performance-wise or
+    turns to a net loss.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using Deep Learning for Market Movement Prediction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Right from the open sourcing and publication by Google, the deep learning library
+    [`TensorFlow`](http://tensorflow.org) has attracted much interest and wide-spread
+    application. This section applies `TensorFlow` in the same way that the previous
+    section applied `scikit-learn` to the prediction of stock market movements modeled
+    as a classification problem. However, `TensorFlow` is not used directly; it is
+    rather used via the equally popular [`Keras`](http://keras.io) deep learning package.
+    `Keras` can be thought of as providing a higher level abstraction to the `TensorFlow`
+    package with an easier to understand and use API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The libraries are best installed via `pip install tensorflow` and `pip install
+    keras`. `scikit-learn` also offers classes to apply neural networks to classification
+    problems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For more background information on deep learning and `Keras`, see Goodfellow
+    et al. (2016) and Chollet (2017), respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Simple Classification Problem Revisited
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'To illustrate the basic approach of applying neural networks to classification
+    problems, the simple classification problem introduced in the previous section
+    again proves useful:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores the two data sub-sets in a `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO23-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the meta information for the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With these preparations, `MLPClassifier` from `scikit-learn` can be imported
+    and straightforwardly applied.^([3](ch05.html#idm45785368841160)) “MLP” in this
+    context stands for *multi-layer perceptron*, which is another expression for *dense
+    neural network*. As before, the API to apply neural networks with `scikit-learn`
+    is basically the same:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `MLPClassifier` object from `scikit-learn`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO24-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates the `MLPClassifier` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code fits the model, generates the predictions, and plots the
+    results, as shown in [Figure 5-18](#dl_plot_1):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO25-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the neural network for classification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO25-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the prediction values based on the fitted model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO25-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the original data and the prediction values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This simple example shows that the application of the deep learning approach
+    is quite similar to the approach with `scikit-learn` and the `LogisticRegression`
+    model object. The API is basically the same; only the parameters are different.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0518](assets/pfat_0518.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-18\. Base data and prediction results with `MLPClassifier` for the
+    simple classification example
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Using Deep Neural Networks to Predict Market Direction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The next step is to apply the approach to stock market data in the form of
+    log returns from a financial time series. First, the data needs to be retrieved
+    and prepared:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO26-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reads the data from the `CSV` file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO26-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picks the single time series column of interest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO26-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Renames the only column to `price`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO26-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns and defines the `direction` as a binary column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO26-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the lagged data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_predicting_market_movements_with_machine_learning_CO26-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates new `DataFrame` columns with the log returns shifted by the respective
+    number of lags.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_predicting_market_movements_with_machine_learning_CO26-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deletes rows containing `NaN` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_predicting_market_movements_with_machine_learning_CO26-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints out the final five rows indicating the “patterns” emerging in the five
+    feature columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code uses a dense neural network (DNN) with the `Keras` package^([4](ch05.html#idm45785368008552)),
+    defines training and test data sub-sets, defines the feature columns, and labels
+    and fits the classifier. In the backend, `Keras` uses the `TensorFlow` package
+    to accomplish the task. [Figure 5-19](#dnn_plot_metrics) shows how the accuracy
+    of the DNN classifier changes for both the training and validation data sets during
+    training. As validation data set, 20% of the training data (without shuffling)
+    is used:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO27-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `TensorFlow` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO27-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the required model object from `Keras`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO27-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the relevant layer object from `Keras`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO27-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `Sequential` model is instantiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_predicting_market_movements_with_machine_learning_CO27-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The hidden layers and the output layer are defined.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_predicting_market_movements_with_machine_learning_CO27-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Compiles the `Sequential` model object for classification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_predicting_market_movements_with_machine_learning_CO27-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the cutoff date between the training and test data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_predicting_market_movements_with_machine_learning_CO27-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the training and test data sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_predicting_market_movements_with_machine_learning_CO27-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes the features data by Gaussian normalization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_predicting_market_movements_with_machine_learning_CO27-15)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model to the training data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0519](assets/pfat_0519.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-19\. Accuracy of DNN classifier on training and validation data per
+    training step
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Equipped with the fitted classifier, the model can generate predictions on
+    the training data set. [Figure 5-20](#dl_plot_2) shows the strategy gross performance
+    compared to the base instrument (in-sample):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO28-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicts the market direction in-sample.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO28-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transforms the predictions into long-short positions, `+1` and `-1`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO28-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the strategy returns given the positions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_predicting_market_movements_with_machine_learning_CO28-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots and compares the strategy performance to the benchmark performance (in-sample).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0520](assets/pfat_0520.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-20\. Gross performance of EUR/USD compared to the deep learning-based
+    strategy (in-sample, no transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The strategy seems to perform somewhat better than the base instrument on the
+    training data set (in-sample, without transaction costs). However, the more interesting
+    question is how it performs on the test data set (out-of-sample). After a wobbly
+    start, the strategy also outperforms the base instrument out-of-sample, as [Figure 5-21](#dl_plot_3)
+    illustrates. This is despite the fact that the accuracy of the classifier is only
+    slightly above 50% on the test data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0521](assets/pfat_0521.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-21\. Gross performance of EUR/USD compared to the deep learning-based
+    strategy (out-of-sample, no transaction costs)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Adding Different Types of Features
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'So far, the analysis mainly focuses on the log returns directly. It is, of
+    course, possible not only to add more classes/categories but also to add other
+    types of features to the mix, such as ones based on *momentum*, *volatility*,
+    or *distance* measures. The code that follows derives the additional features
+    and adds them to the data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO29-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The momentum-based feature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_predicting_market_movements_with_machine_learning_CO29-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The volatility-based feature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_predicting_market_movements_with_machine_learning_CO29-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The distance-based feature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next steps are to redefine the training and test data sets, to normalize
+    the features data, and to update the model to reflect the new features columns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_predicting_market_movements_with_machine_learning_CO30-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `input_shape` parameter is adjusted to reflect the new number of features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Based on the enriched feature set, the classifier can be trained. The in-sample
+    performance of the strategy is quite a bit better than before, as illustrated
+    in [Figure 5-22](#dl_plot_4):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0522](assets/pfat_0522.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-22\. Gross performance of EUR/USD compared to the deep learning-based
+    strategy (in-sample, additional features)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The final step is the evaluation of the classifier and the derivation of the
+    strategy performance out-of-sample. The classifier also performs significantly
+    better, *ceteris paribus*, when compared to the case without the additional features.
+    As before, the start is a bit wobbly (see [Figure 5-23](#dl_plot_5)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0523](assets/pfat_0523.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-23\. Gross performance of EUR/USD compared to the deep learning-based
+    strategy (out-of-sample, additional features)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The `Keras` package, in combination with the `TensorFlow` package as its backend,
+    allows one to make use of the most recent advances in deep learning, such as deep
+    neural network (DNN) classifiers, for algorithmic trading. The application is
+    as straightforward as applying other machine learning models with `scikit-learn`.
+    The approach illustrated in this section allows for an easy enhancement with regard
+    to the different types of features used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As an exercise, it is worthwhile to code a Python class (in the spirit of [“Linear
+    Regression Backtesting Class”](#lr_vector_backtester) and [“Classification Algorithm
+    Backtesting Class”](#sci_vector_backtester)) that allows for a more systematic
+    and realistic usage of the `Keras` package for financial market prediction and
+    the backtesting of respective trading strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Predicting future market movements is the holy grail in finance. It means to
+    find the truth. It means to overcome *efficient markets*. If one can do it with
+    a considerable edge, then stellar investment and trading returns are the consequence.
+    This chapter introduces statistical techniques from the fields of traditional
+    statistics, machine learning, and deep learning to predict the future market direction
+    based on past returns or similar financial quantities. Some first in-sample results
+    are promising, both for linear and logistic regression. However, a more reliable
+    impression is gained when evaluating such strategies out-of-sample and when factoring
+    in transaction costs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter does not claim to have found the holy grail. It rather offers a
+    glimpse on techniques that could prove useful in the search for it. The unified
+    API of `scikit-learn` also makes it easy to replace, for example, one linear model
+    with another one. In that sense, the `ScikitBacktesterClass` can be used as a
+    starting point to explore more machine learning models and to apply them to financial
+    time series prediction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The quote at the beginning of the chapter from the *Terminator 2* movie from
+    1991 is rather optimistic with regard to how fast and to what extent computers
+    might be able to learn and acquire consciousness. No matter if you believe that
+    computers will replace human beings in most areas of life or not, or if they indeed
+    one day become self-aware, they have proven useful to human beings as supporting
+    devices in almost any area of life. And algorithms like those used in machine
+    learning, deep learning, or artificial intelligence hold at least the promise
+    to let them become better algorithmic traders in the near future. A more detailed
+    account of these topics and considerations is found in Hilpisch (2020).
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The books by Guido and Müller (2016) and VanderPlas (2016) provide practical
+    introductions to machine learning with Python and `scikit-learn`. The book by
+    Hilpisch (2020) focuses exclusively on the application of algorithms for machine
+    and deep learning to the problem of identifying statistical inefficiencies and
+    exploiting economic inefficiencies through algorithmic trading:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Guido, Sarah, and Andreas Müller. 2016\. *Introduction to Machine Learning
+    with Python: A Guide for Data Scientists*. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2020\. *Artificial Intelligence in Finance: A Python-Based
+    Guide*. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VanderPlas, Jake. 2016\. *Python Data Science Handbook: Essential Tools for
+    Working with Data*. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The books by Hastie et al. (2008) and James et al. (2013) provide a thorough,
+    mathematical overview of popular machine learning techniques and algorithms:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Hastie, Trevor, Robert Tibshirani, and Jerome Friedman. 2008\. *The Elements
+    of Statistical Learning*. 2nd ed. New York: Springer.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2013\.
+    *Introduction to Statistical Learning*. New York: Springer.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'For more background information on deep learning and `Keras`, refer to these
+    books:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chollet, Francois. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
+    Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Scripts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This section presents Python scripts referenced and used in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Linear Regression Backtesting Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following presents Python code with a class for the vectorized backtesting
+    of strategies based on *linear regression* used for the prediction of the direction
+    of market movements:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: Classification Algorithm Backtesting Class
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following presents Python code with a class for the vectorized backtesting
+    of strategies based on *logistic regression*, as a standard classification algorithm,
+    used for the prediction of the direction of market movements:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch05.html#idm45785375631928-marker)) The books by Guido and Müller (2016)
+    and VanderPlas (2016) provide practical, general introductions to machine learning
+    with Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch05.html#idm45785373157144-marker)) See, for example, the discussion
+    in [The Tale of 10 Days](https://oreil.ly/KRH78).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch05.html#idm45785368841160-marker)) For details, see [*https://oreil.ly/hOwsE*](https://oreil.ly/hOwsE).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch05.html#idm45785368008552-marker)) For details, refer to [*https://keras.io/layers/core/*](https://keras.io/layers/core/).
+  prefs: []
+  type: TYPE_NORMAL

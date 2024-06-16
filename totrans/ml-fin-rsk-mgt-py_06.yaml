@@ -1,0 +1,1634 @@
+- en: Chapter 4\. Machine Learning-Based Volatility Prediction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The most critical feature of the conditional return distribution is arguably
+    its second moment structure, which is empirically the dominant time-varying characteristic
+    of the distribution. This fact has spurred an enormous literature on the modeling
+    and forecasting of return volatility.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Andersen et al. (2003)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: “Some concepts are easy to understand but hard to define. This also holds true
+    for volatility.” This could be a quote from someone living before Markowitz because
+    the way he models volatility is very clear and intuitive. Markowitz proposed his
+    celebrated portfolio theory in which he defined *volatility* as standard deviation
+    so that from then onward, finance became more intertwined with mathematics.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Volatility is the backbone of finance in the sense that it not only provides
+    an information signal to investors, but it also is an input to various financial
+    models. What makes volatility so important? The answer stresses the importance
+    of uncertainty, which is the main characteristic of the financial model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Increased integration of financial markets has led to prolonged uncertainty
+    in those markets, which in turn stresses the importance of volatility, the degree
+    at which values of financial assets changes. Volatility used as a proxy of risk
+    is among the most important variables in many fields, including asset pricing
+    and risk management. Its strong presence and latency make it even compulsory to
+    model. Volatility as a risk measure has taken on a key role in risk management
+    following the Basel Accord that came into effect in 1996 (Karasan and Gaygisiz
+    2020).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A large and growing body of literature regarding the estimation of volatility
+    has emerged after the ground-breaking studies of Black (1976), including Andersen
+    and Bollerslev (1997), Raju and Ghosh (2004), Dokuchaev (2014), and De Stefani
+    et al. (2017). We are talking about a long tradition of volatility prediction
+    using ARCH- and GARCH-type models in which there are certain drawbacks that might
+    cause failures, such as volatility clustering, information asymmetry, and so on.
+    Even though these issues are addressed by different models, recent fluctuations
+    in financial markets coupled with developments in ML have made researchers rethink
+    volatility estimation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, our aim is to show how we can enhance the predictive performance
+    using an ML-based model. We will visit various ML algorithms, namely support vector
+    regression, neural network, and deep learning, so that we are able to compare
+    the predictive performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Modeling volatility amounts to modeling uncertainty so that we better understand
+    and approach uncertainty, enabling us to have good enough approximations of the
+    real world. To gauge the extent to which proposed models account for the real-world
+    situation, we need to calculate the return volatility, which is also known as
+    *realized volatility*. Realized volatility is the square root of realized variance,
+    which is the sum of squared return. Realized volatility is used to calculate the
+    performance of the volatility prediction method. Here is the formula for return
+    volatility:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="ModifyingAbove sigma With caret equals StartRoot StartFraction
+    1 Over n minus 1 EndFraction sigma-summation Underscript n equals 1 Overscript
+    upper N Endscripts left-parenthesis r Subscript n Baseline minus mu right-parenthesis
+    squared EndRoot" display="block"><mrow><mover accent="true"><mi>σ</mi> <mo>^</mo></mover>
+    <mo>=</mo> <msqrt><mrow><mfrac><mn>1</mn> <mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></mfrac>
+    <msubsup><mo>∑</mo> <mrow><mi>n</mi><mo>=</mo><mn>1</mn></mrow> <mi>N</mi></msubsup>
+    <msup><mrow><mo>(</mo><msub><mi>r</mi> <mi>n</mi></msub> <mo>-</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mrow></msqrt></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *r* and <math alttext="mu"><mi>μ</mi></math> are return and mean of return,
+    and *n* is number of observations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s see how return volatility is computed in Python:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the returns of the S&P 500 based on adjusted closing prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 4-1](#rel_vol) shows the realized volatility of S&P 500 over the period
+    of 2010–2021\. The most striking observation is the spikes around the COVID-19
+    pandemic.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![rel_vol](assets/mlfr_0401.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-1\. Realized volatility—S&P 500
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The way volatility is estimated has an undeniable impact on the reliability
+    and accuracy of the related analysis. So this chapter deals with both classical
+    and ML-based volatility prediction techniques with a view to showing the superior
+    prediction performance of the ML-based models. To compare the brand-new ML-based
+    models, we start with modeling the classical volatility models. Some very well
+    known classical volatility models include, but are not limited to, the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARCH
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: GARCH
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: GJR-GARCH
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: EGARCH
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It’s time to dig into the classical volatility models. Let’s start off with
+    the ARCH model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARCH Model
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'One of the early attempts to model volatility was proposed by Eagle (1982)
+    and is known as the ARCH model. The ARCH model is a univariate model and based
+    on historical asset returns. The ARCH(p) model has the following form:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus sigma-summation
+    Underscript k equals 1 Overscript p Endscripts alpha Subscript k Baseline left-parenthesis
+    r Subscript t minus k Baseline right-parenthesis squared" display="block"><mrow><msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo> <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>α</mi>
+    <mi>k</mi></msub> <msup><mrow><mo>(</mo><msub><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub>
+    <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where the mean model is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="r Subscript t Baseline equals sigma Subscript t Baseline epsilon
+    Subscript t" display="block"><mrow><msub><mi>r</mi> <mi>t</mi></msub> <mo>=</mo>
+    <msub><mi>σ</mi> <mi>t</mi></msub> <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
+    is assumed to be normally distributed. In this parametric model, we need to satisfy
+    some assumptions to have strictly positive variance. In this respect, the following
+    conditions should hold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="omega greater-than 0"><mrow><mi>ω</mi> <mo>></mo> <mn>0</mn></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="alpha Subscript k Baseline greater-than-or-equal-to 0"><mrow><msub><mi>α</mi>
+    <mi>k</mi></msub> <mo>≥</mo> <mn>0</mn></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: All of these equations tell us that ARCH is a univariate and nonlinear model
+    in which volatility is estimated with the square of past returns. One of the most
+    distinctive features of ARCH is that it has the property of time-varying conditional
+    variance^([1](ch04.html#idm45737244123312)) so that ARCH is able to model the
+    phenomenon known as *volatility clustering*—that is, large changes tend to be
+    followed by large changes of either sign, and small changes tend to be followed
+    by small changes, as described by Mandelbrot (1963). Hence, once an important
+    announcement is made to the market, it might result in huge volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code block shows how to plot clustering and what it looks like:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Return dataframe into a `numpy` representation
+  prefs: []
+  type: TYPE_NORMAL
+- en: Similar to spikes in realized volatility, [Figure 4-2](#vol_clustering) suggests
+    some large movements, and, unsurprisingly, these ups and downs happen around important
+    events such as the COVID-19 pandemic in mid-2020.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![clustering](assets/mlfr_0402.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-2\. Volatility clustering—S&P 500
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Despite its appealing features, such as simplicity, nonlinearity, easiness,
+    and adjustment for forecast, the ARCH model has certain drawbacks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equal response to positive and negative shocks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Strong assumptions such as restrictions on parameters
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Possible misprediction due to slow adjustments to large movements
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: These drawbacks motivated researchers to work on extensions of the ARCH model,
+    notably the GARCH model proposed by Bollerslev (1986) and Taylor (1986), which
+    we will discuss shortly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now let’s employ the ARCH model to predict volatility. First, let’s generate
+    our own Python code, and then compare it with a built-in function from the `arch`
+    library to see the differences:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining the split location and assigning the split data to `split` variable
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating variance of the S&P 500
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating kurtosis of the S&P 500
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the initial value for slope coefficient <math alttext="alpha"><mi>α</mi></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the initial value for constant term <math alttext="omega"><mi>ω</mi></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using parallel processing to decrease the processing time
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Taking absolute values and assigning the initial values into related variables
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the initial values of volatility
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Iterating the variance of S&P 500
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the log-likelihood
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Minimizing the log-likelihood function
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](assets/12.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-13)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a variable `params` for optimized parameters
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Well, we modeled volatility via ARCH using our own optimization method and
+    ARCH equation. But how about comparing it with the built-in Python code? This
+    built-in code can be imported from `arch` library and is extremely easy to apply.
+    The result of the built-in function follows; it turns out that these two results
+    are very similar to each other:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Although developing our own code is always helpful and improves our understanding,
+    it does not necessarily mean that there’s no need to use built-in functions or
+    libraries. Rather, these functions makes our lives easier in terms of efficiency
+    and ease of use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'All we need is to create a for loop and define a proper information criteria.
+    Here, we’ll choose Bayesian Information Criteria (BIC) as the model selection
+    method and to select lag. The reason BIC is used is that as long as we have large
+    enough samples, BIC is a reliable tool for model selection as per Burnham and
+    Anderson (2002 and 2004). Now, we iterate ARCH model from 1 to 5 lags:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Iterating ARCH parameter *p* over specified interval
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running ARCH model with different *p* values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finding the minimum BIC score to select the best model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running ARCH model with the best *p* value
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forecasting the volatility based on the optimized ARCH model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the root mean square error (RMSE) score
+  prefs: []
+  type: TYPE_NORMAL
+- en: The result of volatility prediction based on our first model is shown in [Figure 4-3](#arch_vol).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![arch](assets/mlfr_0403.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-3\. Volatility prediction with ARCH
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: GARCH Model
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The GARCH model is an extension of the ARCH model incorporating lagged conditional
+    variance. So ARCH is improved by adding *p* number of delated conditional variance,
+    which makes the GARCH model multivariate in the sense that it is an autoregressive
+    moving average model for conditional variance with *p* number of lagged squared
+    returns and *q* number of lagged conditional variance. GARCH(*p*, *q*) can be
+    formulated as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus sigma-summation
+    Underscript k equals 1 Overscript q Endscripts alpha Subscript k Baseline r Subscript
+    t minus k Superscript 2 Baseline plus sigma-summation Underscript k equals 1 Overscript
+    p Endscripts beta Subscript k Baseline sigma Subscript t minus k Superscript 2"
+    display="block"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo>
+    <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <msub><mi>α</mi> <mi>k</mi></msub> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>β</mi>
+    <mi>k</mi></msub> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
+    <mn>2</mn></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where <math alttext="omega"><mi>ω</mi></math> , <math alttext="beta"><mi>β</mi></math>
+    , and <math alttext="alpha"><mi>α</mi></math> are parameters to be estimated and
+    *p* and *q* are maximum lag in the model. To have consistent GARCH, the following
+    conditions should hold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="omega"><mi>ω</mi></math> > 0
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="beta greater-than-or-equal-to 0"><mrow><mi>β</mi> <mo>≥</mo>
+    <mn>0</mn></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="alpha greater-than-or-equal-to 0"><mrow><mi>α</mi> <mo>≥</mo>
+    <mn>0</mn></mrow></math>
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="beta plus alpha"><mrow><mi>β</mi> <mo>+</mo> <mi>α</mi></mrow></math>
+    < 1
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The ARCH model is unable to capture the influence of historical innovations.
+    However, as a more parsimonious model, the GARCH model can account for the change
+    in historical innovations because GARCH models can be expressed as an infinite-order
+    ARCH. Let’s see how GARCH can be shown as an infinite order of ARCH:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus alpha
+    r Subscript t minus 1 Superscript 2 Baseline plus beta sigma Subscript t minus
+    1 Superscript 2" display="block"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup>
+    <mo>=</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
+    <mn>2</mn></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Then replace <math alttext="sigma Subscript t minus 1 Superscript 2"><msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mn>2</mn></msubsup></math> by <math
+    alttext="omega plus alpha r Subscript t minus 2 Superscript 2 plus beta sigma
+    Subscript t minus 2 Superscript 2"><mrow><mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi>
+    <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup></mrow></math>
+    :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus alpha
+    r Subscript t minus 1 Superscript 2 Baseline plus beta left-parenthesis omega
+    plus alpha r Subscript t minus 2 Superscript 2 Baseline sigma Subscript t minus
+    2 Superscript 2 Baseline right-parenthesis" display="block"><mrow><msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi>
+    <mrow><mo>(</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
+    <mn>2</mn></msubsup> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
+    <mn>2</mn></msubsup> <mo>)</mo></mrow></mrow></math><math alttext="equals omega
+    left-parenthesis 1 plus beta right-parenthesis plus alpha r Subscript t minus
+    1 Superscript 2 Baseline plus beta alpha r Subscript t minus 2 Superscript 2 Baseline
+    plus beta squared sigma Subscript t minus 2 Superscript 2 Baseline right-parenthesis"
+    display="block"><mrow><mo>=</mo> <mi>ω</mi> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo>
+    <mi>β</mi> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <msup><mi>β</mi> <mn>2</mn></msup> <msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup> <mrow><mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, let’s substitute <math alttext="sigma Subscript t minus 2 Superscript
+    2"><msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup></math>
+    with <math alttext="omega plus alpha r Subscript t minus 3 Superscript 2 plus
+    beta sigma Subscript t minus 3 Superscript 2"><mrow><mi>ω</mi> <mo>+</mo> <mi>α</mi>
+    <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow> <mn>2</mn></msubsup>
+    <mo>+</mo> <mi>β</mi> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow>
+    <mn>2</mn></msubsup></mrow></math> and do the necessary math so that we end up
+    with:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega left-parenthesis
+    1 plus beta plus beta squared plus period period period right-parenthesis plus
+    alpha sigma-summation Underscript k equals 1 Overscript normal infinity Endscripts
+    beta Superscript k minus 1 Baseline r Subscript t minus k" display="block"><mrow><msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo> <mi>ω</mi> <mrow><mo>(</mo> <mn>1</mn>
+    <mo>+</mo> <mi>β</mi> <mo>+</mo> <msup><mi>β</mi> <mn>2</mn></msup> <mo>+</mo>
+    <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>∞</mi></munderover> <msup><mi>β</mi>
+    <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msup> <msub><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similar to the ARCH model, there is more than one way to model volatility using
+    GARCH in Python. Let us try to develop our own Python-based code using the optimization
+    technique first. In what follows, the `arch` library will be used to predict volatility:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The parameters we get from our own GARCH code are approximately:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="omega"><mi>ω</mi></math> = 0.0392
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="alpha"><mi>α</mi></math> = 0.1737
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="beta"><mi>β</mi></math> = 0.7899
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Now, let’s try it with the built-in Python function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: The built-in function confirms that we did a great job, as the parameters obtained
+    via the built-in code are almost the same as ours, so we have learned how to code
+    GARCH and ARCH models to predict volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It’s apparent that it is easy to work with GARCH(1, 1), but how do we know
+    that the parameters are the optimum ones? Let’s decide the optimum parameter set
+    given the lowest BIC value (and in doing so, generate [Figure 4-4](#garch_vol)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![garch](assets/mlfr_0404.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-4\. Volatility prediction with GARCH
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The volatility of returns is well-fitted by the GARCH model partly because of
+    its volatility clustering and partly because GARCH does not assume that the returns
+    are independent, which allows it to account for the leptokurtic property of returns.
+    However, despite these useful properties and its intuitiveness, GARCH is not able
+    to model the asymmetric response of the shocks (Karasan and Gaygisiz 2020). To
+    remedy this issue, GJR-GARCH was proposed by Glosten, Jagannathan, and Runkle
+    (1993).
+  prefs: []
+  type: TYPE_NORMAL
+- en: GJR-GARCH
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The GJR-GARCH model performs well in modeling the asymmetric effects of announcements
+    in the way that bad news has a larger impact than good news. In other words, in
+    the presence of asymmetry, the distribution of losses has a fatter tail than the
+    distribution of gains. The equation of the model includes one more parameter,
+    <math alttext="gamma"><mi>γ</mi></math> , and it takes the following form:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup>
+    <mo>=</mo> <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <mrow><mo>(</mo> <msub><mi>α</mi> <mi>k</mi></msub> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>γ</mi>
+    <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup>
+    <mi>I</mi> <mrow><mo>(</mo> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo><</mo> <mn>0</mn> <mo>)</mo></mrow> <mo>)</mo></mrow> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>β</mi>
+    <mi>k</mi></msub> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
+    <mn>2</mn></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where <math alttext="gamma"><mi>γ</mi></math> controls for the asymmetry of
+    the announcements and if:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="gamma"><mi>γ</mi></math> = 0
+  prefs: []
+  type: TYPE_NORMAL
+- en: The response to the past shock is the same.
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="gamma"><mi>γ</mi></math> > 0
+  prefs: []
+  type: TYPE_NORMAL
+- en: The response to the past negative shock is stronger than a positive one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="gamma"><mi>γ</mi></math> < 0
+  prefs: []
+  type: TYPE_NORMAL
+- en: The response to the past positive shock is stronger than a negative one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s now run the GJR-GARCH model by finding the optimum parameter values using
+    BIC, and producing [Figure 4-5](#gjr_garch_vol) as a result:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![gjr_garch](assets/mlfr_0405.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-5\. Volatility prediction with GJR-GARCH
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: EGARCH
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Together with the GJR-GARCH model, the EGARCH model, proposed by Nelson (1991),
+    is another tool for controlling for the effect of asymmetric announcements. Additionally,
+    it is specified in logarithmic form, so there is no need to add restrictions to
+    avoid negative volatility:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="log left-parenthesis sigma Subscript t Superscript 2 Baseline
+    right-parenthesis equals omega plus sigma-summation Underscript k equals 1 Overscript
+    p Endscripts beta Subscript k Baseline log sigma Subscript t minus k Superscript
+    2 Baseline plus sigma-summation Underscript k equals 1 Overscript q Endscripts
+    alpha Subscript i Baseline StartFraction StartAbsoluteValue r Subscript k minus
+    1 Baseline EndAbsoluteValue Over StartRoot sigma Subscript t minus k Superscript
+    2 Baseline EndRoot EndFraction plus sigma-summation Underscript k equals 1 Overscript
+    q Endscripts gamma Subscript k Baseline StartFraction r Subscript t minus k Baseline
+    Over StartRoot sigma Subscript t minus k Superscript 2 Baseline EndRoot EndFraction"
+    display="block"><mrow><mtext>log</mtext> <mrow><mo>(</mo> <msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>)</mo></mrow> <mo>=</mo> <mi>ω</mi> <mo>+</mo>
+    <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover>
+    <msub><mi>β</mi> <mi>k</mi></msub> <mtext>log</mtext> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <msub><mi>α</mi> <mi>i</mi></msub> <mfrac><mrow><mrow><mo>|</mo></mrow><msub><mi>r</mi>
+    <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub> <mrow><mo>|</mo></mrow></mrow>
+    <msqrt><msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup></msqrt></mfrac>
+    <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <msub><mi>γ</mi> <mi>k</mi></msub> <mfrac><msub><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub> <msqrt><msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup></msqrt></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The main difference in the EGARCH equation is that logarithm is taken of the
+    variance on the left-hand side of the equation. This indicates the leverage effect,
+    meaning that there exists a negative correlation between past asset returns and
+    volatility. If <math alttext="gamma less-than 0"><mrow><mi>γ</mi> <mo><</mo> <mn>0</mn></mrow></math>
+    , it implies leverage effect, and if <math alttext="gamma not-equals 0"><mrow><mi>γ</mi>
+    <mo>≠</mo> <mn>0</mn></mrow></math> , that shows asymmetry in volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Following the same procedure we used previously, let’s model the volatility
+    using the EGARCH model (resulting in [Figure 4-6](#egarch_vol)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![egarch](assets/mlfr_0406.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-6\. Volatility prediction with EGARCH
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Given the RMSE results shown in [Table 4-1](#vol_results_all), the best and
+    worst performing models are GARCH and EGARCH, respectively. But there are no big
+    differences in the performance of the models we have used here. In particular,
+    during bad news/good news announcements, the performances of EGARCH and GJR-GARCH
+    might be different due to the asymmetry in the market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 4-1\. RMSE results for all four models
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Model | RMSE |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ARCH | 0.0896 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| GARCH | 0.0878 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| GJR-GARCH | 0.0882 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| EGARCH | 0.0904 |'
+  prefs: []
+  type: TYPE_TB
+- en: Up to now, we have discussed the classical volatility models, but from this
+    point on, we will see how ML and the Bayesian approach can be used to model volatility.
+    In the context of ML, support vector machines and neural networks will be the
+    first models to explore. Let’s get started.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Support Vector Regression: GARCH'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Support vector machine (SVM) is a supervised learning algorithm that can be
+    applicable to both classification and regression. The aim of SVM is to find a
+    line that separates two classes. It sounds easy but here is the challenging part:
+    there are almost an infinite number of lines that can be used to distinguish the
+    classes. But we are looking for the optimal line by which the classes can be perfectly
+    discriminated.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In linear algebra, the optimal line is called *hyperplane*, which maximizes
+    the distance between the points that are closest to the hyperplane but belong
+    to different classes. The distance between the two points (support vectors) is
+    known as *margin*. So, in SVM, what we are trying to do is to maximize the margin
+    between support vectors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SVM for classification is known as support vector classification (SVC). Keeping
+    all characteristics of SVM, it can be applicable to regression. Again, in regression,
+    the aim is to find the hyperplane that minimizes the error and maximizes the margin.
+    This method is called support vector regression (SVR) and, in this part, we will
+    apply this method to the GARCH model. Combining these two models gets us *SVR-GARCH*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code shows us the preparations before running the SVR-GARCH in
+    Python. The most crucial step here is to obtain independent variables, which are
+    realized volatility and square of historical returns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Computing realized volatility and assigning a new variable to it named `realized_vol`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating new variables for each SVR kernel
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s run and see our first SVR-GARCH application with linear kernel (and produce
+    [Figure 4-7](#SVR_GARCH_linear_vol)); we’ll use the RMSE metric to compare the
+    applications:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the hyperparameter space for tuning
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying hyperparameter tuning with `RandomizedSearchCV`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting SVR-GARCH with linear kernel to data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the volatilities based on the last 252 observations and storing them
+    in the `predict_svr_lin`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![svr_garch_linear](assets/mlfr_0407.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-7\. Volatility prediction with SVR-GARCH linear kernel
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 4-7](#SVR_GARCH_linear_vol) exhibits the predicted values and actual
+    observation. By eyeballing it, we can tell that SVR-GARCH performs well. As you
+    can guess, the linear kernel works fine if the dataset is linearly separable;
+    it is also suggested by *Occam’s razor*.^([3](ch04.html#idm45737238525200)) But
+    what if the dataset isn’t linearly separable? Let’s continue with the radial basis
+    function (RBF) and polynomial kernels. The former uses elliptical curves around
+    the observations, and the latter, unlike the first two, focuses on the combinations
+    of samples. Let’s now see how they work.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s start with an SVR-GARCH application using the RBF kernel, a function
+    that projects data into a new vector space. From a practical standpoint, SVR-GARCH
+    application with different kernels is not a labor-intensive process; all we need
+    to do is switch the kernel name, as shown in the following (and resulting in [Figure 4-8](#SVR_GARCH_rbf_vol)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![svr_garch_rbf](assets/mlfr_0408.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-8\. Volatility prediction with the SVR-GARCH RBF kernel
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Both the RMSE score and the visualization suggest that SVR-GARCH with linear
+    kernel outperforms SVR-GARCH with RBF kernel. The RMSEs of SVR-GARCH with linear
+    and RBF kernels are 0.000462 and 0.000970, respectively. So SVR with linear kernel
+    performs well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Lastly, let’s try SVR-GARCH with the polynomial kernel. It will turn out that
+    it has the highest RMSE (0.002386), implying that it is the worst-performing kernel
+    among these three different applications. The predictive performance of SVR-GARCH
+    with polynomial kernel can be found in [Figure 4-9](#SVR_GARCH_poly_vol):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![svr_garch_poly](assets/mlfr_0409.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-9\. Volatility prediction with SVR-GARCH polynomial kernel
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Neural networks are the building block for deep learning. In an NN, data is
+    processed in multiple stages to make a decision. Each neuron takes a result of
+    a dot product as input and uses it in an activation function to make a decision:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="z equals w 1 x 1 plus w 2 x 2 plus b" display="block"><mrow><mi>z</mi>
+    <mo>=</mo> <msub><mi>w</mi> <mn>1</mn></msub> <msub><mi>x</mi> <mn>1</mn></msub>
+    <mo>+</mo> <msub><mi>w</mi> <mn>2</mn></msub> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <mi>b</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *b* is bias, *w* is weight, and *x* is input data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'During this process, input data is mathematically manipulated in various ways
+    in hidden and output layers. Generally speaking, an NN has three types of layers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input layers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Hidden layers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Output layers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[Figure 4-10](#nn_str) can help to illustrate the relationships among layers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The input layer includes raw data. In going from the input layer to the hidden
+    layer, we learn coefficients. There may be one or more than one hidden layers
+    depending on the network structure. The more hidden layers the network has, the
+    more complicated it is. Hidden layers, located between input and output layers,
+    perform nonlinear transformations via activation functions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![nn_str](assets/mlfr_0410.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-10\. NN structure
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Finally, the output layer is the layer in which output is produced and decisions
+    are made.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In ML, *gradient descent* is applied to find the optimum parameters that minimize
+    the cost function, but employing only gradient descent in NN is not feasible due
+    to the chain-like structure within the NN. Thus, a new concept known as backpropagation
+    is proposed to minimize the cost function. The idea of *backpropagation* rests
+    on calculating the error between observed and actual output, and then passing
+    this error to the hidden layer. So we move backward, and the main equation takes
+    the form of:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="delta Superscript l Baseline equals StartFraction delta upper
+    J Over delta z Subscript j Superscript l Baseline EndFraction" display="block"><mrow><msup><mi>δ</mi>
+    <mi>l</mi></msup> <mo>=</mo> <mfrac><mrow><mi>δ</mi><mi>J</mi></mrow> <mrow><mi>δ</mi><msubsup><mi>z</mi>
+    <mi>j</mi> <mi>l</mi></msubsup></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *z* is linear transformation and <math alttext="delta"><mi>δ</mi></math>
+    represents error. There is much more to say here, but to keep us on track we’ll
+    stop here. For those who want to dig more into the math behind NNs, please refer
+    to Wilmott (2013) and Alpaydin (2020).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, we apply NN-based volatility prediction using the `MLPRegressor` module
+    from scikit-learn, even though we have various options to run NNs in Python.^([4](ch04.html#idm45737237868960))
+    Given the NN structure we’ve introduced, the result follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the `MLPRegressor` module
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the NN model with three hidden layers and varying neuron numbers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the NN model to the training data^([5](ch04.html#idm45737237767616))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the volatilities based on the last 252 observations and storing them
+    in the `NN_predictions` variable
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 4-11](#NN_vol) shows the volatility prediction result based on the
+    NN model. Despite its reasonable performance, we can play with the number of hidden
+    neurons to generate a deep learning model. To do that, we can apply the Keras
+    library, Python’s interface for artificial neural networks.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![NN](assets/mlfr_0411.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-11\. Volatility prediction with an NN
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Now it’s time to predict volatility using deep learning. Based on Keras, it
+    is easy to configure the network structure. All we need is to determine the number
+    of neurons of the specific layer. Here, the number of neurons for the first and
+    second hidden layers are 256 and 128, respectively. As volatility has a continuous
+    type, we have only one output neuron:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the network structure by deciding number of layers and neurons
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Compiling the model with loss and optimizer
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deciding the epoch and batch size using `np.arange`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the deep learning model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting the volatility based on the weights obtained from the training phase
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the RMSE score by flattening the predictions
+  prefs: []
+  type: TYPE_NORMAL
+- en: It turns out that we get a minimum RMSE score when we have epoch number and
+    batch size of 100\. This shows that increasing the complexity of the model does
+    not necessarily imply high predictive performance. The key is to find a sweet
+    spot between complexity and predictive performance. Otherwise, the model can easily
+    tend to overfit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 4-12](#DL_vol) shows the volatility prediction result derived from
+    the preceding code, and it implies that deep learning provides a strong tool for
+    modeling volatility, too.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![DL](assets/mlfr_0412.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-12\. Volatility prediction with deep learning
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The Bayesian Approach
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The way we approach probability is of central importance in the sense that it
+    distinguishes the classical (or Frequentist) and Bayesian approaches. According
+    to the former, the relative frequency will converge to the true probability. However,
+    a Bayesian application is based on the subjective interpretation. Unlike the Frequentists,
+    Bayesian statisticians consider the probability distribution as uncertain, and
+    it is revised as new information comes in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Due to the different interpretation in the probability of these two approaches,
+    *likelihood*—defined as the probability of an observed event given a set of parameters—is
+    computed differently.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Starting from the joint density function, we can give the mathematical representation
+    of the likelihood function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper L left-parenthesis theta vertical-bar x 1 comma
+    x 2 comma period period period comma x Subscript p Baseline right-parenthesis
+    equals probability left-parenthesis x 1 comma x 2 comma period period period comma
+    x Subscript p Baseline vertical-bar theta right-parenthesis" display="block"><mrow><mi>ℒ</mi>
+    <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub> <mo>)</mo></mrow> <mo>=</mo> <mo
+    form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Among possible <math alttext="theta"><mi>θ</mi></math> values, what we are trying
+    to do is decide which one is more likely. Under the statistical model proposed
+    by the likelihood function, the observed data <math alttext="x 1 comma period
+    period period comma x Subscript p Baseline"><mrow><msub><mi>x</mi> <mn>1</mn></msub>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub></mrow></math>
+    is the most probable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In fact, you are familiar with the method based on this approach, which is maximum
+    likelihood estimation. Having defined the main difference between Bayesian and
+    Frequentist approaches, it is time to delve more into Bayes’ theorem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Bayesian approach is based on conditional distribution, which states that
+    probability gauges the extent to which one has about a uncertain event. So the
+    Bayesian application suggests a rule that can be used to update the beliefs that
+    one holds in light of new information:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bayesian estimation is used when we have some prior information regarding a
+    parameter. For example, before looking at a sample to estimate the mean of a distribution,
+    we may have some prior belief that it is close to 2, between 1 and 3\. Such prior
+    beliefs are especially important when we have a small sample. In such a case,
+    we are interested in combining what the data tells us, namely, the value calculated
+    from the sample, and our prior information.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Rachev et al., 2008
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Similar to the Frequentist application, Bayesian estimation is based on probability
+    density <math alttext="probability left-parenthesis x vertical-bar theta right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>x</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math>
+    . However, as we have discussed previously, Bayesian and Frequentist methods treat
+    parameter set <math alttext="theta"><mi>θ</mi></math> differently. A Frequentist
+    assumes <math alttext="theta"><mi>θ</mi></math> to be fixed, whereas in a Bayesian
+    setting, <math alttext="theta"><mi>θ</mi></math> is taken as a random variable
+    whose probability is known as prior density <math alttext="probability left-parenthesis
+    theta right-parenthesis"><mrow><mo form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi>
+    <mo>)</mo></mrow></math> . Well, we have another unknown term, but no worries—it
+    is easy to understand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In light of this information, we can estimate <math alttext="script upper L
+    left-parenthesis x vertical-bar theta right-parenthesis"><mrow><mi>ℒ</mi> <mo>(</mo>
+    <mi>x</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math> using prior density
+    <math alttext="probability left-parenthesis theta right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> and come
+    up with the following formula. Prior is employed when we need to estimate the
+    conditional distribution of the parameters given observations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="probability left-parenthesis theta vertical-bar x 1 comma x 2
+    comma period period period comma x Subscript p Baseline right-parenthesis equals
+    StartFraction script upper L left-parenthesis x 1 comma x 2 comma period period
+    period comma x Subscript p Baseline vertical-bar theta right-parenthesis probability
+    left-parenthesis theta right-parenthesis Over probability left-parenthesis x 1
+    comma x 2 comma period period period comma x Subscript p Baseline right-parenthesis
+    EndFraction" display="block"><mrow><mo form="prefix">Pr</mo> <mrow><mo>(</mo>
+    <mi>θ</mi> <mo>|</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>x</mi>
+    <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>x</mi>
+    <mi>p</mi></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>ℒ</mi><mrow><mo>(</mo><msub><mi>x</mi>
+    <mn>1</mn></msub> <mo>,</mo><msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo><mo>.</mo><mo>.</mo><mo>.</mo><mo>,</mo><msub><mi>x</mi>
+    <mi>p</mi></msub> <mo>|</mo><mi>θ</mi><mo>)</mo></mrow><mo form="prefix">Pr</mo><mrow><mo>(</mo><mi>θ</mi><mo>)</mo></mrow></mrow>
+    <mrow><mo form="prefix">Pr</mo><mo>(</mo><msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo><msub><mi>x</mi>
+    <mn>2</mn></msub> <mo>,</mo><mo>.</mo><mo>.</mo><mo>.</mo><mo>,</mo><msub><mi>x</mi>
+    <mi>p</mi></msub> <mo>)</mo></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: or
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="probability left-parenthesis theta vertical-bar d a t a right-parenthesis
+    equals StartFraction script upper L left-parenthesis d a t a vertical-bar theta
+    right-parenthesis probability left-parenthesis theta right-parenthesis Over probability
+    left-parenthesis d a t a right-parenthesis EndFraction" display="block"><mrow><mo
+    form="prefix">Pr</mo> <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>d</mi> <mi>a</mi>
+    <mi>t</mi> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>ℒ</mi><mo>(</mo><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>|</mo><mi>θ</mi><mo>)</mo><mo
+    form="prefix">Pr</mo><mo>(</mo><mi>θ</mi><mo>)</mo></mrow> <mrow><mo form="prefix">Pr</mo><mo>(</mo><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>)</mo></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="probability left-parenthesis theta vertical-bar d a t a right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>d</mi> <mi>a</mi> <mi>t</mi>
+    <mi>a</mi> <mo>)</mo></mrow></math> is the posterior density, which gives us information
+    about the parameters given observed data.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="script upper L left-parenthesis d a t a vertical-bar theta right-parenthesis"><mrow><mi>ℒ</mi>
+    <mo>(</mo> <mi>d</mi> <mi>a</mi> <mi>t</mi> <mi>a</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math>
+    is the likelihood function, which estimates the probability of the data given
+    parameters.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="probability left-parenthesis theta right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> is prior
+    probability. It is the probability of the parameters. Prior is basically the initial
+    beliefs about estimates.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Finally, <math alttext="probability"><mo form="prefix">Pr</mo></math> is the
+    evidence, which is used to update the prior.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Consequently, Bayes’ theorem suggests that the posterior density is directly
+    proportional to the prior and likelihood terms but inverserly related to the evidence
+    term. As the evidence is there for scaling, we can describe this process as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="Posterior proportional-to Likelihood times prior" display="block"><mrow><mtext>Posterior</mtext>
+    <mo>∝</mo> <mtext>Likelihood</mtext> <mo>×</mo> <mtext>prior</mtext></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="proportional-to"><mo>∝</mo></math> means “is proportional
+    to.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Within this context, Bayes’ theorem sounds attractive, doesn’t it? Well, it
+    does, but it comes with a cost, which is analytical intractability. Even if Bayes’
+    theorem is theoretically intuitive, it is, by and large, hard to solve analytically.
+    This is the major drawback in wide applicability of Bayes’ theorem. However, the
+    good news is that numerical methods provide solid methods to solve this probabilistic
+    model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Some methods proposed to deal with the computational issues in Bayes’ theorem
+    provide solutions with approximation, including:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Quadrature approximation
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Maximum a posteriori estimation (MAP) (discussed in [Chapter 6](ch06.html#chapter_6))
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Grid approach
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sampling-based approach
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Metropolis–Hastings
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Gibbs sampler
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: No U-Turn sampler
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Of these approaches, let us restrict our attention to the Metropolis–Hastings
+    algorithm (M-H), which will be our method for modeling Bayes’ theorem. The M-H
+    method rests on the Markov chain Monte Carlo (MCMC) method. So before moving forward,
+    let’s talk about the MCMC method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Markov Chain Monte Carlo
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The Markov chain is a model used to describe the transition probabilities among
+    states. A chain is called *Markovian* if the probability of the current state
+    <math alttext="s Subscript t"><msub><mi>s</mi> <mi>t</mi></msub></math> depends
+    only on the most recent state <math alttext="s Subscript t minus 1"><msub><mi>s</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></math> :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="probability left-parenthesis s Subscript t Baseline vertical-bar
+    s Subscript t minus 1 Baseline comma s Subscript t minus 2 Baseline comma period
+    period period comma s Subscript t minus p Baseline right-parenthesis equals probability
+    left-parenthesis s Subscript t Baseline vertical-bar s Subscript t minus 1 Baseline
+    right-parenthesis" display="block"><mrow><mo form="prefix">Pr</mo> <mrow><mo>(</mo>
+    <msub><mi>s</mi> <mi>t</mi></msub> <mo>|</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mi>p</mi></mrow></msub>
+    <mo>)</mo></mrow> <mo>=</mo> <mo form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mi>t</mi></msub> <mo>|</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Thus, MCMC relies on the Markov chain to find the parameter space <math alttext="theta"><mi>θ</mi></math>
+    with the highest posterior probability. As the sample size grows, parameter values
+    approximate to the posterior density:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="limit Underscript j right-arrow plus normal infinity Endscripts
+    theta Superscript j Baseline right-arrow Overscript upper D Endscripts probability
+    left-parenthesis theta vertical-bar x right-parenthesis" display="block"><mrow><munder><mo
+    form="prefix" movablelimits="true">lim</mo> <mrow><mi>j</mi><mo>→</mo><mo>+</mo><mi>∞</mi></mrow></munder>
+    <msup><mi>θ</mi> <mi>j</mi></msup> <mover><mo>→</mo> <mi>D</mi></mover> <mo form="prefix">Pr</mo>
+    <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>x</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *D* refers to distributional approximation. Realized values of parameter
+    space can be used to make inferences about the posterior. In a nutshell, the MCMC
+    method helps us gather IID samples from posterior density so that we can calculate
+    the posterior probability.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To illustrate this, we can refer to [Figure 4-13](#mc_states). This figure
+    shows the probability of moving from one state to another. For the sake of simplicity,
+    we’ll set the probability to be 0.2, indicating that the transition from “studying”
+    to “sleeping” has a probability of 0.2:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mc_states](assets/mlfr_0413.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-13\. Interactions of different states
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'There are two common MCMC methods: M–H and Gibbs sampler. Here, we delve into
+    the former.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Metropolis–Hastings
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: M-H allows us to have an efficient sampling procedure with two steps. First,
+    we draw a sample from proposal density, then we decide either to accept or reject
+    it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let <math alttext="q left-parenthesis theta vertical-bar theta Superscript
+    t minus 1 Baseline right-parenthesis"><mrow><mi>q</mi> <mo>(</mo> <mi>θ</mi> <mo>|</mo>
+    <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup> <mo>)</mo></mrow></math>
+    be a proposal density and <math alttext="theta"><mi>θ</mi></math> be a parameter
+    space. The entire algorithm of M-H can be summarized as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Select initial value for <math alttext="theta Superscript 1"><msup><mi>θ</mi>
+    <mn>1</mn></msup></math> from parameter space <math alttext="theta"><mi>θ</mi></math>
+    .
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Select a new parameter value <math alttext="theta squared"><msup><mi>θ</mi>
+    <mn>2</mn></msup></math> from proposal density, which can be, for the sake of
+    easiness, Gaussian or uniform distribution.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Compute the following acceptance probability:'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: <math alttext="probability Underscript a Endscripts left-parenthesis theta Superscript
+    asterisk Baseline comma theta Superscript t minus 1 Baseline right-parenthesis
+    equals m i n left-parenthesis 1 comma StartFraction p left-parenthesis theta Superscript
+    asterisk Baseline right-parenthesis slash q left-parenthesis theta Superscript
+    asterisk Baseline vertical-bar theta Superscript t minus 1 Baseline right-parenthesis
+    Over p left-parenthesis theta Superscript t minus 1 Baseline right-parenthesis
+    slash q left-parenthesis theta Superscript t minus 1 Baseline vertical-bar theta
+    Superscript asterisk Baseline right-parenthesis EndFraction right-parenthesis"
+    display="block"><mrow><msub><mo form="prefix">Pr</mo> <mi>a</mi></msub> <mrow><mo>(</mo>
+    <msup><mi>θ</mi> <mo>*</mo></msup> <mo>,</mo> <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow> <mo>=</mo> <mi>m</mi> <mi>i</mi> <mi>n</mi> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>,</mo> <mfrac><mrow><mi>p</mi><mrow><mo>(</mo><msup><mi>θ</mi>
+    <mo>*</mo></msup> <mo>)</mo></mrow><mo>/</mo><mi>q</mi><mrow><mo>(</mo><msup><mi>θ</mi>
+    <mo>*</mo></msup> <mo>|</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow></mrow> <mrow><mi>p</mi><mrow><mo>(</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow><mo>/</mo><mi>q</mi><mrow><mo>(</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>|</mo><msup><mi>θ</mi> <mo>*</mo></msup> <mo>)</mo></mrow></mrow></mfrac>
+    <mo>)</mo></mrow></mrow></math>
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: If <math alttext="probability Underscript a Endscripts left-parenthesis theta
+    Superscript asterisk Baseline comma theta Superscript t minus 1 Baseline right-parenthesis"><mrow><msub><mo
+    form="prefix">Pr</mo> <mi>a</mi></msub> <mrow><mo>(</mo> <msup><mi>θ</mi> <mo>*</mo></msup>
+    <mo>,</mo> <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow></mrow></math> is greater than a sample value drawn from uniform
+    distribution U(0,1), repeat this process from step 2.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Well, it appears intimidating, but don’t worry; we have built-in code in Python
+    that makes the applicability of the M-H algorithm much easier. We use the PyFlux
+    library to make use of Bayes’ theorem. Let’s apply the M-H algorithm to predict
+    volatility:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring GARCH model using the PyFlux library
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Printing the estimation of latent variables (parameters)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusting the priors for the model latent variables
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting the model using M-H process
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting the latent variables
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting the fitted model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plotting the histogram for posterior check
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is worthwhile to visualize the results of what we have done so far for volatility
+    prediction with a Bayesian-based GARCH Model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 4-14](#latent_variable_vol) exhibits the distribution of latent variables.
+    Latent variable *q* gathers around 0.2, and the other latent variable, *p*, mostly
+    takes values between 0.7 and 0.8.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![latent_variable](assets/mlfr_0414.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-14\. Latent variables
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 4-15](#model_fit_vol) indicates the demeaned volatility series and
+    the GARCH prediction result based on the Bayesian approach.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![model_fit](assets/mlfr_0415.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-15\. Model fit
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 4-16](#posterior_predict_vol) visualizes the posterior predictions
+    of the Bayesian model with the data so that we are able to detect systematic discrepancies,
+    if any. The vertical line represents the test statistic, and it turns out the
+    observed value is larger than that of our model.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![posterior_predict](assets/mlfr_0416.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-16\. Posterior prediction
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'After we are done with the training part, we are all set to move on to the
+    next phase, which is prediction. Prediction analysis is done for the 252 steps
+    ahead, and the RMSE is calculated given the realized volatility:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In-sample volatility prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the RMSE score
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Eventually, we are ready to observe the prediction result of the Bayesian approach,
+    and the following code does it for us, generating [Figure 4-17](#bayesian_predict_vol):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![bayesian](assets/mlfr_0417.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-17\. Bayesian volatility prediction
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 4-17](#bayesian_predict_vol) visualizes the volatility prediction based
+    on an M-H–based Bayesian approach, and it seems to overshoot toward the end of
+    2020\. The overall performance of this method shows that it is not among the best
+    methods.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Volatility prediction is a key to understanding the dynamics of the financial
+    market in the sense that it helps us to gauge uncertainty. With that being said,
+    it is used as input in many financial models, including risk models. These facts
+    emphasize the importance of having accurate volatility prediction. Traditionally,
+    parametric methods such as ARCH, GARCH, and their extensions have been extensively
+    used, but these models suffer from being inflexible. To remedy this issue, data-driven
+    models are promising, and this chapter attempted to make use of these models,
+    namely, SVMs, NNs, and deep learning-based models. It turns out that the data-driven
+    models outperform the parametric models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next chapter, market risk, a core financial risk topic, will be discussed
+    both from theoretical and empirical standpoints, and the ML models will be incorporated
+    to further improve the estimation of this risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Articles cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Andersen, Torben G., Tim Bollerslev, Francis X. Diebold, and Paul Labys. 2003\.
+    “Modeling and Forecasting Realized Volatility.” *Econometrica* 71 (2): 579-625.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Andersen, Torben G., and Tim Bollerslev. 1997\. “Intraday Periodicity And Volatility
+    Persistence in Financial Markets.” *Journal of Empirical Finance* 4 (2-3): 115-158.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Black, Fischer. 1976\. “Studies of Stock Market Volatility Changes.” *1976 Proceedings
+    of the American Statistical Association Business and Economic Statistics Section*.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Bollerslev, T. 1986\. “Generalized Autoregressive Conditional Heteroskedasticity.”
+    *Journal of Econometrics* 31 (3): 307-327. 3): 542-547.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Burnham, Kenneth P., and David R. Anderson. 2004\. “Multimodel Inference: Understanding
+    AIC and BIC in Model Selection.” *Sociological Methods and Research* 33 (2): 261-304.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Eagle, Robert F. 1982\. “Autoregressive Conditional Heteroskedasticity with
+    Estimates of the Variance of UK Inflation.” *Econometrica* 50 (4): 987-1008.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: De Stefani, Jacopo, Olivier Caelen, Dalila Hattab, and Gianluca Bontempi. 2017\.
+    “Machine Learning for Multi-step Ahead Forecasting of Volatility Proxies.” MIDAS@
+    PKDD/ECML, 17-28.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Dokuchaev, Nikolai. 2014\. “Volatility Estimation from Short Time Series of
+    Stock Prices.” Journal of Nonparametric Statistics 26 (2): 373-384.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Glosten, L. R., R. Jagannathan, and D. E. Runkle 1993\. “On the Relation between
+    the Expected Value and the Volatility of the Nominal Excess Return on Stocks.”
+    *The Journal of Finance* 48 (5): 1779-1801.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Karasan, Abdullah, and Esma Gaygisiz. 2020\. “Volatility Prediction and Risk
+    Management: An SVR-GARCH Approach.” *The Journal of Financial Data Science* 2
+    (4): 85-104.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Mandelbrot, Benoit. 1963\. “New Methods in Statistical Economics.” Journal
+    of Political Economy 71 (5): 421-440.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Nelson, Daniel B. 1991\. Conditional Heteroskedasticity in Asset Returns: A
+    New Approach. *Econometrica* 59 (2): 347-370.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Raju, M. T., and Anirban Ghosh. 2004\. “Stock Market Volatility: An International
+    Comparison.” Securities and Exchange Board of India.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Books cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Alpaydin, E. 2020\. *Introduction to Machine Learning*. Cambridge: MIT press.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Burnham, Kenneth P., and David R. Anderson. 2002\. *Model Selection and Multimodel
+    Inference: A Practical Information-Theoretic Approach*. New York: Springer-Verlag.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Focardi, Sergio M. 1997\. *Modeling the Market: New Theories and Techniques*.
+    The Frank J. Fabozzi Series, Vol. 14\. New York: John Wiley and Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Rachev, Svetlozar T., John SJ Hsu, Biliana S. Bagasheva, and Frank J. Fabozzi.
+    2012\. *Bayesian Methods in Finance*. New York: John Wiley and Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Taylor, S. 1986\. *Modeling Financial Time Series*. Chichester: Wiley.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Wilmott, Paul. 2019\. *Machine Learning: An Applied Mathematics Introduction*.
+    Panda Ohana Publishing.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch04.html#idm45737244123312-marker)) Conditional variance means that volatility
+    estimation is a function of the past values of asset returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch04.html#idm45737239187584-marker)) For more information on these functions,
+    see Andrew Ng’s [lecture notes](https://oreil.ly/sTWGj).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch04.html#idm45737238525200-marker)) Occam’s razor, also known as law
+    of parsimony, states that given a set of explanations, simpler explanation is
+    the most plausible and likely one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch04.html#idm45737237868960-marker)) Of these alternatives, TensorFlow,
+    PyTorch, and NeuroLab are the most prominent libraries.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch04.html#idm45737237767616-marker)) For more detailed information, please
+    see the [`MLPClassifier` documentation](https://oreil.ly/HnrTk).
+  prefs: []
+  type: TYPE_NORMAL

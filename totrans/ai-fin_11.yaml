@@ -1,0 +1,638 @@
+- en: Chapter 8\. Recurrent Neural Networks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: History never repeats itself, but it rhymes.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Mark Twain (probably)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: My life seemed to be a series of events and accidents. Yet when I look back,
+    I see a pattern.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Bernoît Mandelbrot
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter is about *recurrent neural networks* (RNNs). This type of network
+    is specifically designed to learn about sequential data, such as text or time
+    series data. The discussion in this chapter takes, as before, a practical approach
+    and relies mainly on worked-out Python examples, making use of `Keras`.^([1](ch08.xhtml#idm45625292780216))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“First Example”](#rnn_first) and [“Second Example”](#rnn_second) introduce
+    RNNs on the basis of two simple examples with sample numerical data. The application
+    of RNNs to predict sequential data is illustrated. [“Financial Price Series”](#rnn_fin_price_series)
+    then works with financial price series data and applies the RNN approach to predict
+    such a series directly via estimation. [“Financial Return Series”](#rnn_fin_ret_series)
+    then works with returns data to predict the future direction of the price of a
+    financial instrument also via an estimation approach. [“Financial Features”](#rnn_fin_features)
+    adds financial features to the mix—in addition to price and return data—to predict
+    the market direction. Three different approaches are illustrated in this section:
+    prediction via a shallow RNN for both estimation and classification, as well as
+    prediction via a deep RNN for classification.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The chapter shows that the application of RNNs to financial time series data
+    can achieve a prediction accuracy of well above 60% out-of-sample in the context
+    of directional market predictions. However, the results obtained cannot fully
+    keep up with those seen in [Chapter 7](ch07.xhtml#dense_networks). This might
+    come as a surprise, since RNNs are meant to work well with financial time series
+    data, which is the primary focus of this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First Example
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'To illustrate the training and usage of RNNs, consider a simple example based
+    on a sequence of integers. First, some imports and configurations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Function to set all seed values
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second is the simple data set that is transformed into an appropriate shape:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sample data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reshaping to two dimensions
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using the `TimeseriesGenerator`, the raw data can be transformed into an object
+    suited for the training of an RNN. The idea is to use a certain number of lags
+    of the original data to train the model to predict the next value in the sequence.
+    For example, `0, 1, 2` are the three lagged values (features) used to predict
+    the value `3` (label). In the same way, `1, 2, 3` are used to predict `4`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`TimeseriesGenerator` creates batches of lagged sequential data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The creation of the RNN model is similar to DNNs. The following Python code
+    uses a single hidden layer of type `SimpleRNN` (Chollet 2017, ch. 6; also see
+    [Keras recurrent layers](https://oreil.ly/kpuqA)). Even with relatively few hidden
+    units, the number of trainable parameters is quite large. The `.fit_generator()`
+    method takes as input generator objects such as those created with `TimeseriesGenerator`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The single hidden layer is of type `SimpleRNN`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The summary of the shallow RNN.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The fitting of the RNN based on the generator object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The performance metrics might show relatively erratic behavior when training
+    RNNs (see [Figure 8-1](#figure_rnn_01)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0801](Images/aiif_0801.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-1\. Performance metrics during RNN training
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Having a trained RNN available, the following Python code generates in-sample
+    and out-of-sample predictions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In-sample prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Out-of-sample prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Far-out-of-sample prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even for far-out-of-sample predictions, the results are good in general in this
+    simple case. However, the problem at hand could, for example, be perfectly solved
+    by the application of OLS regression. Therefore, the effort involved for the training
+    of an RNN for such a problem is quite high given the performance of the RNN.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second Example
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The first example illustrates the training of an RNN for a simple problem that
+    is easy to solve not only by OLS regression but also by a human being inspecting
+    the data. The second example is a bit more challenging. The input data is transformed
+    by a quadratic term and a trigonometric term, as well as by adding white noise
+    to it. [Figure 8-2](#figure_rnn_02) shows the resulting sequence for the interval
+    <math alttext="left-bracket minus 2 pi comma 2 pi"><mrow><mo>[</mo> <mo>-</mo>
+    <mn>2</mn> <mi>π</mi> <mo>,</mo> <mn>2</mn> <mi>π</mi></mrow></math> ]:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deterministic transformation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stochastic transformation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0802](Images/aiif_0802.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-2\. Sample sequence data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'As before, the raw data is reshaped, `TimeseriesGenerator` is applied, and
+    the RNN with a single hidden layer is trained:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following Python code predicts sequence values for the interval <math alttext="left-bracket
+    minus 6 pi comma 6 pi"><mrow><mo>[</mo> <mo>-</mo> <mn>6</mn> <mi>π</mi> <mo>,</mo>
+    <mn>6</mn> <mi>π</mi></mrow></math> ]. This interval is three times the size of
+    the training interval and contains out-of-sample predictions both on the left-hand
+    side and on the right-hand side of the training interval. [Figure 8-3](#figure_rnn_03)
+    shows that the model performs quite well, even out-of-sample:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enlarges the sample data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In-sample *and* out-of-sample prediction
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simplicity of Examples
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The first two examples are deliberately chosen to be simple. Both problems posed
+    in the examples can be solved more efficiently with OLS regression, for example,
+    by allowing for trigonometric basis functions in the second example. However,
+    the training of RNNs for nontrivial sequence data, such as financial time series
+    data, is basically the same. In such a context, OLS regression, for instance,
+    can in general not keep up with the capabilities of RNNs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0803](Images/aiif_0803.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-3\. In-sample and out-of-sample predictions of the RNN
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Financial Price Series
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'As a first application of RNNs to financial time series data, consider intraday
+    EUR/USD quotes. With the approach introduced in the previous two sections, the
+    training of the RNN on the financial time series is straightforward. First, the
+    data is imported and resampled. The data is also normalized and transformed into
+    the appropriate `ndarray` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects a single column
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Renames the column
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resamples the data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies Gaussian normalization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reshapes the data set to two dimensions
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, the RNN is trained based on the generator object. The function `create_rnn_model()`
+    allows the creation of an RNN with a `SimpleRNN` or an `LSTM` (*long short-term
+    memory*) layer (Chollet 2017, ch. 6; also see [Keras recurrent layers](https://oreil.ly/kpuqA)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a `SimpleRNN` layer or `LSTM` layer
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds an output layer for *estimation* or *classification*
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Third, the in-sample prediction is generated. As [Figure 8-4](#figure_rnn_04)
+    illustrates, the RNN is capable of capturing the structure of the normalized financial
+    time series data. Based on this visualization, the prediction accuracy seems quite
+    good:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0804](Images/aiif_0804.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-4\. In-sample prediction for financial price series by the RNN (whole
+    data set)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'However, the visualization suggests a result that does not hold up upon closer
+    inspection. [Figure 8-5](#figure_rnn_05) zooms in and only shows 50 data points
+    from the original data set and of the prediction. It becomes clear that the prediction
+    values from the RNN are basically just the most previous lag, shifted by one time
+    interval. Visually speaking, the prediction line is the financial time series
+    itself, moved one time interval to the right:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0805](Images/aiif_0805.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-5\. In-sample prediction for financial price series by the RNN (data
+    sub-set)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: RNNs and Efficient Markets
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The results for the prediction of a financial price series based on an RNN are
+    in line with the OLS regression approach used in [Chapter 6](ch06.xhtml#ai_first_finance)
+    to illustrate the EMH. There, it is illustrated that, in a least-squares sense,
+    today’s price is the best predictor for tomorrow’s price. The application of an
+    RNN to price data does not yield any other insight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial Return Series
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'As previous analyses have shown, it might be easier to predict returns instead
+    of prices. Therefore, the following Python code repeats the preceding analysis
+    based on log returns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'As [Figure 8-6](#figure_rnn_06) shows, the RNN’s predictions are not too good
+    in absolute terms. However, they seem to get the market direction (sign of the
+    return) somehow right:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0806](Images/aiif_0806.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-6\. In-sample prediction for financial return series by the RNN (data
+    sub-set)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'While [Figure 8-6](#figure_rnn_06) only provides an indication, the relatively
+    high accuracy score supports the assumption that the RNN might perform better
+    on a return than on a price series:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'However, to get a realistic picture, a train-test split is in order. The accuracy
+    score out-of-sample is not as high as the one seen for the whole data set in-sample,
+    but it is still high for the problem at hand:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Splits the data into train and test data sub-sets
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model on the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO10-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tests the model on the testing data
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial Features
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The application of RNNs is not restricted to the raw price or return data.
+    Additional features can also be included to improve the prediction of the RNN.
+    The following Python code adds typical financial features to the data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a time series *momentum* feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds a rolling *volatility* feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The out-of-sample accuracy, maybe somewhat surprisingly, drops significantly
+    in the estimation case. In other words, there is no improvement observed from
+    adding financial features in this particular case:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the first and second moment of the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies Gaussian normalization to the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applies Gaussian normalization to the testing data—based on the statistics from
+    the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fits the model on the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tests the model on the testing data
+  prefs: []
+  type: TYPE_NORMAL
+- en: Classification
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The analyses so far use a `Keras` RNN model for *estimation* to predict the
+    future direction of the price of the financial instrument. The problem at hand
+    is probably better cast directly into a *classification* setting. The following
+    Python code works with binary labels data and predicts the direction of the price
+    movement directly. It also works this time with an LSTM layer. The out-of-sample
+    accuracy is quite high even for a relatively small number of hidden units and
+    only a few training epochs. The approach again takes class imbalance into account
+    by adjusting the class weights appropriately. The prediction accuracy is quite
+    high in this case with around 65%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: RNN model for classification
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Binary training labels
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Class frequency for training labels
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Binary testing labels
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep RNNs
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Finally, consider deep RNNs, which are RNNs with multiple hidden layers. They
+    are as easily created as deep DNNs. The only requirement is that for the nonfinal
+    hidden layers, the parameter `return_sequences` is set to `True`. The following
+    Python function to create a deep RNN also allows for the addition of `Dropout`
+    layers to potentially avoid overfitting. The prediction accuracy is comparable
+    to the one seen in the previous sub-section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A minimum of two hidden layers is ensured.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first hidden layer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `Dropout` layers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO14-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The final hidden layer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO14-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The model is built for classification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter introduces RNNs with `Keras` and illustrates the application of
+    such neural networks to financial time series data. On the Python level, working
+    with RNNs is not too different from working with DNNs. One major difference is
+    that the training and test data must necessarily be presented in a sequential
+    form to the respective methods. However, this is made easy by the application
+    of the `TimeseriesGenerator` function, which transforms sequential data into a
+    generator object that `Keras` RNNs can work with.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The examples in this chapter work with both financial price series and financial
+    return series. In addition, financial features, such as time series momentum,
+    can also be added easily. The functions presented for model creation allow, among
+    other things, for one to use `SimpleRNN` or `LSTM` layers as well as different
+    optimizers. They also allow one to model estimation and classification problems
+    in the context of shallow and deep neural networks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The out-of-sample prediction accuracy, when predicting market direction, is
+    relatively high for the classification examples—but it’s not that high and can
+    even be quite low for the estimation examples.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chollet, François. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
+    Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch08.xhtml#idm45625292780216-marker)) For technical details of RNNs, refer
+    to Goodfellow et al. (2016, ch. 10). For the practical implementation, refer to
+    Chollet (2017, ch. 6).
+  prefs: []
+  type: TYPE_NORMAL

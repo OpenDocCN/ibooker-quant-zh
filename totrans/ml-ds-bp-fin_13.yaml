@@ -1,0 +1,2940 @@
+- en: Chapter 9\. Reinforcement Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Incentives drive nearly everything, and finance is not an exception. Humans
+    do not learn from millions of labeled examples. Instead, we often learn from positive
+    or negative experiences that we associate with our actions. Learning from experiences
+    and the associated rewards or punishments is the core idea behind reinforcement
+    learning (RL).^([1](ch09.xhtml#idm45174907850488))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning is an approach toward training a machine to find the
+    best course of action through optimal policies that maximize rewards and minimize
+    punishments.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The RL algorithms that empowered *AlphaGo* (the first computer program to defeat
+    a professional human Go player) are also finding inroads into finance. Reinforcement
+    learning’s main idea of *maximizing the rewards* aligns beautifully with several
+    areas in finance, including algorithmic trading and portfolio management. Reinforcement
+    learning is particularly suitable for algorithmic trading, because the concept
+    of a *return-maximizing agent* in an uncertain, dynamic environment has much in
+    common with an investor or a trading strategy that interacts with financial markets.
+    Reinforcement learning–based models go one step further than the price prediction–based
+    trading strategies discussed in previous chapters and determine rule-based policies
+    for actions (i.e., place an order, do nothing, cancel an order, and so on).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Similarly, in portfolio management and asset allocation, reinforcement learning–based
+    algorithms do not yield predictions and do not learn the structure of the market
+    implicitly. They do more. They directly learn the policy of changing the portfolio
+    allocation weights dynamically in the continuously changing market. Reinforcement
+    learning models are also useful for order execution problems, which involve the
+    process of completing a buy or sell order for a market instrument. Here, the algorithms
+    learn through trial and error, figuring out the optimal path of execution on their
+    own.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning algorithms, with their ability to tackle more nuances
+    and parameters within the operational environment, can also produce derivatives
+    hedging strategies. Unlike traditional finance-based hedging strategies, these
+    hedging strategies are optimal and valid under real-world market frictions, such
+    as transaction costs, market impact, liquidity constraints, and risk limits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this chapter, we cover three reinforcement learning–based case studies covering
+    major finance applications: algorithmic trading, derivatives hedging, and portfolio
+    allocation. In terms of the model development steps, the case studies follow a
+    standardized seven-step model development process presented in [Chapter 2](ch02.xhtml#Chapter2).
+    Model development and evaluation are key steps for reinforcement learning, and
+    these steps will be emphasized. With multiple concepts in machine learning and
+    finance implemented, these case studies can be used as a blueprint for any other
+    reinforcement learning–based problem in finance.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 1: Reinforcement Learning–Based Trading Strategy”](#CaseStudy1RL),
+    we demonstrate the use of RL to develop an algorithmic trading strategy.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 2: Derivatives Hedging”](#CaseStudy2RL), we implement and analyze
+    reinforcement learning–based techniques to calculate the optimal hedging strategies
+    for portfolios of derivatives under market frictions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 3: Portfolio Allocation”](#CaseStudy3RL), we illustrate the
+    use of a reinforcement learning–based technique on a dataset of cryptocurrency
+    in order to allocate capital into different cryptocurrencies to maximize risk-adjusted
+    returns. We also introduce a reinforcement learning–based *simulation environment*
+    to train and test the model.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This Chapter’s Code Repository
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A Python-based Jupyter notebook for all the case studies presented in this chapter
+    is included under the folder [Chapter 9 - Reinforcement Learning](https://oreil.ly/Fp0xD)
+    in the code repository for this book. To work through any machine learning problems
+    in Python involving RL models (such as DQN or policy gradient) presented in this
+    chapter, readers need to modify the template slightly to align with their problem
+    statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement Learning—Theory and Concepts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Reinforcement learning is an extensive topic covering a wide range of concepts
+    and terminology. The theory section of this chapter covers the items and topics
+    listed in [Figure 9-1](#RLConcepts).^([2](ch09.xhtml#idm45174907783768))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0901](Images/mlbf_0901.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-1\. RL summary of concepts
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In order to solve any problem using RL, it is important to first understand
+    and define the RL components.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RL Components
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The main components of an RL system are agent, actions, environment, state,
+    and reward.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agent
+  prefs: []
+  type: TYPE_NORMAL
+- en: The entity that performs actions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Actions
+  prefs: []
+  type: TYPE_NORMAL
+- en: The things an agent can do within its environment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: The world in which the agent resides.
+  prefs: []
+  type: TYPE_NORMAL
+- en: State
+  prefs: []
+  type: TYPE_NORMAL
+- en: The current situation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward
+  prefs: []
+  type: TYPE_NORMAL
+- en: The immediate return sent by the environment to evaluate the last action by
+    the agent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal of reinforcement learning is to learn an optimal strategy through experimental
+    trials and relatively simple feedback loops. With the optimal strategy, the agent
+    is capable of actively adapting to the environment to maximize the rewards. Unlike
+    in supervised learning, these reward signals are not given to the model immediately.
+    Instead, they are returned as a consequence of a sequence of actions that the
+    agent makes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An agent’s actions are usually conditioned on what the agent perceives from
+    the environment. What the agent perceives is referred to as the observation or
+    the state of the environment. [Figure 9-2](#RLComp) summarizes the components
+    of a reinforcement learning system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0902](Images/mlbf_0902.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-2\. RL components
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The interaction between the agent and the environment involves a sequence of
+    actions and observed rewards in time, <math alttext="t equals 1 comma 2 period
+    period period upper T"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn>
+    <mo>.</mo> <mo>.</mo> <mo>.</mo> <mi>T</mi></mrow></math> . During the process,
+    the agent accumulates knowledge about the environment, learns the optimal policy,
+    and makes decisions on which action to take next so as to efficiently learn the
+    best policy. Let’s label the state, action, and reward at time step *t* as <math
+    alttext="upper S Subscript t Baseline comma upper A Subscript t Baseline period
+    period period upper R Subscript t Baseline"><mrow><msub><mi>S</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <msub><mi>R</mi> <mi>t</mi></msub></mrow></math> , respectively. Thus, the interaction
+    sequence is fully described by one episode (also known as “trial” or “trajectory”),
+    and the sequence ends at the terminal state <math alttext="upper S Subscript upper
+    T Baseline colon upper S 1 comma upper A 1 comma upper R 2 comma upper S 2 comma
+    upper A 2 period period period upper A Subscript upper T Baseline"><mrow><msub><mi>S</mi>
+    <mi>T</mi></msub> <mo>:</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>A</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>R</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>S</mi>
+    <mn>2</mn></msub> <mo>,</mo> <msub><mi>A</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo>
+    <mo>.</mo> <msub><mi>A</mi> <mi>T</mi></msub></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In addition to the five components of reinforcement learning mentioned so far,
+    there are three additional components of reinforcement learning: policy, value
+    function (and Q-value), and model of the environment. Let us discuss the components
+    in detail.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Policy
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'A policy is an algorithm or a set of rules that describes how an agent makes
+    its decisions. More formally, a policy is a function, usually denoted as *π*,
+    that maps a state (*s*) and an action (*a*):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="a Subscript t Baseline equals pi left-parenthesis s Subscript
+    t Baseline right-parenthesis" display="block"><mrow><msub><mi>a</mi> <mi>t</mi></msub>
+    <mo>=</mo> <mi>π</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This means that an agent decides its action given its current state. The policy
+    can be can be either deterministic or stochastic. A deterministic policy maps
+    a state to actions. On the other hand, a stochastic policy outputs a probability
+    distribution over actions. It means that instead of being sure of taking action
+    *a*, there is a probability assigned to the action given a state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Our goal in reinforcement learning is to learn an optimal policy (which is also
+    referred to as <math alttext="pi Superscript asterisk"><msup><mi>π</mi> <mo>*</mo></msup></math>
+    ). An optimal policy tells us how to act to maximize return in every state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Value function (and Q-value)
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The goal of a reinforcement learning agent is to learn to perform a task well
+    in an environment. Mathematically, this means maximizing the future reward, or
+    cumulative discounted reward, <math alttext="upper G"><mi>G</mi></math> , which
+    can be expressed in the following equation as a function of reward function <math
+    alttext="upper R"><mi>R</mi></math> at different times:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper G Subscript t Baseline equals upper R Subscript t plus
+    1 Baseline plus gamma upper R Subscript t plus 2 Baseline plus period period period
+    equals sigma-summation Underscript 0 Overscript normal infinity Endscripts y Superscript
+    k Baseline upper R Subscript t plus k plus 1 Baseline" display="block"><mrow><msub><mi>G</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <mi>γ</mi> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>2</mn></mrow></msub>
+    <mo>+</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>=</mo> <munderover><mo>∑</mo>
+    <mrow><mn>0</mn></mrow> <mi>∞</mi></munderover> <msup><mi>y</mi> <mi>k</mi></msup>
+    <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The discounting factor <math alttext="gamma"><mi>γ</mi></math> is a value between
+    0 and 1 to penalize the rewards in the future, as future rewards do not provide
+    immediate benefits and may have higher uncertainty. Future reward is an important
+    input to the value function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The value function (or state value) measures the attractiveness of a state
+    through a prediction of future reward <math alttext="upper G Subscript t"><msub><mi>G</mi>
+    <mi>t</mi></msub></math> . The value function of a state *s* is the expected return,
+    with a policy <math alttext="pi"><mi>π</mi></math> if we are in this state at
+    time *t*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
+    equals upper E left-bracket upper G Subscript t Baseline vertical-bar upper S
+    Subscript t Baseline equals s right-bracket EndLayout" display="block"><mrow><mi>V</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mrow><mo>[</mo>
+    <msub><mi>G</mi> <mi>t</mi></msub> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub>
+    <mo>=</mo> <mi>s</mi> <mo>]</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similarly, we define the action-value function (Q-value) of a state-action
+    pair ( <math alttext="s comma a"><mrow><mi>s</mi> <mo>,</mo> <mi>a</mi></mrow></math>
+    ) as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s comma a right-parenthesis
+    equals upper E left-bracket upper G Subscript t Baseline vertical-bar upper S
+    Subscript t Baseline equals s comma upper A Subscript t Baseline equals a right-bracket
+    EndLayout" display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo>
+    <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mrow><mo>[</mo> <msub><mi>G</mi>
+    <mi>t</mi></msub> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>s</mi>
+    <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub> <mo>=</mo> <mi>a</mi> <mo>]</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: So the value function is the expected return for a state following a policy
+    <math alttext="pi"><mi>π</mi></math> . The Q-value is the expected reward for
+    the state-action pair following a policy <math alttext="pi"><mi>π</mi></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The value function and the Q-value are interconnected as well. Since we follow
+    the target policy <math alttext="pi"><mi>π</mi></math> , we can make use of the
+    probability distribution over possible actions and the Q-values to recover the
+    value function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
+    equals sigma-summation Underscript a element-of upper A Endscripts upper Q left-parenthesis
+    s comma a right-parenthesis pi left-parenthesis a vertical-bar s right-parenthesis
+    EndLayout" display="block"><mrow><mi>V</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <munder><mo>∑</mo> <mrow><mi>a</mi><mo>∈</mo><mi>A</mi></mrow></munder>
+    <mi>Q</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow>
+    <mi>π</mi> <mrow><mo>(</mo> <mi>a</mi> <mo>|</mo> <mi>s</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The preceding equation represents the relationship between the value function
+    and Q-value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The relationship between reward function ( <math alttext="upper R"><mi>R</mi></math>
+    ), future rewards ( <math alttext="upper G"><mi>G</mi></math> ), value function,
+    and Q-value is used to derive the Bellman equations (discussed later in this chapter),
+    which are one of the key components of many reinforcement learning models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The model is a descriptor of the environment. With the model, we can learn
+    or infer how the environment would interact with and provide feedback to the agent.
+    Models are used for *planning*, by which we mean any way of deciding on a course
+    of action by considering possible future situations. A model of the stock market,
+    for example, is tasked with predicting what the prices will look like in the future.
+    The model has two major parts: *transition probability function* (*P*) and *reward
+    function*. We already discussed the reward function. The transition function (*P*)
+    records the probability of transitioning from one state to another after taking
+    an action.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, an RL agent may be directly or indirectly trying to learn a policy
+    or value function shown in [Figure 9-3](#ModelValPolicy). The approach to learning
+    a policy varies depending on the RL model type. When we fully know the environment,
+    we can find the optimal solution by using *model-based approaches*.^([3](ch09.xhtml#idm45174907622280))
+    When we do not know the environment, we follow a *model-free approach* and try
+    to learn the model explicitly as part of the algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0903](Images/mlbf_0903.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-3\. Model, value, and policy
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: RL components in a trading context
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Let’s try to understand what the RL components correspond to in a trading setting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agent
+  prefs: []
+  type: TYPE_NORMAL
+- en: The agent is our trading agent. We can think of the agent as a human trader
+    who makes trading decisions based on the current state of the exchange and their
+    account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Action
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There would be three actions: *Buy, Hold,* and *Sell*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward function
+  prefs: []
+  type: TYPE_NORMAL
+- en: An obvious reward function would be the *realized PnL (Profit and Loss)*. Other
+    reward functions can be *Sharpe ratio* or *maximum drawdown*.^([4](ch09.xhtml#idm45174907605976))
+    There can be a wide range of complex reward functions that offer a trade-off between
+    profit and risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: The environment in a trading context would be the *exchange*. In the case of
+    trading on an exchange, we do not observe the complete state of the environment.
+    Specifically, we are unaware of the other agents, and what an agent observes is
+    not the true state of the environment but some derivation of it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is referred to as a *partially observable Markov decision process* (POMDP).
+    This is the most common type of environment that we encounter in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RL Modeling Framework
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, we describe the core framework of reinforcement learning used
+    across several RL models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bellman equations
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Bellman equations refer to a set of equations that decompose the value function
+    and Q-value into the immediate reward plus the discounted future values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In RL, the main aim of an agent is to get the most expected sum of rewards from
+    every state it lands in. To achieve that, we must try to get the optimal value
+    function and Q-value; the Bellman equations help us to do so.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We use the relationship between reward function (R), future rewards (G), value
+    function, and Q-value to derive the Bellman equation for value function, as shown
+    in [Equation 9-1](#BelEqValFunc).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 9-1\. Bellman equation for value function
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper V left-parenthesis s right-parenthesis
+    equals upper E left-bracket upper R Subscript t plus 1 Baseline plus gamma upper
+    V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis vertical-bar
+    upper S Subscript t Baseline equals s right-bracket EndLayout" display="block"><mrow><mi>V</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>E</mi> <mo>[</mo>
+    <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo>
+    <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>|</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>s</mi>
+    <mo>]</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here, the value function is decomposed into two parts; an immediate reward,
+    <math alttext="upper R Subscript t plus 1"><msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></math>
+    , and the discounted value of the successor state, <math alttext="gamma upper
+    V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis"><mrow><mi>γ</mi>
+    <mi>V</mi> <mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></math> , as shown in the preceding equation. Hence, we have
+    broken down the problem into the immediate reward and the discounted successor
+    state. The state value *V(s)* for the state *s* at time *t* can be computed using
+    the current reward <math alttext="upper R Subscript t plus 1"><msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></math> and the value function
+    at the time *t*+1\. This is the Bellman equation for value function. This equation
+    can be maximized to get an equation called Bellman Optimality Equation for value
+    function, represented by *V*(s)*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We follow a very similar algorithm to estimate the optimal state-action values
+    (Q-values). The simplified iteration algorithms for value function and Q-value
+    are shown in Equations [9-2](#IterationAlgoV) and [9-3](#IterationAlgoQ).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 9-2\. Iteration algorithm for value function
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>V</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>)</mo></mrow> <mo>=</mo> <munder><mi>m</mi> <mi>a</mi></munder>
+    <mi>a</mi> <mi>x</mi> <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder>
+    <msubsup><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow>
+    <mi>a</mi></msubsup> <mfenced separators="" open="(" close=")"><msubsup><mi>R</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
+    <mo>+</mo> <mi>γ</mi> <msub><mi>V</mi> <mi>k</mi></msub> <mrow><mo>(</mo><msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>)</mo></mrow></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equation 9-3\. Iteration algorithm for Q-value
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>Q</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder> <msubsup><mi>P</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
+    <mrow><mo stretchy="false">[</mo> <msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup> <mo>+</mo> <mi>γ</mi> <mo>*</mo>
+    <munder><mi>m</mi> <msup><mi>a</mi> <mo>′</mo></msup></munder> <mi>a</mi> <mi>x</mi>
+    <mo>*</mo> <msub><mi>Q</mi> <mi>k</mi></msub> <mrow><mo>(</mo> <msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>,</mo> <msup><mi>a</mi> <mo>′</mo></msup> <mo>)</mo></mrow>
+    <mo stretchy="false">]</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="inline"><msubsup><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup></math> is the transition probability
+    from state *s* to state s′, given that action *a* was chosen.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math display="inline"><msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup></math> is the reward that the agent
+    gets when it goes from state *s* to state s′, given that action *a* was chosen.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bellman equations are important because they let us express values of states
+    as values of other states. This means that if we know the value function or Q-value
+    of *s*[t+1], we can very easily calculate the value of *s*[t]. This opens a lot
+    of doors for iterative approaches for calculating the value for each state, since
+    if we know the value of the next state, we can know the value of the current state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we have complete information about the environment, the iteration algorithms
+    shown in Equations [9-2](#IterationAlgoV) and [9-3](#IterationAlgoQ) turn into
+    a planning problem, solvable by dynamic programming that we will demonstrate in
+    the next section. Unfortunately, in most scenarios, we do not know <math display="inline"><msub><mi>R</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow></msub></math> or <math
+    display="inline"><msub><mi>P</mi> <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow></msub></math>
+    and thus cannot apply the Bellman equations directly, but they lay the theoretical
+    foundation for many RL algorithms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Markov decision processes
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Almost all RL problems can be framed as Markov decision processes (MDPs). MDPs
+    formally describe an environment for reinforcement learning. A Markov decision
+    process consists of five elements: <math><mrow><mi>M</mi> <mo>=</mo> <mi>S</mi>
+    <mo>,</mo> <mi>A</mi> <mo>,</mo> <mi>P</mi> <mo>,</mo> <mi>R</mi> <mo>,</mo> <mi>γ</mi></mrow></math>
+    , where the symbols carry the same meanings as defined in the previous section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*S*: a set of states'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*A*: a set of actions'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*P*: transition probability'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*R*: reward function'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*γ*: discounting factor for future rewards'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: MDPs frame the agent–environment interaction as a sequential decision problem
+    over a series of time steps t = 1, …, T. The agent and the environment interact
+    continually, the agent selecting actions and the environment responding to these
+    actions and presenting new situations to the agent, with the aim of coming up
+    with an optimal policy or strategy. Bellman equations form the basis for the overall
+    algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All states in MDP have the Markov property, referring to the fact that the future
+    depends only on the current state, not on the history.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let us look into an example of MDP in a financial context and analyze the Bellman
+    equation. Trading in the market can be formalized as an MDP, which is a process
+    that has specified transition probabilities from state to state. [Figure 9-4](#MDP)
+    shows an example of MDP in the financial market, with a set of states, transition
+    probability, action, and reward.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0904](Images/mlbf_0904.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-4\. Markov decision process
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The MDP presented here has three states: bull, bear, and stagnant market, represented
+    by three states (s[0], s[1], s[2]). The three actions of a trader are hold, buy,
+    and sell, represented by a[0], a[1], a[2], respectively. This is a hypothetical
+    setup in which we assume that transition probabilities are known and the action
+    of the trader leads to a change in the state of the market. In the subsequent
+    sections we will look at approaches for solving RL problems without making such
+    assumptions. The chart also shows the transition probabilities and the rewards
+    for different actions. If we start in state s[0] (bull market), the agent can
+    choose between actions a[0], a[1], a[2] (sell, buy, or hold). If it chooses action
+    buy (a[1]), it remains in state s[0] with certainty, and without any reward. It
+    can thus decide to stay there forever if it wants. But if it chooses action hold
+    (a[0]), it has a 70% probability of gaining a reward of +50, and remaining in
+    state s[0]. It can then try again to gain as much reward as possible. But at some
+    point, it is going to end up instead in state s[1] (stagnant market). In state
+    s[1] it has only two possible actions: hold (a[0]) or buy (a[1]). It can choose
+    to stay put by repeatedly choosing action a[1], or it can choose to move on to
+    state s[2] (bear market) and get a negative reward of –250\. In state s[3] it
+    has no other choice than to take action buy (a[1]), which will most likely lead
+    it back to state s[0] (bull market), gaining a reward of +200 on the way.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, by looking at this MDP, it is possible to come up with an optimal policy
+    or a strategy to achieve the most reward over time. In state s[0] it is clear
+    that action a[0] is the best option, and in state s[2] the agent has no choice
+    but to take action a[1], but in state s[1] it is not obvious whether the agent
+    should stay put (a[0]) or sell (a[2]).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s apply the following Bellman equation as per [Equation 9-3](#IterationAlgoQ)
+    to get the optimal Q-value:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>Q</mi> <mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <munder><mo>∑</mo> <msup><mi>s</mi> <mo>′</mo></msup></munder> <msubsup><mi>P</mi>
+    <mrow><mi>s</mi><msup><mi>s</mi> <mo>′</mo></msup></mrow> <mi>a</mi></msubsup>
+    <mo stretchy="false">[</mo><msubsup><mi>R</mi> <mrow><mi>s</mi><msup><mi>s</mi>
+    <mo>′</mo></msup></mrow> <mi>a</mi></msubsup> <mo>+</mo> <mi>γ</mi> <mo>*</mo>
+    <munder><mi>m</mi> <msup><mi>a</mi> <mo>′</mo></msup></munder> <mi>a</mi> <mi>x</mi>
+    <mo>*</mo> <msub><mi>Q</mi> <mi>k</mi></msub> <mrow><mo>(</mo><msup><mi>s</mi>
+    <mo>′</mo></msup> <mo>,</mo><msup><mi>a</mi> <mo>′</mo></msup> <mo>)</mo></mrow><mo
+    stretchy="false">]</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This gives us the optimal policy (Q-value) for this MDP, when using a discount
+    rate of 0.95\. Looking for the highest Q-value for each of the states: in a bull
+    market (s[0]) choose action hold (a[0]); in a stagnant market (s[1]) choose action
+    sell (a[2]); and in a bear market (s[2]) choose action buy (a[1]).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The preceding example is a demonstration of a dynamic programming (DP) algorithm
+    for obtaining optimal policy. These methods make an unrealistic assumption of
+    complete knowledge of the environment but are the conceptual foundations for most
+    other approaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Temporal difference learning
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Reinforcement learning problems with discrete actions can often be modeled as
+    Markov decision processes, as we saw in the previous example, but in most cases
+    the agent initially has no insight into the transition probabilities. It also
+    does not know what the rewards are going to be. This is where temporal difference
+    (TD) learning can be useful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A TD learning algorithm is very similar to the value iteration algorithm ([Equation
+    9-2](#IterationAlgoV)) based on the Bellman equation but is tweaked to take into
+    account the fact that the agent has only partial knowledge of the MDP. In general,
+    we assume that the agent initially knows only the possible states and actions
+    and nothing more. For example, the agent uses an exploration policy, a purely
+    random policy, to explore the MDP, and as it progresses, the TD learning algorithm
+    updates the estimates of the state values based on the transitions and rewards
+    that are actually observed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The key idea in TD learning is to update the value function V(*S[t]*) toward
+    an estimated return <math alttext="upper R Subscript t plus 1 Baseline plus gamma
+    upper V left-parenthesis upper S Subscript t plus 1 Baseline right-parenthesis"><mrow><msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo> <mi>γ</mi> <mi>V</mi>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math> (known as the *TD target*). The extent to which
+    we want to update the value function is controlled by the *learning rate* hyperparameter
+    *α*, which defines how aggressive we want to be when updating our value. When
+    *α* is close to zero, we’re not updating very aggressively. When *α* is close
+    to one, we’re simply replacing the old value with the updated value:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>←</mo> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <mi>γ</mi> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <mi>V</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similarly, for Q-value estimation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>←</mo> <mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi>
+    <mi>t</mi></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo> <mi>γ</mi> <mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many RL models use the TD learning algorithm that we will see in the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Artificial neural network and deep learning
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Reinforcement learning models often leverage an artificial neural network and
+    deep learning methods to approximate a value or policy function. That is, ANN
+    can learn to map states to values, or state-action pairs to Q-values. ANNs use
+    *coefficients*, or *weights*, to approximate the function relating inputs to outputs.
+    In the context of RL, the learning of ANNs means finding the right weights by
+    iteratively adjusting them in such a way that the rewards are maximized. Refer
+    to [3](ch03.xhtml#Chapter3) and [5](ch05.xhtml#Chapter5) for more details on methods
+    related to ANN (including deep learning).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement Learning Models
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Reinforcement learning can be categorized into *model-based* and *model-free*
+    algorithms, based on whether the rewards and probabilities for each step are readily
+    accessible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model-based algorithms
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Model-based algorithms try to understand the environment and create a model
+    to represent it. When the RL problem includes well-defined transition probabilities
+    and a limited number of states and actions, it can be framed as a *finite MDP*
+    for which dynamic programming (DP) can compute an exact solution, similar to the
+    previous example.^([5](ch09.xhtml#idm45174907045944))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model-free algorithms
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Model-free algorithms try to maximize the expected reward only from real experience,
+    without a model or prior knowledge. Model-free algorithms are used when we have
+    incomplete information about the model. The agent’s policy *π(s)* provides the
+    guideline on what is the optimal action to take in a certain state with the goal
+    of maximizing the total rewards. Each state is associated with a value function
+    *V(s)* predicting the expected amount of future rewards we are able to receive
+    in this state by acting on the corresponding policy. In other words, the value
+    function quantifies how good a state is. Model-free algorithms are further divided
+    into *value-based* and *policy-based*. Value-based algorithms learn the state,
+    or Q-value, by choosing the best action in a state. These algorithms are generally
+    based upon temporal difference learning that we discussed in the RL framework
+    section. Policy-based algorithms (also known as *direct policy search*) directly
+    learn an optimal policy that maps state to action (or tries to approximate optimal
+    policy, if true optimal policy is not attainable).
+  prefs: []
+  type: TYPE_NORMAL
+- en: In most situations in finance, we do not fully know the environment, rewards,
+    or transition probabilities, and we must fall back to model-free algorithms and
+    related approaches.^([6](ch09.xhtml#idm45174907036600)) Hence, the focus of the
+    next section and of the case studies will be the model-free methods and related
+    algorithms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 9-5](#TaxRLModels) shows a taxonomy of model-free reinforcement learning.
+    We highly recommend that readers refer to *Reinforcement Learning: An Introduction*
+    for a more in-depth understanding of the algorithms and the concepts.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0905](Images/mlbf_0905.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-5\. Taxonomy of RL models
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: In the context of model-free methods, temporal difference learning is one of
+    the most used approaches. In TD, the algorithm refines its estimates based on
+    its own prior estimates. The value-based algorithms *Q-learning* and *SARSA* use
+    this approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model-free methods often leverage an artificial neural network to approximate
+    a value or policy function. *Policy gradient* and *deep Q-network (DQN)* are two
+    commonly used model-free algorithms that use artificial neutral networks. Policy
+    gradient is a policy-based approach that directly parameterizes the policy. Deep
+    Q-network is a value-based method that combines deep learning with *Q-learning*,
+    which sets the learning objective to optimize the estimates of Q-value.^([7](ch09.xhtml#idm45174907028376))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Q-Learning
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Q-learning* is an adaptation of TD learning. The algorithm evaluates which
+    action to take based on a Q-value (or action-value) function that determines the
+    value of being in a certain state and taking a certain action at that state. For
+    each state-action pair *(s, a)*, this algorithm keeps track of a running average
+    of the rewards, *R*, which the agent gets upon leaving the state *s* with action
+    *a*, plus the rewards it expects to earn later. Since the target policy would
+    act optimally, we take the maximum of the Q-value estimates for the next state.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The learning proceeds *off-policy*—that is, the algorithm does *not* need to
+    select actions based on the policy that is implied by the value function alone.
+    However, convergence requires that all state-action pairs continue to be updated
+    throughout the training process, and a straightforward way to ensure that this
+    occurs is to use an *ε-greedy* policy, which is defined further in the following
+    section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The steps of Q-learning are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: At time step *t*, we start from state *s[t]* and pick an action according to
+    Q-values, <math alttext="a Subscript t Baseline equals m a x Subscript a Baseline
+    upper Q left-parenthesis s Subscript t Baseline comma a right-parenthesis"><mrow><msub><mi>a</mi>
+    <mi>t</mi></msub> <mo>=</mo> <mi>m</mi> <mi>a</mi> <msub><mi>x</mi> <mi>a</mi></msub>
+    <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <mi>a</mi>
+    <mo>)</mo></mrow></mrow></math> .
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: We apply an *ε-greedy* approach that selects an action randomly with a probability
+    of *ε* or otherwise chooses the best action according to the Q-value function.
+    This ensures the exploration of new actions in a given state while also exploiting
+    the learning experience.^([8](ch09.xhtml#idm45174907004296))
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: With action *a[t]*, we observe reward *R[t+1]* and get into the next state *S[t+1]*.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'We update the action-value function:'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>←</mo> <mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi>
+    <mi>t</mi></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <mrow><mo>(</mo> <msub><mi>R</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>+</mo> <mi>γ</mi> <munder><mo
+    movablelimits="true" form="prefix">max</mo> <mi>a</mi></munder> <mi>Q</mi> <mrow><mo>(</mo>
+    <msub><mi>s</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo>
+    <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>–</mo> <mi>Q</mi> <mrow><mo>(</mo>
+    <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub>
+    <mo>)</mo></mrow> <mo>)</mo></mrow></mrow></math>
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: We increment the time step, *t = t+1*, and repeat the steps.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Given enough iterations of the steps above, this algorithm will converge to
+    the optimal Q-value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SARSA
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: SARSA is also a TD learning–based algorithm. It refers to the procedure of updating
+    the Q-value by following a sequence of <math alttext="period period period upper
+    S Subscript t Baseline comma upper A Subscript t Baseline comma upper R Subscript
+    t plus 1 Baseline comma upper S Subscript t plus 1 Baseline comma upper A Subscript
+    t plus 1 Baseline comma period period period"><mrow><mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <msub><mi>S</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>A</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>A</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo></mrow></math> . The first two steps
+    of SARSA are similar to the steps of Q-learning. However, unlike Q-learning, SARSA
+    is an *on-policy* algorithm in which the agent grasps the optimal policy and uses
+    the same to act. In this algorithm, the policies used for *updating* and for *acting*
+    are the same. Q-learning is considered an *off-policy* algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep Q-Network
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'In the previous section, we saw how Q-learning allows us to learn the optimal
+    Q-value function in an environment with discrete state actions using iterative
+    updates based on the Bellman equation. However, Q-learning may have the following
+    drawbacks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In cases where the state and action space are large, the optimal Q-value table
+    quickly becomes computationally infeasible.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Q-learning may suffer from instability and divergence.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'To address these shortcomings, we use ANNs to approximate Q-values. For example,
+    if we use a function with parameter *θ* to calculate Q-values, we can label the
+    Q-value function as *Q(s,a;θ)*. The deep Q-learning algorithm approximates the
+    Q-values by learning a set of weights, *θ*, of a multilayered deep Q-network that
+    maps states to actions. The algorithm aims to greatly improve and stabilize the
+    training procedure of Q-learning through two innovative mechanisms:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Experience replay
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead of running Q-learning on state-action pairs as they occur during simulation
+    or actual experience, the algorithm stores the history of state, action, reward,
+    and next state transitions that are experienced by the agent in one large *replay
+    memory*. This can be referred to as a *mini-batch* of observations. During Q-learning
+    updates, samples are drawn at random from the replay memory, and thus one sample
+    could be used multiple times. Experience replay improves data efficiency, removes
+    correlations in the observation sequences, and smooths over changes in the data
+    distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Periodically updated target
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Q* is optimized toward target values that are only periodically updated. The
+    Q-network is cloned and kept frozen as the optimization targets every *C* step
+    (*C* is a hyperparameter). This modification makes the training more stable as
+    it overcomes the short-term oscillations. To learn the network parameters, the
+    algorithm applies *gradient descent*^([9](ch09.xhtml#idm45174906929688)) to a
+    loss function defined as the squared difference between the DQN’s estimate of
+    the target and its estimate of the Q-value of the current state-action pair, *Q(s,a:θ)*.
+    The loss function is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>L</mi> <mrow><mo>(</mo> <msub><mi>θ</mi> <mi>i</mi></msub>
+    <mo>)</mo></mrow> <mo>=</mo> <mi>𝔼</mi> <mo stretchy="false">[</mo> <msup><mfenced
+    separators="" open="(" close=")"><mi>r</mi> <mo>+</mo> <mi>γ</mi> <munder><mo
+    movablelimits="true" form="prefix">max</mo> <msup><mi>a</mi> <mo>′</mo></msup></munder>
+    <mi>Q</mi> <mrow><mo>(</mo><msup><mi>s</mi> <mo>′</mo></msup> <mo>,</mo><mi>a</mi><mo>′</mo><mo>;</mo><msub><mi>θ</mi>
+    <mrow><mi>i</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>–</mo>
+    <mi>Q</mi> <mrow><mo>(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>;</mo><msub><mi>θ</mi>
+    <mi>i</mi></msub> <mo>)</mo></mrow></mfenced> <mn>2</mn></msup> <mo stretchy="false">]</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The loss function is essentially a mean squared error (MSE) function, where
+    <math display="inline"><mfenced separators="" open="(" close=")"><mi>r</mi> <mo>+</mo>
+    <mi>γ</mi> <msub><mo movablelimits="true" form="prefix">max</mo> <msup><mi>a</mi>
+    <mo>′</mo></msup></msub> <mi>Q</mi> <mrow><mo>(</mo><msup><mi>s</mi> <mo>′</mo></msup>
+    <mo>,</mo><mi>a</mi><mo>′</mo><mo>;</mo><msub><mi>θ</mi> <mrow><mi>i</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mfenced></math> represents the target value and <math alttext="upper
+    Q left-bracket s comma a semicolon theta Subscript i Baseline right-bracket"><mrow><mi>Q</mi>
+    <mo>[</mo> <mi>s</mi> <mo>,</mo> <mi>a</mi> <mo>;</mo> <msub><mi>θ</mi> <mi>i</mi></msub>
+    <mo>]</mo></mrow></math> represents the predicted value. *θ* are the weights of
+    the network, which are computed when the loss function is minimized. Both the
+    target and the current estimate depend on the set of weights, underlining the
+    distinction from supervised learning, in which targets are fixed prior to training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An example of the DQN for the trading example containing buy, sell, and hold
+    actions is represented in [Figure 9-6](#DQN). Here, we provide the network only
+    the state (*s*) as input, and we receive Q-values for all possible actions (i.e.,
+    buy, sell, and hold) at once. We will be using DQN in the first and third case
+    studies of this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0906](Images/mlbf_0906.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-6\. DQN
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Policy gradient
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Policy gradient* is a policy-based method in which we learn a policy function,
+    *π*, which is a direct map from each state to the best corresponding action at
+    that state. It is a more straightforward approach than the value-based method,
+    without the need for a Q-value function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Policy gradient methods learn the policy directly with a parameterized function
+    respect to *θ, π(a|s;θ)*. This function can be a complex function and might require
+    a sophisticated model. In policy gradient methods, we use ANNs to map state to
+    action because they are efficient at learning complex functions. The loss function
+    of the ANN is the opposite of the expected return (cumulative future rewards).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The objective function of the policy gradient method can be defined as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper J left-parenthesis theta right-parenthesis equals upper
+    V Subscript pi Sub Subscript theta Baseline left-parenthesis upper S 1 right-parenthesis
+    equals double-struck upper E Subscript pi Sub Subscript theta Baseline left-bracket
+    upper V 1 right-bracket" display="block"><mrow><mi>J</mi> <mrow><mo>(</mo> <mi>θ</mi>
+    <mo>)</mo></mrow> <mo>=</mo> <msub><mi>V</mi> <msub><mi>π</mi> <mi>θ</mi></msub></msub>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo>
+    <msub><mi>𝔼</mi> <msub><mi>π</mi> <mi>θ</mi></msub></msub> <mrow><mo>[</mo> <msub><mi>V</mi>
+    <mn>1</mn></msub> <mo>]</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *θ* represents a set of weights of the ANN that maps states to actions.
+    The idea here is to maximize the objective function and compute the weights (*θ*)
+    of the ANN.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since this is a maximization problem, we optimize the policy by taking the
+    *gradient ascent* (as opposed to gradient descent, which is used to minimize the
+    loss function), with the partial derivative of the objective with respect to the
+    policy parameter *θ*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="theta left-arrow theta plus StartFraction normal partial-differential
+    Over normal partial-differential theta EndFraction upper J left-parenthesis theta
+    right-parenthesis" display="block"><mrow><mi>θ</mi> <mo>←</mo> <mi>θ</mi> <mo>+</mo>
+    <mfrac><mi>∂</mi> <mrow><mi>∂</mi><mi>θ</mi></mrow></mfrac> <mi>J</mi> <mrow><mo>(</mo>
+    <mi>θ</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using gradient ascent, we can find the best *θ* that produces the highest return.
+    Computing the gradient numerically can be done by perturbing *θ* by a small amount
+    *ε* in the kth dimension or by using an analytical approach for deriving the gradient.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We will be using the policy gradient method for case study 2 later in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Key Challenges in Reinforcement Learning
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'So far, we have covered only what reinforcement learning algorithms can do.
+    However, several shortcomings are outlined below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resource efficiency
+  prefs: []
+  type: TYPE_NORMAL
+- en: Current deep reinforcement learning algorithms require vast amounts of time,
+    training data, and computational resources in order to reach a desirable level
+    of proficiency. Thus, making reinforcement learning algorithms trainable under
+    limited resources will continue to be an important issue.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Credit assignment
+  prefs: []
+  type: TYPE_NORMAL
+- en: In RL, reward signals can occur significantly later than actions that contributed
+    to the result, complicating the association of actions with their consequences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Interpretability
+  prefs: []
+  type: TYPE_NORMAL
+- en: In RL, it is relatively difficult for a model to provide any meaningful, intuitive
+    relationships between input and their corresponding output that can be easily
+    understood. Most advanced reinforcement learning algorithms incorporate deep neural
+    networks, which make interpretability even more difficult due to a large number
+    of layers and nodes inside the neural network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let us look at the case studies now.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Case Study 1: Reinforcement Learning–Based Trading Strategy'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Algorithmic trading primarily has three components: *policy development*, *parameter
+    optimization*, and *backtesting*. The policy determines what actions to take based
+    on the current state of the market. Parameter optimization is performed using
+    a search over possible values of strategy parameters, such as thresholds or coefficients.
+    Finally, backtesting assesses the viability of a trading strategy by exploring
+    how it would have played out using historical data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: RL is based around coming up with a policy to maximize the reward in a given
+    environment. Instead of needing to hand code a rule-based trading policy, RL learns
+    one directly. There is no need to explicitly specify rules and thresholds. Their
+    ability to decide policy on their own makes RL models very suitable machine learning
+    algorithms to create automated algorithmic trading models, or *trading bots*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In terms of *parameter optimization* and *backtesting* steps, RL allows for
+    end-to-end optimization and maximizes (potentially delayed) rewards. Reinforcement
+    learning agents are trained in a simulation, which can be as complex as desired.
+    Taking into account latencies, liquidity, and fees, we can seamlessly combine
+    the backtesting and parameter optimization steps without needing to go through
+    separate stages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Additionally, RL algorithms learn powerful policies parameterized by artificial
+    neural networks. RL algorithms can also learn to adapt to various market conditions
+    by experiencing them in historical data, given that they are trained over a long-time
+    horizon and have sufficient memory. This allows them to be much more robust to
+    changing markets than supervised learning–based trading strategies, which, due
+    to the simplistic nature of the policy, may not have a parameterization powerful
+    enough to learn to adapt to changing market conditions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning, with its capability to easily handle policy, parameter
+    optimization, and backtesting, is ideal for the next wave of algorithmic trading.
+    Anecdotally, it seems that several of the more sophisticated algorithmic execution
+    desks at large investment banks and hedge funds are beginning to use reinforcement
+    learning to optimize their decision making.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study, we will create an end-to-end trading strategy based on reinforcement
+    learning. We will use the Q-learning approach with deep Q-network (DQN) to come
+    up with a policy and an implementation of the trading strategy. As discussed before,
+    the name “Q-learning” is in reference to the <math alttext="upper Q left-parenthesis
+    s comma a right-parenthesis"><mrow><mi>Q</mi> <mo>(</mo> <mi>s</mi> <mo>,</mo>
+    <mi>a</mi> <mo>)</mo></mrow></math> function, which returns the expected reward
+    based on the state *s* and provided action *a*. In addition to developing a specific
+    trading strategy, this case study will discuss the general framework and components
+    of a reinforcement learning–based trading strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Creating a Reinforcement Learning–Based Trading Strategy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'In the reinforcement learning framework for this case study, the algorithm
+    takes an action (buy, sell, or hold) depending on the current state of the stock
+    price. The algorithm is trained using a deep Q-learning model to perform the best
+    action. The key components of the reinforcement learning framework for this case
+    study are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agent
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trading agent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Action
+  prefs: []
+  type: TYPE_NORMAL
+- en: Buy, sell, or hold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward function
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Realized profit and loss (PnL) is used as the reward function for this case
+    study. The reward depends on the action: sell (realized profit and loss), buy
+    (no reward), or hold (no reward).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: State
+  prefs: []
+  type: TYPE_NORMAL
+- en: A sigmoid function^([10](ch09.xhtml#idm45174906688584)) of the differences of
+    past stock prices for a given time window is used as the state. State *S[t]* is
+    described as <math alttext="left-parenthesis d Subscript t minus tau plus 1 Baseline
+    comma d Subscript t minus 1 Baseline comma d Subscript t Baseline right-parenthesis"><mrow><mo>(</mo>
+    <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mi>τ</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mi>t</mi></msub> <mo>)</mo></mrow></math> , where
+    <math display="inline"><mrow><msub><mi>d</mi> <mi>T</mi></msub> <mo>=</mo> <mi>s</mi>
+    <mi>i</mi> <mi>g</mi> <mi>m</mi> <mi>o</mi> <mi>i</mi> <mi>d</mi> <mrow><mo>(</mo>
+    <msub><mi>p</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>p</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math> , <math alttext="p Subscript t"><msub><mi>p</mi>
+    <mi>t</mi></msub></math> is price at time *t*, and <math alttext="tau"><mi>τ</mi></math>
+    is the time window size. A sigmoid function converts the differences of the past
+    stock prices into a number between zero and one, which helps to normalize the
+    values to probabilities and makes the state simpler to interpret.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stock exchange or the stock market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selecting the RL Components for a Trading Strategy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Formulating an intelligent behavior for a reinforcement learning–based trading
+    strategy begins with identification of the correct components of the RL model.
+    Hence, before we go into the model development, we should carefully identify the
+    following RL components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward function
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is an important parameter, as it decides whether the RL algorithm will
+    learn to optimize the appropriate metric. In addition to the return or PnL, the
+    reward function can incorporate risk embedded in the underlying instrument or
+    include other parameters such as volatility or maximum drawdown. It can also include
+    the transaction costs of the buy/sell actions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: State
+  prefs: []
+  type: TYPE_NORMAL
+- en: State determines the observations that the agent receives from the environment
+    for taking a decision. The state should be representative of current market behavior
+    as compared to the past and can also include values of any signals that are believed
+    to be predictive or items related to market microstructure, such as volume traded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data that we will use will be the S&P 500 closing prices. The data is extracted
+    from Yahoo Finance and contains ten years of daily data from 2010 to 2019.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The list of libraries used for all of the steps of model implementation, from
+    *data loading* to *model evaluation*, including deep learning–based model development,
+    are included here. The details of most of these packages and functions have been
+    provided in Chapters [2](ch02.xhtml#Chapter2), [3](ch03.xhtml#Chapter3), and [4](ch04.xhtml#Chapter4).
+    The packages used for different purposes have been separated in the Python code
+    here, and their usage will be demonstrated in different steps of the model development
+    process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Packages for reinforcement learning`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Packages/modules for data processing and visualization`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The fetched data for the time period of 2010 to 2019 is loaded:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'We will look at descriptive statistics and data visualization in this section.
+    Let us have a look at the dataset we have:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in02](Images/mlbf_09in02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The data has a total of 2,515 rows and six columns, which contain the categories
+    *open*, *high*, *low*, *close*, *adjusted close price*, and *total volume*. The
+    adjusted close price is the closing price adjusted for the split and dividends.
+    For the purpose of this case study, we will be focusing on the closing price.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in03](Images/mlbf_09in03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The chart shows that S&P 500 has been in an upward-trending series between 2010
+    and 2019\. Let us perform the data preparation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Data preparation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This step is important in order to create a meaningful, reliable, and clean
+    dataset that can be used without any errors in the reinforcement learning algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Data cleaning
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we check for NAs in the rows and either drop them or fill them
+    with the mean of the column:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: As there are no null values in the data, there is no need to perform any further
+    data cleaning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Evaluate algorithms and models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This is the key step of the reinforcement learning model development, where
+    we will define all the relevant functions and classes and train the algorithm.
+    In the first step, we prepare the data for the training set and the test set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1\. Train-test split
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we partition the original dataset into training set and test
+    set. We use the test set to confirm the performance of our final model and to
+    understand if there is any overfitting. We will use 80% of the dataset for modeling
+    and 20% for testing:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.2\. Implementation steps and modules
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The overall algorithm of this case study (and of reinforcement learning in general)
+    is a bit complex as it requires building *class-based code structure* and the
+    simultaneous use of many modules and functions. This additional section was added
+    for this case study to provide a functional explanation of what is happening in
+    the program.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithm, in simple terms, decides whether to buy, sell, or hold when provided
+    with the current market price.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 9-7](#RLTrading) provides an overview of the training of the Q-learning-based
+    algorithm in the context of this case study. The algorithm evaluates which action
+    to take based on a Q-value, which determines the value of being in a certain state
+    and taking a certain action at that state.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As per [Figure 9-7](#RLTrading), the state (*s*) is decided on the basis of
+    the current and historical behavior of the price (P[t], P[t–1],…). Based on the
+    current state, the action is “buy.” With this action, we observe a reward of *$10*
+    (i.e., the PnL associated with the action) and move into the next state. Using
+    the current reward and the next state’s Q-value, the algorithm updates the Q-value
+    function. The algorithm keeps on moving through the next time steps. Given sufficient
+    iterations of the steps above, this algorithm will converge to the optimal Q-value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0907](Images/mlbf_0907.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-7\. Reinforcement learning for trading
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The deep Q-network that we use in this case study uses an ANN to approximate
+    Q-values; hence, the action value function is defined as *Q(s,a;θ)*. The deep
+    Q-learning algorithm approximates the Q-value function by learning a set of weights,
+    *θ*, of a multilayered DQN that maps states to actions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Modules and functions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Implementing this DQN algorithm requires implementation of several functions
+    and modules that interact with each other during the model training. Here is a
+    summary of the modules and functions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agent class
+  prefs: []
+  type: TYPE_NORMAL
+- en: The agent is defined as “Agent” class. This holds the variables and member functions
+    that perform the Q-learning. An object of the `Agent` class is created using the
+    training phase and is used for training the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Helper functions
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this module, we create additional functions that are helpful for training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Training module
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this step, we perform the training of the data using the variables and the
+    functions defined in the agent and helper methods. During training, the prescribed
+    action for each day is predicted, the rewards are computed, and the deep learning–based
+    Q-learning model weights are updated iteratively over a number of episodes. Additionally,
+    the profit and loss of each action is summed to determine whether an overall profit
+    has occurred. The aim is to maximize the total profit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We provide a deep dive into the interaction between the different modules and
+    functions in [“5.5\. Training the model”](#training_model_cs).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let us look at each of these in detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3\. Agent class
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The `agent` class consists of the following components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Constructor`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Function `model`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Function `act`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Function `expReplay`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The `Constructor` is defined as `init` function and contains important parameters
+    such as `discount factor` for reward function, `epsilon` for the *ε-greedy* approach,
+    `state size`, and `action size`. The number of actions is set at three (i.e.,
+    buy, sell, and hold). The `memory` variable defines the `replay memory` size.
+    The input parameter of this function also consists of `is_eval` parameter, which
+    defines whether training is ongoing. This variable is changed to `True` during
+    the evaluation/testing phase. Also, if the pretrained model has to be used in
+    the evaluation/training phase, it is passed using the `model_name` variable:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The function `model` is a deep learning model that maps the states to actions.
+    This function takes in the state of the environment and returns a *Q-value* table
+    or a policy that refers to a probability distribution over actions. This function
+    is built using the Keras Python library.^([11](ch09.xhtml#idm45174906222520))
+    The architecture for the deep learning model used is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The model expects rows of data with number of variables equal to the *state
+    size*, which comes as an input.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The first, second, and third hidden layers have *64*, *32*, and *8* nodes, respectively,
+    and all of these layers use the ReLU activation function.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The output layer has the number of nodes equal to the action size (i.e., three),
+    and the node uses a linear activation function:^([12](ch09.xhtml#idm45174906129432))
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The function `act` returns an action given a state. The function uses the `model`
+    function and returns a buy, sell, or hold action:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The function `expReplay` is the key function, where the neural network is trained
+    based on the observed experience. This function implements the *Experience replay*
+    mechanism as previously discussed. Experience replay stores a history of state,
+    action, reward, and next state transitions that are experienced by the agent.
+    It takes a minibatch of the observations (*replay memory*) as an input and updates
+    the deep learning–based Q-learning model weights by minimizing the loss function.
+    The *epsilon greedy* approach implemented in this function prevents overfitting.
+    In order to explain the function, different steps are numbered in the comments
+    of the following Python code, along with an outline of the steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prepare the replay buffer memory, which is the set of observation used for training.
+    New experiences are added to the replay buffer memory using a for loop.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '*Loop* across all the observations of state, action, reward, and next state
+    transitions in the mini-batch.'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The target variable for the Q-table is updated based on the Bellman equation.
+    The update happens if the current state is the terminal state or the end of the
+    episode. This is represented by the variable `done` and is defined further in
+    the training function. If it is not `done`, the target is just set to reward.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Predict the Q-value of the next state using a deep learning model.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The Q-value of this state for the action in the current replay buffer is set
+    to the target.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The deep learning model weights are updated by using the `model.fit` function.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The epsilon greedy approach is implemented. Recall that this approach selects
+    an action randomly with a probability of *ε* or the best action, according to
+    the Q-value function, with probability 1–*ε*.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.4\. Helper functions
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this module, we create additional functions that are helpful for training.
+    Some of the important helper functions are discussed here. For details about other
+    helper functions, refer to the Jupyter notebook in the GitHub repository for this
+    book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function `getState` generates the states given the stock data, time *t*
+    (the day of prediction), and window *n* (number of days to go back in time). First,
+    the vector of price difference is computed, followed by scaling this vector from
+    zero to one with a `sigmoid` function. This is returned as the state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function `plot_behavior` returns the plot of the market price along with
+    indicators for the buy and sell actions. It is used for the overall evaluation
+    of the algorithm during the training and testing phase.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.5\. Training the model
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We will proceed to train the data. Based on our agent, we define the following
+    variables and instantiate the stock agent:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Episode
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of times the code is trained through the entire data. In this case
+    study, we use 10 episodes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Windows size
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of market days to consider to evaluate the state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Batch size
+  prefs: []
+  type: TYPE_NORMAL
+- en: Size of the replay buffer or memory use during training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once these variables are defined, we train the model iterating through the episodes.
+    [Figure 9-8](#TraingStepsQTrd) provides a deep dive into the training steps and
+    brings together all the elements discussed so far. The upper section showing steps
+    1 to 7 describes the steps in the *training* module, and the lower section describes
+    the steps in the `replay buffer` function (i.e., `exeReplay` function).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0908](Images/mlbf_0908.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-8\. Training steps of Q-trading
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Steps 1 to 6 shown in [Figure 9-8](#TraingStepsQTrd) are numbered in the following
+    Python code and are described as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Get the current state using the helper function `getState`. It returns a vector
+    of states, where the length of the vector is defined by windows size and the values
+    of the states are between zero and one.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the action for the given state using the `act` function of the agent class.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the reward for the given action. The mapping of the action and reward is
+    described in the problem definition section of this case study.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the next state using the `getState` function. The detail of the next state
+    is further used in the Bellman equation for updating the Q-function.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'The details of the state, next state, action, etc., are saved in the memory
+    of the agent object, which is used further by the `exeReply` function. A sample
+    mini-batch is as follows:'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '![mlbf 09in04](Images/mlbf_09in04.png)'
+  prefs:
+  - PREF_IND
+  type: TYPE_IMG
+- en: Check if the batch is complete. The size of a batch is defined by the batch
+    size variable. If the batch is complete, then we move to the `Replay buffer` function
+    and update the Q-function by minimizing the MSE between the Q-predicted and the
+    Q-target. If not, then we move to the next time step.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The code produces the final results of each episode, along with the plot showing
+    the buy and sell actions and the total profit for each episode of the training
+    phase.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in05](Images/mlbf_09in05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in06](Images/mlbf_09in06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in07](Images/mlbf_09in07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in08](Images/mlbf_09in08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The charts show the details of the buy/sell pattern and the total gains of the
+    first two (zero and one) and last two (9 and 10) episodes. The details of other
+    episodes can be seen in Jupyter notebook under the GitHub repository for this
+    book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As we can see, in the beginning of episodes 0 and 1, since the agent has no
+    preconception of the consequences of its actions, it takes randomized actions
+    to observe the rewards associated with it. In episode zero, there is an overall
+    profit of $6,738, a strong result indeed, but in episode one we experience an
+    overall loss of $45\. The fact that the cumulative reward per episode fluctuates
+    substantially in the beginning illustrates the exploration process the algorithm
+    is going through. Looking at episodes 9 and 10, it seems as though the agent begins
+    learning from its training. It discovers the strategy and starts to exploit it
+    consistently. The buy and sell actions of these last two episodes lead a PnL that
+    is perhaps less than that of episode zero, but far more robust. The buy and sell
+    actions in the later episodes have been performed uniformly over the entire time
+    period, and the overall profit is stable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ideally, the number of training episodes should be higher than the number used
+    in this case study. A higher number of training episodes will lead to a better
+    training performance. Before we move on to the testing, let us go through the
+    details about model tuning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.6\. Model tuning
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Similar to other machine learning techniques, we can find the best combination
+    of model hyperparameters in RL by using techniques such as grid search. The grid
+    search for RL-based problems are computationally intensive. Hence, in this section,
+    rather than performing the grid search, we present the key hyperparameters to
+    consider, along with their intuition and potential impact on the model output.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gamma (discount factor)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Decaying gamma will have the agent prioritize short-term rewards as it learns
+    what those rewards are, and place less emphasis on long-term rewards. Lowering
+    the discount factor in this case study may cause the algorithm to focus on the
+    long-term rewards.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Epsilon
+  prefs: []
+  type: TYPE_NORMAL
+- en: The epsilon variable drives the *exploration versus exploitation* property of
+    the model. The more we get to know our environment, the less random exploration
+    we want to do. When we reduce epsilon, the likelihood of a random action becomes
+    smaller, and we take more opportunities to benefit from the high-valued actions
+    that we already discovered. However, in the trading setup, we do not want the
+    algorithm to *overfit* to the training data, and the epsilon should be modified
+    accordingly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Episodes and batch size
+  prefs: []
+  type: TYPE_NORMAL
+- en: A higher number of episodes and larger batch size in the training set will lead
+    to better training and a more optimal Q-value. However, there is a trade-off,
+    as increasing the number of episodes and batch size increases the total training
+    time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Window size
+  prefs: []
+  type: TYPE_NORMAL
+- en: Window size determines the number of market days to consider to evaluate the
+    state. This can be increased in case we want the state to be determined by a greater
+    number of days in the past.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of layers and nodes of the deep learning model
+  prefs: []
+  type: TYPE_NORMAL
+- en: This can be modified for better training and a more optimal Q-value. The details
+    about the impact of changing the layers and nodes of ANN models are discussed
+    in [Chapter 3](ch03.xhtml#Chapter3), and the grid search for a deep learning model
+    is discussed in [Chapter 5](ch05.xhtml#Chapter5).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6\. Testing the data
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'After training the data, it is evaluated against the test dataset. This is
+    an important step, especially for reinforcement learning, as the agent may mistakenly
+    correlate reward with certain spurious features from the data, or it may overfit
+    a particular chart pattern. In the testing step, we look at the performance of
+    the already trained model (*model_ep10*) from the training step on the test data.
+    The Python code looks similar to the training set we saw before. However, the
+    `is_eval` flag is set to `true`, the `reply buffer` function is not called, and
+    there is no training. Let us look at the results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in09](Images/mlbf_09in09.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the results above, our model resulted in an overall profit of $1,280,
+    and we can say that our DQN agent performs quite well on the test set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we created an automated trading strategy, or a *trading
+    bot*, that simply needs to be fed running stock market data to produce a trading
+    signal. We saw that the algorithm decides the policy by itself, and the overall
+    approach is much simpler and more principled than the supervised learning–based
+    approach. The trained model was profitable in the test set, corroborating the
+    effectiveness of the RL-based trading strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In using a reinforcement learning model such as DQN, which is based on a deep
+    neural network, we can learn policies that are more complex and powerful than
+    what a human trader could learn.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the high complexity and low interpretability of the RL-based model, visualization
+    and testing steps become quite important. For interpretability, we used the plots
+    of the training episodes of the training algorithm and found that the model starts
+    to learn over a period of time, discovers the strategy, and starts to exploit
+    it. A sufficient number of tests should be conducted on different time periods
+    before deploying the model for live trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: While using RL-based models, we should carefully select the RL components, such
+    as the reward function and state, and ensure understanding of their impact on
+    the overall model results. Before implementing or training the model, it is important
+    to think of questions, such as “How can we engineer the reward function or the
+    state so that the RL algorithm has the potential to learn to optimize the right
+    metric?”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, these RL-based models can enable financial practitioners to create
+    trading strategies with a very flexible approach. The framework provided in this
+    case study can be a great starting point to develop more powerful models for algorithmic
+    trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 2: Derivatives Hedging'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Much of traditional finance theory for handling derivatives pricing and risk
+    management is based on the idealized complete markets assumption of perfect hedgability,
+    without trading restrictions, transaction costs, market impact, or liquidity constraints.
+    In practice, however, these frictions are very real. As a consequence, practical
+    risk management using derivatives requires human oversight and maintenance; the
+    models themselves are insufficient. Implementation is still partially driven by
+    the trader’s intuitive understanding of the shortcomings of the existing tools.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning algorithms, with their ability to tackle more nuances
+    and parameters within the operational environment, are inherently aligned with
+    the objective of hedging. These models can produce dynamic strategies that are
+    optimal, even in a world with frictions. The model-free RL approaches demand very
+    few theoretical assumptions. This allows for automation of hedging without requiring
+    frequent human intervention, making the overall hedging process significantly
+    faster. These models can learn from large amounts of historical data and can consider
+    many variables to make more precise and accurate hedging decisions. Moreover,
+    the availability of vast amounts of data makes RL-based models more useful and
+    effective than ever before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study, we implement a reinforcement learning–based hedging strategy
+    that adopts the ideas presented in the paper [“Deep Hedging”](https://oreil.ly/6_Qvz)
+    by Hans Bühler et al. We will build an optimal hedging strategy for a specific
+    type of derivative (call options) by minimizing the risk-adjusted PnL. We use
+    the measure *CVaR* (conditional value at risk), which quantifies the amount of
+    tail risk of a position or portfolio as a risk assessment measure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Implementing a Reinforcement Learning–Based Hedging Strategy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'In the reinforcement learning framework for this case study, the algorithm
+    decides the best hedging strategy for call options using market prices of the
+    underlying asset. A direct policy search reinforcement learning strategy is used.
+    The overall idea, derived from the “Deep Hedging” paper, is based on minimizing
+    the hedge error under a risk assessment measure. The overall PnL of a call option
+    hedging strategy over a period of time, from *t*=1 to *t*=T, can be written as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><mi>P</mi> <mi>n</mi> <msub><mi>L</mi> <mi>T</mi></msub>
+    <mrow><mo>(</mo> <mi>Z</mi> <mo>,</mo> <mi>δ</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>δ</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper Z Subscript upper T"><msub><mi>Z</mi> <mi>T</mi></msub></math>
+    is the payoff of a call option at maturity.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math display="inline"><mrow><msub><mi>δ</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow></mrow></math>
+    is the cash flow from the hedging instruments on day <math alttext="t"><mi>t</mi></math>
+    , where <math alttext="delta"><mi>δ</mi></math> is the hedge and <math alttext="upper
+    S Subscript t"><msub><mi>S</mi> <mi>t</mi></msub></math> is the spot price on
+    day <math alttext="t"><mi>t</mi></math> .
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="upper C Subscript t"><msub><mi>C</mi> <mi>t</mi></msub></math>
+    is the transaction cost at time <math alttext="t"><mi>t</mi></math> and may be
+    constant or proportional to the hedge size.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The individual components in the equation are the components of the cash flow.
+    However, it would be preferable to take into account the risk arising from any
+    position while designing the reward function. We use the measure CVaR as the risk
+    assessment measure. CVaR quantifies the amount of tail risk and is the `expected
+    shortfall` (risk aversion parameter)^([13](ch09.xhtml#idm45174904541224)) for
+    the confidence level <math alttext="alpha"><mi>α</mi></math> . Now the reward
+    function is modified to the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>V</mi> <mi>T</mi></msub> <mo>=</mo> <mi>f</mi>
+    <mo>(</mo> <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>δ</mi>
+    <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mrow><mo>(</mo> <msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="f"><mi>f</mi></math> represents the CVaR.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We will train an *RNN-based* network to learn the optimal hedging strategy (i.e.,
+    <math alttext="delta 1 comma delta 2 period period period comma delta Subscript
+    upper T Baseline"><mrow><msub><mi>δ</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>δ</mi>
+    <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>δ</mi>
+    <mi>T</mi></msub></mrow></math> ) given the stock price, strike price, and risk
+    aversion parameter, ( <math alttext="alpha"><mi>α</mi></math> ), by minimizing
+    CVaR. We assume transaction costs to be zero for simplicity. The model can easily
+    be extended to incorporate transaction costs and other market frictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data used for the synthetic underlying stock price is generated using Monte
+    Carlo simulation, assuming a lognormal price distribution. We assume an interest
+    rate of 0% and annual volatility of 20%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The key components of the model are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agent
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trader or trading agent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Action
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hedging strategy (i.e., <math alttext="delta 1 comma delta 2 period period period
+    comma delta Subscript upper T Baseline"><mrow><msub><mi>δ</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>δ</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>δ</mi> <mi>T</mi></msub></mrow></math> ).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward function
+  prefs: []
+  type: TYPE_NORMAL
+- en: CVaR—this is a convex function and is minimized during the model training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: State
+  prefs: []
+  type: TYPE_NORMAL
+- en: State is the representation of the current market and relevant product variables.
+    The state represents the model inputs, which include the simulated stock price
+    path (i.e., <math alttext="upper S 1 comma upper S 2 period period period comma
+    upper S Subscript upper T Baseline"><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>S</mi> <mn>2</mn></msub> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo>
+    <msub><mi>S</mi> <mi>T</mi></msub></mrow></math> ), strike, and risk aversion
+    parameter ( <math alttext="alpha"><mi>α</mi></math> ).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stock exchange or stock market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The loading of Python packages is similar to the previous case studies. Please
+    refer to the Jupyter notebook for this case study for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2\. Generating the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this step we generate the data for this case study using a Black-Scholes
+    simulation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This function generates the Monte Carlo paths for the stock price and gets
+    the option price on each of the Monte Carlo paths. The calculation as shown is
+    based on the lognormal assumption of stock prices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mrow><msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>=</mo> <msub><mi>S</mi> <mi>t</mi></msub> <msup><mi>e</mi> <mrow><mfenced
+    separators="" open="(" close=")"><mi>μ</mi><mo>–</mo><mfrac><mn>1</mn> <mn>2</mn></mfrac><msup><mi>σ</mi>
+    <mn>2</mn></msup></mfenced> <mi>Δ</mi><mi>t</mi><mo>+</mo><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt><mi>Z</mi></mrow></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="upper S"><mi>S</mi></math> is stock price, <math alttext="sigma"><mi>σ</mi></math>
+    is volatility, <math alttext="mu"><mi>μ</mi></math> is the drift, <math alttext="t"><mi>t</mi></math>
+    is time, and <math alttext="upper Z"><mi>Z</mi></math> is a standard normal variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We generate 50,000 simulations of the spot price over a period of one month.
+    The total number of time steps is 30\. Hence, for each Monte Carlo scenario, there
+    is one observation per day. The parameters needed for the simulation are defined
+    below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'We will look at descriptive statistics and data visualization in this section.
+    Given that the data was generated by the simulation, we simply inspect one path
+    as a sanity check of the simulation algorithm:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in10](Images/mlbf_09in10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 4\. Evaluate algorithms and models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this direct policy search approach, we use an artificial neural network (ANN)
+    to map the state to action. In a traditional ANN, we assume that all inputs (and
+    outputs) are independent of each other. However, the hedging decision at time
+    *t* (represented by *δ[t]*) is *path dependent* and is influenced by the stock
+    price and hedging decisions at previous time steps. Hence, using a traditional
+    ANN is not feasible. *RNN* is a type of ANN that can capture the time-varying
+    dynamics of the underlying system and is more appropriate in this context. RNNs
+    have a memory, which captures information about what has been calculated so far.
+    We used this property of the RNN model for time series modeling in [Chapter 5](ch05.xhtml#Chapter5).
+    *LSTM* (also discussed in [Chapter 5](ch05.xhtml#Chapter5)) is a special kind
+    of RNN capable of learning long-term dependencies. Past state information is made
+    available to the network when mapping to an action; the extraction of relevant
+    past data is then learned as part of the training process. We will use an LSTM
+    model to map the state to action and get the hedging strategy (i.e., δ[1], δ[2],…δ[T]).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Policy gradient script
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: We will cover the implementation steps and model training in this section. We
+    provide the input variables—stock price path ( <math alttext="upper S 1 comma
+    upper S 2 comma period period period upper S Subscript upper T Baseline"><mrow><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>S</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo>
+    <mo>.</mo> <mo>.</mo> <msub><mi>S</mi> <mi>T</mi></msub></mrow></math> ), strike,
+    and risk aversion parameter, <math alttext="alpha"><mi>α</mi></math> —to the trained
+    model and receive the hedging strategy (i.e., <math alttext="delta 1 comma delta
+    2 comma period period period delta Subscript upper T Baseline right-parenthesis"><mrow><msub><mi>δ</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>δ</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo>
+    <mo>.</mo> <mo>.</mo> <msub><mi>δ</mi> <mi>T</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>
+    as the output. [Figure 9-9](#PGTraining) provides an overview of the training
+    of the policy gradient for this case study.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0909](Images/mlbf_0909.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-9\. Policy gradient training for derivatives hedging
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: We already performed step 1 in section 2 of this case study. Steps 2 to 5 are
+    self-explanatory and are implemented in the `agent` class defined later. The `agent`
+    holds the variables and member functions that perform the training. An `object`
+    of the `agent` class is created using the training phase and is used for training
+    the model. After a sufficient number of iterations of steps 2 to 5, an optimal
+    policy gradient model is generated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The class consists of the following modules:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Constructor`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The function `execute_graph_batchwise`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The functions `training`, `predict`, and `restore`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Let us dig deeper into the Python code for each of the functions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Constructor` is defined as an `init` function, where we define the model
+    parameters. We can pass the `timesteps`, `batch_size`, and `number of nodes` in
+    each layer of the LSTM model to the constructor. We define the input variables
+    of the model (i.e., stock price path, strike, and risk aversion parameter) as
+    *TensorFlow placeholders*. Placeholders are used to feed in data from outside
+    the computational graph, and we feed the data of these input variables during
+    the training phase. We implement an LSTM network in TensorFlow by using the `tf.MultiRNNCell`
+    function. The LSTM model uses four layers with 62, 46, 46, and 1 nodes. The loss
+    function is the CVaR, which is minimized when `tf.train` is called during the
+    training step. We sort the negative realized PnLs of the trading strategy and
+    calculate the mean of the (1−*α*) top losses:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The function `execute_graph_batchwise` is the key function of the program,
+    in which we train the neural network based on the observed experience. It takes
+    a batch of the states as input and updates the policy gradient–based LSTM model
+    weights by minimizing CVaR. This function trains the LSTM model to predict a hedging
+    strategy by looping across the epochs and batches. First, it prepares a batch
+    of market variables (stock price, strike, and risk aversion) and uses `sess.run`
+    function for training. This `sess.run` is a TensorFlow function to run any operation
+    defined within it. Here, it takes the inputs and runs the `tf.train` function
+    that was defined in the constructor. After a sufficient number of iterations,
+    an optimal policy gradient model is generated:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `training` function simply triggers the `execute_graph_batchwise` function
+    and provides all the inputs required for training to this function. The `predict`
+    function returns the action (hedging strategy) given a state (market variables).
+    The `restore` function restores the saved trained model, to be used further for
+    training or prediction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: 4.2\. Training the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The steps of training our policy-based model are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Define the risk aversion parameter for CVaR, number of features (this is total
+    number of stocks, and in this case we just have one), strike price, and batch
+    size. The CVaR represents the amount of loss we want to minimize. For example,
+    a CVaR of 99% means that we want to avoid extreme loss, while a CVaR of 50% minimizes
+    average loss. We train with a CVaR of 50% to have smaller mean loss.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Instantiate the policy gradient agent, which has the RNN based-policy with the
+    loss function based on the CVaR.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Iterate through the batches; the strategy is defined by the policy output of
+    the LSTM-based network.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Finally, the trained model is saved.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5\. Testing the data
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Testing is an important step, especially for RL, as it is difficult for a model
+    to provide any meaningful, intuitive relationships between input and their corresponding
+    output that is easily understood. In the testing step, we will compare the effectiveness
+    of the hedging strategy and compare it to a delta hedging strategy based on the
+    Black-Scholes model. We first define the helper functions used in this step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1\. Helper functions for comparison against Black-Scholes
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this module, we create additional functions that are used for comparison
+    against the traditional Black-Scholes model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1.1\. Black-Scholes price and delta
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The function `BlackScholes_price` implements the analytical formula for the
+    call option price, and `BS_delta` implements the analytical formula for the delta
+    of a call option:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.1.2\. Test results and plotting
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The following functions are used to compute the key metrics and related plots
+    for evaluating the effectiveness of the hedge. The function `test_hedging_strategy`
+    computes different types of PnL, including CVaR, PnL, and Hedge PnL. The function
+    `plot_deltas` plots the comparison of the RL delta versus Black-Scholes hedging
+    at different time points. The function `plot_strategy_pnl` is used to plot the
+    total PnL of the RL-based strategy versus Black-Scholes hedging:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.1.3\. Hedging error for Black-Scholes replication
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The following function is used to get the hedging strategy based on the traditional
+    Black-Scholes model, which is further used for comparison against the RL-based
+    hedging strategy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.2\. Comparison between Black-Scholes and reinforcement learning
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: We will compare the effectiveness of the hedging strategy by looking at the
+    influence of the CVaR risk aversion parameter and inspect how well the RL-based
+    model can generalize the hedging strategy if we change the moneyness of the option,
+    the drift, and the volatility of the underlying process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.1\. Test at 99% risk aversion
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'As mentioned before, the CVaR represents the amount of loss we want to minimize.
+    We trained the model using a risk aversion of 50% to minimize average loss. However,
+    for testing purposes we increase the risk aversion to 99%, meaning that we want
+    to avoid extreme loss. These results are compared against the Black-Scholes model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We use the trained function and compare the Black-Scholes and RL models in
+    the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in11](Images/mlbf_09in11.png)![mlbf 09in12](Images/mlbf_09in12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: For the first test set (strike 100, same drift, same vol) with a risk aversion
+    of 99%, the results look quite good. We see that the delta from both Black-Scholes
+    and the RL-based approach converge over time from day 1 to 30\. The CVaRs of both
+    strategies are similar and lower in magnitude, with values of 1.24 and 1.38 for
+    Black-Scholes and RL, respectively. Also, the volatility of the two strategies
+    is similar, as illustrated in the second chart.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.2\. Changing moneyness
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us now look at the comparison of the strategies, when the moneyness, defined
+    as the ratio of strike to spot price, is changed. In order to change the moneyness,
+    we decrease the strike price by 10\. The code snippet is similar to the previous
+    case, and the output is shown below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: With the change in the moneyness, we see that the PnL of the RL strategy is
+    significantly worse than that of the Black-Scholes strategy. We see a significant
+    deviation of the delta between the two across all the days. The CVaR and the volatility
+    of the RL-based strategy is much higher. The results indicate that we should be
+    careful while generalizing the model to different levels of moneyness and should
+    train the model with the option of using a variety of strikes before implementing
+    it in a production environment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in13](Images/mlbf_09in13.png)![mlbf 09in14](Images/mlbf_09in14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 5.2.3\. Changing drift
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us now look at the comparison of the strategies when the drift is changed.
+    In order to change the drift, we assume the drift of the stock price is 4% per
+    month, or 48% annualized. The output is shown below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in15](Images/mlbf_09in15.png)![mlbf 09in16](Images/mlbf_09in16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The overall results look good for the change in drift. The conclusion is similar
+    to results when the risk aversion was changed, with the deltas for the two approaches
+    converging over time. Again, the CVaRs are similar in magnitude, with Black-Scholes
+    producing a value of 1.21, and RL a value of 1.357.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.4\. Shifted volatility
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Finally, we look at the impact of shifting the volatility. In order to change
+    the volatility, we increase it by 5%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 09in17](Images/mlbf_09in17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Looking at the results, the delta, CVaR, and overall volatility of both models
+    are similar. Hence looking at the different comparisons overall, the performance
+    of this RL-based hedging is on par with Black-Scholes–based hedging.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in18](Images/mlbf_09in18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we compared the effectiveness of a call option hedging strategy
+    using RL. The RL-based hedging strategy did quite well even when certain input
+    parameters were modified. However, this strategy was not able to generalize the
+    strategy for options at different moneyness levels. It underscores the fact that
+    RL is a data-intensive approach, and it is important to train the model with different
+    scenarios, which becomes more important if the model is intended to be used across
+    a wide variety of derivatives.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although we found the RL and traditional Black-Scholes strategies comparable,
+    the RL approach offers a much higher ceiling for improvement. The RL model can
+    be further trained using a wide variety of instruments with different hyperparameters,
+    leading to performance enhancements. It would be interesting to explore the comparison
+    of these two hedging models for more exotic derivatives, given the trade-off between
+    these approaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, the RL-based approach is model independent and scalable, and it offers
+    efficiency boosts for many classical problems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 3: Portfolio Allocation'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'As discussed in prior case studies, the most commonly used technique for portfolio
+    allocation, *mean-variance portfolio optimization*, suffers from several weaknesses,
+    including:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimation errors in the expected returns and covariance matrix caused by the
+    erratic nature of financial returns.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Unstable quadratic optimization that greatly jeopardizes the optimality of the
+    resulting portfolios.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'We addressed some of these weaknesses in [“Case Study 1: Portfolio Management:
+    Finding an Eigen Portfolio”](ch07.xhtml#CaseStudy1DR) in [Chapter 7](ch07.xhtml#Chapter7),
+    and in [“Case Study 3: Hierarchical Risk Parity”](ch08.xhtml#CaseStudy3CL) in
+    [Chapter 8](ch08.xhtml#Chapter8). Here, we approach this problem from an RL perspective.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning algorithms, with the ability to decide the policy on
+    their own, are strong models for performing portfolio allocation in an automated
+    manner, without the need for continuous supervision. Automation of the manual
+    steps involved in portfolio allocation can prove to be immensely useful, specifically
+    for robo-advisors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In an RL-based framework, we treat portfolio allocation not just as a one-step
+    optimization problem but as *continuous control* of the portfolio with delayed
+    rewards. We move from discrete optimal allocation to continuous control territory,
+    and in the environment of a continuously changing market, RL algorithms can be
+    leveraged to solve complex and dynamic portfolio allocation problems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study, we will use a Q-learning-based approach and DQN to come
+    up with a policy for optimal portfolio allocation among a set of cryptocurrencies.
+    Overall, the approach and framework in terms of the Python-based implementation
+    is similar to that in case study 1\. Therefore, some repetitive sections or code
+    explanation is skipped in this case study.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Creating a Reinforcement Learning–Based Algorithm for Portfolio
+    Allocation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'In the reinforcement learning framework defined for this case study, the algorithm
+    performs an action, which is *optimal portfolio allocation*, depending on the
+    current state of the portfolio. The algorithm is trained using a deep Q-learning
+    framework, and the components of the model are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Agent
+  prefs: []
+  type: TYPE_NORMAL
+- en: A portfolio manager, a robo-advisor, or an individual investor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Action
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assignment and rebalancing of the portfolio weights. The DQN model provides
+    the Q-values, which are converted into portfolio weights.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reward function
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Sharpe ratio. Although there can be a wide range of complex reward functions
+    that provide a trade-off between profit and risk, such as percentage return or
+    maximum drawdown.
+  prefs: []
+  type: TYPE_NORMAL
+- en: State
+  prefs: []
+  type: TYPE_NORMAL
+- en: The state is the correlation matrix of the instruments based on a specific time
+    window. The correlation matrix is a suitable state variable for the portfolio
+    allocation, as it contains the information about the relationships between different
+    instruments and can be useful in performing portfolio allocation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Environment
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cryptocurrency exchange.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dataset used in this case study is from the [Kaggle](https://oreil.ly/613O2)
+    platform. It contains the daily prices of cryptocurrencies in 2018\. The data
+    contains some of the most liquid cryptocurrencies, including Bitcoin, Ethereum,
+    Ripple, Litecoin, and Dash.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The standard Python packages are loaded in this step. The details have already
+    been presented in the previous case studies. Refer to the Jupyter notebook for
+    this case study for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The fetched data is loaded in this step:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 3.1\. Descriptive statistics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We will look at descriptive statistics and data visualizations of the data
+    in this section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in19](Images/mlbf_09in19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The data has a total of 375 rows and 15 columns. These columns hold the daily
+    prices of 15 different cryptocurrencies in 2018.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Evaluate algorithms and models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This is the key step of the reinforcement learning model development, where
+    we will define all the functions and classes and train the algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Agent and cryptocurrency environment script
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: We have an `Agent` class that holds the variables and member functions that
+    perform the Q-learning. This is similar to the `Agent` class defined in case study
+    1, with an additional function to convert the Q-value output from the deep neural
+    network to portfolio weights and vice versa. The training module implements iteration
+    through several episodes and batches and saves the information of the state, action,
+    reward, and next state to be used in training. We skip the detailed description
+    of the Python code of `Agent` class and the training module in this case study.
+    Readers can refer to the Jupyter notebook in the code repository for this book
+    for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We implement a simulation environment for cryptocurrencies using a class called
+    `CryptoEnvironment`. The concept of a simulation environment, or *gym*, is quite
+    common in RL problems. One of the challenges of reinforcement learning is the
+    lack of available simulation environments on which to experiment. *OpenAI gym*
+    is a toolkit that provides a wide variety of simulated environments (e.g., Atari
+    games, 2D/3D physical simulations), so we can train agents, compare them, or develop
+    new RL algorithms. Additionally, it was developed with the aim of becoming a standardized
+    environment and benchmark for RL research. We introduce a similar concept in the
+    `CryptoEnvironment` class, where we create a simulation environment for cryptocurrencies.
+    This class has the following key functions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`getState`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This function returns the state as well as the historical return or raw historical
+    data depending on the `is_cov_matrix` or `is_raw_time_series` flag
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`getReward`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This function returns the reward (i.e., Sharpe ratio) of the portfolio, given
+    the portfolio weights and lookback period
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: Let’s explore the training of the RL model in the next step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3\. Training the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'As a first step, we initialize the `Agent` class and `CryptoEnvironment` class.
+    Then, we set the `number of episodes` and `batch size` for the training purpose.
+    Given the volatility of cryptocurrencies, we set the state `window size` to 180
+    and `rebalancing frequency` to 90 days:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 9-10](#QLearnPort) provides a deep dive into the training of the DQN
+    algorithm used for developing the RL-based portfolio allocation strategy. If we
+    look carefully, the chart is similar to the steps defined in [Figure 9-8](#TraingStepsQTrd)
+    in case study 1, with minor differences in the *Q-Matrix*, *reward function*,
+    and *action*. Steps 1 to 7 describe the training and `CryptoEnvironment` module;
+    steps 8 to 10 show what happens in the `replay buffer` function (i.e., `exeReplay`
+    function) in the `Agent` module.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0910](Images/mlbf_0910.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9-10\. DQN training for portfolio optimization
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The details of steps 1 to 6 are:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Get the *current state* using the helper function `getState` defined in the
+    `CryptoEnvironment` module. It returns a correlation matrix of the cryptocurrencies
+    based on the window size.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the *action* for the given state using the `act` function of the `Agent`
+    class. The action is the weight of the cryptocurrency portfolio.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the *reward* for the given action using the `getReward` function in the
+    `CryptoEnvironment` module.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the next state using the `getState` function. The detail of the next state
+    is further used in the Bellman equation for updating the Q-function.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The details of the state, next state, and action are saved in the memory of
+    the `Agent` object. This memory is used further by the `exeReply` function.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Check if the batch is complete. The size of a batch is defined by the batch
+    size variable. If the batch is not complete, we move to the next time iteration.
+    If the batch is complete, then we move to the `Replay buffer` function and update
+    the Q-function by minimizing the MSE between the Q-predicted and the Q-target
+    in steps 8, 9, and 10.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: As shown in the following charts, the code produces the final results along
+    with two charts for each episode. The first chart shows the total cumulative return
+    over time, while the second chart shows the percentage of each cryptocurrency
+    in the portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Episode 0/50 epsilon 1.0`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in20](Images/mlbf_09in20.png)![mlbf 09in21](Images/mlbf_09in21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '`Episode 1/50 epsilon 1.0`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in22](Images/mlbf_09in22.png)![mlbf 09in23](Images/mlbf_09in23.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '`Episode 48/50 epsilon 1.0`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in24](Images/mlbf_09in24.png)![mlbf 09in25](Images/mlbf_09in25.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '`Episode 49/50 epsilon 1.0`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in26](Images/mlbf_09in26.png)![mlbf 09in27](Images/mlbf_09in27.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The charts outline the details of the portfolio allocation of the first two
+    and last two episodes. The details of other episodes can be seen in the Jupyter
+    notebook under the GitHub repository for this book. The black line shows the performance
+    of the portfolio, and the dotted grey line shows the performance of the benchmark,
+    which is an equally weighted portfolio of cryptocurrencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the beginning of episodes zero and one, the agent has no preconception of
+    the consequences of its actions, and it takes randomized actions to observe the
+    returns, which are quite volatile. Episode zero shows a clear example of erratic
+    performance behavior. Episode one displays more stable movement but ultimately
+    underperforms the benchmark. This is evidence that the cumulative reward per episode
+    fluctuates significantly in the beginning of training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The last two charts of episodes 48 and 49 show the agent starting to learn from
+    its training and discovering the optimal strategy. Overall returns are relatively
+    stable and outperform the benchmark. However, the overall portfolio weights are
+    still quite volatile due to the short time series and high volatility of the underlying
+    cryptocurrency assets. Ideally, we would be able to increase the number of training
+    episodes and the length of historical data to enhance the training performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let us look at the testing results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Testing the data
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Recall that the black line shows the performance of the portfolio, and the
+    dotted grey line is that of an equally weighted portfolio of cryptocurrencies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: Despite underperforming during the initial period, the model performance was
+    better overall, primarily due to avoiding the steep decline that the benchmark
+    portfolio experienced in the latter part of the test window. The returns appear
+    very stable, perhaps due to rotating away from the most volatile cryptocurrencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 09in28](Images/mlbf_09in28.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Let us inspect the return, volatility, Sharpe ratio, alpha, and beta of the
+    portfolio and benchmark:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: Overall, the RL portfolio performs better across the board, with a higher return,
+    higher Sharpe ratio, lower volatility, slight alpha, and negative correlation
+    to the benchmark.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we went beyond the classic efficient frontier for portfolio
+    optimization and directly learned a policy of dynamically changing portfolio weights.
+    We trained an RL-based model by setting up a standardized simulation environment.
+    This approach facilitated the training process and can be explored further for
+    general RL-based model training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trained RL-based model outperformed an equal-weight benchmark in the test
+    set. The performance of the RL-based model can be further improved by optimizing
+    the hyperparameters or using a longer time series for training. However, given
+    the high complexity and low interpretability of an RL-based model, testing should
+    occur across different time periods and market cycles before deploying the model
+    for live trading. Also, as discussed in case study 1, we should carefully select
+    the RL components, such as the reward function and state, and ensure we understand
+    their impact on the overall model results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The framework provided in this case study can enable financial practitioners
+    to perform portfolio allocation and rebalancing with a very flexible and automated
+    approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Chapter Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Reward maximization is one of the key principles that drives algorithmic trading,
+    portfolio management, derivative pricing, hedging, and trade execution. In this
+    chapter, we saw that when we use RL-based approaches, explicitly defining the
+    strategy or policy for trading, derivative hedging, or portfolio management is
+    unnecessary. The algorithm determines the policy itself, which can lead to a much
+    simpler and more principled approach than other machine learning techniques.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 1: Reinforcement Learning–Based Trading Strategy”](#CaseStudy1RL),
+    we saw that RL makes algorithmic trading a simple game, which may or may not involve
+    understanding fundamental information. In [“Case Study 2: Derivatives Hedging”](#CaseStudy2RL),
+    we explored the use of reinforcement learning for a traditional derivative hedging
+    problem. This exercise demonstrated that we can leverage the efficient numerical
+    calculation of RL in derivatives hedging to address some of the drawbacks of the
+    more traditional models. In [“Case Study 3: Portfolio Allocation”](#CaseStudy3RL),
+    we performed portfolio allocation by learning a policy of changing portfolio weights
+    dynamically in a continuously changing market environment, leading to further
+    automation of the portfolio management process.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although RL comes with some challenges, such as being computationally expensive
+    and data intensive and lacking interpretability, it aligns perfectly with some
+    areas in finance that are suited for policy frameworks based on reward maximization.
+    Reinforcement learning has managed to achieve superhuman performance in finite
+    action spaces, such as those in the games of Go, chess, and Atari. Looking ahead,
+    with the availability of more data, refined RL algorithms, and superior infrastructure,
+    RL will continue to prove to be immensely useful in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exercises
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Using the ideas and concepts presented in case studies 1 and 2, implement a
+    trading strategy based on a policy gradient algorithm for FX. Vary the key components
+    (i.e., reward function, state, etc.) for this implementation.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Implement the hedging of a fixed income derivative using the concepts presented
+    in case study 2.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Incorporate a transaction cost in case study 2 and see the impact on the overall
+    results.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Based on the ideas presented in case study 3, implement a Q-learning-based portfolio
+    allocation strategy on a portfolio of stocks, FX, or fixed income instruments.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch09.xhtml#idm45174907850488-marker)) Reinforcement learning is also referred
+    to as RL throughout this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([2](ch09.xhtml#idm45174907783768-marker)) For more details, be sure to check
+    out *Reinforcement Learning: An Introduction* by Richard Sutton and Andrew Barto
+    (MIT Press), or David Silver’s free online [RL course at University College London](https://oreil.ly/niRu-).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch09.xhtml#idm45174907622280-marker)) See [“Reinforcement Learning Models”](#reinforcement_learning_models)
+    for more details on model-based and model-free approaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch09.xhtml#idm45174907605976-marker)) A maximum drawdown is the maximum
+    observed loss from peak to trough of a portfolio before a new peak is attained;
+    it is an indicator of downside risk over a specified time period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([5](ch09.xhtml#idm45174907045944-marker)) If the state and action spaces of
+    MDP are finite, then it is called a finite Markov decision process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([6](ch09.xhtml#idm45174907036600-marker)) The MDP example based on dynamic
+    programming that was discussed in the previous section was an example of a model-based
+    algorithm. As seen there, example rewards and transition probabilities are needed
+    for such algorithms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([7](ch09.xhtml#idm45174907028376-marker)) There are some models, such as the
+    actor-critic model, that leverage both policy-based and value-based methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([8](ch09.xhtml#idm45174907004296-marker)) *Off-policy*, *ε-greedy*, *exploration*,
+    and *exploitation* are commonly used terms in RL and will be used in other sections
+    and case studies as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([9](ch09.xhtml#idm45174906929688-marker)) Refer to [Chapter 3](ch03.xhtml#Chapter3)
+    for more details on gradient descent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([10](ch09.xhtml#idm45174906688584-marker)) Refer to [Chapter 3](ch03.xhtml#Chapter3)
+    for more details on the sigmoid function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([11](ch09.xhtml#idm45174906222520-marker)) The details of the Keras-based
+    implementation of deep learning models are shown in [Chapter 3](ch03.xhtml#Chapter3).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([12](ch09.xhtml#idm45174906129432-marker)) Refer to [Chapter 3](ch03.xhtml#Chapter3)
+    for more details on the linear and ReLU activation functions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([13](ch09.xhtml#idm45174904541224-marker)) The expected shortfall is the expected
+    value of an investment in the tail scenario.
+  prefs: []
+  type: TYPE_NORMAL

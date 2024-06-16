@@ -1,0 +1,794 @@
+- en: Chapter 10\. Deep Reinforcement Learning for Time Series Prediction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Reinforcement learning* is a branch of machine learning that deals with sequential
+    decision-making problems. Algorithms in this branch learn to make optimal decisions
+    by interacting with an environment and receiving feedback in the form of rewards.
+    In the context of time series forecasting, it can be used to develop models that
+    make sequential predictions based on historical data. Traditional forecasting
+    approaches often rely on statistical methods or supervised learning techniques,
+    which assume independence between data points. However, time series data exhibits
+    temporal dependencies and patterns, which may be effectively captured using reinforcement
+    learning.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning models for time series forecasting typically involve
+    an agent that takes actions based on observed states and receives rewards based
+    on the accuracy of its predictions. The agent learns through trial and error to
+    maximize cumulative rewards over time. The key challenge is finding an optimal
+    balance between *exploration* (trying out new actions) and *exploitation* (using
+    learned knowledge).
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter gives a basic overview of reinforcement learning and deep reinforcement
+    learning with regard to predicting time series data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Intuition of Reinforcement Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Simplification is always the right path toward understanding more advanced details.
+    So let’s look at reinforcement learning from a simple point of view before digging
+    deeper.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning deals primarily with rewards and penalties. Imagine a
+    child who gets a reward for doing good things and a punishment for doing bad things.
+    Over time, that child will grow and will develop their experience so that they
+    do good things and try to avoid doing bad things as much as possible (no one is
+    perfect). Therefore, the learning is done through experience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: From a time series perspective, the main idea is the same. Imagine training
+    a model on past data and letting it then learn by experience, rewarding it for
+    good predictions and calibrating its parameters when it makes a mistake so that
+    it can achieve better accuracy next time. The algorithm is greedy in nature and
+    wants to maximize its rewards; therefore, over time it becomes better at predicting
+    the next likely value, which is of course dependent on the quality and the signal-to-noise
+    ratio of the analyzed time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The term *reinforcement learning* comes from the fact that *positive reinforcement*
+    is given to the algorithm when it makes right decisions and *negative reinforcement*
+    is given when it makes bad decisions. The first three concepts you must know are
+    states, actions, and rewards:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: States
+  prefs: []
+  type: TYPE_NORMAL
+- en: The features at every time step. For example, at a certain time step, the current
+    state of the market is its OHLC data and its volume data. In more familiar words,
+    states are the explanatory variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Actions
+  prefs: []
+  type: TYPE_NORMAL
+- en: The decisions a trader may make at every time step. They generally involve buying,
+    selling, or holding. In more familiar words, actions are the algorithms’ decisions
+    when faced with certain states (a simple discretionary example of this would be
+    a trader noticing an overvalued market and deciding to initiate a buy order).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rewards
+  prefs: []
+  type: TYPE_NORMAL
+- en: The results of correct actions. The simplest reward is the positive return.
+    Note that a poorly designed reward function can lead to model issues such as a
+    buy-and-hold strategy.^([1](ch10.html#id771))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Table 10-1](#table-10-1) shows the three main elements of reinforcement learning.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 10-1\. A hypothetical decision table
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|   | Time | Open | High | Low | Close | &#124; | **Action** | **Reward** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **States** |   1 | 10 | 14 | 8 | 10 | &#124; | BUY |     0 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **States** |   2 | 10 | 15 | 6 | 13 | &#124; | BUY |     3 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **States** |   3 | 13 | 16 | 8 | 14 | &#124; | SELL |   –1 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **States** |   4 | 10 | 16 | 8 | 14 | &#124; | HOLD |     0 |'
+  prefs: []
+  type: TYPE_TB
+- en: States are the rows that go from the Time column to the Close column. Actions
+    can be categorical, as you can see from the Action column, and Rewards can either
+    be numerical (e.g., a positive or negative profit) or categorical (e.g., profit
+    or loss label).
+  prefs: []
+  type: TYPE_NORMAL
+- en: From the preceding list, it seems complicated to just design a system that looks
+    for rewards. A *reward function* quantifies the desirability or utility of being
+    in a particular state or taking a specific action. The reward function therefore
+    provides feedback to the agent, indicating the immediate quality of its actions
+    and guiding its learning process. Before we discuss reward functions in more detail,
+    let’s look at what a state-action table is (also known as a Q-table).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *Q-table*, short for *quality table*, is a data structure to store and update
+    the expected value (called the *Q-value*) of taking a particular action in a given
+    state. The Q-value of a state-action pair (*s*, *a*) at time *t* represents the
+    expected cumulative reward that an agent can achieve by taking action *a* in state
+    *s* following a specific policy. The Q-table is therefore a table-like structure
+    that maps each state-action pair to its corresponding Q-value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Initially, the Q-table is usually initialized with arbitrary values or set to
+    zero. As the algorithm explores the environment (market) and receives rewards,
+    it updates the Q-values in the table based on the observed rewards and the estimated
+    future rewards. This process is typically done using an algorithm such as Q-learning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Over time, through repeated exploration and exploitation, the Q-table gradually
+    converges to more accurate estimates of the optimal Q-values, representing the
+    best actions to take in each state. By using the Q-table, the agent can make informed
+    decisions and learn to maximize its cumulative rewards in the given environment.
+    Remember, a reward can be a profit, Sharpe ratio, or any other performance metric.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Q-learning* is a popular reinforcement learning algorithm that enables an
+    agent to learn optimal actions by iteratively updating its action-value function,
+    known as the *Bellman equation*, defined as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper Q left-parenthesis s Subscript t Baseline comma a Subscript
+    t Baseline right-parenthesis equals upper R left-parenthesis s Subscript t Baseline
+    comma a Subscript t Baseline right-parenthesis plus gamma m a x left-bracket upper
+    Q left-parenthesis s Subscript t plus 1 Baseline comma a Subscript t plus 1 Baseline
+    right-parenthesis right-bracket"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mi>R</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo>
+    <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>γ</mi> <mi>m</mi>
+    <mi>a</mi> <mi>x</mi> <mrow><mo>[</mo> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>a</mi>
+    <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>]</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s Subscript t Baseline
+    comma a Subscript t Baseline right-parenthesis is the expected reward 2nd Row  upper
+    R left-parenthesis s Subscript t Baseline comma a Subscript t Baseline right-parenthesis
+    is the reward table 3rd Row  gamma is the learning rate left-parenthesis known
+    as g a m m a right-parenthesis EndLayout"><mtable><mtr><mtd columnalign="left"><mrow><mi>Q</mi>
+    <mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub>
+    <mo>)</mo> <mtext>is</mtext> <mtext>the</mtext> <mtext>expected</mtext> <mtext>reward</mtext></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>R</mi> <mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mi>t</mi></msub> <mo>)</mo> <mtext>is</mtext> <mtext>the</mtext>
+    <mtext>reward</mtext> <mtext>table</mtext></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>γ</mi>
+    <mtext>is</mtext> <mtext>the</mtext> <mtext>learning</mtext> <mtext>rate</mtext>
+    <mtext>(known</mtext> <mtext>as</mtext> <mi>g</mi> <mi>a</mi> <mi>m</mi> <mi>m</mi>
+    <mi>a</mi> <mtext>)</mtext></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The larger the learning rate (γ), the more the algorithm takes into account
+    the previous experiences. Notice that if γ is equal to zero, it would be synonymous
+    to learning nothing as the second term will cancel itself out. As a simple example,
+    consider [Table 10-2](#table-10-2).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 10-2\. R-table
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Time (State) | Act (Action) | Wait (Action) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|        1 | 2 reward units | 0 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|        2 | 2 reward units | 0 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|        3 | 2 reward units | 0 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|        4 | 2 reward units | 0 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|        5 | 2 reward units | 4 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The table describes the results of actions through time. At every time step,
+    acting (doing something) will give a reward of 2, while waiting to act on the
+    fifth time step will give a reward of 4\. This means that the agent can make one
+    of the following choices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Act now and get 2 reward units.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Wait before acting and get 4 reward units.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Let’s assume γ = 0.80\. Using the Bellman equation and working backward will
+    get you the following results:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s 1 comma a 1 right-parenthesis
+    equals 0 plus 0.8 left-parenthesis 2.04 right-parenthesis equals 1.63 2nd Row  upper
+    Q left-parenthesis s 2 comma a 2 right-parenthesis equals 0 plus 0.8 left-parenthesis
+    2.56 right-parenthesis equals 2.04 3rd Row  upper Q left-parenthesis s 3 comma
+    a 3 right-parenthesis equals 0 plus 0.8 left-parenthesis 3.20 right-parenthesis
+    equals 2.56 4th Row  upper Q left-parenthesis s 4 comma a 4 right-parenthesis
+    equals 0 plus 0.8 left-parenthesis 4.00 right-parenthesis equals 3.20 EndLayout"><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>04</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>1</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>63</mn></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>2</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>56</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>04</mn></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>3</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>3</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>3</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>20</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>2</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>56</mn></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mn>4</mn></msub>
+    <mo>,</mo> <msub><mi>a</mi> <mn>4</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mn>0</mn>
+    <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>8</mn> <mrow><mo>(</mo>
+    <mn>4</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>00</mn> <mo>)</mo></mrow> <mo>=</mo>
+    <mn>3</mn> <mo lspace="0%" rspace="0%">.</mo> <mn>20</mn></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Table 10-2](#table-10-2) may be updated to become [Table 10-3](#table-10-3)
+    as follows.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 10-3\. Q-table
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Time (State) | Act (Action) | Wait (Action) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       1 | 2 reward units | 1.63 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       2 | 2 reward units | 2.04 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       3 | 2 reward units | 2.56 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       4 | 2 reward units | 3.20 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       5 | 2 reward units | 4.00 reward units |'
+  prefs: []
+  type: TYPE_TB
+- en: Therefore, the Q-table is continuously updated with the implied rewards to help
+    maximize the final reward. To understand why the term *max* is in the Bellman
+    equation, consider the example in [Table 10-4](#table-10-4).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 10-4\. R-table
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Time (State) | Buy | Sell | Hold |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       1 |  5 |  8 |  8 |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       2 |  3 |  2 |  1 |'
+  prefs: []
+  type: TYPE_TB
+- en: '|       3 |  2 |  5 |  6 |'
+  prefs: []
+  type: TYPE_TB
+- en: Calculate the would-be value of *x* in a Q-table ([Table 10-5](#table-10-5))
+    assuming a learning rate of 0.4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 10-5\. Q-table
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Time (State) | Buy | Sell | Hold |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|      1 |  ?   |  ? |  ? |'
+  prefs: []
+  type: TYPE_TB
+- en: '|      2 |  ? |  x |  ? |'
+  prefs: []
+  type: TYPE_TB
+- en: '|      3 |  2 |  5 |  6 |'
+  prefs: []
+  type: TYPE_TB
+- en: 'Following the formula, you should get this result:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="x equals 2 plus 0.4 left-parenthesis m a x left-parenthesis 2
+    comma 5 comma 6 right-parenthesis right-parenthesis equals 4.4"><mrow><mi>x</mi>
+    <mo>=</mo> <mn>2</mn> <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo>
+    <mn>4</mn> <mo>(</mo> <mi>m</mi> <mi>a</mi> <mi>x</mi> <mo>(</mo> <mn>2</mn> <mo>,</mo>
+    <mn>5</mn> <mo>,</mo> <mn>6</mn> <mo>)</mo> <mo>)</mo> <mo>=</mo> <mn>4</mn> <mo
+    lspace="0%" rspace="0%">.</mo> <mn>4</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: States (features) must be predictive in nature so that the reinforcement learning
+    algorithm predicts the next value with an accuracy better than random. Examples
+    of features can be the values of the relative strength index (RSI), moving averages,
+    and lagged close prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is crucial to keep in mind that the inputs’ statistical preference remains
+    the same, that is, stationary. This begs the question: how are moving averages
+    used as inputs if they are not stationary? The simple answer is through the usual
+    transformation, which is to take the percentage difference.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: It is possible to use fractional differencing to transform a nonstationary time
+    series into a stationary one while retaining its memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *policy* defines the behavior of an agent in an environment. It is a mapping
+    from states to actions, indicating what action the agent should take in a given
+    state. The policy essentially guides the agent’s decision-making process by specifying
+    the action to be executed based on the observed state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal of reinforcement learning is to find an optimal policy that maximizes
+    the agent’s long-term cumulative reward. This is typically achieved through a
+    trial-and-error process, where the agent interacts with the environment, takes
+    actions, receives rewards, and adjusts its policy based on the observed outcomes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The exploitation policy is generally faster than the exploration policy but
+    may be more limited as it seeks a greater and immediate reward, while there may
+    be a path afterward that leads to an even greater reward. Ideally, the best policy
+    to take is a combination of both. But how do you determine this optimal mix? That
+    question is answered by epsilon (ε).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Epsilon* is a parameter used in exploration–exploitation trade-offs. It determines
+    the probability with which an agent selects a random action (exploration) versus
+    selecting the action with the highest estimated value (exploitation).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Commonly used exploration strategies include epsilon-greedy and softmax. In
+    *epsilon-greedy*, the agent selects the action with the highest estimated value
+    with a probability of (1 – ε), and then it selects a random action with a probability
+    of ε. This allows the agent to explore different actions and potentially discover
+    better policies. As the agent learns over time, the epsilon value is often decayed
+    gradually to reduce exploration and focus more on exploitation.^([2](ch10.html#id778))
+    *Softmax* action selection considers the estimated action values but introduces
+    stochasticity in the decision-making process. The temperature parameter associated
+    with softmax determines the randomness in action selection, where a higher temperature
+    leads to more exploration.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Warning
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Do not mix up epsilon and gamma:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Gamma* is a parameter that determines the importance of future rewards. It
+    controls the extent to which the agent values immediate rewards compared to delayed
+    rewards (hence, it is related to a delayed gratification issue). The value of
+    gamma is typically a number between 0 and 1, where a value closer to 1 means the
+    agent considers future rewards more heavily, while a value closer to 0 gives less
+    importance to future rewards. To understand this more, consider having another
+    look at the Bellman equation.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Epsilon* is a parameter used in exploration–exploitation trade-offs. It determines
+    the probability with which an agent selects a random action (exploration) versus
+    selecting the action with the highest estimated value (exploitation).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: At this point, you may feel overwhelmed by the amount of new information presented,
+    especially because it differs from what you have seen so far in the book. Before
+    moving to the more complex deep reinforcement learning discussion, a quick summary
+    of what you have seen in this chapter until now may be beneficial. Reinforcement
+    learning is essentially giving the machine a task that it will then learn how
+    to do on its own.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With time series analysis, states represent the current situation or condition
+    of the environment at a particular time. An example of state is a technical indicator’s
+    value. States are represented by Q-tables. Actions are self-explanatory and can
+    be buy, sell, or hold (or even a more complex combination such as decrease weight
+    and increase weight). Rewards are what the algorithm is trying to maximize and
+    can be profit per trade, Sharpe ratio, or any sort of performance evaluation metric.
+    A reward can also be a penalty such as the number of trades or maximum drawdown (in
+    such a case, you are aiming to minimize it). The reinforcement learning algorithm
+    will go through many iterations and variables through different policies to try
+    to detect hidden patterns and optimize trading decision so that profitability
+    is maximized. This is easier said than done (or coded).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One question is begging an answer: is using a Q-table to represent the different
+    states of financial time series efficient? This question is answered in the next
+    section.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deep Reinforcement Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*Deep reinforcement learning* combines reinforcement learning techniques with
+    deep learning architectures, particularly deep neural networks. It involves training
+    agents to learn optimal behavior and make decisions by interacting with an environment,
+    using deep neural networks to approximate value functions or policies.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The main difference between a reinforcement learning algorithm and a deep reinforcement
+    learning algorithm is that the former estimates Q-values using the Q-table, while
+    the latter estimates Q-values using ANNs (see [Chapter 8](ch08.html#ch08) for
+    details on artificial neural networks).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: As a reminder, *artificial neural networks* (ANNs) are a type of computational
+    model inspired by the structure and functioning of the human brain. A neural network
+    consists of interconnected nodes organized into layers. The three main types of
+    layers are the input layer, hidden layers, and the output layer. The input layer
+    receives the initial data, which is then processed through the hidden layers,
+    and finally, the output layer produces the network’s prediction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The main objective of this section is to understand and design a deep reinforcement
+    learning algorithm with the aim of data prediction. Keep in mind that reinforcement
+    learning is still not heavily applied since it suffers from a few issues (discussed
+    at the end of this section) that need to be resolved before making it one of the
+    main trading algorithms in quantitative finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Therefore, deep reinforcement learning will have two main elements with important
+    tasks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A deep neural network architecture to recognize patterns and approximate the
+    best function that relates dependent and independent variables
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A reinforcement learning architecture that allows the algorithm to learn by
+    trial and error how to maximize a certain profit function
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Let’s continue defining a few key concepts before putting things together. *Replay
+    memory*, also known as *experience replay*, involves storing and reusing past
+    experiences to enhance the learning process and improve the stability and efficiency
+    of the training.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In deep reinforcement learning, an agent interacts with an environment, observes
+    states, takes actions, and receives rewards. Each observation, action, reward,
+    and resulting next state is considered an experience. The replay memory serves
+    as a buffer that stores a collection of these experiences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The replay memory has the following key features:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storage
+  prefs: []
+  type: TYPE_NORMAL
+- en: The replay memory is a data structure that can store a fixed number of experiences.
+    Each experience typically consists of the current state, the action taken, the
+    resulting reward, the next state, and a flag indicating whether the episode terminated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sampling
+  prefs: []
+  type: TYPE_NORMAL
+- en: During the training process, instead of using experiences immediately as they
+    occur, the agent samples a batch of experiences from the replay memory. Randomly
+    sampling experiences from a large pool of stored transitions helps in decorrelating
+    the data and breaking the temporal dependencies that exist in consecutive experiences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Batch learning
+  prefs: []
+  type: TYPE_NORMAL
+- en: The sampled batch of experiences is then used to update the agent’s neural network.
+    By learning from a batch of experiences rather than individual experiences, the
+    agent can make more efficient use of computation and improve the learning stability.
+    Batch learning also allows for the application of optimization techniques, such
+    as stochastic gradient descent, to update the network weights.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The replay memory provides several benefits to deep reinforcement learning algorithms.
+    Among those benefits is experience reuse, as the agent can learn from a more diverse
+    set of data, reducing the bias that can arise from sequential updates. Breaking
+    correlations is another benefit since the sequential nature of experience collection
+    in reinforcement learning can introduce correlations between consecutive experiences.
+    Randomly sampling experiences from the replay memory helps break these correlations,
+    making the learning process more stable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So far, we have discussed the following steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining and initializing the environment
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Designing the neural network architecture
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Designing the reinforcement learning architecture with experience replay to
+    stabilize the learning process
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Interacting with the environment and storing experiences until the learning
+    process is done and predictions on new data are done
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: One thing we have not discussed is how to reduce overestimations, which can
+    be achieved by doubling down on the neural network architecture.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *Double Deep Q-Network* (DDQN) model is an extension of the original DQN
+    architecture introduced by DeepMind in 2015\. The primary motivation behind DDQN
+    is to address a known issue in the DQN algorithm called *overestimation bias*,
+    which can lead to suboptimal action selection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the original DQN, the action values (Q-values) for each state-action pair
+    are estimated using a single neural network. However, during the learning process,
+    the Q-values are estimated using the maximum Q-value among all possible actions
+    in the next state (take a look at [Table 10-5](#table-10-5)). This maximum Q-value
+    can sometimes result in an overestimation of the true action values, leading to
+    a suboptimal policy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The DDQN addresses this overestimation bias by utilizing two separate neural
+    networks: the Q-network and the target-network. The *Q-network* is a deep neural
+    network that approximates the action-value function (Q-function). In other words,
+    it estimates the value of each possible action in a given state. The Q-network’s
+    parameters (weights and biases) are learned through training to minimize the difference
+    between predicted Q-values and target Q-values. The *target network* is a separate
+    copy of the Q-network that is used to estimate the target Q-values during training.
+    It helps stabilize the learning process and improve the convergence of the Q-network.
+    The weights of the target network are not updated during training; instead, they
+    are periodically updated to match the weights of the Q-network.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key idea behind the DDQN is to decouple the selection of actions from the
+    estimation of their values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The algorithm updates the Q-network regularly and the target network occasionally.
+    This is done to avoid the issue of the same model being used to estimate the Q-value
+    from the next state and then giving it to the Bellman equation to estimate the
+    Q-value for the current state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So, to put these elements into an ordered sequence, here’s how the deep reinforcement
+    learning architecture may look:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The environment is initialized.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The epsilon value is selected. Remember, epsilon is the exploration–exploitation
+    trade-off parameter used to control the agent’s behavior during training.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The current state is fetched. Remember, an example of the current state may
+    be the OHLC data, the RSI, the standard deviation of the returns, or even the
+    day of the week.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: In the first round, the algorithm selects the action through exploration as
+    the model is not trained yet; therefore, the action is randomly selected (e.g.,
+    from a choice panel of buy, sell, and hold). If it’s not the first step, then
+    exploitation may be used to select the action. Exploitation is where the action
+    is determined by the neural network model.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The action is applied.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The previous elements are stored in replay memory.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The inputs and the target array are fetched and the Q-network is trained.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If the round is not over, repeat the process starting at step 3\. Otherwise,
+    train the target network and repeat from step 1.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: To illustrate the algorithm, let’s use it on the synthetic sine wave time series.
+    Create the time series and then apply the deep reinforcement learning algorithm
+    with the aim of predicting the future values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The full code can be found in the [GitHub repository](https://oreil.ly/5YGHI)
+    (for replication purposes).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 10-1](#figure-10-1) shows the test data (solid line) versus the predicted
+    data (dashed line) using 1 epoch, 5 inputs (lagged values), a batch size of 64,
+    and 1 hidden layer with 6 neurons.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_1001.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-1\. Test data versus predicted data using 1 epoch, 5 inputs, a batch
+    size of 64, and 1 hidden layer with 6 neurons
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 10-2](#figure-10-2) shows the test data (solid line) versus the predicted
+    data (dashed line) using 1 epoch, 5 inputs (lagged values), a batch size of 64,
+    and 2 hidden layers with each having 6 neurons.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_1002.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-2\. Predicted values versus actual values using 1 epoch, 5 inputs,
+    a batch size of 64, and 2 hidden layers with each having 6 neurons
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 10-3](#figure-10-3) shows the predictions using 10 epochs, 5 inputs
+    (lagged values), a batch size of 32, and 2 hidden layers with each having 6 neurons.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_1003.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-3\. Predicted values versus actual values using 10 epochs, 5 inputs,
+    a batch size of 32, and 2 hidden layers with each having 6 neurons
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 10-4](#figure-10-4) shows the predictions using 10 epochs, 5 inputs
+    (lagged values), a batch size of 32, and 2 hidden layers with each having 24 neurons.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_1004.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-4\. Predicted values versus actual values using 10 epochs, 5 inputs,
+    a batch size of 32, and 2 hidden layers with each having 24 neurons
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 10-5](#figure-10-5) shows the predictions using 10 epochs, 8 inputs
+    (lagged values), a batch size of 32, and 2 hidden layers with each having 64 neurons.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](assets/dlff_1005.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-5\. Predicted values versus actual values using 10 epochs, 8 inputs,
+    a batch size of 32, and 2 hidden layers with each having 64 neurons
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: As you know, the more epochs, the better the fit—up to a certain point, where
+    overfitting may start to become an issue. Fortunately, by now you know how to
+    reduce that risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Note that the sine wave example is a very basic one, and more complex data can
+    be used with the algorithm. The choice of the sine wave time series is for illustrative
+    purposes only, and you must use more sophisticated methods on more complex time
+    series to be able to judge the algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reinforcement learning is easily overfit and is more likely to learn simple
+    patterns and not hidden and complicated ones. Also, you should now be aware of
+    the difficulty of reward function design and choice of features. Furthermore,
+    such models are often considered mystery boxes, making it difficult to explain
+    the reasoning behind their predictions. All of these issues are now a barrier
+    to implementing a stable and profitable deep reinforcement learning algorithm
+    for trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Reinforcement learning can be applied to time series prediction tasks, where
+    the goal is to make predictions about future values based on historical data.
+    In this approach, an agent interacts with an environment representing the time
+    series data. The agent receives observations of past values and takes actions
+    to predict future values. The agent’s actions involve adjusting its internal model
+    or parameters to make predictions. It uses reinforcement learning algorithms to
+    learn from past experiences and improve its prediction accuracy over time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The agent receives rewards or penalties based on the accuracy of its predictions.
+    Rewards can be designed to reflect the prediction error or the utility of the
+    predictions for the specific application. Through a process of trial and error,
+    the agent learns to associate certain patterns or features in the time series
+    data with future outcomes. It learns to make predictions that maximize rewards
+    and minimize errors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The reinforcement learning process involves a balance between exploration and
+    exploitation. The agent explores different prediction strategies, trying to discover
+    patterns and make accurate predictions. It also exploits its existing knowledge
+    to make predictions based on what it has learned so far. The goal of reinforcement
+    learning for time series prediction is to train the agent to make accurate and
+    reliable predictions. By continually receiving feedback and updating its prediction
+    strategies, the agent adapts to changing patterns in the time series and improves
+    its forecasting abilities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Chapter 11](ch11.html#ch11) will show how to employ more deep learning techniques
+    and applications.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([1](ch10.html#id771-marker)) A buy-and-hold strategy is a passive action whereby
+    the trader or the algorithm initiates one buy order and holds it for a long time
+    in an attempt to replicate the market’s return and minimize transaction costs
+    incurred from excessive trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch10.html#id778-marker)) Keep epsilon decay in mind as it will be used
+    as a variable in the code later.
+  prefs: []
+  type: TYPE_NORMAL

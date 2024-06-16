@@ -1,0 +1,1552 @@
+- en: Chapter 3\. Three-State Economy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The model is said to be *complete* if every contingent claim can be generated
+    by some trading strategy. Otherwise, the model is said to be *incomplete*.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Stanley Pliska (1997)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Assume that an individual views the outcome of any investment in probabilistic
+    terms; that is, he thinks of the possible results in terms of some probability
+    distribution. In assessing the desirability of a particular investment, however,
+    he is willing to act on the basis of only two parameters of this distribution—its
+    expected value and standard deviation.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: William Sharpe (1964)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The previous chapter is based on the most simple model economy, in which the
+    notion of uncertainty in finance can be analyzed. This chapter enriches the two-state
+    economy by just a single additional state while keeping the number of traded financial
+    assets constant at two. In this slightly enriched *static three-state economy*,
+    the notions of market incompleteness and indeterminacy of the martingale measure
+    are discussed. Super-replication and approximate replication approaches are presented
+    to cope with incompleteness and its consequences for the pricing of contingent
+    claims. The chapter also presents the Capital Asset Pricing Model (CAPM), which
+    builds on the mean-variance portfolio analysis and adds equilibrium arguments
+    to derive prices for financial assets in mean-volatility space even if they are
+    not replicable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter mainly covers the following topics from finance, mathematics,
+    and Python programming:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Finance | Mathematics | Python |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Uncertainty | Probability space | `ndarray` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Financial assets | Vectors, matrices | `ndarray` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Attainable contingent claims | Span of vectors, basis of vector space | `ndarray`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Martingale pricing, arbitrage | Sets of probability measures, expectation
+    | `ndarray, np.dot` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Super-replication | Minimization, constraints | `scipy.optimize.minimize,
+    dict, lambda` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Approximate replication | Mean squared error, OLS regression | `np.linalg.lstsq`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Capital market line | Expectation, standard deviation | `NumPy` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Capital Asset Pricing Model | Correlation, covariance | `NumPy` |'
+  prefs: []
+  type: TYPE_TB
+- en: If not explicitly stated otherwise, the assumptions and notions of the two-state
+    economy from the previous chapter carry over to the three-state economy discussed
+    in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Uncertainty
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Two *points in time* are relevant, today, <math alttext="t equals 0"><mrow><mi>t</mi>
+    <mo>=</mo> <mn>0</mn></mrow></math> , and one year from today in the future, <math
+    alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math> . Let
+    the *state space* be given by <math alttext="normal upper Omega equals StartSet
+    u comma m comma d EndSet"><mrow><mi>Ω</mi> <mo>=</mo> <mo>{</mo> <mi>u</mi> <mo>,</mo>
+    <mi>m</mi> <mo>,</mo> <mi>d</mi> <mo>}</mo></mrow></math> . <math alttext="StartSet
+    u comma m comma d EndSet"><mrow><mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>m</mi> <mo>,</mo>
+    <mi>d</mi> <mo>}</mo></mrow></math> represent the three different states of the
+    economy possible in one year. The *power set* over the state space is given as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="normal script upper P left-parenthesis normal upper Omega right-parenthesis
+    equals StartSet normal empty-set comma StartSet u EndSet comma StartSet m EndSet
+    comma StartSet d EndSet comma StartSet u comma m EndSet comma StartSet u comma
+    d EndSet comma StartSet m comma d EndSet comma normal upper Omega EndSet" display="block"><mrow><mi>℘</mi>
+    <mrow><mo>(</mo> <mi>Ω</mi> <mo>)</mo></mrow> <mo>=</mo> <mfenced separators=""
+    open="{" close="}"><mi>∅</mi> <mo>,</mo> <mo>{</mo> <mi>u</mi> <mo>}</mo> <mo>,</mo>
+    <mo>{</mo> <mi>m</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>d</mi> <mo>}</mo> <mo>,</mo>
+    <mo>{</mo> <mi>u</mi> <mo>,</mo> <mi>m</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>u</mi>
+    <mo>,</mo> <mi>d</mi> <mo>}</mo> <mo>,</mo> <mo>{</mo> <mi>m</mi> <mo>,</mo> <mi>d</mi>
+    <mo>}</mo> <mo>,</mo> <mi>Ω</mi></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The probability measure <math alttext="upper P"><mi>P</mi></math> is defined
+    on the power set, and it is assumed that <math alttext="upper P left-parenthesis
+    omega right-parenthesis equals one-third comma omega element-of normal upper Omega"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mn>3</mn></mfrac>
+    <mo>,</mo> <mi>ω</mi> <mo>∈</mo> <mi>Ω</mi></mrow></math> . The resulting *probability
+    space* <math alttext="left-parenthesis normal upper Omega comma normal script
+    upper P left-parenthesis normal upper Omega right-parenthesis comma upper P right-parenthesis"><mrow><mo>(</mo>
+    <mi>Ω</mi> <mo>,</mo> <mi>℘</mi> <mo>(</mo> <mi>Ω</mi> <mo>)</mo> <mo>,</mo> <mi>P</mi>
+    <mo>)</mo></mrow></math> represents *uncertainty* in the model economy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial Assets
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: There are two financial assets traded in the model economy. The first is a *risk-less
+    bond* <math alttext="upper B equals left-parenthesis upper B 0 comma upper B 1
+    right-parenthesis"><mrow><mi>B</mi> <mo>=</mo> <mo>(</mo> <msub><mi>B</mi> <mn>0</mn></msub>
+    <mo>,</mo> <msub><mi>B</mi> <mn>1</mn></msub> <mo>)</mo></mrow></math> with <math
+    alttext="upper B 0 equals 10"><mrow><msub><mi>B</mi> <mn>0</mn></msub> <mo>=</mo>
+    <mn>10</mn></mrow></math> and <math alttext="upper B 1 equals left-parenthesis
+    11 comma 11 comma 11 right-parenthesis Superscript upper T"><mrow><msub><mi>B</mi>
+    <mn>1</mn></msub> <mo>=</mo> <msup><mrow><mo>(</mo><mn>11</mn><mo>,</mo><mn>11</mn><mo>,</mo><mn>11</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> . The risk-less interest rate accordingly is <math
+    alttext="i equals"><mrow><mi>i</mi> <mo>=</mo></mrow></math> 0.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The second is a *risky stock*, <math alttext="upper S equals left-parenthesis
+    upper S 0 comma left-parenthesis upper S 1 Superscript u Baseline comma upper
+    S 1 Superscript m Baseline comma upper S 1 Superscript d Baseline right-parenthesis
+    Superscript upper T Baseline right-parenthesis"><mrow><mi>S</mi> <mo>=</mo> <mfenced
+    separators="" open="(" close=")"><msub><mi>S</mi> <mn>0</mn></msub> <mo>,</mo>
+    <msup><mrow><mo>(</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup> <mo>,</mo><msubsup><mi>S</mi>
+    <mn>1</mn> <mi>m</mi></msubsup> <mo>,</mo><msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>)</mo></mrow> <mi>T</mi></msup></mfenced></mrow></math> , with <math alttext="upper
+    S 0 equals 10"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>=</mo> <mn>10</mn></mrow></math>
+    and:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper S 1 equals Start 3 By 1 Matrix 1st Row  20 2nd Row  10
+    3rd Row  5 EndMatrix" display="block"><mrow><msub><mi>S</mi> <mn>1</mn></msub>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mn>20</mn></mtd></mtr>
+    <mtr><mtd><mn>10</mn></mtd></mtr> <mtr><mtd><mn>5</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Define the market payoff matrix <math alttext="script upper M element-of double-struck
+    upper R Superscript 3 times 2"><mrow><mi>ℳ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow></msup></mrow></math>
+    by:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="script upper M identical-to Start 3 By 2 Matrix 1st Row 1st Column
+    upper B 1 2nd Column upper S 1 Superscript u Baseline 2nd Row 1st Column upper
+    B 1 2nd Column upper S 1 Superscript m Baseline 3rd Row 1st Column upper B 1 2nd
+    Column upper S 1 Superscript d Baseline EndMatrix equals Start 3 By 2 Matrix 1st
+    Row 1st Column 11 2nd Column 20 2nd Row 1st Column 11 2nd Column 10 3rd Row 1st
+    Column 11 2nd Column 5 EndMatrix" display="block"><mrow><mi>ℳ</mi> <mo>≡</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd>
+    <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup></mtd></mtr> <mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd> <mtd><msubsup><mi>S</mi> <mn>1</mn>
+    <mi>d</mi></msubsup></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>11</mn></mtd> <mtd><mn>20</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd>
+    <mtd><mn>10</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd> <mtd><mn>5</mn></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Attainable Contingent Claims
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The *span* of the traded financial assets is also called the *set of attainable
+    contingent claims* <math alttext="double-struck upper A"><mi>𝔸</mi></math> . A
+    contingent claim <math alttext="upper C 1 colon normal upper Omega right-arrow
+    double-struck upper R Subscript 0 Baseline"><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>:</mo> <mi>Ω</mi> <mo>→</mo> <msub><mi>ℝ</mi> <mrow><mo>≥</mo><mn>0</mn></mrow></msub></mrow></math>
+    is said to be attainable if its payoff can be expressed as a linear combination
+    of the payoff vectors of the traded assets. In other words, there exists a portfolio
+    <math alttext="phi"><mi>ϕ</mi></math> such that <math alttext="upper V 1 left-parenthesis
+    phi right-parenthesis equals script upper M dot phi equals upper C 1"><mrow><msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mi>ℳ</mi>
+    <mo>·</mo> <mi>ϕ</mi> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
+    . Therefore
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="double-struck upper A equals StartSet script upper M dot phi
+    comma phi element-of double-struck upper R squared EndSet" display="block"><mrow><mi>𝔸</mi>
+    <mo>=</mo> <mfenced separators="" open="{" close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi>
+    <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mn>2</mn></msup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: if there are no constraints on the portfolio positions, or
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><mi>𝔸</mi> <mo>=</mo> <mfenced separators="" open="{"
+    close="}"><mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>,</mo> <mi>ϕ</mi> <mo>∈</mo> <msubsup><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow> <mn>2</mn></msubsup></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: if short selling is prohibited.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is easy to verify that the payoff vectors of the two financial assets are
+    linearly independent. However, there are only two such vectors and three different
+    states. It is known by standard results from linear algebra that a basis for the
+    vector space <math alttext="double-struck upper R cubed"><msup><mi>ℝ</mi> <mn>3</mn></msup></math>
+    needs to consist of three linearly independent vectors. In other words, not every
+    contingent claim is replicable by a portfolio of the traded financial assets.
+    An example is, for instance, the *first Arrow-Debreu security*. The system of
+    linear equations for the replication is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout Enlarged left-brace 1st Row  b dot 11 plus s dot
+    20 equals 1 2nd Row  b dot 11 plus s dot 10 equals 0 3rd Row  b dot 11 plus s
+    dot 5 equals 0 EndLayout" display="block"><mfenced separators="" open="{" close=""><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <mn>11</mn> <mo>+</mo> <mi>s</mi>
+    <mo>·</mo> <mn>20</mn> <mo>=</mo> <mn>1</mn></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>b</mi>
+    <mo>·</mo> <mn>11</mn> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mn>10</mn> <mo>=</mo>
+    <mn>0</mn></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo>
+    <mn>11</mn> <mo>+</mo> <mi>s</mi> <mo>·</mo> <mn>5</mn> <mo>=</mo> <mn>0</mn></mrow></mtd></mtr></mtable></mfenced></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Subtracting the second equation from the first gives <math alttext="s equals
+    one-tenth"><mrow><mi>s</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>10</mn></mfrac></mrow></math>
+    . Subtracting the third equation from the first gives <math alttext="s equals
+    one-fifteenth"><mrow><mi>s</mi> <mo>=</mo> <mfrac><mn>1</mn> <mn>15</mn></mfrac></mrow></math>
+    , which is obviously a contradiction to the first result. Therefore, there is
+    no solution to this replication problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using Python, the set of attainable contingent claims can be visualized in
+    three dimensions. The approach is based on Monte Carlo simulation for the portfolio
+    composition. For simplicity, the simulation allows only for positive portfolio
+    positions between 0 and 1\. [Figure 3-1](#incom_01) shows the results graphically
+    and illustrates that the two vectors can only span a two-dimensional area of the
+    three-dimensional space. If the market would be complete, the simulated payoff
+    vectors would populate a cube (the financial assets would span <math alttext="double-struck
+    upper R cubed"><msup><mi>ℝ</mi> <mn>3</mn></msup></math> ) and not only a rectangular
+    area (span <math alttext="double-struck upper R squared"><msup><mi>ℝ</mi> <mn>2</mn></msup></math>
+    ). The modeling of uncertainty is along the lines of the Python code introduced
+    in [Chapter 2](ch02_split_000.xhtml#two_state_economy) with the necessary adjustments
+    for three possible future states of the economy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of portfolios to be simulated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The random position in the bond with some examples—all position values are between
+    0 and 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_three_state_economy_CO1-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The random position in the stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_three_state_economy_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `list` comprehension that calculates the resulting payoff vectors from the
+    random portfolio compositions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_three_state_economy_CO1-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The basic plotting subpackage of `matplotlib`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_three_state_economy_CO1-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Three-dimensional plotting capabilities.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_three_state_economy_CO1-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An empty canvas is created.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_three_state_economy_CO1-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A subplot for a three-dimensional object is added.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_three_state_economy_CO1-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The payoff vectors are visualized as a red dot each.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market Incompleteness
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: While in a complete model economy *every* contingent claim is attainable, only
+    a *small subset* of contingent claims is generally attainable in an incomplete
+    market. In that sense, changing from a complete to an incomplete model economy
+    has tremendous consequences. Pricing by replication, as introduced in [Chapter 2](ch02_split_000.xhtml#two_state_economy),
+    relies on the attainability of a contingent claim. What about pricing, then, when
+    replication fails? These and other questions in this context are answered in the
+    remainder of the chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0301](Images/ftwp_0301.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3-1\. Random portfolio payoff vectors visualized in three dimensions
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Martingale Pricing
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The importance of martingale measures is clear from the First Fundamental Theorem
+    of Asset Pricing (1FTAP) and the Second Fundamental Theorem of Asset Pricing (2FTAP).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Martingale Measures
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Any probability measure makes the discounted bond price process a martingale.
+    What about the stock price process? The defining equation for a martingale measure
+    <math><mrow><mi>Q</mi><mo>:</mo><mi>℘</mi><mrow><mo>(</mo><mi>Ω</mi><mo>)</mo></mrow><mo>→</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math> is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis equals
+    bold upper E Superscript upper Q Baseline left-parenthesis upper S 1 right-parenthesis"
+    display="block"><mrow><msub><mi>S</mi> <mn>0</mn></msub> <mo>·</mo> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow> <mo>=</mo> <msup><mi>𝐄</mi>
+    <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: or
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper S 0 dot left-parenthesis 1 plus i right-parenthesis equals
+    q Superscript u Baseline dot upper S 1 Superscript u Baseline plus q Superscript
+    m Baseline dot upper S 1 Superscript m Baseline plus q Superscript d Baseline
+    dot upper S 1 Superscript d" display="block"><mrow><msub><mi>S</mi> <mn>0</mn></msub>
+    <mo>·</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo> <mi>i</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <msup><mi>q</mi> <mi>u</mi></msup> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn>
+    <mi>u</mi></msubsup> <mo>+</mo> <msup><mi>q</mi> <mi>m</mi></msup> <mo>·</mo>
+    <msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup> <mo>+</mo> <msup><mi>q</mi>
+    <mi>d</mi></msup> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'with <math alttext="q Superscript omega Baseline identical-to upper Q left-parenthesis
+    omega right-parenthesis comma omega element-of normal upper Omega"><mrow><msup><mi>q</mi>
+    <mi>ω</mi></msup> <mo>≡</mo> <mi>Q</mi> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow>
+    <mo>,</mo> <mi>ω</mi> <mo>∈</mo> <mi>Ω</mi></mrow></math> . In numbers and with
+    <math alttext="q Superscript d Baseline equals 1 minus q Superscript u Baseline
+    minus q Superscript m"><mrow><msup><mi>q</mi> <mi>d</mi></msup> <mo>=</mo> <mn>1</mn>
+    <mo>-</mo> <msup><mi>q</mi> <mi>u</mi></msup> <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></math>
+    :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column 11 2nd Column equals 3rd Column
+    q Superscript u Baseline dot 20 plus q Superscript m Baseline dot 10 plus left-parenthesis
+    1 minus q Superscript u Baseline minus q Superscript m Baseline right-parenthesis
+    dot 5 2nd Row 1st Column q Superscript m Baseline 2nd Column equals 3rd Column
+    StartFraction 6 minus 15 dot q Superscript u Baseline Over 5 EndFraction EndLayout"
+    display="block"><mtable><mtr><mtd><mn>11</mn></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><msup><mi>q</mi>
+    <mi>u</mi></msup> <mo>·</mo> <mn>20</mn> <mo>+</mo> <msup><mi>q</mi> <mi>m</mi></msup>
+    <mo>·</mo> <mn>10</mn> <mo>+</mo> <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi>
+    <mi>u</mi></msup> <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup> <mo>)</mo></mrow>
+    <mo>·</mo> <mn>5</mn></mrow></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi>
+    <mi>m</mi></msup></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><msup><mi>q</mi>
+    <mi>u</mi></msup></mrow> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recalling the properties of a probability measure, it must hold (binding condition)
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column 6 minus 15 dot q Superscript u
+    2nd Column greater-than-or-equal-to 3rd Column 0 2nd Row 1st Column q Superscript
+    u Baseline 2nd Column less-than-or-equal-to 3rd Column two-fifths EndLayout" display="block"><mtable><mtr><mtd><mrow><mn>6</mn>
+    <mo>-</mo> <mn>15</mn> <mo>·</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
+    <mtd><mo>≥</mo></mtd> <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi>
+    <mi>u</mi></msup></mrow></mtd> <mtd><mo>≤</mo></mtd> <mtd><mfrac><mn>2</mn> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and (nonbinding condition)
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartFraction 6 minus 15 dot q
+    Superscript u Baseline Over 5 EndFraction 2nd Column less-than-or-equal-to 3rd
+    Column 1 2nd Row 1st Column q Superscript u Baseline 2nd Column greater-than-or-equal-to
+    3rd Column one-fifteenth EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><msup><mi>q</mi>
+    <mi>u</mi></msup></mrow> <mn>5</mn></mfrac></mtd> <mtd><mo>≤</mo></mtd> <mtd><mn>1</mn></mtd></mtr>
+    <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd> <mtd><mo>≥</mo></mtd>
+    <mtd><mfrac><mn>1</mn> <mn>15</mn></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: as well as (binding condition)
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column q Superscript d Baseline equals
+    1 minus q Superscript u Baseline minus q Superscript m Baseline 2nd Column greater-than-or-equal-to
+    3rd Column 0 2nd Row 1st Column q Superscript u Baseline 2nd Column greater-than-or-equal-to
+    3rd Column one-tenth EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>q</mi>
+    <mi>d</mi></msup> <mo>=</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi> <mi>u</mi></msup>
+    <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></mtd> <mtd><mo>≥</mo></mtd>
+    <mtd><mn>0</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
+    <mtd><mo>≥</mo></mtd> <mtd><mfrac><mn>1</mn> <mn>10</mn></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and (nonbinding condition)
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column q Superscript d Baseline equals
+    1 minus q Superscript u Baseline minus q Superscript m Baseline 2nd Column less-than-or-equal-to
+    3rd Column 1 2nd Row 1st Column q Superscript u Baseline 2nd Column less-than-or-equal-to
+    3rd Column three-fifths EndLayout" display="block"><mtable><mtr><mtd><mrow><msup><mi>q</mi>
+    <mi>d</mi></msup> <mo>=</mo> <mn>1</mn> <mo>-</mo> <msup><mi>q</mi> <mi>u</mi></msup>
+    <mo>-</mo> <msup><mi>q</mi> <mi>m</mi></msup></mrow></mtd> <mtd><mo>≤</mo></mtd>
+    <mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></mtd>
+    <mtd><mo>≤</mo></mtd> <mtd><mfrac><mn>3</mn> <mn>5</mn></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Therefore, there are infinitely many probability measures that make the discounted
+    stock price process a martingale. Setting <math alttext="q identical-to q Superscript
+    u"><mrow><mi>q</mi> <mo>≡</mo> <msup><mi>q</mi> <mi>u</mi></msup></mrow></math>
+    , the set of all martingale measures <math alttext="double-struck upper Q"><mi>ℚ</mi></math>
+    consistent with the market model is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="double-struck upper Q equals StartSet Start 3 By 1 Matrix 1st
+    Row  q 2nd Row  StartFraction 6 minus 15 dot q Over 5 EndFraction 3rd Row  1 minus
+    q minus StartFraction 6 minus 15 dot q Over 5 EndFraction EndMatrix comma one-tenth
+    less-than-or-equal-to q less-than-or-equal-to two-fifths EndSet" display="block"><mrow><mi>ℚ</mi>
+    <mo>=</mo> <mfenced separators="" open="{" close="}"><mfenced open="(" close=")"><mtable><mtr><mtd><mi>q</mi></mtd></mtr>
+    <mtr><mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mi>q</mi></mrow>
+    <mn>5</mn></mfrac></mtd></mtr> <mtr><mtd><mrow><mn>1</mn> <mo>-</mo> <mi>q</mi>
+    <mo>-</mo> <mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mi>q</mi></mrow>
+    <mn>5</mn></mfrac></mrow></mtd></mtr></mtable></mfenced> <mo>,</mo> <mfrac><mn>1</mn>
+    <mn>10</mn></mfrac> <mo>≤</mo> <mi>q</mi> <mo>≤</mo> <mfrac><mn>2</mn> <mn>5</mn></mfrac></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: As an example, take <math alttext="q equals three-tenths"><mrow><mi>q</mi> <mo>=</mo>
+    <mfrac><mn>3</mn> <mn>10</mn></mfrac></mrow></math> . It follows
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper Q left-parenthesis q equals three-tenths right-parenthesis
+    equals Start 3 By 1 Matrix 1st Row  three-tenths 2nd Row  StartFraction 6 minus
+    15 dot three-tenths Over 5 EndFraction 3rd Row  1 minus three-tenths minus three-tenths
+    EndMatrix equals Start 3 By 1 Matrix 1st Row  three-tenths 2nd Row  three-tenths
+    3rd Row  four-tenths EndMatrix" display="block"><mrow><mi>Q</mi> <mfenced separators=""
+    open="(" close=")"><mi>q</mi> <mo>=</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac></mfenced>
+    <mo>=</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr>
+    <mtr><mtd><mfrac><mrow><mn>6</mn><mo>-</mo><mn>15</mn><mo>·</mo><mfrac><mn>3</mn>
+    <mn>10</mn></mfrac></mrow> <mn>5</mn></mfrac></mtd></mtr> <mtr><mtd><mrow><mn>1</mn>
+    <mo>-</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>-</mo> <mfrac><mn>3</mn>
+    <mn>10</mn></mfrac></mrow></mtd></mtr></mtable></mfenced> <mo>=</mo> <mfenced
+    open="(" close=")"><mtable><mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr>
+    <mtr><mtd><mfrac><mn>3</mn> <mn>10</mn></mfrac></mtd></mtr> <mtr><mtd><mfrac><mn>4</mn>
+    <mn>10</mn></mfrac></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: and
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="three-tenths dot 20 plus three-tenths dot 10 plus four-tenths
+    dot 5 equals 11" display="block"><mrow><mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>·</mo>
+    <mn>20</mn> <mo>+</mo> <mfrac><mn>3</mn> <mn>10</mn></mfrac> <mo>·</mo> <mn>10</mn>
+    <mo>+</mo> <mfrac><mn>4</mn> <mn>10</mn></mfrac> <mo>·</mo> <mn>5</mn> <mo>=</mo>
+    <mn>11</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: as desired for the stock price process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With the specifications from before, the calculation in Python is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: According to the 2FTAP, the market model is *incomplete* since there is more
+    than one martingale measure consistent with the market model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Martingale Measures in Incomplete Markets
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Complete market models are characterized by a unique martingale measure. By
+    contrast, incomplete market models usually allow for an infinite number of martingale
+    measures consistent with the model economy. It should be clear that this has significant
+    consequences for the pricing of contingent claims since different martingale measures
+    will lead to different values of contingent claims that are all consistent with
+    the absence of arbitrage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Risk-Neutral Pricing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'What implications does an infinite number of market consistent martingale measures
+    have when it comes to the arbitrage pricing of contingent claims? First, for those
+    contingent claims that are attainable, <math alttext="double-struck upper A"><mi>𝔸</mi></math>
+    , arbitrage pricing holds as in a complete market setting: the value of the replicating
+    portfolio equals the price of the contingent claim to be replicated—otherwise
+    arbitrage opportunities exist. Formally, <math alttext="upper C 0 equals upper
+    V 0 left-parenthesis phi right-parenthesis"><mrow><msub><mi>C</mi> <mn>0</mn></msub>
+    <mo>=</mo> <msub><mi>V</mi> <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></math>
+    if <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals upper
+    C 1"><mrow><msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math> .'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For those contingent claims that are not attainable, <math alttext="upper C
+    1 element-of double-struck upper A overbar equals double-struck upper R cubed
+    minus double-struck upper A"><mrow><msub><mi>C</mi> <mn>1</mn></msub> <mo>∈</mo>
+    <mover accent="true"><mi>𝔸</mi> <mo>¯</mo></mover> <mo>=</mo> <msup><mi>ℝ</mi>
+    <mn>3</mn></msup> <mo>∖</mo> <mi>𝔸</mi></mrow></math> , the answer is not that
+    simple. Suppose the first Arrow-Debreu security <math alttext="gamma Superscript
+    u"><msup><mi>γ</mi> <mi>u</mi></msup></math> . It is not replicable as shown previously
+    and therefore belongs to the set <math alttext="double-struck upper A overbar"><mover
+    accent="true"><mi>𝔸</mi> <mo>¯</mo></mover></math> . Its martingale price is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="gamma 0 Superscript u Baseline left-parenthesis q right-parenthesis
+    equals StartFraction 1 Over 1 plus i EndFraction dot double-struck upper E Superscript
+    upper Q Baseline left-parenthesis left-parenthesis 1 comma 0 comma 0 right-parenthesis
+    Superscript upper T Baseline right-parenthesis equals StartFraction 1 Over 1 plus
+    i EndFraction dot q" display="block"><mrow><msubsup><mi>γ</mi> <mn>0</mn> <mi>u</mi></msubsup>
+    <mrow><mo>(</mo> <mi>q</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <msup><mi>𝔼</mi> <mi>Q</mi></msup> <mfenced separators="" open="("
+    close=")"><msup><mrow><mo>(</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mfenced> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>+</mo><mi>i</mi></mrow></mfrac>
+    <mo>·</mo> <mi>q</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The quantity <math alttext="gamma 0 Superscript omega"><msubsup><mi>γ</mi> <mn>0</mn>
+    <mi>ω</mi></msubsup></math> is often called the *state price* for one unit of
+    currency in state <math alttext="omega element-of normal upper Omega"><mrow><mi>ω</mi>
+    <mo>∈</mo> <mi>Ω</mi></mrow></math> . It is simply the discounted martingale probability
+    for this state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the model economy, <math alttext="one-tenth less-than-or-equal-to q less-than-or-equal-to
+    two-fifths"><mrow><mfrac><mn>1</mn> <mn>10</mn></mfrac> <mo>≤</mo> <mi>q</mi>
+    <mo>≤</mo> <mfrac><mn>2</mn> <mn>5</mn></mfrac></mrow></math> must hold, therefore
+    the martingale price—the price avoiding arbitrage opportunities—lies in the interval:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartFraction 10 Over 11 EndFraction dot one-tenth equals one-eleventh
+    less-than-or-equal-to gamma 0 Superscript u Baseline less-than-or-equal-to StartFraction
+    10 Over 11 EndFraction dot two-fifths equals four-elevenths" display="block"><mrow><mfrac><mn>10</mn>
+    <mn>11</mn></mfrac> <mo>·</mo> <mfrac><mn>1</mn> <mn>10</mn></mfrac> <mo>=</mo>
+    <mfrac><mn>1</mn> <mn>11</mn></mfrac> <mo>≤</mo> <msubsup><mi>γ</mi> <mn>0</mn>
+    <mi>u</mi></msubsup> <mo>≤</mo> <mfrac><mn>10</mn> <mn>11</mn></mfrac> <mo>·</mo>
+    <mfrac><mn>2</mn> <mn>5</mn></mfrac> <mo>=</mo> <mfrac><mn>4</mn> <mn>11</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In words, every price between <math alttext="one-eleventh"><mfrac><mn>1</mn>
+    <mn>11</mn></mfrac></math> and <math alttext="four-elevenths"><mfrac><mn>4</mn>
+    <mn>11</mn></mfrac></math> for the first Arrow-Debreu security is consistent with
+    the absence of arbitrage, given the assumptions for the model economy. Calculations
+    for other contingent claims that are not attainable lead to similar results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Super-Replication
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Replication is important not only in a *pricing* context. It is also an approach
+    to *hedge risk* resulting from an uncertain contingent claim payoff. Consider
+    an arbitrary attainable contingent claim. Selling short the replication portfolio
+    in addition to holding the contingent claim eliminates any kind of risk resulting
+    from uncertainty regarding future payoff. This is because the payoffs of the contingent
+    claim and the replicating portfolio cancel each other out perfectly. Formally,
+    if the portfolio <math alttext="phi Superscript asterisk"><msup><mi>ϕ</mi> <mo>*</mo></msup></math>
+    replicates contingent claim <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math>
+    , then:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper C 1 minus upper V 1 left-parenthesis phi Superscript asterisk
+    Baseline right-parenthesis equals upper C 1 minus script upper M dot phi Superscript
+    asterisk Baseline equals 0" display="block"><mrow><msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>-</mo> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <msup><mi>ϕ</mi>
+    <mo>*</mo></msup> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>C</mi> <mn>1</mn></msub>
+    <mo>-</mo> <mi>ℳ</mi> <mo>·</mo> <msup><mi>ϕ</mi> <mo>*</mo></msup> <mo>=</mo>
+    <mn>0</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a contingent claim that is not attainable, such a perfect hedge is not available.
+    However, one can always compose a portfolio that *super-replicates* the payoff
+    of such a contingent claim. A portfolio <math alttext="phi"><mi>ϕ</mi></math>
+    super-replicates a contingent claim <math alttext="upper C 1"><msub><mi>C</mi>
+    <mn>1</mn></msub></math> if its payoff in every future state of the economy is
+    greater than or equal to the contingent claims payoff <math alttext="upper V 1
+    left-parenthesis phi right-parenthesis greater-than-or-equal-to upper C 1"><mrow><msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≥</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Consider again the first Arrow-Debreu security <math alttext="gamma Superscript
+    u"><msup><mi>γ</mi> <mi>u</mi></msup></math> , which is not attainable. The payoff
+    can be super-replicated, for example, by a portfolio containing the risk-less
+    bond only:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="phi equals left-parenthesis StartFraction 1 Over upper B 1 EndFraction
+    comma 0 right-parenthesis Superscript upper T" display="block"><mrow><mi>ϕ</mi>
+    <mo>=</mo> <msup><mfenced separators="" open="(" close=")"><mfrac><mn>1</mn> <msub><mi>B</mi>
+    <mn>1</mn></msub></mfrac> <mo>,</mo><mn>0</mn></mfenced> <mi>T</mi></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting payoff is
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper V 1 left-parenthesis phi right-parenthesis equals StartFraction
+    1 Over upper B 1 EndFraction dot Start 3 By 1 Matrix 1st Row  upper B 1 2nd Row  upper
+    B 1 3rd Row  upper B 1 EndMatrix equals Start 3 By 1 Matrix 1st Row  1 2nd Row  1
+    3rd Row  1 EndMatrix greater-than-or-equal-to Start 3 By 1 Matrix 1st Row  1 2nd
+    Row  0 3rd Row  0 EndMatrix equals upper C 1" display="block"><mrow><msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn>
+    <msub><mi>B</mi> <mn>1</mn></msub></mfrac> <mo>·</mo> <mfenced open="(" close=")"><mtable><mtr><mtd><msub><mi>B</mi>
+    <mn>1</mn></msub></mtd></mtr> <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd></mtr>
+    <mtr><mtd><msub><mi>B</mi> <mn>1</mn></msub></mtd></mtr></mtable></mfenced> <mo>=</mo>
+    <mfenced open="(" close=")"><mtable><mtr><mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mn>1</mn></mtd></mtr>
+    <mtr><mtd><mn>1</mn></mtd></mtr></mtable></mfenced> <mo>≥</mo> <mfenced open="("
+    close=")"><mtable><mtr><mtd><mn>1</mn></mtd></mtr> <mtr><mtd><mn>0</mn></mtd></mtr>
+    <mtr><mtd><mn>0</mn></mtd></mtr></mtable></mfenced> <mo>=</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where the <math alttext="greater-than-or-equal-to"><mo>≥</mo></math> sign is
+    to be understood element-wise. Although this satisfies the definition of super-replication,
+    it might not be the best choice in terms of the costs to set up the super-replication
+    portfolio. Therefore, a *cost minimization* argument is introduced in general.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *super-replication problem* for a contingent claim <math alttext="upper
+    C 1"><msub><mi>C</mi> <mn>1</mn></msub></math> at *minimal costs* is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  min Underscript phi Endscripts upper V 0
+    left-parenthesis phi right-parenthesis 2nd Row  s period t period upper V 1 left-parenthesis
+    phi right-parenthesis greater-than-or-equal-to upper C 1 EndLayout" display="block"><mtable><mtr><mtd><mrow><munder><mo
+    movablelimits="true" form="prefix">min</mo> <mi>ϕ</mi></munder> <msub><mi>V</mi>
+    <mn>0</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mtext>s.t.</mtext> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>≥</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: or
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row  min Underscript b comma s Endscripts b dot
+    upper B 0 plus s dot upper S 0 2nd Row  s period t period StartLayout Enlarged
+    left-brace 1st Row  b dot upper B 1 plus s dot upper S 1 Superscript u Baseline
+    greater-than-or-equal-to upper C 1 Superscript u Baseline 2nd Row  b dot upper
+    B 1 plus s dot upper S 1 Superscript m Baseline greater-than-or-equal-to upper
+    C 1 Superscript m Baseline 3rd Row  b dot upper B 1 plus s dot upper S 1 Superscript
+    d Baseline greater-than-or-equal-to upper C 1 Superscript d EndLayout EndLayout"
+    display="block"><mtable><mtr><mtd><mrow><munder><mo movablelimits="true" form="prefix">min</mo>
+    <mrow><mi>b</mi><mo>,</mo><mi>s</mi></mrow></munder> <mi>b</mi> <mo>·</mo> <msub><mi>B</mi>
+    <mn>0</mn></msub> <mo>+</mo> <mi>s</mi> <mo>·</mo> <msub><mi>S</mi> <mn>0</mn></msub></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mtext>s.t.</mtext> <mfenced separators="" open="{" close=""><mtable><mtr><mtd
+    columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>u</mi></msubsup>
+    <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>u</mi></msubsup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>m</mi></msubsup>
+    <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>m</mi></msubsup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>b</mi> <mo>·</mo> <msub><mi>B</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mi>s</mi> <mo>·</mo> <msubsup><mi>S</mi> <mn>1</mn> <mi>d</mi></msubsup>
+    <mo>≥</mo> <msubsup><mi>C</mi> <mn>1</mn> <mi>d</mi></msubsup></mrow></mtd></mtr></mtable></mfenced></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Such minimization problems can be modeled and solved straightforwardly in Python
+    when using the [`SciPy`](http://scipy.org) package. The following code starts
+    by calculating the costs for the inefficient super-replication portfolio using
+    the bond only. It proceeds by defining a value function for a portfolio. It also
+    illustrates that alternative portfolio compositions can indeed be more cost efficient:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The payoff of the contingent claim (first Arrow-Debreu security).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The portfolio with the bond only checked for the super-replication characteristic.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_three_state_economy_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The costs to set up this portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_three_state_economy_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A function to calculate the value of a portfolio `phi` today, `t=0`, or in one
+    year, `t=1`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_three_state_economy_CO2-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another guess for a super-replicating portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_three_state_economy_CO2-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cost to set it up, which is lower than with the bond only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_three_state_economy_CO2-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: And the resulting value (payoff) in one year, which super-replicates the first
+    Arrow-Debreu security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The second part of the code implements the *minimization program* based on
+    the previous inequality constraints in vectorized fashion. The cost optimal super-replication
+    portfolio is much cheaper than the one using the bond only or the already more
+    efficient portfolio including the bond and the stock:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the `minimize` function from `scipy.optimize`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the inequality constraints in vectorized fashion based on a `lambda`
+    (or anonymous) function; the function <math alttext="lamda"><mi>λ</mi></math>
+    modeled here is <math alttext="lamda left-parenthesis phi right-parenthesis equals
+    upper V 1 left-parenthesis phi right-parenthesis minus upper C 1"><mrow><mi>λ</mi>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>V</mi> <mn>1</mn></msub>
+    <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow> <mo>-</mo> <msub><mi>C</mi> <mn>1</mn></msub></mrow></math>
+    , for which the inequality constraint <math alttext="lamda left-parenthesis phi
+    right-parenthesis greater-than-or-equal-to 0"><mrow><mi>λ</mi> <mo>(</mo> <mi>ϕ</mi>
+    <mo>)</mo> <mo>≥</mo> <mn>0</mn></mrow></math> must hold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_three_state_economy_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function to be minimized also as a `lambda` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_three_state_economy_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An initial guess for the optimal solution (not too important here).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_three_state_economy_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The method to be used for the minimization, here Sequential Least Squares Programming
+    (`SLSQP`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_three_state_economy_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The constraints for the minimization problem as defined before.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_three_state_economy_CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The complete results dictionary from the minimization, with the optimal parameters
+    under `x` and the minimal function value under `fun`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_three_state_economy_CO3-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The value of the optimal super-replicating portfolio today.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_three_state_economy_CO3-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The future uncertain value of the optimal super-replicating portfolio; the optimal
+    portfolio that sells short the bond and goes long the stock exactly replicates
+    the relevant payoff in two states and only super-replicates in the middle state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Approximate Replication
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Super-replication assumes a somewhat extreme situation: the payoff of the contingent
+    claim to be super-replicated must be reached or exceeded in any given state under
+    any circumstances. Such a situation is seen in practice, for instance, when a
+    life insurance company invests in a way that it can meet under all circumstances—which
+    often translates in the real world into something like “With a probability of
+    99.9%.”—its future liabilities and obligations (contingent claims). However, this
+    might not be an economically sensible or even viable option in many cases.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is where *approximation* comes into play. The idea is to replicate the
+    payoff of a contingent claim *as well as possible* given an objective function.
+    The problem then becomes minimizing the *replication error* given the traded financial
+    assets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A possible candidate for the objective or error function is the *mean squared
+    error* (MSE). Let <math alttext="upper V 1 left-parenthesis phi right-parenthesis"><mrow><msub><mi>V</mi>
+    <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ϕ</mi> <mo>)</mo></mrow></mrow></math>
+    be the value vector given a replication portfolio <math alttext="phi"><mi>ϕ</mi></math>
+    . The MSE for a contingent claim <math alttext="upper C 1"><msub><mi>C</mi> <mn>1</mn></msub></math>
+    given the portfolio <math alttext="phi"><mi>ϕ</mi></math> is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper M upper S upper E left-parenthesis upper V 1 left-parenthesis
+    phi right-parenthesis minus upper C 1 right-parenthesis equals StartFraction 1
+    Over bar normal upper Omega bar EndFraction sigma-summation Underscript omega
+    element-of normal upper Omega Endscripts left-parenthesis upper V 1 Superscript
+    omega Baseline left-parenthesis phi right-parenthesis minus upper C 1 Superscript
+    omega Baseline right-parenthesis squared" display="block"><mrow><mi>M</mi> <mi>S</mi>
+    <mi>E</mi> <mrow><mo>(</mo> <msub><mi>V</mi> <mn>1</mn></msub> <mrow><mo>(</mo>
+    <mi>ϕ</mi> <mo>)</mo></mrow> <mo>-</mo> <msub><mi>C</mi> <mn>1</mn></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mn>1</mn> <mrow><mo>|</mo><mi>Ω</mi><mo>|</mo></mrow></mfrac>
+    <munder><mo>∑</mo> <mrow><mi>ω</mi><mo>∈</mo><mi>Ω</mi></mrow></munder> <msup><mrow><mo>(</mo><msubsup><mi>V</mi>
+    <mn>1</mn> <mi>ω</mi></msubsup> <mrow><mo>(</mo><mi>ϕ</mi><mo>)</mo></mrow><mo>-</mo><msubsup><mi>C</mi>
+    <mn>1</mn> <mi>ω</mi></msubsup> <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This is the quantity to be minimized. For an attainable contingent claim, the
+    MSE is zero. The problem itself in matrix form is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="min Underscript phi Endscripts upper M upper S upper E left-parenthesis
+    script upper M dot phi minus upper C 1 right-parenthesis" display="block"><mrow><munder><mo
+    movablelimits="true" form="prefix">min</mo> <mi>ϕ</mi></munder> <mi>M</mi> <mi>S</mi>
+    <mi>E</mi> <mrow><mo>(</mo> <mi>ℳ</mi> <mo>·</mo> <mi>ϕ</mi> <mo>-</mo> <msub><mi>C</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: In linear algebra, this is a problem that falls in the category of *ordinary
+    least-squares regression* (OLS regression) problems. The previous problem is the
+    special case of a *linear* OLS regression problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`NumPy` provides the function `np.linalg.lstsq` that solves problems of this
+    kind in a standardized and efficient manner:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The future price matrix of the two traded financial assets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This solves the linear OLS regression problem by minimizing the MSE.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_three_state_economy_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The optimal portfolio positions, that is, the solution to the problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_three_state_economy_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The MSE obtained from the optimization procedure (minimal mean squared replication
+    error).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_three_state_economy_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rank of matrix <math alttext="upper M"><mi>M</mi></math> …
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_three_state_economy_CO4-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …and its singular values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](Images/7.png)](#co_three_state_economy_CO4-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The value of the approximate portfolio (lower than the value of the cost-minimizing
+    portfolio).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](Images/8.png)](#co_three_state_economy_CO4-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The payoff of the approximation portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](Images/9.png)](#co_three_state_economy_CO4-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The vector with the replication errors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](Images/10.png)](#co_three_state_economy_CO4-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The MSE from the approximate replication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Approximate replication might not be applicable in all circumstances. But an
+    investor or financial manager with discretion in their decisions can decide that
+    an approximation is simply good enough. Such a decision could be made, for example,
+    in cases in which super-replication might be considered to be too costly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Capital Market Line
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Assume a mean-variance or, rather, mean-volatility context. In what follows,
+    the risky stock is interpreted as the *market portfolio*. One can think of the
+    market portfolio in terms of a broad stock index—in the spirit of the S&P 500
+    stock index.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As before, agents can compose portfolios that consist of the bond and the market
+    portfolio. The rate of return for the bond—the risk-less interest rate—is <math
+    alttext="i equals"><mrow><mi>i</mi> <mo>=</mo></mrow></math> 0.1, and the volatility
+    is 0\. The expected rate of return for the market portfolio is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="mu Subscript upper S Baseline equals StartFraction bold upper
+    E Superscript upper P Baseline left-parenthesis upper S 1 right-parenthesis Over
+    upper S 0 EndFraction minus 1 equals seven-sixths minus 1 equals one-sixth" display="block"><mrow><msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow> <msub><mi>S</mi> <mn>0</mn></msub></mfrac>
+    <mo>-</mo> <mn>1</mn> <mo>=</mo> <mfrac><mn>7</mn> <mn>6</mn></mfrac> <mo>-</mo>
+    <mn>1</mn> <mo>=</mo> <mfrac><mn>1</mn> <mn>6</mn></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Its volatility is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma Subscript upper S Baseline equals StartRoot bold upper
+    E Superscript upper P Baseline left-parenthesis left-parenthesis StartFraction
+    upper S 1 minus upper S 0 Over upper S 0 EndFraction minus mu Subscript upper
+    S Baseline right-parenthesis squared right-parenthesis EndRoot" display="block"><mrow><msub><mi>σ</mi>
+    <mi>S</mi></msub> <mo>=</mo> <msqrt><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mfenced
+    separators="" open="(" close=")"><msup><mfenced separators="" open="(" close=")"><mfrac><mrow><msub><mi>S</mi>
+    <mn>1</mn></msub> <mo>-</mo><msub><mi>S</mi> <mn>0</mn></msub></mrow> <msub><mi>S</mi>
+    <mn>0</mn></msub></mfrac> <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub></mfenced>
+    <mn>2</mn></msup></mfenced></mrow></msqrt></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Quick calculations in Python give the corresponding numerical values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected return of the market portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The volatility of the returns of the market portfolio.^([1](ch03.xhtml#idm44853701345560))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Feasible mean values for a normalized portfolio with total weight of 1 or 100%
+    consisting of the bond and the market portfolio without short selling range from
+    0 to about 0.166\. Regarding the volatility, values between 0 and about 0.623
+    are possible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Allowing for short selling, [Figure 3-2](#incom_02) shows the *capital market
+    line* (CML) resulting from different portfolio compositions. Because short selling
+    of the bond is allowed, risk-return combinations on the upper line (with positive
+    slope) are possible, which is what is referred to in general as *the* CML. The
+    lower line (with negative slope) is in principle irrelevant since such portfolios,
+    resulting from short positions in the market portfolio, have lower expected rates
+    of return at the same risk as those that have a corresponding long position in
+    the market portfolio:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The market portfolio position takes on values between –200% and 200%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The bond portfolio position fills up to 100% total portfolio weight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_three_state_economy_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The risk-less interest rate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_three_state_economy_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting expected rates of return for the portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_three_state_economy_CO6-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting volatility values for the portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_three_state_economy_CO6-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the CML for short as well as long positions in the market portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0302](Images/ftwp_0302.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3-2\. Capital market line (upper, increasing part)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The equation describing the (upper, increasing part of the) CML is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="mu equals i plus StartFraction mu Subscript upper S Baseline
+    minus i Over sigma Subscript upper S Baseline EndFraction dot sigma" display="block"><mrow><mi>μ</mi>
+    <mo>=</mo> <mi>i</mi> <mo>+</mo> <mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub>
+    <mo>-</mo><mi>i</mi></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac> <mo>·</mo>
+    <mi>σ</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Capital Asset Pricing Model
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The *Capital Asset Pricing Model* (CAPM) as pioneered by Sharpe (1964) is an
+    equilibrium pricing model that mainly relates the expected rate of return of an
+    arbitrary financial asset or portfolio and its volatility with the market portfolio’s
+    expected rate of return and volatility.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To this end, the *correlation* between the rates of return of a financial asset
+    and the market portfolio is of importance. In addition to the market portfolio,
+    consider another risky financial asset with price process <math alttext="upper
+    T equals left-parenthesis upper T 0 comma upper T 1 right-parenthesis"><mrow><mi>T</mi>
+    <mo>=</mo> <mo>(</mo> <msub><mi>T</mi> <mn>0</mn></msub> <mo>,</mo> <msub><mi>T</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></math> . The correlation <math alttext="rho"><mi>ρ</mi></math>
+    is defined by:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="rho Subscript upper S upper T Baseline equals StartFraction bold
+    upper E Superscript upper P Baseline left-parenthesis left-parenthesis r 1 Superscript
+    upper S Baseline minus mu Subscript upper S Baseline right-parenthesis dot left-parenthesis
+    r 1 Superscript upper T Baseline minus mu Subscript upper T Baseline right-parenthesis
+    right-parenthesis Over sigma Subscript upper S Baseline dot sigma Subscript upper
+    T Baseline EndFraction" display="block"><mrow><msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mfenced separators=""
+    open="(" close=")"><mrow><mo>(</mo><msubsup><mi>r</mi> <mn>1</mn> <mi>S</mi></msubsup>
+    <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub> <mo>)</mo></mrow><mo>·</mo><mrow><mo>(</mo><msubsup><mi>r</mi>
+    <mn>1</mn> <mi>T</mi></msubsup> <mo>-</mo><msub><mi>μ</mi> <mi>T</mi></msub> <mo>)</mo></mrow></mfenced></mrow>
+    <mrow><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo><msub><mi>σ</mi> <mi>T</mi></msub></mrow></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: with <math alttext="negative 1 less-than-or-equal-to rho Subscript upper S upper
+    T Baseline less-than-or-equal-to 1"><mrow><mo>-</mo> <mn>1</mn> <mo>≤</mo> <msub><mi>ρ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>≤</mo> <mn>1</mn></mrow></math> .
+    If the correlation is positive, the two financial assets have a tendency to move
+    in the same direction. If it is negative, the financial assets have a tendency
+    to move in opposite directions. In the special case of perfect positive correlation,
+    <math alttext="rho Subscript upper S upper T Baseline equals 1"><mrow><msub><mi>ρ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>=</mo> <mn>1</mn></mrow></math> ,
+    the two financial assets always move in the same direction. This is true, for
+    instance, for portfolios that lie on the CML for which the rates of return are
+    just the rates of return of the market portfolio scaled by the weight of the market
+    portfolio. Uncertainty in this case arises from the market portfolio part only
+    such that any variation in risk is due to the market portfolio weight variation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Consider the case of a financial asset <math alttext="upper T"><mi>T</mi></math>
+    , which is part of the market portfolio and for which the correlation with the
+    market portfolio shall not be perfect. For such a financial asset, the expected
+    rate of return is given by:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
+    equals 3rd Column i plus StartFraction left-parenthesis mu Subscript upper S Baseline
+    minus i right-parenthesis dot rho Subscript upper S upper T Baseline Over sigma
+    Subscript upper S Baseline EndFraction dot sigma Subscript upper T 2nd Row 1st
+    Column Blank 2nd Column equals 3rd Column i plus StartFraction rho Subscript upper
+    S upper T Baseline dot sigma Subscript upper S Baseline dot sigma Subscript upper
+    T Baseline Over sigma Subscript upper S Superscript 2 Baseline EndFraction dot
+    left-parenthesis mu Subscript upper S Baseline minus i right-parenthesis EndLayout"
+    display="block"><mtable><mtr><mtd><msub><mi>μ</mi> <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mfrac><mrow><mrow><mo>(</mo><msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>-</mo><mi>i</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>ρ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac>
+    <mo>·</mo> <msub><mi>σ</mi> <mi>T</mi></msub></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mfrac><mrow><msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>·</mo><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo><msub><mi>σ</mi> <mi>T</mi></msub></mrow>
+    <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo>
+    <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is easy to verify that the correlation between the market portfolio and the
+    bond is zero such that the previous relationship gives the risk-less interest
+    as the expected return if the financial asset <math alttext="upper T"><mi>T</mi></math>
+    is the risk-less bond.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *covariance* between <math alttext="upper S 1"><msub><mi>S</mi> <mn>1</mn></msub></math>
+    and <math alttext="upper T 1"><msub><mi>T</mi> <mn>1</mn></msub></math> is defined
+    as <math alttext="sigma Subscript upper S upper T Baseline equals rho Subscript
+    upper S upper T Baseline dot sigma Subscript upper S Baseline dot sigma Subscript
+    upper T"><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>=</mo>
+    <msub><mi>ρ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>·</mo> <msub><mi>σ</mi>
+    <mi>S</mi></msub> <mo>·</mo> <msub><mi>σ</mi> <mi>T</mi></msub></mrow></math>
+    such that
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
+    equals 3rd Column i plus StartFraction sigma Subscript upper S upper T Baseline
+    Over sigma Subscript upper S Superscript 2 Baseline EndFraction dot left-parenthesis
+    mu Subscript upper S Baseline minus i right-parenthesis 2nd Row 1st Column Blank
+    2nd Column equals 3rd Column i plus beta Subscript upper T Baseline dot left-parenthesis
+    mu Subscript upper S Baseline minus i right-parenthesis EndLayout" display="block"><mtable><mtr><mtd><msub><mi>μ</mi>
+    <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><mi>i</mi> <mo>+</mo>
+    <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
+    <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo> <msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <msub><mi>β</mi> <mi>T</mi></msub> <mo>·</mo>
+    <mrow><mo>(</mo> <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: with
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="beta Subscript upper T Baseline identical-to StartFraction sigma
+    Subscript upper S upper T Baseline Over sigma Subscript upper S Superscript 2
+    Baseline EndFraction" display="block"><mrow><msub><mi>β</mi> <mi>T</mi></msub>
+    <mo>≡</mo> <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
+    <mi>S</mi> <mn>2</mn></msubsup></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This gives the famous CAPM linear relationship between the expected rate of
+    return of the market portfolio and the expected return of the financial asset
+    <math alttext="upper T"><mi>T</mi></math> —or any other financial asset to this
+    end. In that sense, the CAPM states that the rate of return for any financial
+    asset is only determined by the expected excess return of the market portfolio
+    over the risk-less interest rate and the beta factor, which is the covariance
+    between the two, scaled by the square of the market portfolio volatility (variance
+    of returns).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For the CAPM, the CML is replaced by the *security market line* (SML), which
+    is plotted in beta-return space as follows. A visualization is given in [Figure 3-3](#incom_03):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_three_state_economy_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates an `ndarray` object with the `beta` values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_three_state_economy_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the expected returns `mu` according to the CAPM.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_three_state_economy_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the `beta-mu` combinations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_three_state_economy_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the limits for the `y` axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_three_state_economy_CO7-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the beta and expected return of the market portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![ftwp 0303](Images/ftwp_0303.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3-3\. Security market line
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'But why do the preceding relationships—and in particular the CAPM formula—hold
+    true in the first place? To answer this question, consider a portfolio with normalized
+    weight of 1 or 100% of which a proportion <math alttext="a"><mi>a</mi></math>
+    is invested in financial asset <math alttext="upper T"><mi>T</mi></math> and the
+    remainder <math alttext="1 minus a"><mrow><mn>1</mn> <mo>-</mo> <mi>a</mi></mrow></math>
+    is invested in the market portfolio. The expected rate of return of this portfolio
+    is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="mu left-parenthesis a right-parenthesis equals a dot mu Subscript
+    upper T Baseline plus left-parenthesis 1 minus a right-parenthesis dot mu Subscript
+    upper S" display="block"><mrow><mi>μ</mi> <mrow><mo>(</mo> <mi>a</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mi>a</mi> <mo>·</mo> <msub><mi>μ</mi> <mi>T</mi></msub> <mo>+</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>·</mo>
+    <msub><mi>μ</mi> <mi>S</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The volatility of the portfolio is (see Sharpe (1964)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sigma left-parenthesis a right-parenthesis equals left-parenthesis
+    a squared dot sigma Subscript upper T Superscript 2 Baseline plus left-parenthesis
+    1 minus a right-parenthesis squared dot sigma Subscript upper S Superscript 2
+    Baseline plus 2 dot a dot left-parenthesis 1 minus a right-parenthesis dot sigma
+    Subscript upper S upper T Baseline right-parenthesis Superscript one-half" display="block"><mrow><mi>σ</mi>
+    <mrow><mo>(</mo> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <msup><mfenced separators=""
+    open="(" close=")"><msup><mi>a</mi> <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi>
+    <mi>T</mi> <mn>2</mn></msubsup> <mo>+</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mfenced> <mfrac><mn>1</mn> <mn>2</mn></mfrac></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The marginal change in the expected portfolio rate of return, given a marginal
+    change in the allocation of the financial asset <math alttext="upper T"><mi>T</mi></math>
+    , is determined by the following partial derivative:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartFraction normal partial-differential mu Over normal partial-differential
+    a EndFraction equals mu Subscript upper T Baseline minus mu Subscript upper S"
+    display="block"><mrow><mfrac><mrow><mi>∂</mi><mi>μ</mi></mrow> <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac>
+    <mo>=</mo> <msub><mi>μ</mi> <mi>T</mi></msub> <mo>-</mo> <msub><mi>μ</mi> <mi>S</mi></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The marginal change in the portfolio volatility, given a marginal change in
+    the allocation of the financial asset <math alttext="upper T"><mi>T</mi></math>
+    , is determined by the following partial derivative:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartFraction normal partial-differential sigma Over normal partial-differential
+    a EndFraction equals StartFraction a dot sigma Subscript upper T Superscript 2
+    Baseline minus sigma Subscript upper S Superscript 2 Baseline plus a dot sigma
+    Subscript upper S Superscript 2 Baseline plus sigma Subscript upper S upper T
+    Baseline minus 2 dot a dot sigma Subscript upper S upper T Baseline Over StartRoot
+    a squared dot sigma Subscript upper T Superscript 2 Baseline plus left-parenthesis
+    1 minus a right-parenthesis squared dot sigma Subscript upper S Superscript 2
+    Baseline plus 2 dot a dot left-parenthesis 1 minus a right-parenthesis dot sigma
+    Subscript upper S upper T Baseline EndRoot EndFraction" display="block"><mrow><mfrac><mrow><mi>∂</mi><mi>σ</mi></mrow>
+    <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac> <mo>=</mo> <mfrac><mrow><mi>a</mi><mo>·</mo><msubsup><mi>σ</mi>
+    <mi>T</mi> <mn>2</mn></msubsup> <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><mi>a</mi><mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>-</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow> <msqrt><mrow><msup><mi>a</mi>
+    <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>T</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup> <mo>·</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup>
+    <mo>+</mo><mn>2</mn><mo>·</mo><mi>a</mi><mo>·</mo><mrow><mo>(</mo><mn>1</mn><mo>-</mo><mi>a</mi><mo>)</mo></mrow><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></msqrt></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The basic insight of the CAPM as an *equilibrium model* is that the financial
+    asset <math alttext="upper T"><mi>T</mi></math> is already part of the market
+    portfolio. Therefore, <math alttext="a"><mi>a</mi></math> can only be interpreted
+    as the *excess demand* for the financial asset, and in equilibrium when excess
+    demand for all financial assets *is zero*, <math alttext="a"><mi>a</mi></math>
+    also must equal zero. Therefore, in equilibrium, the partial derivative for the
+    expected portfolio rate of return remains unchanged, while the one for the portfolio
+    volatility simplifies significantly when evaluated at the equilibrium point <math
+    alttext="a equals 0"><mrow><mi>a</mi> <mo>=</mo> <mn>0</mn></mrow></math> :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartFraction normal partial-differential
+    sigma Over normal partial-differential a EndFraction vertical-bar Subscript a
+    equals 0 2nd Column equals 3rd Column one-half sigma Subscript upper S dot left-parenthesis
+    negative 2 dot sigma Subscript upper S Superscript 2 Baseline plus 2 dot sigma
+    Subscript upper S upper T Baseline right-parenthesis 2nd Row 1st Column Blank
+    2nd Column equals 3rd Column sigma Subscript upper S Baseline dot sigma Subscript
+    upper S upper T minus sigma Subscript upper S Baseline dot sigma Subscript upper
+    S Superscript 2 3rd Row 1st Column Blank 2nd Column equals 3rd Column StartFraction
+    sigma Subscript upper S upper T Baseline minus sigma Subscript upper S Superscript
+    2 Baseline Over sigma Subscript upper S Baseline EndFraction EndLayout" display="block"><mtable><mtr><mtd><msub><mfenced
+    separators="" open="" close="|"><mfrac><mrow><mi>∂</mi><mi>σ</mi></mrow> <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac></mfenced>
+    <mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow></msub></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mfrac><mn>1</mn> <mn>2</mn></mfrac> <msub><mi>σ</mi> <mi>S</mi></msub>
+    <mo>·</mo> <mfenced separators="" open="(" close=")"><mo>-</mo> <mn>2</mn> <mo>·</mo>
+    <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup> <mo>+</mo> <mn>2</mn> <mo>·</mo>
+    <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mfenced></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><msub><mi>σ</mi> <mi>S</mi></msub> <mo>·</mo>
+    <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>-</mo> <msub><mi>σ</mi>
+    <mi>S</mi></msub> <mo>·</mo> <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow></mtd></mtr>
+    <mtr><mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi>
+    <mi>S</mi></msub></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *risk-return trade-off* in market equilibrium therefore is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartStartFraction StartFraction
+    normal partial-differential mu Over normal partial-differential a EndFraction
+    OverOver StartFraction normal partial-differential sigma Over normal partial-differential
+    a EndFraction EndEndFraction vertical-bar Subscript a equals 0 2nd Column equals
+    3rd Column StartStartFraction mu Subscript upper T Baseline minus mu Subscript
+    upper S Baseline OverOver StartFraction sigma Subscript upper S upper T Baseline
+    minus sigma Subscript upper S Superscript 2 Baseline Over sigma Subscript upper
+    S Baseline EndFraction EndEndFraction EndLayout" display="block"><mtable><mtr><mtd><msub><mfenced
+    separators="" open="" close="|"><mfrac><mfrac><mrow><mi>∂</mi><mi>μ</mi></mrow>
+    <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac> <mfrac><mrow><mi>∂</mi><mi>σ</mi></mrow>
+    <mrow><mi>∂</mi><mi>a</mi></mrow></mfrac></mfrac></mfenced> <mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow></msub></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>μ</mi> <mi>T</mi></msub> <mo>-</mo><msub><mi>μ</mi>
+    <mi>S</mi></msub></mrow> <mfrac><mrow><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub>
+    <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi>
+    <mi>S</mi></msub></mfrac></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The final insight needed to derive the preceding *CAPM formula* is that in
+    equilibrium, the previous term needs to be equal to the slope of the CML:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartStartFraction mu Subscript
+    upper T Baseline minus mu Subscript upper S Baseline OverOver StartFraction sigma
+    Subscript upper S upper T Baseline minus sigma Subscript upper S Superscript 2
+    Baseline Over sigma Subscript upper S Baseline EndFraction EndEndFraction 2nd
+    Column equals 3rd Column StartFraction mu Subscript upper S Baseline minus i Over
+    sigma Subscript upper S Baseline EndFraction 2nd Row 1st Column mu Subscript upper
+    T Baseline 2nd Column equals 3rd Column i plus StartFraction sigma Subscript upper
+    S upper T Baseline Over sigma Subscript upper S Superscript 2 Baseline EndFraction
+    dot left-parenthesis mu Subscript upper S Baseline minus i right-parenthesis 3rd
+    Row 1st Column Blank 2nd Column equals 3rd Column i plus beta Subscript upper
+    T Baseline dot left-parenthesis mu Subscript upper S Baseline minus i right-parenthesis
+    EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><msub><mi>μ</mi> <mi>T</mi></msub>
+    <mo>-</mo><msub><mi>μ</mi> <mi>S</mi></msub></mrow> <mfrac><mrow><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub> <mo>-</mo><msubsup><mi>σ</mi> <mi>S</mi>
+    <mn>2</mn></msubsup></mrow> <msub><mi>σ</mi> <mi>S</mi></msub></mfrac></mfrac></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo><mi>i</mi></mrow>
+    <msub><mi>σ</mi> <mi>S</mi></msub></mfrac></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo>
+    <msub><mi>μ</mi> <mi>T</mi></msub></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><mi>i</mi>
+    <mo>+</mo> <mfrac><msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub> <msubsup><mi>σ</mi>
+    <mi>S</mi> <mn>2</mn></msubsup></mfrac> <mo>·</mo> <mrow><mo>(</mo> <msub><mi>μ</mi>
+    <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <msub><mi>β</mi> <mi>T</mi></msub> <mo>·</mo>
+    <mrow><mo>(</mo> <msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo> <mi>i</mi> <mo>)</mo></mrow></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: How does the CAPM help in pricing a financial asset that is not replicable?
+    Given the vector of uncertain prices in one year of a financial asset <math alttext="upper
+    T 1"><msub><mi>T</mi> <mn>1</mn></msub></math> , the uncertain rates of return
+    are
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="r Superscript upper T Baseline equals StartFraction upper T 1
+    minus upper T 0 Over upper T 0 EndFraction" display="block"><mrow><msup><mi>r</mi>
+    <mi>T</mi></msup> <mo>=</mo> <mfrac><mrow><msub><mi>T</mi> <mn>1</mn></msub> <mo>-</mo><msub><mi>T</mi>
+    <mn>0</mn></msub></mrow> <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where <math alttext="upper T 0"><msub><mi>T</mi> <mn>0</mn></msub></math> is
+    the equilibrium price today to be determined. The following relationship holds
+    as well:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="mu Subscript upper T Baseline equals StartFraction bold upper
+    E Superscript upper P Baseline left-parenthesis upper T 1 right-parenthesis minus
+    upper T 0 Over upper T 0 EndFraction" display="block"><mrow><msub><mi>μ</mi> <mi>T</mi></msub>
+    <mo>=</mo> <mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow><mo>-</mo><msub><mi>T</mi> <mn>0</mn></msub></mrow>
+    <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Define now the *unit price of risk* as the excess return of the market portfolio
+    per unit of variance by
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="lamda equals StartFraction mu Subscript upper S Baseline minus
+    i Over sigma Subscript upper S Superscript 2 Baseline EndFraction" display="block"><mrow><mi>λ</mi>
+    <mo>=</mo> <mfrac><mrow><msub><mi>μ</mi> <mi>S</mi></msub> <mo>-</mo><mi>i</mi></mrow>
+    <msubsup><mi>σ</mi> <mi>S</mi> <mn>2</mn></msubsup></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: such that according to the CAPM, one gets
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column mu Subscript upper T 2nd Column
+    equals 3rd Column i plus lamda dot sigma Subscript upper S upper T EndLayout"
+    display="block"><mtable><mtr><mtd><msub><mi>μ</mi> <mi>T</mi></msub></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mi>λ</mi> <mo>·</mo> <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This shows that in equilibrium the expected rate of return of a financial asset
+    is determined only by its covariance with the market portfolio. Equating this
+    with the preceding term for the expected return of the financial asset <math alttext="upper
+    T"><mi>T</mi></math> yields
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartFraction bold upper E Superscript
+    upper P Baseline left-parenthesis upper T 1 right-parenthesis minus upper T 0
+    Over upper T 0 EndFraction 2nd Column equals 3rd Column i plus lamda dot sigma
+    Subscript upper S upper T 2nd Row 1st Column upper T 0 2nd Column equals 3rd Column
+    StartFraction bold upper E Superscript upper P Baseline left-parenthesis upper
+    T 1 right-parenthesis Over 1 plus i plus lamda dot sigma Subscript upper S upper
+    T Baseline EndFraction EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><msup><mi>𝐄</mi>
+    <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi> <mn>1</mn></msub> <mo>)</mo></mrow><mo>-</mo><msub><mi>T</mi>
+    <mn>0</mn></msub></mrow> <msub><mi>T</mi> <mn>0</mn></msub></mfrac></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mrow><mi>i</mi> <mo>+</mo> <mi>λ</mi> <mo>·</mo> <msub><mi>σ</mi> <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mo>⇔</mo> <msub><mi>T</mi> <mn>0</mn></msub></mrow></mtd> <mtd><mo>=</mo></mtd>
+    <mtd><mfrac><mrow><msup><mi>𝐄</mi> <mi>P</mi></msup> <mrow><mo>(</mo><msub><mi>T</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mrow> <mrow><mn>1</mn><mo>+</mo><mi>i</mi><mo>+</mo><mi>λ</mi><mo>·</mo><msub><mi>σ</mi>
+    <mrow><mi>S</mi><mi>T</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The denominator can be thought of as a *risk-adjusted discount factor*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: MVP, CAPM, and Market Completeness
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Both MVP and the CAPM rely on high-level statistics only, such as expectation,
+    volatility, and covariance. When replicating contingent claims, for example, every
+    single payoff in every possible future state plays an important role—with the
+    demonstrated consequences resulting from market incompleteness. In MVP and CAPM
+    contexts, it is (implicitly) assumed that investors only care about aggregate
+    statistics and not really about every single state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider the example of two financial assets with the same initial prices under
+    an equal probability measure, one paying 20 currency units in one state and nothing
+    in the others, and the other one paying 20 currency units in a different state
+    as the other financial asset and nothing else. Both financial assets have the
+    same risk-return characteristics. However, an agent might strongly prefer one
+    over the other—independent of the fact that their aggregate statistics are the
+    same. Focusing on risk and return is often a convenient simplification but not
+    always an appropriate one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The major topic of this chapter is incomplete financial markets. Moving from
+    a two-state model economy to one with three states and keeping the number of traded
+    financial assets constant at two, immediately results in market incompleteness.
+    This in turn implies that contingent claims are in general not perfectly replicable
+    by portfolios composed of the risk-less bond and the risky stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, payoffs of contingent claims can be super-replicated if they must be
+    met or surpassed under all circumstances. While there are in general infinitely
+    many such super-replication portfolios, it is generally required that the cost-minimizing
+    portfolio be chosen. If there is a bit more flexibility, the payoffs of contingent
+    claims that are not attainable can also be approximated. In this context, the
+    replication problem is replaced by an optimization problem, according to which
+    the mean squared error of the replication portfolio is minimized. Mathematically,
+    this boils down to a linear OLS regression problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The CAPM is based on equilibrium pricing arguments to derive expected rates
+    of return and also prices for traded financial assets given their risk-return
+    characteristics in the mean-volatility space. A central role is played by the
+    correlation and the covariance of a financial asset with the market portfolio,
+    which is assumed to contain the financial asset itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Articles and books cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Pliska, Stanley. 1997\. *Introduction to Mathematical Finance.* Malden and
+    Oxford: Blackwell Publishers.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Sharpe, William. 1964\. “Capital Asset Prices: A Theory of Market Equilibrium
+    under Conditions of Risk.” *The Journal of Finance* 19 (3): 425–442.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch03.xhtml#idm44853701345560-marker)) Note that this calculation for the
+    volatility is only valid since an equal probability is assumed for the three states.
+  prefs: []
+  type: TYPE_NORMAL

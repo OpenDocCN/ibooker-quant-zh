@@ -1,0 +1,929 @@
+- en: Chapter 5\. Machine Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Dataism says that the universe consists of data flows, and the value of any
+    phenomenon or entity is determined by its contribution to data processing….Dataism
+    thereby collapses the barrier between animals [humans] and machines, and expects
+    electronic algorithms to eventually decipher and outperform biochemical algorithms.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Yuval Noah Harari (2015)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Machine learning is the scientific method on steroids. It follows the same process
+    of generating, testing, and discarding or refining hypotheses. But while a scientist
+    may spend his or her whole life coming up with and testing a few hundred hypotheses,
+    a machine learning system can do the same in a second. Machine learning automates
+    discovery. It’s no surprise, then, that it’s revolutionizing science as much as
+    it’s revolutionizing business.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Pedro Domingos (2015)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter is about *machine learning as a process*. Although it uses specific
+    algorithms and specific data for illustration, the notions and approaches discussed
+    in this chapter are general in nature. The goal is to present the most important
+    elements of machine learning in a single place and in an easy-to-understand and
+    easy-to-visualize manner. The approach of this chapter is practical and illustrative
+    in nature, omitting most technical details throughout. In that sense, the chapter
+    provides a kind of blueprint for later, more realistic machine learning applications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Learning”](#ml_learning) briefly discusses the very notion of a machine that
+    *learns*. [“Data”](#ml_data) imports and preprocesses the sample data used in
+    later sections. The sample data is based on a time series for the EUR/USD exchange
+    rate. [“Success”](#ml_success) implements OLS regression and neural network estimation
+    given the sample data and uses the mean-squared error as the measure of success.
+    [“Capacity”](#ml_capacity) discusses the role of the model capacity in making
+    models more successful in the context of estimation problems. [“Evaluation”](#ml_evaluation)
+    explains the role that model evaluation, typically based on a validation data
+    sub-set, plays in the machine-learning process. [“Bias and Variance”](#ml_bias_var)
+    discusses the notions of *high bias* and *high variance* models and their typical
+    characteristics in the context of estimation problems. [“Cross-Validation”](#ml_cross_val)
+    illustrates the concept of cross-validation to avoid, among other things, overfitting
+    due to a too-large model capacity.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: VanderPlas (2017, ch. 5) discusses topics similar to the ones covered in this
+    chapter, making use primarily of the `scikit-learn` Python package. Chollet (2017,
+    ch. 4) also provides an overview similar to the one provided here, but primarily
+    makes use of the `Keras` deep learning package. Goodfellow et al. (2016, ch. 5)
+    give a more technical and mathematical overview of machine learning and related
+    important concepts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Learning
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'On a formal, more abstract level, *learning* by an algorithm or computer program
+    can be defined as in Mitchell (1997):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A computer program is said to learn from experience <math alttext="upper E"><mi>E</mi></math>
+    with respect to some class of tasks <math alttext="upper T"><mi>T</mi></math>
+    and performance measure <math alttext="upper P"><mi>P</mi></math> , if its performance
+    at tasks in <math alttext="upper T"><mi>T</mi></math> , as measured by <math alttext="upper
+    P"><mi>P</mi></math> , improves with experience <math alttext="upper E"><mi>E</mi></math>
+    .
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: There is a class of tasks that are to be performed (for example, *estimation*
+    or *classification*). Then there is a performance measure, such as the *mean-squared
+    error* (MSE) or the *accuracy ratio*. Then there is *learning* as measured by
+    the improvement in performance given the experience of the algorithm with the
+    task. The class of tasks at hand is described in general based on the given data
+    set, which includes the features data and the labels data in the case of supervised
+    learning, or only the features data in the case of unsupervised learning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Learning Task Versus Task to Learn
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In the definition of learning through an algorithm or computer program, it is
+    important to note the difference between the task of learning and the tasks to
+    be learned. *Learning* means to learn how to (best) execute a certain task, such
+    as estimation or classification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This section introduces the sample data set to be used in the sections to follow.
+    The sample data is created based on a real financial time series for the EUR/USD
+    exchange rate. First, the data is imported from a CSV file, and then the data
+    is resampled to monthly data and stored in a `Series` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the financial time series data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resamples the data to monthly time intervals
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 5-1](#figure_ml_01) shows the financial time series.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0501](Images/aiif_0501.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-1\. EUR/USD exchange rate as time series (monthly)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'To have a single feature only, the following Python code creates a synthetic
+    feature vector. This allows for simple visualizations in two dimensions. The synthetic
+    feature (independent variable), of course, does not have any explanatory power
+    for the EUR/USD exchange rate (labels data, dependent variable). In what follows,
+    it is also abstracted from the fact that the labels data is sequential and temporal
+    in nature. The sample data set is treated in this chapter as a general data set
+    composed of a one-dimensional features vector and a one-dimensional labels vector.
+    [Figure 5-2](#figure_ml_01_) visualizes the sample data set that implies an *estimation
+    problem* is the task at hand:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transforms the labels data to an `ndarray` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Subtracts the mean value from the data element-wise
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a synthetic feature as an `ndarray` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0502](Images/aiif_0502.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-2\. Sample data set
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Success
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The measure of success for estimation problems in general is the MSE, as used
+    in [Chapter 1](ch01.xhtml#artificial_intelligence). Based on the MSE, success
+    is judged given the labels data as the relevant benchmark and the predicted values
+    of an algorithm after having been exposed to the data set or parts of it. As in
+    [Chapter 1](ch01.xhtml#artificial_intelligence), two algorithms are considered
+    in this and the following sections: OLS regression and neural networks.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First is OLS regression. The application is straightforward, as the following
+    Python code illustrates. The regression result is shown in [Figure 5-3](#figure_ml_02)
+    for a regression including monomials up to the fifth order. The resulting MSE
+    is also calculated:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function `MSE` calculates the mean-squared error.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The fitting of the OLS regression model up to and including fifth-order monomials.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The prediction by the OLS regression model given the optimal parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The MSE value given the prediction values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0503](Images/aiif_0503.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-3\. Sample data and cubic regression line
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'OLS regression is generally solved analytically. Therefore, no iterated learning
+    takes place. However, one can simulate a learning procedure by gradually exposing
+    the algorithm to more data. The following Python code implements OLS regression
+    and prediction, starting with a few samples only and gradually increasing the
+    number to finally reach the complete length of the data set. The regression step
+    is implemented based on the smaller sub-sets, whereas the prediction steps are
+    implemented based on the whole features data in each case. In general, the MSE
+    drops significantly when increasing the training data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regression step based on data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prediction step based on the complete data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resulting MSE value
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second is the neural network. The application to the sample data is again straightforward
+    and similar to the case in [Chapter 1](ch01.xhtml#artificial_intelligence). [Figure 5-4](#figure_ml_03)
+    shows how the neural network approximates the sample data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The neural network is a shallow network with a single hidden layer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The fitting step with a relatively high number of epochs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The prediction step that also flattens the `ndarray` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting MSE value for the DNN prediction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0504](Images/aiif_0504.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-4\. Sample data and neural network approximation
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'With the `Keras` package, the MSE values are stored after every learning step.
+    [Figure 5-5](#figure_ml_04) shows how the MSE value (“loss”) decreases on average
+    (as far as one can tell from the plot) with the increasing number of epochs over
+    which the neural network is trained:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0505](Images/aiif_0505.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-5\. MSE values against number of training epochs
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Capacity
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The *capacity* of a model or algorithm defines what types of functions or relationships
+    the model or algorithm can basically learn. In the case of OLS regression based
+    on monomials only, there is only one parameter that defines the capacity of the
+    model: the degree of the highest monomial to be used. If this degree parameter
+    is set to `deg=3`, the OLS regression model can learn functional relationships
+    of constant, linear, quadratic, or cubic type. The higher the parameter `deg`
+    is, the higher the capacity of the OLS regression model will be.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code starts at `deg=1` and increases the degree in increments
+    of two. The MSE values monotonically decrease with the increasing degree parameter.
+    [Figure 5-6](#figure_ml_05) shows the regression lines for all degrees considered:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regression step for different values for `deg`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0506](Images/aiif_0506.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-6\. Regression lines for different highest degrees
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The capacity of a neural network depends on a number of *hyperparameters*.
+    Among them are, in general, the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of hidden layers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Number of hidden units for each hidden layer
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Together, these two hyperparameters define the number of trainable parameters
+    (weights) in the neural network. The neural network model in the previous section
+    has a relatively low number of trainable parameters. Adding, for example, just
+    one more layer of the same size increases the number of trainable parameters significantly.
+    Although the number of training epochs may need to be increased, the MSE value
+    decreases significantly for the neural network with the higher capacity, and the
+    fit also seems much better visually, as [Figure 5-7](#figure_ml_06) shows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds potentially many layers to the neural network
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A deep neural network with three hidden layers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The summary shows the increased number of trainable parameters (increased capacity)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0507](Images/aiif_0507.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-7\. Sample data and DNN approximation (higher capacity)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Evaluation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In the previous sections, the analysis focuses on the performance of estimation
+    algorithms on the sample data set as a whole. As a general rule, the capacity
+    of the model or algorithm directly influences its performance when training and
+    evaluating it on the same data set. However, this is the “simple and easy case”
+    in ML. The more complex and interesting case is when a trained model or algorithm
+    shall be used for a generalization on data that the model or algorithm has not
+    seen before. Such a generalization can, for example, be the prediction (estimation)
+    of a future stock price, given the history of stock prices, or the classification
+    of potential debtors as “creditworthy” or “not creditworthy,” given the data from
+    existing debtors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although the term *prediction* is often used freely in the context of estimations,
+    given the features data set used for training, a real prediction probably entails
+    predicting something not known up front and never seen before. Again, the prediction
+    of a future stock price is a good example for a real prediction in a temporal
+    sense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In general, a given data set is divided into sub-sets that each have different
+    purposes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Training data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the sub-set used for the training of the algorithm.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Validation data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the sub-set used for validating the performance of the algorithm during
+    training—and this data set is different from the training data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Test data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the sub-set on which the trained algorithm is only tested after the
+    training is finished.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Insights that are gained by applying a (currently) trained algorithm on the
+    validation data set might reflect on the training itself (for example, by adjusting
+    the hyperparameters of a model). On the other hand, the idea is that insights
+    from testing the trained algorithm on the test data set shall not be reflected
+    in the training itself or the hyperparameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code chooses, somewhat arbitrarily, 25% of the sample
+    data for testing; the model or algorithm will not see this data before the training
+    (learning) is finished. Similarly, 25% of the sample data is reserved for validation;
+    this data is used to monitor performance during the training step and possibly
+    during many learning iterations. The remaining 50% is used for the training (learning)
+    itself.^([1](ch05.xhtml#idm45625305881528)) Given the sample data set, it makes
+    sense to apply shuffling techniques to populate all sample data sub-sets randomly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of test data set samples
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of validation data set samples
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Randomized index for complete data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resulting sorted indexes for the data sub-sets
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_machine_learning_CO8-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resulting features data sub-sets
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_machine_learning_CO8-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resulting labels data sub-sets
+  prefs: []
+  type: TYPE_NORMAL
+- en: Randomized Sampling
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The randomized population of training, validation, and test data sets is a common
+    and useful technique for data sets that are neither sequence-like nor temporal
+    in nature. However, when one is dealing, say, with a financial time series, shuffling
+    the data is generally to be avoided because it breaks up temporal structures and
+    sneaks foresight bias into the process by using, for example, later samples for
+    training and implementing the testing on earlier samples.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Based on the training and validation data sub-sets, the following Python code
+    implements a regression for different `deg` parameter values and calculates the
+    MSE values for the predictions on both data sub-sets. Although the MSE values
+    on the training data set decrease monotonically, the MSE values on the validation
+    data set often reach a minimum for a certain parameter value and then increase
+    again. This phenomenon indicates what is called *overfitting*. [Figure 5-8](#figure_ml_07)
+    shows the regression fits for the different values of `deg` and compares the fits
+    for both the training data and validation data sets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: MSE value for the training data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: MSE value for the validation data set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0508](Images/aiif_0508.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-8\. Training and validation data including regression fits
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'With `Keras` and the neural network model, the validation data set performance
+    can be monitored for every single learning step. One can also use callback functions
+    to stop the model training early when no further improvements, say, in the performance
+    on the training data set, are observed. The following Python code makes use of
+    such a callback function. [Figure 5-9](#figure_ml_08) shows the predictions of
+    the neural network for the training and validation data sets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Learning is stopped based on training data MSE value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is only stopped after a certain number of epochs that do not show an improvement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The best weights are restored when the learning is stopped.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The validation data sub-sets are specified.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_machine_learning_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The callback function is passed to the `fit()` method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0509](Images/aiif_0509.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-9\. Training and validation data including DNN predictions
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`Keras` allows analysis of the change in the MSE values on both data sets for
+    every single epoch the model has been trained in. [Figure 5-10](#figure_ml_09)
+    shows that the MSE values decrease with the increasing number of training epochs,
+    although only on average and not monotonically:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0510](Images/aiif_0510.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-10\. MSE values for DNN model on the training and validation data sets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'In the case of OLS regression, one would probably choose a high—but not too
+    high—value for the degree parameter, such as `deg=9`. The parameterization of
+    the neural network model automatically gives the best model configuration at the
+    end of the training. [Figure 5-10](#figure_ml_09) compares the predictions of
+    both models to each other and to the test data set. Given the nature of the sample
+    data, the somewhat better test data set performance of the neural network should
+    not come as a surprise:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0511](Images/aiif_0511.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-11\. Test data and predictions from OLS regression and the DNN model
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Bias and Variance
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A major problem in ML in general and when applying ML algorithms to financial
+    data in particular is the problem of *overfitting*. A model is overfitting its
+    training data when the performance is worse on the validation and test data than
+    on the training data. An example using OLS regression can illustrate the problem
+    both visually and numerically.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code uses smaller sub-sets for both training and validation
+    and implements a linear regression, as well as one of higher order. The linear
+    regression fit, as shown in [Figure 5-12](#figure_ml_11), has a *high bias* on
+    the training data set; absolute differences between predictions and labels data
+    are relatively high. The higher-order fit shows a *high variance*. It hits all
+    training data points exactly, but the fit itself varies significantly to achieve
+    the perfect fit:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Smaller features data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Smaller labels data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: High bias OLS regression (linear)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: High variance OLS regression (higher order)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_machine_learning_CO11-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enlarged features data set for plotting
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0512](Images/aiif_0512.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-12\. High bias and high variance OLS regression fits
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 5-12](#figure_ml_11) shows that a high bias fit performs worse in the
+    example than a high variance fit on the training data. But the high variance fit,
+    which is overfitting here to a large extent, performs much worse on the validation
+    data. This can be illustrated by comparing performance measures for all cases.
+    The following Python code calculates not only the MSE values, but also the <math
+    alttext="upper R squared"><msup><mi>R</mi> <mn>2</mn></msup></math> values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model bias as mean absolute differences
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model variance as variance of model predictions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance of *high bias* model on *training data*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance of *high bias* model on *validation data*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_machine_learning_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance of *high variance* model on *training data*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_machine_learning_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance of *high variance* model on *validation data*
+  prefs: []
+  type: TYPE_NORMAL
+- en: The results show that performance of the high bias model is roughly comparable
+    on both the training and validation data sets. By contrast, the performance of
+    the high variance model is perfect on the training data and pretty bad on the
+    validation data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cross-Validation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A standard approach to avoid overfitting is *cross-validation*, during which
+    multiple training and validation data populations are tested. The `scikit-learn`
+    package provides functionality to implement cross-validation in a standardized
+    way. The function `cross_val_score` can be applied to any `scikit-learn` model
+    object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code implements the OLS regression approach on the complete sample
+    data set, using a polynomial OLS regression model from `scikit-learn`. The five-fold
+    cross-validation is implemented for different degrees for the highest polynomial.
+    The cross-validation scores become, on average, worse the higher the highest degree
+    is in the regression. Particularly bad results are observed when the first 20%
+    of the data is used for validation (data on the left-hand side in [Figure 5-3](#figure_ml_02))
+    or the final 20% of the data is used (data on the right-hand side in [Figure 5-3](#figure_ml_02)).
+    Similarly, the best validation scores are observed for the middle 20% of the sample
+    data set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates a polynomial regression model class
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the default printing settings for `numpy`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implements the five-fold cross-validation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Keras` provides wrapper classes to use `Keras` model objects with `scikit-learn`
+    functionality, such as the `cross_val_score` function. The following example uses
+    the `KerasRegressor` class to wrap the neural network models and to apply the
+    cross-validation to them. The cross-validation scores are better throughout for
+    the two networks tested when compared to the OLS regression cross-validation scores.
+    The neural network capacity does not play too large a role in this example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_machine_learning_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Wrapper class for neural network with *low* capacity
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_machine_learning_CO14-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cross-validation for neural network with *low* capacity
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_machine_learning_CO14-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Wrapper class for neural network with *high* capacity
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_machine_learning_CO14-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cross-validation for neural network with *high* capacity
+  prefs: []
+  type: TYPE_NORMAL
+- en: Avoiding Overfitting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Overfitting—when a model performs much better on a training data set than on
+    the validation and test data sets—is to be avoided in ML in general and in finance
+    in particular. Proper evaluation procedures and analyses, such as cross-validation,
+    help in preventing overfitting and in finding, for example, an adequate model
+    capacity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This chapter presents a blueprint for a machine learning process. The main
+    elements presented are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Learning
+  prefs: []
+  type: TYPE_NORMAL
+- en: What exactly is meant by machine *learning*?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data
+  prefs: []
+  type: TYPE_NORMAL
+- en: What raw data and what (preprocessed) features and labels data is to be used?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Success
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the problem as defined indirectly by the data (estimation, classification,
+    etc.), what is the appropriate measure of success?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Capacity
+  prefs: []
+  type: TYPE_NORMAL
+- en: Which role does the model capacity play, and what might be an adequate capacity
+    given the problem at hand?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluation
+  prefs: []
+  type: TYPE_NORMAL
+- en: How shall the model performance be evaluated given the purpose of the trained
+    model?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bias and variance
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Which models are better suited for the problem at hand: those with rather high
+    bias or rather high variance?'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cross-validation
+  prefs: []
+  type: TYPE_NORMAL
+- en: For non-sequence-like data sets, how does the model perform when cross-validated
+    on different configurations for the training and validation data sub-sets used?
+  prefs: []
+  type: TYPE_NORMAL
+- en: This blueprint is applied loosely in subsequent chapters to a number of real-world
+    financial use cases. For more background information and details about machine
+    learning as a process, refer to the references listed at the end of this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chollet, François. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Domingos, Pedro. 2015\. *The Master Algorithm: How the Quest for the Ultimate
+    Learning Machine Will Remake Our World.* New York: Basic Books.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
+    Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Harari, Yuval Noah. 2015\. *Homo Deus: A Brief History of Tomorrow.* London:
+    Harvill Secker.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Mitchell, Tom M. 1997\. *Machine Learning*. New York: McGraw-Hill.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VanderPlas, Jake. 2017\. *Python Data Science Handbook*. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch05.xhtml#idm45625305881528-marker)) Often, the rule of thumb mentioned
+    in this context is “60%, 20%, 20%” for the split of a given data set into training,
+    validation, and testing data sub-sets.
+  prefs: []
+  type: TYPE_NORMAL

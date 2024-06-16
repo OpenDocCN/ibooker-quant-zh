@@ -1,0 +1,1770 @@
+- en: Chapter 5\. Modeling Market Risk
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A measure of risk driven by historical data assumes the future will follow the
+    pattern of the past. You need to understand the limitations of that assumption.
+    More importantly, you need to model scenarios in which that pattern breaks down.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Miles Kennedy
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Risk is ubiquitous in finance, but it is hard to quantify. First and foremost,
+    it’s important to know how to differentiate the sources of financial risks on
+    the grounds that it might not be a wise move to use the same tools against risks
+    arising from different sources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Thus, treating the various sources of financial risk differently is crucial
+    because the impacts of those different risks, as well as the tools used to mitigate
+    them, are completely different. Assuming that firms are subject to large market
+    fluctuations, then all assets in their portfolios are susceptible to risk originating
+    from these fluctuations. However, a different tool should be developed to cope
+    with a risk emanating from customer profiles. In addition, keep in mind that different
+    risk factors contribute significantly to asset prices. All of these examples imply
+    that treating risk factors needs careful consideration in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As was briefly discussed previously, these risks are mainly market, credit,
+    liquidity, and operational risks. It is evident that some other types can be added
+    to this list, but they can be thought of as subbranches of these main four risk
+    types, which will be our focus throughout this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Market risk* is the risk arising from changes in financial indicators, such
+    as the exchange rate, interest rate, inflation, and so on. Market risk can be
+    referred to as risk of losses in on- and off-balance-sheet positions arising from
+    movements in market prices (BIS 2020). Let’s now see how these factors affect
+    market risk. Suppose that a rise in inflation rates poses a threat to the current
+    profitability of the financial institutions, since inflation creates pressures
+    on interest rates. This, in turn, affects the cost of funds for borrowers. These
+    instances can be amplified, but we should also note the interactions of these
+    financial risk sources. That is, when a single source of financial risk changes,
+    other risk sources cannot stay constant. Thus to some extent, financial indicators
+    are interrelated, meaning that the interactions of these risk sources should be
+    taken into account.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As you can imagine, there are different tools to manage market risk. Of them,
+    the most prominent and widely accepted tools are value at risk (VaR) and expected
+    shortfall (ES). The ultimate aim of this chapter is to augment these approaches
+    using recent developments in ML. At this juncture, it would be tempting to ask
+    the following questions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Do traditional models fail in finance?
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: What makes the ML-based model different?
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: I will start by tackling the first question. The first and foremost challenge
+    that traditional models are unable to address is the complexity of the financial
+    system. Due either to some strong assumptions, or simply their inability to capture
+    the complexity introduced by the data, long-standing traditional models are starting
+    to be replaced by ML-based models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This fact is well put by Prado (2020):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Considering the complexity of modern financial systems, it is unlikely that
+    a researcher will be able to uncover the ingredients of a theory by visual inspection
+    of the data or by running a few regressions.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'To address the second question, it would be wise to think about the working
+    logic of ML models. ML models, as opposed to old statistical methods, try to unveil
+    the associations between variables, identify key variables, and enable us to find
+    out the impact of the variables on the dependent variable without the need for
+    a well-established theory. This is, in fact, the beauty of ML models in the sense
+    that they allow us to discover theories rather than require them:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many methods from statistics and machine learning (ML) may, in principle, be
+    used for both prediction and inference. However, statistical methods have a long-standing
+    focus on inference, which is achieved through the creation and fitting of a project-specific
+    probability model...
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: By contrast, ML concentrates on prediction by using general-purpose learning
+    algorithms to find patterns in often rich and unwieldy data.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Bzdok (2018, p. 232)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In the following section, we’ll start our discussion on the market risk models.
+    First, we’ll talk about the application of the VaR and ES models. After discussing
+    the traditional application of these models, we will learn how we can improve
+    them by using an ML-based approach. Let’s jump in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Value at Risk (VaR)
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The VaR model emerged from a request made by a J.P. Morgan executive who wanted
+    to have a summary report showing possible losses as well as risks that J.P. Morgan
+    was exposed to on a given day. This report would inform executives about the risks
+    assumed by the institution in an aggregated manner. The method by which market
+    risk is computed is known as VaR. This report was the starting point of VaR, and
+    now it has become so widespread that not only institutions prefer using VaR, but
+    its adoption has become required by regulators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The adoption of VaR dates back to the 1990s, and despite numerous extensions
+    to it and new proposed models, it is still in use. What makes it so appealing?
+    The answer comes from Kevin Dowd (2002, p. 10):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The VaR figure has two important characteristics. The first is that it provides
+    a common consistent measure of risk across different positions and risk factors.
+    It enables us to measure the risk associated with a fixed-income position, say,
+    in a way that is comparable to and consistent with a measure of the risk associated
+    with equity positions. VaR provides us with a common risk yardstick, and this
+    yardstick makes it possible for institutions to manage their risks in new ways
+    that were not possible before. The other characteristic of VaR is that it takes
+    account of the correlations between different risk factors. If two risks offset
+    each other, the VaR allows for this offset and tells us that the overall risk
+    is fairly low.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'In fact, VaR addresses one of the most common questions an investor has: *what
+    is the maximum expected loss of my investment?*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: VaR provides a very intuitive and practical answer to this question. In this
+    regard, it is used to measure the worst expected loss for a company over a given
+    period and a pre-defined confidence interval. Suppose that a daily VaR of an investment
+    is $1 million with 95% confidence interval. This would read as there being a 5%
+    chance that an investor might incur a loss greater than $1 million in a day.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on this definition, we can determine that the components of VaR are a
+    confidence interval, a time period, the value of an asset or portfolio, and the
+    standard deviation, as we are talking about risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In summary, there are some important points in VaR analysis that need to be
+    highlighted:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: VaR needs an estimation of the probability of loss.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: VaR concentrates on the potential losses. We are not talking about actual or
+    realized losses; rather, VaR is a kind of loss projection.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VaR has three key ingredients:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Standard deviation that defines the level of loss.
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Fixed time horizon over which risk is assessed.
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Confidence interval.
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'VaR can be measured via three different approaches:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Variance-covariance VaR
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Historical simulation VaR
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Monte Carlo VaR
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Variance-Covariance Method
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The variance-covariance method is also known as the *parametric* method, because
+    observations are assumed to be normally distributed. The variance-covariance method
+    is commonplace in that returns are deemed to follow normal distribution. The parametric
+    form assumption makes the application of variance-covariance method easy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As in all VaR approaches, we can either work with a single asset or a portfolio.
+    However, working with a portfolio requires careful treatment in the sense that
+    correlation structure and portfolio variance need to be estimated. At this point,
+    correlation comes into the picture, and historical data is used to calculate correlation,
+    mean, and standard deviation. When augmenting this with an ML-based approach,
+    correlation structure will be our main focus.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Suppose that we have a portfolio consisting of a single asset, as shown in
+    [Figure 5-1](#VaR_illustration). It is shown that the return of this asset is
+    zero and standard deviation is 1, and if the holding period is 1, the corresponding
+    VaR value can be computed from the value of the asset by the corresponding Z-value
+    and standard deviation. Hence, the normality assumption makes things easier, but
+    it is a strong assumption, as there is no guarantee that asset returns are normally
+    distributed; rather, most asset returns do not follow a normal distribution. Moreover,
+    due to the normality assumption, potential risk in tail might not be captured.
+    Therefore the normality assumption comes with a cost. See the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating probability density function based on given `x`, mean, and standard
+    deviation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO1-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Limiting the x-axis and y-axis
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifying the location of `x` at 5% percentile of the `x` data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![VaR_illustration](assets/mlfr_0501.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-1\. VaR illustration
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Following Fama (1965), it was realized that stock price returns do not follow
+    normal distribution due to fat tail and asymmetry. This empirical observation
+    implies that stock returns have higher kurtosis than that of a normal distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having high kurtosis amounts to fat tail, and this is able to capture the extreme
+    negative returns. As the variance-covariance method is unable to capture fat tail,
+    it cannot, therefore, estimate extreme negative returns that are likely to occur,
+    especially in periods of crisis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s see how we apply the variance-covariance VaR in Python. To illustrate,
+    let’s consider a two-asset portfolio. The formula of the variance-covariance VaR
+    is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign VaR equals upper V sigma Subscript p Baseline StartRoot
+    t EndRoot upper Z Subscript alpha Baseline dollar-sign"><mrow><mtext>VaR</mtext>
+    <mo>=</mo> <mi>V</mi> <msub><mi>σ</mi> <mi>p</mi></msub> <msqrt><mi>t</mi></msqrt>
+    <msub><mi>Z</mi> <mi>α</mi></msub></mrow></math><math alttext="dollar-sign sigma
+    Subscript p Baseline equals StartRoot w 1 squared sigma 1 squared plus w 2 squared
+    sigma 2 squared plus rho w 1 w 2 sigma 1 sigma 2 EndRoot dollar-sign"><mrow><msub><mi>σ</mi>
+    <mi>p</mi></msub> <mo>=</mo> <msqrt><mrow><msubsup><mi>w</mi> <mn>1</mn> <mn>2</mn></msubsup>
+    <msubsup><mi>σ</mi> <mn>1</mn> <mn>2</mn></msubsup> <mo>+</mo> <msubsup><mi>w</mi>
+    <mn>2</mn> <mn>2</mn></msubsup> <msubsup><mi>σ</mi> <mn>2</mn> <mn>2</mn></msubsup>
+    <mo>+</mo> <mi>ρ</mi> <msub><mi>w</mi> <mn>1</mn></msub> <msub><mi>w</mi> <mn>2</mn></msub>
+    <msub><mi>σ</mi> <mn>1</mn></msub> <msub><mi>σ</mi> <mn>2</mn></msub></mrow></msqrt></mrow></math><math
+    alttext="dollar-sign sigma Subscript p Baseline equals StartRoot w 1 sigma 1 plus
+    w 2 plus sigma plus 2 w 1 w 2 sigma-summation Underscript 1 comma 2 Endscripts
+    EndRoot dollar-sign"><mrow><msub><mi>σ</mi> <mi>p</mi></msub> <mo>=</mo> <msqrt><mrow><msub><mi>w</mi>
+    <mn>1</mn></msub> <msub><mi>σ</mi> <mn>1</mn></msub> <mo>+</mo> <msub><mi>w</mi>
+    <mn>2</mn></msub> <mo>+</mo> <mi>σ</mi> <mo>+</mo> <mn>2</mn> <msub><mi>w</mi>
+    <mn>1</mn></msub> <msub><mi>w</mi> <mn>2</mn></msub> <msub><mo>∑</mo> <mrow><mn>1</mn><mo>,</mo><mn>2</mn></mrow></msub></mrow></msqrt></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To apply this in code, we start with the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the parameters to be used in extracting data from Alpha Vantage
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Making a request to the Alpha Vantage website
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opening the response file, which is in a text format
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reversing the data that covers the period of 2019-01 to 2019-12 and appending
+    the daily stock prices of IBM, MSFT, and INTC
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Alpha Vantage is a data-providing company that partners with major exchanges
+    and institutions. Using Alpha Vantage’s API, it is possible to access stock prices
+    with various time intervals (intraday, daily, weekly, and so on), stock fundamentals,
+    and foreign exchange information. For more information, please see [Alpha Vantage’s
+    website](https://oreil.ly/ByZYD).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We then perform our calculations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating logarithmic return
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Drawing random numbers for weights
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating weights
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating covariance matrix
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_modeling_market_risk_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finding the portfolio standard deviation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_modeling_market_risk_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Computing the Z-score for a specific value using the percent point function
+    (`ppf`)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_modeling_market_risk_CO3-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the variance-covariance VaR model
+  prefs: []
+  type: TYPE_NORMAL
+- en: VaR changes depending on the time horizon in the sense that holding assets for
+    a longer period makes an investor more susceptible to risk. As shown in [Figure 5-2](#VaR_horizon),
+    VaR increases in relation to holding time by the amount of <math alttext="StartRoot
+    t EndRoot"><msqrt><mi>t</mi></msqrt></math> . Additionally, the holding period
+    is the longest period for portfolio liquidation. Taking into account the reporting
+    purpose, a 30-day period may be a more suitable one for an investor. Therefore,
+    we’ll illustrate that period in the following code, in which we generate [Figure 5-2](#VaR_horizon).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The pros and cons of the variance-covariance method are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pros
+  prefs: []
+  type: TYPE_NORMAL
+- en: Easy to calculate
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Does not require a large number of samples
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cons
+  prefs: []
+  type: TYPE_NORMAL
+- en: Observations are normally distributed
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Does not work well with nonlinear structures
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Requires the computation of the covariance matrix
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '![VaR_horizon](assets/mlfr_0502.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-2\. VaR over different horizons
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: So, even though assuming normality sounds appealing, it may not be the best
+    way to estimate VaR, especially in the case where the asset returns do not have
+    a normal distribution. Luckily, there is another method that does not have a normality
+    assumption, namely the historical simulation VaR model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Historical Simulation Method
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Having strong assumptions, such as a normal distribution, might be the cause
+    of inaccurate estimations. A solution to this issue is the historical simulation
+    VaR. This is an empirical method: instead of using a parametric approach, we find
+    the percentile, which is the Z-table equivalent of variance-covariance method.
+    Suppose that the confidence interval is 95%; 5% will be used in lieu of the Z-table
+    values, and all we need to do is to multiply this percentile by the initial investment.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following are the steps taken in the historical simulation VaR:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Obtain the asset returns of the portfolio (or individual asset)
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Find the corresponding return percentile based on confidence interval
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Multiply this percentile by initial investment
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'To do this in code, we can define the following function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the 95% percentile of stock returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the historical simulation VaR
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The historical simulation VaR method implicitly assumes that historical price
+    changes have a similar pattern, i.e., that there is no structural break. The pros
+    and cons of this method are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pros
+  prefs: []
+  type: TYPE_NORMAL
+- en: No distributional assumption
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Works well with nonlinear structures
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Easy to calculate
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cons
+  prefs: []
+  type: TYPE_NORMAL
+- en: Requires a large sample
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Needs high computing power
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The Monte Carlo Simulation VaR
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before delving into the Monte Carlo simulation VaR estimation, it would be good
+    to briefly introduce the Monte Carlo simulation. Monte Carlo is a computerized
+    mathematical method used to make an estimation in cases where there is no closed-form
+    solution, so it is a highly efficient tool for numerical approximation. Monte
+    Carlo relies on repeated random samples from a given distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The logic behind Monte Carlo is well defined by Glasserman (2003, p. 11):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Monte Carlo methods are based on the analogy between probability and volume.
+    The mathematics of measure formalizes the intuitive notion of probability, associating
+    an event with a set of outcomes and defining the probability of the event to be
+    its volume or measure relative to that of a universe of possible outcomes. Monte
+    Carlo uses this identity in reverse, calculating the volume of a set by interpreting
+    the volume as a probability.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: From the application standpoint, Monte Carlo is very similar to the historical
+    simulation VaR, but it does not use historical observations. Rather, it generates
+    random samples from a given distribution. Monte Carlo helps decision makers by
+    providing links between possible outcomes and probabilities, which makes it an
+    efficient and applicable tool in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Mathematical Monte Carlo can be defined in the following way:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let <math alttext="upper X 1 comma upper X 2 comma ellipsis comma upper X Subscript
+    n Baseline"><mrow><msub><mi>X</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>X</mi>
+    <mn>2</mn></msub> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <msub><mi>X</mi> <mi>n</mi></msub></mrow></math>
+    be independent and identically distributed random variables, and f(x) be a real-valued
+    function. The law of large numbers states that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="sans-serif upper E left-parenthesis f left-parenthesis upper
+    X right-parenthesis right-parenthesis almost-equals StartFraction 1 Over upper
+    N EndFraction sigma-summation Underscript i Overscript upper N Endscripts f left-parenthesis
+    upper X Subscript i Baseline right-parenthesis" display="block"><mrow><mi>𝖤</mi>
+    <mrow><mo>(</mo> <mi>f</mi> <mrow><mo>(</mo> <mi>X</mi> <mo>)</mo></mrow> <mo>)</mo></mrow>
+    <mo>≈</mo> <mfrac><mn>1</mn> <mi>N</mi></mfrac> <munderover><mo>∑</mo> <mi>i</mi>
+    <mi>N</mi></munderover> <mi>f</mi> <mrow><mo>(</mo> <msub><mi>X</mi> <mi>i</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So in a nutshell, a Monte Carlo simulation is doing nothing but generating
+    random samples and calculating their mean. Computationally, it follows these steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Define the domain
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Generate random numbers
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Iterate and aggregate the result
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The determination of mathematical <math alttext="pi"><mi>π</mi></math> is a
+    simple but illustrative example of Monte Carlo application.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Suppose we have a circle with radius *r* = 1 and an area of 4\. The area of
+    a circle is <math alttext="pi"><mi>π</mi></math> , and area of a square in which
+    we try to fit the circle is 4\. The ratio turns out to be:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign StartFraction pi Over 4 EndFraction dollar-sign"><mfrac><mi>π</mi>
+    <mn>4</mn></mfrac></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To leave <math alttext="pi"><mi>π</mi></math> alone, the proportion between
+    a circle and area can be defined as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign StartFraction upper C i r c u m f e r e n c e Subscript
+    c i r c l e Baseline Over upper A r e a Subscript s q u a r e Baseline EndFraction
+    equals StartFraction m Over n EndFraction dollar-sign"><mrow><mfrac><mrow><mi>C</mi><mi>i</mi><mi>r</mi><mi>c</mi><mi>u</mi><mi>m</mi><mi>f</mi><mi>e</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>c</mi><msub><mi>e</mi>
+    <mrow><mi>c</mi><mi>i</mi><mi>r</mi><mi>c</mi><mi>l</mi><mi>e</mi></mrow></msub></mrow>
+    <mrow><mi>A</mi><mi>r</mi><mi>e</mi><msub><mi>a</mi> <mrow><mi>s</mi><mi>q</mi><mi>u</mi><mi>a</mi><mi>r</mi><mi>e</mi></mrow></msub></mrow></mfrac>
+    <mo>=</mo> <mfrac><mi>m</mi> <mi>n</mi></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Once we equalize these equations, it turns out that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign pi equals 4 x StartFraction m Over n EndFraction
+    dollar-sign"><mrow><mi>π</mi> <mo>=</mo> <mn>4</mn> <mi>x</mi> <mfrac><mi>m</mi>
+    <mi>n</mi></mfrac></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we go step by step, the first is to define domain, which is [-1, 1]. So the
+    numbers inside the circle satisfy <math alttext="x squared plus y squared less-than-or-equal-to
+    1"><mrow><msup><mi>x</mi> <mn>2</mn></msup> <mo>+</mo> <msup><mi>y</mi> <mn>2</mn></msup>
+    <mo>≤</mo> <mn>1</mn></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The second step is to generate random numbers to meet this given condition.
+    That is to say, we need to have uniformly distributed random samples, which is
+    a rather easy task in Python. For the sake of practice, I will generate 100 uniformly
+    distributed random numbers using the NumPy library:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating random numbers from uniform distribution
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checking if points are inside the circle, which has a radius of 1
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating 95% of every stock return and appending the result in the list named
+    `MC_percentile95`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating Monte Carlo VaR
+  prefs: []
+  type: TYPE_NORMAL
+- en: Denoising
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Volatility is everywhere, but it is a formidable task to find out what kind
+    of volatility is most valuable. In general, there are two types of information
+    in the market: *noise* and *signal*. The former generates nothing but random information,
+    but the latter equips us with valuable information by which an investor can make
+    money. To illustrate, consider that there are two main players in the market:
+    one using noisy information called a noise trader, and an informed trader who
+    exploits signal or insider information. The noise trader’s trading motivation
+    is driven by random behavior. So information flow in the market is considered
+    a buying signal for some noise traders and a selling signal for others.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, informed traders are considered to be rational ones in the sense that
+    they are able to assess a signal because they know that it is private information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consequently, continuous flow of information should be treated with caution.
+    In short, information coming from noise traders can be considered as noise, and
+    information coming from insiders can be taken as signal, and this is the sort
+    of information that matters. Investors who cannot distinguish between noise and
+    signal can fail to gain profit and/or assess risk properly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now the problem turns out to be differentiating the flow of information in the
+    financial markets. How can we differentiate noise from signal? And how can we
+    use this information?
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is now worthwhile to discuss the Marchenko–Pastur theorem, which helps have
+    homogenous covariance matrices. The Marchenko–Pastur theorem allows us to extract
+    signal from noise using eigenvalues of covariance matrices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Let <math alttext="upper A element-of double-struck upper R Superscript n x
+    n"><mrow><mi>A</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mrow><mi>n</mi><mi>x</mi><mi>n</mi></mrow></msup></mrow></math>
+    be a square matrix. Then, <math alttext="lamda element-of double-struck upper
+    R"><mrow><mi>λ</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math> is an eigenvalue of *A*
+    and <math alttext="x element-of double-struck upper R Superscript n"><mrow><mi>x</mi>
+    <mo>∈</mo> <msup><mi>ℝ</mi> <mi>n</mi></msup></mrow></math> is the corresponding
+    eigenvector of *A* if
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper A x equals lamda x dollar-sign"><mrow><mi>A</mi>
+    <mi>x</mi> <mo>=</mo> <mi>λ</mi> <mi>x</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="x element-of double-struck upper R Superscript n Baseline
+    not-equals 0"><mrow><mi>x</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mi>n</mi></msup> <mo>≠</mo>
+    <mn>0</mn></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Eigenvalue* and *eigenvector* have special meanings in a financial context.
+    Eigenvectors represent the variance in covariance matrix, while an eigenvalue
+    shows the magnitude of an eigenvector. Specifically, the largest eigenvector corresponds
+    to largest variance, and the magnitude of this is equal to the corresponding eigenvalue.
+    Due to noise in the data, some eigenvalues can be thought of as random, and it
+    makes sense to detect and filter out these eigenvalues to retain only signals.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To differentiate noise and signal, we fit the Marchenko–Pastur theorem probability
+    density function (PDF) to the noisy covariance. The PDF the of Marchenko–Pastur
+    theorem takes the following form (Prado 2020):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><mi>f</mi> <mrow><mo>(</mo> <mi>λ</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mfenced close="" open="{" separators=""><mtable><mtr><mtd columnalign="left"><mrow><mfrac><mi>T</mi>
+    <mi>N</mi></mfrac> <msqrt><mrow><mrow><mo>(</mo> <msub><mi>λ</mi> <mi>t</mi></msub>
+    <mo>-</mo> <mi>λ</mi> <mo>)</mo></mrow> <mrow><mo>(</mo> <mi>λ</mi> <mo>-</mo>
+    <msub><mi>λ</mi> <mo>-</mo></msub> <mo>)</mo></mrow></mrow></msqrt></mrow></mtd>
+    <mtd columnalign="right"><mrow><mtext>if</mtext> <mi>λ</mi> <mo>∈</mo> <mo>[</mo>
+    <mi>λ</mi> <mo>-</mo> <msub><mi>λ</mi> <mo>-</mo></msub> <mo>]</mo></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mn>0</mn> <mo>,</mo></mrow></mtd> <mtd columnalign="right"><mrow><mtext>if</mtext>
+    <mi>λ</mi> <mo>∉</mo> <mo>[</mo> <mi>λ</mi> <mo>-</mo> <msub><mi>λ</mi> <mo>-</mo></msub>
+    <mo>]</mo></mrow></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="lamda Subscript plus Baseline and lamda Subscript minus
+    Baseline"><mrow><msub><mi>λ</mi> <mo>+</mo></msub> <mtext>and</mtext> <msub><mi>λ</mi>
+    <mo>-</mo></msub></mrow></math> are the maximum and minimum eigenvalues, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the following code block, which is a slight modification of the code provided
+    by Prado (2020), we will generate the probability density function of a Marchenko–Pastur
+    distribution and kernel density, which will allow us to model a random variable
+    in a nonparametric approach. Then, the Marchenko–Pastur distribution will be fitted
+    to the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating maximum expected eigenvalue
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating minimum expected eigenvalue
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO6-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating probability density function of Marchenko-Pastur distribution
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO6-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Initiating kernel density estimation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_modeling_market_risk_CO6-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fitting kernel density to the observations
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_modeling_market_risk_CO6-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assessing the log density model on observations
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_modeling_market_risk_CO6-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating random samples from normal distribution
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_modeling_market_risk_CO6-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Converting covariance matrix into correlation matrix
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_modeling_market_risk_CO6-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating eigenvalues of the correlation matrix
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_modeling_market_risk_CO6-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turning the NumPy array into diagonal matrix
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_modeling_market_risk_CO6-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calling `mp_pdf` to estimate the probability density function of the Marchenko–Pastur
+    distribution
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](assets/12.png)](#co_modeling_market_risk_CO6-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calling `kde_fit` to fit kernel distribution to the data
+  prefs: []
+  type: TYPE_NORMAL
+- en: The resulting [Figure 5-3](#Marchenko_Pastur) shows that the Marchenko–Pastur
+    distribution fits the data well. Thanks to the Marchenko–Pastur theorem, we are
+    able to differentiate the noise and signal; we can now refer to data for which
+    the noise has filtered as *denoised*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![M_P](assets/mlfr_0503.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-3\. Fitting Marchenko–Pastur distribution
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: So far, we have discussed the main steps to take to denoising the covariance
+    matrix so that we can plug it into the VaR model, which is called the *denoised
+    VaR* estimation. Denoising the covariance matrix is nothing but taking unnecessary
+    information (noise) out of the data. So we can then make use of the signal from
+    the market, focusing our attention on the important events only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Denoising the covariance matrix includes the following stages:^([1](ch05.html#idm45737228731696))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculate the eigenvalues and eigenvectors based on correlation matrix.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Use kernel density estimation, find the eigenvector for a specific eigenvalue.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Fit the Marchenko–Pastur distribution to the kernel density estimation.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Find the maximum theoretical eigenvalue using the Marchenko–Pastur distribution.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Calculate the average of eigenvalues greater than the theoretical value.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Use these new eigenvalues and eigenvectors to calculate the denoised correlation
+    matrix.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Calculate the denoised covariance matrix by the new correlation matrix.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Let’s take a look at how easy it is to apply finding the denoised covariance
+    matrix with a few lines of code using the `portfoliolab` library in Python:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Relating the number of observations `T` to the number of variables `N`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the bandwidth for kernel density estimation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating the denoised covariance matrix
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Incorporating the denoised covariance matrix into the VaR formula
+  prefs: []
+  type: TYPE_NORMAL
+- en: The difference between the traditionally applied VaR and the denoised VaR is
+    even more pronounced in a crisis period. During a crisis period, correlation among
+    assets becomes higher, which is sometimes referred to as *correlation breakdown*.
+    We will evaluate the effect of a crisis to check this phenomenon, and to do that,
+    we will use the 2017–2018 crisis. However, the exact beginning and ending date
+    of the crisis is necessary to run this analysis; we’ll get this information from
+    the National Bureau of Economic Research (NBER), which announces business cycles.^([2](ch05.html#idm45737230084272))
+  prefs: []
+  type: TYPE_NORMAL
+- en: The result confirms that the correlation, and thereby VaRs, become higher during
+    crisis periods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, we managed to obtain a ML-based VaR using a denoised covariance matrix
+    in lieu of an empirical matrix that we calculate directly from the data. Despite
+    its appeal and ease of use, VaR is not a coherent risk measure, which requires
+    satisfying certain conditions or axioms. You can think of these axioms as technical
+    requirements for a risk measure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let <math alttext="alpha element-of left-parenthesis 0 comma 1 right-parenthesis"><mrow><mi>α</mi>
+    <mo>∈</mo> <mo>(</mo> <mn>0</mn> <mo>,</mo> <mn>1</mn> <mo>)</mo></mrow></math>
+    be a fixed confidence level and ( <math alttext="omega"><mi>ω</mi></math> , <math
+    alttext="script upper F"><mi>ℱ</mi></math> , <math alttext="sans-serif upper P"><mi>𝖯</mi></math>
+    ) be a probability space in which <math alttext="omega"><mi>ω</mi></math> represents
+    a sample space, <math alttext="script upper F"><mi>ℱ</mi></math> denotes a subset
+    of sample space, and <math alttext="sans-serif upper P"><mi>𝖯</mi></math> is probability
+    measure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: To illustrate, say <math alttext="omega"><mi>ω</mi></math> is the set of all
+    possible outcomes in the event of tossing a coin, <math alttext="omega"><mi>ω</mi></math>
+    = {H, T}. <math alttext="script upper F"><mi>ℱ</mi></math> can be treated as tossing
+    a coin twice, <math alttext="script upper F equals 2 Superscript omega"><mrow><mi>ℱ</mi>
+    <mo>=</mo> <msup><mn>2</mn> <mi>ω</mi></msup></mrow></math> = <math alttext="2
+    squared"><msup><mn>2</mn> <mn>2</mn></msup></math> . Finally, probability measure,
+    <math alttext="sans-serif upper P"><mi>𝖯</mi></math> , is the odds of getting
+    tails (0.5).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here are the four axioms of a coherent risk measure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Translation invariance
+  prefs: []
+  type: TYPE_NORMAL
+- en: For all outcomes *Y* and a constant <math alttext="a element-of double-struck
+    upper R"><mrow><mi>a</mi> <mo>∈</mo> <mi>ℝ</mi></mrow></math> , we have
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper V a upper R left-parenthesis upper Y plus a
+    right-parenthesis equals upper V a upper R left-parenthesis upper Y right-parenthesis
+    plus a dollar-sign"><mrow><mi>V</mi> <mi>a</mi> <mi>R</mi> <mo>(</mo> <mi>Y</mi>
+    <mo>+</mo> <mi>a</mi> <mo>)</mo> <mo>=</mo> <mi>V</mi> <mi>a</mi> <mi>R</mi> <mo>(</mo>
+    <mi>Y</mi> <mo>)</mo> <mo>+</mo> <mi>a</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: which means that if a riskless amount *a* is added to the portfolio, it results
+    in lowering VaR by *a*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Subadditivity
+  prefs: []
+  type: TYPE_NORMAL
+- en: For all <math alttext="upper Y 1"><msub><mi>Y</mi> <mn>1</mn></msub></math>
+    and <math alttext="upper Y 2"><msub><mi>Y</mi> <mn>2</mn></msub></math> , we have
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper V a upper R left-parenthesis upper Y 1 plus
+    upper Y 2 right-parenthesis less-than-or-equal-to upper V a upper R left-parenthesis
+    upper Y 1 right-parenthesis plus upper V a upper R left-parenthesis upper Y 2
+    right-parenthesis dollar-sign"><mrow><mi>V</mi> <mi>a</mi> <mi>R</mi> <mrow><mo>(</mo>
+    <msub><mi>Y</mi> <mn>1</mn></msub> <mo>+</mo> <msub><mi>Y</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>≤</mo> <mi>V</mi> <mi>a</mi> <mi>R</mi> <mrow><mo>(</mo>
+    <msub><mi>Y</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>+</mo> <mi>V</mi> <mi>a</mi>
+    <mi>R</mi> <mrow><mo>(</mo> <msub><mi>Y</mi> <mn>2</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This axiom stresses the importance of diversification in risk management. Take
+    <math alttext="upper Y 1"><msub><mi>Y</mi> <mn>1</mn></msub></math> and <math
+    alttext="upper Y 2"><msub><mi>Y</mi> <mn>2</mn></msub></math> as two assets: if
+    they are both included in the portfolio, then that results in lower VaR than having
+    them separately. Let’s check whether VaR satisfies the subadditivity assumption:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Asset return for the first asset
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Asset return for the second asset
+  prefs: []
+  type: TYPE_NORMAL
+- en: It turns out that portfolio VaR is less that the sum of the individual VaRs,
+    which makes no sense due to the risk mitigation through diversification. More
+    elaborately, portfolio VaR should be lower than the sum of individual VaRs via
+    diversification, as diversification mitigates risk, which in turn reduces the
+    portfolio VaR.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Positive homogeneity
+  prefs: []
+  type: TYPE_NORMAL
+- en: For all outcomes *Y* and *a* > 0, we have
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper V a upper R left-parenthesis a upper Y right-parenthesis
+    equals a upper V a upper R left-parenthesis upper Y right-parenthesis dollar-sign"><mrow><mi>V</mi>
+    <mi>a</mi> <mi>R</mi> <mo>(</mo> <mi>a</mi> <mi>Y</mi> <mo>)</mo> <mo>=</mo> <mi>a</mi>
+    <mi>V</mi> <mi>a</mi> <mi>R</mi> <mo>(</mo> <mi>Y</mi> <mo>)</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: which implies that the risk and value of the portfolio go in tandem—that is,
+    if the value of a portfolio increases by an amount *a*, the risk goes up by *a*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Monotonicity
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For any two outcomes, <math alttext="upper Y 1"><msub><mi>Y</mi> <mn>1</mn></msub></math>
+    and <math alttext="upper Y 2"><msub><mi>Y</mi> <mn>2</mn></msub></math> , if <math
+    alttext="upper Y 1 less-than-or-equal-to upper Y 2"><mrow><msub><mi>Y</mi> <mn>1</mn></msub>
+    <mo>≤</mo> <msub><mi>Y</mi> <mn>2</mn></msub></mrow></math> , then:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper V a upper R left-parenthesis upper Y 2 right-parenthesis
+    less-than-or-equal-to upper V a upper R left-parenthesis upper Y 1 right-parenthesis
+    dollar-sign"><mrow><mi>V</mi> <mi>a</mi> <mi>R</mi> <mrow><mo>(</mo> <msub><mi>Y</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow> <mo>≤</mo> <mi>V</mi> <mi>a</mi> <mi>R</mi>
+    <mrow><mo>(</mo> <msub><mi>Y</mi> <mn>1</mn></msub> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: At first, this may seem puzzling, but it is intuitive in the sense that monotonicity
+    implies a lower VaR in the case of higher asset returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We now know that VaR is not a coherent risk measure. However, VaR is not the
+    only tool by which we estimate market risk. Expected shortfall is another, and
+    coherent, market risk measure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Expected Shortfall
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Unlike VaR, ES focuses on the tail of the distribution. More specifically, ES
+    enables us to take into account unexpected risks in the market. However, this
+    doesn’t mean that ES and VaR are two entirely different concepts. Rather, they
+    are related—that is, it is possible to express ES *using* VaR.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s assume that loss distribution is continuous; then ES can be mathematically
+    defined as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper E upper S Subscript alpha Baseline equals StartFraction
+    1 Over 1 minus alpha EndFraction integral Subscript alpha Superscript 1 Baseline
+    q Subscript u Baseline d u dollar-sign"><mrow><mi>E</mi> <msub><mi>S</mi> <mi>α</mi></msub>
+    <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>-</mo><mi>α</mi></mrow></mfrac>
+    <msubsup><mo>∫</mo> <mi>α</mi> <mn>1</mn></msubsup> <msub><mi>q</mi> <mi>u</mi></msub>
+    <mi>d</mi> <mi>u</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *q* denotes the quantile of the loss distribution. The ES formula suggests
+    that it is nothing but a probability weighted average of <math alttext="left-parenthesis
+    1 minus alpha right-parenthesis percent-sign"><mrow><mo>(</mo> <mn>1</mn> <mo>-</mo>
+    <mi>α</mi> <mo>)</mo> <mo>%</mo></mrow></math> of losses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s substitute <math alttext="q Subscript u"><msub><mi>q</mi> <mi>u</mi></msub></math>
+    and VaR, which gives us the following equation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper E upper S Subscript alpha Baseline equals StartFraction
+    1 Over 1 minus alpha EndFraction integral Subscript alpha Superscript 1 Baseline
+    upper V a upper R Subscript u Baseline d u dollar-sign"><mrow><mi>E</mi> <msub><mi>S</mi>
+    <mi>α</mi></msub> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>-</mo><mi>α</mi></mrow></mfrac>
+    <msubsup><mo>∫</mo> <mi>α</mi> <mn>1</mn></msubsup> <mi>V</mi> <mi>a</mi> <msub><mi>R</mi>
+    <mi>u</mi></msub> <mi>d</mi> <mi>u</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Alternatively, it is the mean of losses exceeding VaR:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper E upper S Subscript alpha Baseline equals sans-serif
+    upper E left-parenthesis upper L vertical-bar upper L greater-than upper V a upper
+    R Subscript alpha Baseline right-parenthesis dollar-sign"><mrow><mi>E</mi> <msub><mi>S</mi>
+    <mi>α</mi></msub> <mo>=</mo> <mi>𝖤</mi> <mrow><mo>(</mo> <mi>L</mi> <mo>|</mo>
+    <mi>L</mi> <mo>></mo> <mi>V</mi> <mi>a</mi> <msub><mi>R</mi> <mi>α</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Loss distribution can be continuous or discrete and, as you can imagine, if
+    it takes the discrete form, the ES is different such that
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper E upper S Subscript alpha Baseline equals StartFraction
+    1 Over 1 minus alpha EndFraction sigma-summation Underscript n equals 0 Overscript
+    1 Endscripts max left-parenthesis upper L Subscript n Baseline right-parenthesis
+    probability left-parenthesis upper L Subscript n Baseline right-parenthesis dollar-sign"><mrow><mi>E</mi>
+    <msub><mi>S</mi> <mi>α</mi></msub> <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>-</mo><mi>α</mi></mrow></mfrac>
+    <msubsup><mo>∑</mo> <mrow><mi>n</mi><mo>=</mo><mn>0</mn></mrow> <mn>1</mn></msubsup>
+    <mtext>max</mtext> <mrow><mo>(</mo> <msub><mi>L</mi> <mi>n</mi></msub> <mo>)</mo></mrow>
+    <mo form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>L</mi> <mi>n</mi></msub>
+    <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where <math alttext="m a x left-parenthesis upper L Subscript n Baseline right-parenthesis"><mrow><mi>m</mi>
+    <mi>a</mi> <mi>x</mi> <mo>(</mo> <msub><mi>L</mi> <mi>n</mi></msub> <mo>)</mo></mrow></math>
+    shows the highest <math alttext="n Superscript t h"><msup><mi>n</mi> <mrow><mi>t</mi><mi>h</mi></mrow></msup></math>
+    loss, and <math alttext="probability left-parenthesis upper L Subscript n Baseline
+    right-parenthesis"><mrow><mo form="prefix">Pr</mo> <mo>(</mo> <msub><mi>L</mi>
+    <mi>n</mi></msub> <mo>)</mo></mrow></math> indicates probability of <math alttext="n
+    Superscript t h"><msup><mi>n</mi> <mrow><mi>t</mi><mi>h</mi></mrow></msup></math>
+    highest loss. In code, we can formulate this as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the variance-covariance VaR
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the confidence interval, estimating the ES based on VaR
+  prefs: []
+  type: TYPE_NORMAL
+- en: ES can also be computed based on the historical observations. Like the historical
+    simulation VaR method, parametric assumption can be relaxed. To do that, the first
+    return (or loss) corresponding to the 95% is found, and then the mean of the observations
+    greater than the 95% gives us the result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is what we do in code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the 95% of the returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the ES based on the historical observations
+  prefs: []
+  type: TYPE_NORMAL
+- en: Thus far, we have seen how to model the expected shortfall in a traditional
+    way. Now, it is time to introduce an ML-based approach to further enhance the
+    estimation performance and reliability of the ES model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Liquidity-Augmented Expected Shortfall
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As discussed, ES provides us with a coherent risk measure to gauge market risk.
+    However, though we differentiate financial risks as market, credit, liquidity,
+    and operational risks, that does not necessarily mean that these risks are entirely
+    unrelated to one another. Rather, they are, to some extent, correlated. That is,
+    once a financial crisis hit the market, market risk surges along with the drawdown
+    on lines of credit, which in turn increases liquidity risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This fact is supported by Antoniades (2014, p. 6) stating that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Common pool of liquid assets is the resource constraint through which liquidity
+    risk can affect the supply of mortgage credit.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: During the financial crisis of 2007–2008 the primary source of stresses to bank
+    funding conditions arose from the funding illiquidity experienced in the markets
+    for wholesale funding.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Ignoring the liqudity dimension of risk may result in underestimating the market
+    risk. Therefore, augmenting ES with liquidity risk may make a more accurate and
+    reliable estimation. Well, it sounds appealing, but how can we find a proxy for
+    liquidity?
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the literature, bid-ask spread measures are commonly used for modeling liquidity.
+    Shortly, *bid-ask spread* is the difference between the highest available price
+    (bid price) that a buyer is willing to pay and the lowest price (ask price) that
+    a seller is willing to get. So bid-ask spread gives a tool to measure the transaction
+    cost.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '*Liquidity* can be defined as the ease of making a transaction in which assets
+    are sold in a very short time period without a significant impact on market price.
+    There are two main measures of liquidity:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market liquidity
+  prefs: []
+  type: TYPE_NORMAL
+- en: The ease with which an asset is traded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Funding liquidity
+  prefs: []
+  type: TYPE_NORMAL
+- en: The ease with which an investor can obtain funding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Liquidity and the risk arising from it will be discussed in greater detail in
+    [Chapter 7](ch07.html#chapter_7).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To the extent that bid-ask spread is a good indicator of transaction cost,
+    it is also a good proxy of liquidity in the sense that transaction cost is one
+    of the components of liquidity. Spreads can be defined various ways depending
+    on their focus. Here are the bid-ask spreads that we will use to incorporate liquidity
+    risk into the ES model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Effective spread
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign Effective spread equals 2 StartAbsoluteValue left-parenthesis
+    upper P Subscript t Baseline minus upper P Subscript m i d Baseline right-parenthesis
+    EndAbsoluteValue dollar-sign"><mrow><mtext>Effective</mtext> <mtext>spread</mtext>
+    <mo>=</mo> <mn>2</mn> <mo>|</mo> <mo>(</mo> <msub><mi>P</mi> <mi>t</mi></msub>
+    <mo>-</mo> <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub>
+    <mo>)</mo> <mo>|</mo></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="upper P Subscript t"><msub><mi>P</mi> <mi>t</mi></msub></math>
+    is the price of trade at time *t* and <math alttext="upper P Subscript m i d"><msub><mi>P</mi>
+    <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub></math> is the midpoint of the
+    bid-ask offer ( <math alttext="left-parenthesis upper P Subscript a s k Baseline
+    minus upper P Subscript b i d Baseline right-parenthesis slash 2"><mrow><mo>(</mo>
+    <msub><mi>P</mi> <mrow><mi>a</mi><mi>s</mi><mi>k</mi></mrow></msub> <mo>-</mo>
+    <msub><mi>P</mi> <mrow><mi>b</mi><mi>i</mi><mi>d</mi></mrow></msub> <mo>)</mo>
+    <mo>/</mo> <mn>2</mn></mrow></math> ) prevailing at the time of the <math alttext="t"><mi>t</mi></math>
+    .
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proportional quoted spread
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign Proportional quoted spread equals left-parenthesis
+    upper P Subscript a s k Baseline minus upper P Subscript b i d Baseline right-parenthesis
+    slash upper P Subscript m i d Baseline dollar-sign"><mrow><mtext>Proportional</mtext>
+    <mtext>quoted</mtext> <mtext>spread</mtext> <mo>=</mo> <mrow><mo>(</mo> <msub><mi>P</mi>
+    <mrow><mi>a</mi><mi>s</mi><mi>k</mi></mrow></msub> <mo>-</mo> <msub><mi>P</mi>
+    <mrow><mi>b</mi><mi>i</mi><mi>d</mi></mrow></msub> <mo>)</mo></mrow> <mo>/</mo>
+    <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="upper P Subscript a s k"><msub><mi>P</mi> <mrow><mi>a</mi><mi>s</mi><mi>k</mi></mrow></msub></math>
+    is the ask price and <math alttext="upper P Subscript b i d"><msub><mi>P</mi>
+    <mrow><mi>b</mi><mi>i</mi><mi>d</mi></mrow></msub></math> and <math alttext="upper
+    P Subscript m i d"><msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub></math>
+    are bid price and mid price, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Quoted spread
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign Quoted spread equals upper P Subscript a s k Baseline
+    minus upper P Subscript b i d Baseline dollar-sign"><mrow><mtext>Quoted</mtext>
+    <mtext>spread</mtext> <mo>=</mo> <msub><mi>P</mi> <mrow><mi>a</mi><mi>s</mi><mi>k</mi></mrow></msub>
+    <mo>-</mo> <msub><mi>P</mi> <mrow><mi>b</mi><mi>i</mi><mi>d</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proportional effective spread
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign Proportional effective spread equals 2 left-parenthesis
+    StartAbsoluteValue upper P Subscript t Baseline minus upper P Subscript m i d
+    Baseline EndAbsoluteValue right-parenthesis slash upper P Subscript m i d Baseline
+    dollar-sign"><mrow><mtext>Proportional</mtext> <mtext>effective</mtext> <mtext>spread</mtext>
+    <mo>=</mo> <mrow><mn>2</mn> <mo>(</mo> <mo>|</mo></mrow> <msub><mi>P</mi> <mi>t</mi></msub>
+    <mo>-</mo> <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub>
+    <mrow><mo>|</mo> <mo>)</mo></mrow> <mo>/</mo> <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Effective Cost
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'A buyer-initiated trade occurs when a trade is executed at a price above the
+    quoted mid price. Similarly, a seller-initiated trade occurs when a trade is executed
+    at a price below the quoted mid price. We can then describe the *effective cost*
+    as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math mode="display"><mrow><mtext>Effective</mtext> <mtext>cost</mtext> <mo>=</mo>
+    <mfenced close="" open="{" separators=""><mtable><mtr><mtd columnalign="left"><mrow><mrow><mo>(</mo>
+    <msub><mi>P</mi> <mi>t</mi></msub> <mo>-</mo> <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub>
+    <mo>)</mo></mrow> <mo>/</mo> <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub>
+    <mtext>for</mtext> <mtext>buyer-initiated</mtext></mrow></mtd></mtr> <mtr><mtd
+    columnalign="left"><mrow><mrow><mo>(</mo> <msub><mi>P</mi> <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub>
+    <mo>/</mo> <msub><mi>P</mi> <mi>t</mi></msub> <mo>)</mo></mrow> <mo>/</mo> <msub><mi>P</mi>
+    <mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msub> <mtext>for</mtext> <mtext>seller-initiated</mtext></mrow></mtd></mtr></mtable></mfenced></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now we need to find a way to incorporate these bid-ask spreads into the ES model
+    so that we are able to account for the liquidity risk as well as market risk.
+    We will employ two different methods to accomplish this task. The first method
+    we’ll use is to take the cross-sectional mean of the bid-ask spread, as suggested
+    by Chordia et al., (2000) and Pástor and Stambaugh (2003). The second method is
+    to apply principal component analysis (PCA) as proposed by Mancini et al. (2013).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The cross-sectional mean is nothing but a row-wise averaging of the bid-ask
+    spread. Using this method, we are able to generate a measure for market-wide liquidity.
+    The averaging formula is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper L Subscript upper M comma t Baseline equals
+    StartFraction 1 Over upper N EndFraction sigma-summation Underscript i Overscript
+    upper N Endscripts upper L Subscript i comma t dollar-sign"><mrow><msub><mi>L</mi>
+    <mrow><mi>M</mi><mo>,</mo><mi>t</mi></mrow></msub> <mo>=</mo> <mfrac><mn>1</mn>
+    <mi>N</mi></mfrac> <msubsup><mo>∑</mo> <mi>i</mi> <mi>N</mi></msubsup> <msub><mi>L</mi>
+    <mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where <math alttext="upper L Subscript upper M comma t"><msub><mi>L</mi> <mrow><mi>M</mi><mo>,</mo><mi>t</mi></mrow></msub></math>
+    is the market liquidity and <math alttext="upper L Subscript i comma t"><msub><mi>L</mi>
+    <mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub></math> is the individual liquidity
+    measure, namely bid-ask spread in our case. Then we can calculate
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper E upper S Subscript upper L Baseline equals
+    upper E upper S plus Liquidity cost dollar-sign"><mrow><mi>E</mi> <msub><mi>S</mi>
+    <mi>L</mi></msub> <mo>=</mo> <mi>E</mi> <mi>S</mi> <mo>+</mo> <mtext>Liquidity</mtext>
+    <mtext>cost</mtext></mrow></math><math alttext="dollar-sign upper E upper S Subscript
+    upper L Baseline equals StartFraction 1 Over 1 minus alpha EndFraction integral
+    Subscript alpha Superscript 1 Baseline upper V a upper R Subscript u Baseline
+    d u plus one-half upper P Subscript l a s t Baseline left-parenthesis mu plus
+    k sigma right-parenthesis dollar-sign"><mrow><mi>E</mi> <msub><mi>S</mi> <mi>L</mi></msub>
+    <mo>=</mo> <mfrac><mn>1</mn> <mrow><mn>1</mn><mo>-</mo><mi>α</mi></mrow></mfrac>
+    <msubsup><mo>∫</mo> <mi>α</mi> <mn>1</mn></msubsup> <mi>V</mi> <mi>a</mi> <msub><mi>R</mi>
+    <mi>u</mi></msub> <mi>d</mi> <mi>u</mi> <mo>+</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac>
+    <msub><mi>P</mi> <mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub>
+    <mrow><mo>(</mo> <mi>μ</mi> <mo>+</mo> <mi>k</mi> <mi>σ</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P Subscript l a s t"><msub><mi>P</mi> <mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub></math>
+    is the closing stock price
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="mu"><mi>μ</mi></math> is the mean of spread
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*k* is the scaling factor to accommodate fat tail'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: <math alttext="sigma"><mi>σ</mi></math> is the standard deviation of the spread
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'To convert these methods to code, we’ll do the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Importing the `bid_ask` data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the mid price
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining conditions for buyer- and seller-initiated trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the above-given condition holds, it returns 1, and it is appended into the
+    `buyer_seller_initiated` list
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_modeling_market_risk_CO11-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the above-given condition does not hold, it returns 0, and it is appended
+    into the `buyer_seller_initiated` list
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_modeling_market_risk_CO11-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the `buyer_seller_initiated` variable takes a value of 1, the corresponding
+    effective cost formula is run
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_modeling_market_risk_CO11-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the `buyer_seller_initiated` variable takes a value of 0, the corresponding
+    effective cost formula is run
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_modeling_market_risk_CO11-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the quoted, proportional quoted, effective, and proportional effective
+    spreads
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_modeling_market_risk_CO11-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Obtaining the correlation matrices and listing them column-wise
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_modeling_market_risk_CO11-13)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sorting out the correlation greater than 80%
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_modeling_market_risk_CO11-14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the cross-sectional mean of spread measures
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](assets/12.png)](#co_modeling_market_risk_CO11-15)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Obtaining the standard deviation of spreads
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![13](assets/13.png)](#co_modeling_market_risk_CO11-16)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Filtering the last observed stock prices from the `stocks` data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![14](assets/14.png)](#co_modeling_market_risk_CO11-17)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the liquidity-adjusted ES
+  prefs: []
+  type: TYPE_NORMAL
+- en: The PCA is a method used to reduce dimensionality. It is used to extract as
+    much information as possible using as few components as possible. If we were to
+    take [Figure 5-4](#scree_plot) as an example, out of five features, we might pick
+    two components. So we reduce dimensionality at the expense of losing information
+    because, depending on our chosen cut-off point, we pick the number of components
+    and lose as much information as how many components we left off.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To be more specific, the point at which [Figure 5-4](#scree_plot) gets flatter
+    implies that we retain less information and this is the cut-off point for the
+    PCA. However, it is not an easy call in that there is a trade-off between the
+    cutoff point and information retained. On the one hand, the higher the cut-off
+    point (the higher number of components we have), the more information we retain
+    (the less dimensionality we reduce). On the other hand, the lower the cut-off
+    point (the fewer number of components we have), the less information we retain
+    (the higher dimensionality we reduce). Getting a flatter scree plot is not the
+    only criteria for selecting a suitable number of components, so what would be
+    the possible criteria for picking the proper number of components? Here are the
+    possible cut-off criteria for PCA:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Greater than 80% explained variance
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: More than one eigenvalue
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The point at which the scree plot gets flatter
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Note
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Please note that liquidity adjustment can be applied to VaR, too. The same procedure
+    applies to VaR. Mathematically,
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="dollar-sign upper V a upper R Subscript upper L Baseline equals
+    sigma Subscript p Baseline StartRoot t EndRoot upper Z Subscript alpha Baseline
+    plus one-half upper P Subscript l a s t Baseline left-parenthesis mu plus k sigma
+    right-parenthesis dollar-sign"><mrow><mi>V</mi> <mi>a</mi> <msub><mi>R</mi> <mi>L</mi></msub>
+    <mo>=</mo> <msub><mi>σ</mi> <mi>p</mi></msub> <msqrt><mi>t</mi></msqrt> <msub><mi>Z</mi>
+    <mi>α</mi></msub> <mo>+</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac> <msub><mi>P</mi>
+    <mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub> <mrow><mo>(</mo>
+    <mi>μ</mi> <mo>+</mo> <mi>k</mi> <mi>σ</mi> <mo>)</mo></mrow></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: This application is left to the reader.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, dimensionality reduction is not the only thing that we can take advantage
+    of. In this example, we apply PCA for the benefit of getting the peculiar features
+    of liquidity, because PCA filters the most important information from the data
+    for us:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Standardizing the spread measures
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO12-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Identifying the number of principal components as 5
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Applying the principal component to the *spread_measures_scaled*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Observing the explained variance of the five principal components
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_modeling_market_risk_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Observing the cumulative explained variance of the five principal components
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_modeling_market_risk_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Drawing the *scree plot* ([Figure 5-4](#scree_plot))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_modeling_market_risk_CO12-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Based on scree plot, determining two to be the number of components to be used
+    in our PCA analysis
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_modeling_market_risk_CO12-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Drawing the *biplot* ([Figure 5-5](#bi_plot)) to observe the relationship between
+    components and features
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlfr 0504](assets/mlfr_0504.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-4\. PCA scree plot
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![mlfr 0505](assets/mlfr_0505.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5-5\. PCA biplot
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'We now have all the necessary information, and by incorporating this information,
+    we are able to calculate the liquidity-adjusted ES. Unsurprisingly, the following
+    code reveals that the liquidity-adjusted ES provides larger values compared to
+    the standard ES application. This implies that including a liquidity dimension
+    in our ES estimation results in higher risk:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_modeling_market_risk_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the liquidity part of the liquidity-adjusted ES formula for the
+    first principal component
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_modeling_market_risk_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating the liquidity part of the liquidity-adjusted ES formula for the
+    second principal component
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_modeling_market_risk_CO13-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculating cross-sectional mean of the two principal components
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_modeling_market_risk_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimating the liquidity-adjusted ES
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Market risk has been always under scrutiny as it gives us the extent to which
+    a company is vulnerable to risk emanating from market events. In a financial risk
+    management textbook, it is customary to find a VaR and an ES model, which are
+    two prominent and commonly applied models in theory and practice. In this chapter,
+    after providing an introduction to these models, models were introduced to revisit
+    and improve model estimation. To this end, we first tried to differentiate information
+    flows in the form of noise and signal, which is called denoising. Then, we employed
+    a denoised covariance matrix to improve the VaR estimation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, we discussed an ES model as a coherent risk measure. The method that we
+    applied to improve this model was a liquidity-based approach, by which we revisited
+    the ES model and augmented it using a liquidity component so that it was possible
+    to consider liquidity risk in estimating ES.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further improvements in market risk estimation are possible, but our aim here
+    is to give a general idea and the requisite tooling to provide a decent foundation
+    for ML-based market risk approaches. However, you can go further and apply different
+    tools. In the next chapter, we will discuss credit risk modeling as suggested
+    by regulatory bodies like the Basel Committee on Banking Supervision (BCBS) and
+    then enrich this model using an ML-based approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Articles cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Antoniades, Adonis. 2016\. “Liquidity Risk and the Credit Crunch of 2007-2008:
+    Evidence from Micro-Level Data on Mortgage Loan Applications.” *Journal of Financial
+    and Quantitative Analysis* 51 (6): 1795-1822.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Bzdok, D., N. Altman, and M. Krzywinski. 2018\. “Points of Significance: Statistics
+    Versus Machine Learning.” *Nature Methods* 15 (4): 233-234.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: BIS, Calculation of RWA for Market Risk, 2020.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Chordia, Tarun, Richard Roll, and Avanidhar Subrahmanyam. 2000\. “Commonality
+    in Liquidity.” Journal of Financial Economics 56 (1): 3-28.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Mancini, Loriano, Angelo Ranaldo, and Jan Wrampelmeyer. 2013\. “Liquidity in
+    the Foreign Exchange Market: Measurement, Commonality, and Risk Premiums.” *The
+    Journal of Finance* 68 (5): 1805-1841.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Pástor, Ľuboš, and Robert F. Stambaugh. 2003\. “Liquidity Risk and Expected
+    Stock Returns.” *Journal of Political Economy* 111 (3): 642-685.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Books cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Dowd, Kevin. 2003\. *An Introduction to Market Risk Measurement*. Hoboken,
+    NJ: John Wiley and Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Glasserman, Paul. *Monte Carlo Methods in Financial Engineering*. 2013\. Stochastic
+    Modelling and Applied Probability Series, Volume 53\. New York: Springer Science
+    & Business Media.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'M. López De Prado. 2020\. *Machine Learning for Asset Managers*. Cambridge:
+    Cambridge University Press.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch05.html#idm45737228731696-marker)) The details of the procedure can
+    be found at [Hudson and Thames](https://oreil.ly/gkQjX).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch05.html#idm45737230084272-marker)) See [NBER’s website](https://oreil.ly/07s71)
+    for further information.
+  prefs: []
+  type: TYPE_NORMAL

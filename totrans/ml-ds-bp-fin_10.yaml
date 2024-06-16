@@ -1,0 +1,1687 @@
+- en: 'Chapter 7\. Unsupervised Learning: Dimensionality Reduction'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In previous chapters, we used supervised learning techniques to build machine
+    learning models using data where the answer was already known (i.e., the class
+    labels were available in our input data). Now we will explore *unsupervised learning*,
+    where we draw inferences from datasets consisting of input data when the answer
+    is unknown. Unsupervised learning algorithms attempt to infer patterns from the
+    data without any knowledge of the output the data is meant to yield. Without requiring
+    labeled data, which can be time-consuming and impractical to create or acquire,
+    this family of models allows for easy use of larger datasets for analysis and
+    model development.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Dimensionality reduction* is a key technique within unsupervised learning.
+    It compresses the data by finding a smaller, different set of variables that capture
+    what matters most in the original features, while minimizing the loss of information.
+    Dimensionality reduction helps mitigate problems associated with high dimensionality
+    and permits the visualization of salient aspects of higher-dimensional data that
+    is otherwise difficult to explore.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the context of finance, where datasets are often large and contain many dimensions,
+    dimensionality reduction techniques prove to be quite practical and useful. Dimensionality
+    reduction enables us to reduce noise and redundancy in the dataset and find an
+    approximate version of the dataset using fewer features. With fewer variables
+    to consider, exploration and visualization of a dataset becomes more straightforward.
+    Dimensionality reduction techniques also enhance supervised learning–based models
+    by reducing the number of features or by finding new ones. Practitioners use these
+    dimensionality reduction techniques to allocate funds across asset classes and
+    individual investments, identify trading strategies and signals, implement portfolio
+    hedging and risk management, and develop instrument pricing models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, we will discuss fundamental dimensionality reduction techniques
+    and walk through three case studies in the areas of portfolio management, interest
+    rate modeling, and trading strategy development. The case studies are designed
+    to not only cover diverse topics from a finance standpoint but also highlight
+    multiple machine learning and data science concepts. The standardized template
+    containing the detailed implementation of modeling steps in Python and machine
+    learning and finance concepts can be used as a blueprint for any other dimensionality
+    reduction–based problem in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 1: Portfolio Management: Finding an Eigen Portfolio”](#CaseStudy1DR),
+    we use a dimensionality reduction algorithm to allocate capital into different
+    asset classes to maximize risk-adjusted returns. We also introduce a backtesting
+    framework to assess the performance of the portfolio we constructed.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 2: Yield Curve Construction and Interest Rate Modeling”](#CaseStudy2DR),
+    we use dimensionality reduction techniques to generate the typical movements of
+    a yield curve. This will illustrate how dimensionality reduction techniques can
+    be used for reducing the dimension of market variables across a number of asset
+    classes to promote faster and effective portfolio management, trading, hedging,
+    and risk management.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In [“Case Study 3: Bitcoin Trading: Enhancing Speed and Accuracy”](#CaseStudy3DR),
+    we use dimensionality reduction techniques for algorithmic trading. This case
+    study demonstrates data exploration in low dimension.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This Chapter’s Code Repository
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A Python-based master template for dimensionality reduction, along with the
+    Jupyter notebook for all the case studies in this chapter, is included in the
+    folder [*Chapter 7 - Unsup. Learning - Dimensionality Reduction*](https://oreil.ly/tI-KJ)
+    in the code repository for this book. To work through any dimensionality reduction–modeling
+    machine learning problems in Python involving the dimensionality reduction models
+    (such as PCA, SVD, Kernel PCA, or t-SNE) presented in this chapter, readers need
+    to modify the template slightly to align with their problem statement. All the
+    case studies presented in this chapter use the standard Python master template
+    with the standardized model development steps presented in [Chapter 3](ch03.xhtml#Chapter3).
+    For the dimensionality reduction case studies, steps 6 (i.e., model tuning) and
+    7 (i.e., finalizing the model) are relatively lighter compared to the supervised
+    learning models, so these steps have been merged with step 5\. For situations
+    in which steps are irrelevant, they have been skipped or combined with others
+    to make the flow of the case study more intuitive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dimensionality Reduction Techniques
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Dimensionality reduction represents the information in a given dataset more
+    efficiently by using fewer features. These techniques project data onto a lower
+    dimensional space by either discarding variation in the data that is not informative
+    or identifying a lower dimensional subspace on or near where the data resides.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are many types of dimensionality reduction techniques. In this chapter,
+    we will cover these most frequently used techniques for dimensionality reduction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Principal component analysis (PCA)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Kernel principal component analysis (KPCA)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: t-distributed stochastic neighbor embedding (t-SNE)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: After application of these dimensionality reduction techniques, the low-dimension
+    feature subspace can be a linear or nonlinear function of the corresponding high-dimensional
+    feature subspace. Hence, on a broad level these dimensionality reduction algorithms
+    can be classified as linear and nonlinear. Linear algorithms, such as PCA, force
+    the new variables to be linear combinations of the original features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Nonlinear algorithms such KPCA and t-SNE can capture more complex structures
+    in the data. However, given the infinite number of options, the algorithms still
+    need to make assumptions to arrive at a solution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Principal Component Analysis
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The idea of principal component analysis (PCA) is to reduce the dimensionality
+    of a dataset with a large number of variables, while retaining as much variance
+    in the data as possible. PCA allows us to understand whether there is a different
+    representation of the data that can explain a majority of the original data points.
+  prefs: []
+  type: TYPE_NORMAL
+- en: PCA finds a set of new variables that, through a linear combination, yield the
+    original variables. The new variables are called *principal components* (PCs).
+    These principal components are orthogonal (or independent) and can represent the
+    original data. The number of components is a hyperparameter of the PCA algorithm
+    that sets the target dimensionality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The PCA algorithm works by projecting the original data onto the principal component
+    space. It then identifies a sequence of principal components, each of which aligns
+    with the direction of maximum variance in the data (after accounting for variation
+    captured by previously computed components). The sequential optimization also
+    ensures that new components are not correlated with existing components. Thus
+    the resulting set constitutes an orthogonal basis for a vector space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The decline in the amount of variance of the original data explained by each
+    principal component reflects the extent of correlation among the original features.
+    The number of components that capture, for example, 95% of the original variation
+    relative to the total number of features provides an insight into the linearly
+    independent information of the original data. In order to understand how PCA works,
+    let’s consider the distribution of data shown in [Figure 7-1](#PCA1).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0701](Images/mlbf_0701.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-1\. PCA-1
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: PCA finds a new quadrant system (*y’* and *x’* axes) that is obtained from the
+    original through translation and rotation. It will move the center of the coordinate
+    system from the original point *(0, 0)* to the center of the distribution of data
+    points. It will then move the x-axis into the principal axis of variation, which
+    is the one with the most variation relative to data points (i.e., the direction
+    of maximum spread). Then it moves the other axis orthogonally to the principal
+    one, into a less important direction of variation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 7-2](#PCA2) shows an example of PCA in which two dimensions explain
+    nearly all the variance of the underlying data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0702](Images/mlbf_0702.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-2\. PCA-2
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: These new directions that contain the maximum variance are called principal
+    components and are orthogonal to each other by design.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are two approaches to finding the principal components: *Eigen decomposition*
+    and *singular value decomposition* (SVD).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Eigen decomposition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The steps of Eigen decomposition are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, a covariance matrix is created for the features.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Once the covariance matrix is computed, the *eigenvectors* of the covariance
+    matrix are calculated.^([1](ch07.xhtml#idm45174917893240)) These are the directions
+    of maximum variance.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The *eigenvalues* are then created. They define the magnitude of the principal
+    components.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: So, for *n* dimensions, there will be an *n* × *n* variance-covariance matrix,
+    and as a result, we will have an eigenvector of *n* values and *n* eigenvalues.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python’s sklearn library offers a powerful implementation of PCA. The `sklearn.decomposition.PCA`
+    function computes the desired number of principal components and projects the
+    data into the component space. The following code snippet illustrates how to create
+    two principal components from a dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Implementation`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: There are additional items, such as *factor loading*, that can be obtained using
+    the functions in the sklearn library. Their use will be demonstrated in the case
+    studies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Singular value decomposition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Singular value decomposition (SVD) is factorization of a matrix into three matrices
+    and is applicable to a more general case of *m* × *n* rectangular matrices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If *A* is an *m* × *n* matrix, then SVD can express the matrix as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper A equals upper U normal upper Sigma upper V Superscript
+    upper T" display="block"><mrow><mi>A</mi> <mo>=</mo> <mi>U</mi> <mi>Σ</mi> <msup><mi>V</mi>
+    <mi>T</mi></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *A* is an *m* × *n* matrix, *U* is an *(m* × *m)* orthogonal matrix, *Σ*
+    is an *(m* × *n)* nonnegative rectangular diagonal matrix, and *V* is an *(n*
+    × *n)* orthogonal matrix. SVD of a given matrix tells us exactly how we can decompose
+    the matrix. *Σ* is a diagonal matrix with *m* diagonal values called *singular
+    values*. Their magnitude indicates how significant they are to preserving the
+    information of the original data. *V* contains the principal components as column
+    vectors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As shown above, both Eigen decomposition and SVD tell us that using PCA is effectively
+    looking at the initial data from a different angle. Both will always give the
+    same answer; however, SVD can be much more efficient than Eigen decomposition,
+    as it is able to handle sparse matrices (those which contain very few nonzero
+    elements). In addition, SVD yields better numerical stability, especially when
+    some of the features are strongly correlated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Truncated SVD* is a variant of SVD that computes only the largest singular
+    values, where the number of computes is a user-specified parameter. This method
+    is different from regular SVD in that it produces a factorization where the number
+    of columns is equal to the specified truncation. For example, given an *n* × *n*
+    matrix, SVD will produce matrices with *n* columns, whereas truncated SVD will
+    produce matrices with a specified number of columns that may be less than *n*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Implementation`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: In terms of the weaknesses of the PCA technique, although it is very effective
+    in reducing the number of dimensions, the resulting principal components may be
+    less interpretable than the original features. Additionally, the results may be
+    sensitive to the selected number of principal components. For example, too few
+    principal components may miss some information compared to the original list of
+    features. Also, PCA may not work well if the data is strongly nonlinear.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Kernel Principal Component Analysis
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A main limitation of PCA is that it only applies linear transformations. Kernel
+    principal component analysis (KPCA) extends PCA to handle nonlinearity. It first
+    maps the original data to some nonlinear feature space (usually one of higher
+    dimension). Then it applies PCA to extract the principal components in that space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A simple example of when KPCA is applicable is shown in [Figure 7-3](#KPCA).
+    Linear transformations are suitable for the blue and red data points on the left-hand
+    plot. However, if all dots are arranged as per the graph on the right, the result
+    is not linearly separable. We would then need to apply KPCA to separate the components.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 0703](Images/mlbf_0703.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-3\. Kernel PCA
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '`Implementation`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: In the Python code, we specify `kernel='rbf'`, which is the [radial basis function
+    kernel](https://oreil.ly/zCo-X). This is commonly used as a kernel in machine
+    learning techniques, such as in SVMs (see [Chapter 4](ch04.xhtml#Chapter4)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using KPCA, component separation becomes easier in a higher dimensional space,
+    as mapping into a higher dimensional space often provides greater classification
+    power.
+  prefs: []
+  type: TYPE_NORMAL
+- en: t-distributed Stochastic Neighbor Embedding
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: t-distributed stochastic neighbor embedding (t-SNE) is a dimensionality reduction
+    algorithm that reduces the dimensions by modeling the probability distribution
+    of neighbors around each point. Here, the term *neighbors* refers to the set of
+    points closest to a given point. The algorithm emphasizes keeping similar points
+    together in low dimensions as opposed to maintaining the distance between points
+    that are apart in high dimensions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithm starts by calculating the probability of similarity of data points
+    in corresponding high and low dimensional space. The similarity of points is calculated
+    as the conditional probability that a point *A* would choose point *B* as its
+    neighbor if neighbors were picked in proportion to their probability density under
+    a normal distribution centered at *A*. The algorithm then tries to minimize the
+    difference between these conditional probabilities (or similarities) in the high
+    and low dimensional spaces for a perfect representation of data points in the
+    low dimensional space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Implementation`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: An implementation of t-SNE is shown in the third case study presented in this
+    chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Case Study 1: Portfolio Management: Finding an Eigen Portfolio'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A primary objective of portfolio management is to allocate capital into different
+    asset classes to maximize risk-adjusted returns. Mean-variance portfolio optimization
+    is the most commonly used technique for asset allocation. This method requires
+    an estimated covariance matrix and expected returns of the assets considered.
+    However, the erratic nature of financial returns leads to estimation errors in
+    these inputs, especially when the sample size of returns is insufficient compared
+    to the number of assets being allocated. These errors greatly jeopardize the optimality
+    of the resulting portfolios, leading to poor and unstable outcomes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dimensionality reduction is a technique we can use to address this issue. Using
+    PCA, we can take an *n* × *n* covariance matrix of our assets and create a set
+    of *n* linearly uncorrelated principal portfolios (sometimes referred to in literature
+    as an *eigen portfolio*) made up of our assets and their corresponding variances.
+    The principal components of the covariance matrix capture most of the covariation
+    among the assets and are mutually uncorrelated. Moreover, we can use standardized
+    principal components as the portfolio weights, with the statistical guarantee
+    that the returns from these principal portfolios are linearly uncorrelated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By the end of this case study, readers will be familiar with a general approach
+    to finding an eigen portfolio for asset allocation, from understanding concepts
+    of PCA to backtesting different principal components.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Using Dimensionality Reduction for Asset Allocation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Our goal in this case study is to maximize the risk-adjusted returns of an equity
+    portfolio using PCA on a dataset of stock returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The dataset used for this case study is the Dow Jones Industrial Average (DJIA)
+    index and its respective 30 stocks. The return data used will be from the year
+    2000 onwards and can be downloaded from Yahoo Finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We will also compare the performance of our hypothetical portfolios against
+    a benchmark and backtest the model to evaluate the effectiveness of the approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The list of the libraries used for data loading, data analysis, data preparation,
+    model evaluation, and model tuning are shown below. The details of most of these
+    packages and functions can be found in Chapters [2](ch02.xhtml#Chapter2) and [4](ch04.xhtml#Chapter4).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Packages for dimensionality reduction`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Packages for data processing and visualization`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We import the dataframe containing the adjusted closing prices for all the
+    companies in the DJIA index:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Next, we inspect the dataset.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1\. Descriptive statistics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let’s look at the shape of the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: The data is comprised of 30 columns and 4,804 rows containing the daily closing
+    prices of the 30 stocks in the index since 2000.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2\. Data visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The first thing we must do is gather a basic sense of our data. Let us take
+    a look at the return correlations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: There is a significant positive correlation between the daily returns. The plot
+    (full-size version available on [GitHub](https://oreil.ly/yFwu-)) also indicates
+    that the information embedded in the data may be represented by fewer variables
+    (i.e., something smaller than the 30 dimensions we have now). We will perform
+    another detailed look at the data after implementing dimensionality reduction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in01](Images/mlbf_07in01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 4\. Data preparation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We prepare the data for modeling in the following sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Data cleaning
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'First, we check for NAs in the rows and either drop them or fill them with
+    the mean of the column:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Some stocks were added to the index after our start date. To ensure proper
+    analysis, we will drop those with more than 30% missing values. Two stocks fit
+    this criteria—Dow Chemicals and Visa:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We end up with return data for 28 companies and an additional one for the DJIA
+    index. Now we fill the NAs with the mean of the columns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 4.2\. Data transformation
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In addition to handling the missing values, we also want to standardize the
+    dataset features onto a unit scale (mean = 0 and variance = 1). All the variables
+    should be on the same scale before applying PCA; otherwise, a feature with large
+    values will dominate the result. We use `StandardScaler` in sklearn to standardize
+    the dataset, as shown below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: Overall, cleaning and standardizing the data is important in order to create
+    a meaningful and reliable dataset to be used in dimensionality reduction without
+    error.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let us look at the returns of one of the stocks from the cleaned and standardized
+    dataset:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in02](Images/mlbf_07in02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 5\. Evaluate algorithms and models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 5.1\. Train-test split
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'The portfolio is divided into training and test sets to perform the analysis
+    regarding the best portfolio and to perform backtesting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '5.2\. Model evaluation: applying principal component analysis'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'As the next step, we create a function to perform PCA using the sklearn library.
+    This function generates the principal components from the data that will be used
+    for further analysis:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.2.1\. Explained variance using PCA
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: In this step, we look at the variance explained using PCA. The decline in the
+    amount of variance of the original data explained by each principal component
+    reflects the extent of correlation among the original features. The first principal
+    component captures the most variance in the original data, the second component
+    is a representation of the second highest variance, and so on. The eigenvectors
+    with the lowest eigenvalues describe the least amount of variation within the
+    dataset. Therefore, these values can be dropped.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following charts show the number of principal components and the variance
+    explained by each.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in03](Images/mlbf_07in03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We find that the most important factor explains around 40% of the daily return
+    variation. This dominant principal component is usually interpreted as the “market”
+    factor. We will discuss the interpretation of this and the other factors when
+    looking at the portfolio weights.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The plot on the right shows the cumulative explained variance and indicates
+    that around ten factors explain 73% of the variance in returns of the 28 stocks
+    analyzed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.2\. Looking at portfolio weights
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we look more closely at the individual principal components.
+    These may be less interpretable than the original features. However, we can look
+    at the weights of the factors on each principal component to assess any intuitive
+    themes relative to the 28 stocks. We construct five portfolios, defining the weights
+    of each stock as each of the first five principal components. We then create a
+    scatterplot that visualizes an organized descending plot with the respective weight
+    of every company at the current chosen principal component:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Given that scale for the plots are the same, we can also look at the heatmap
+    as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in04](Images/mlbf_07in04.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in05](Images/mlbf_07in05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The heatmap and barplots show the contribution of different stocks in each eigenvector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Traditionally, the intuition behind each principal portfolio is that it represents
+    some sort of independent risk factor. The manifestation of those risk factors
+    depends on the assets in the portfolio. In our case study, the assets are all
+    U.S. domestic equities. The principal portfolio with the largest variance is typically
+    a systematic risk factor (i.e., “market” factor). Looking at the first principal
+    component (*Portfolio 0*), we see that the weights are distributed homogeneously
+    across the stocks. This nearly equal weighted portfolio explains 40% of the variance
+    in the index and is a fair representation of a systematic risk factor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rest of the eigen portfolios typically correspond to sector or industry
+    factors. For example, *Portfolio 1* assigns a high weight to JNJ and MRK, which
+    are stocks from the health care sector. Similarly, *Portfolio 3* has high weights
+    on technology and electronics companies, such AAPL, MSFT, and IBM.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the asset universe for our portfolio is expanded to include broad, global
+    investments, we may identify factors for international equity risk, interest rate
+    risk, commodity exposure, geographic risk, and many others.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next step, we find the best eigen portfolio.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.3\. Finding the best eigen portfolio
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: To determine the best eigen portfolio, we use the *Sharpe ratio*. This is an
+    assessment of risk-adjusted performance that explains the annualized returns against
+    the annualized volatility of a portfolio. A high Sharpe ratio explains higher
+    returns and/or lower volatility for the specified portfolio. The annualized Sharpe
+    ratio is computed by dividing the annualized returns against the annualized volatility.
+    For annualized return we apply the geometric average of all the returns in respect
+    to the periods per year (days of operations in the exchange in a year). Annualized
+    volatility is computed by taking the standard deviation of the returns and multiplying
+    it by the square root of the periods per year.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code computes the Sharpe ratio of a portfolio:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We construct a loop to compute the principal component weights for each eigen
+    portfolio. Then it uses the Sharpe ratio function to look for the portfolio with
+    the highest Sharpe ratio. Once we know which portfolio has the highest Sharpe
+    ratio, we can visualize its performance against the index for comparison:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 07in06](Images/mlbf_07in06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'As shown by the results above, *Portfolio 0* is the best performing one, with
+    the highest return *and* the lowest volatility. Let us look at the composition
+    of this portfolio:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in07](Images/mlbf_07in07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Recall that this is the portfolio that explains 40% of the variance and represents
+    the systematic risk factor. Looking at the portfolio weights (in percentages in
+    the y-axis), they do not vary much and are in the range of 2.7% to 4.5% across
+    all stocks. However, the weights seem to be higher in the financial sector, and
+    stocks such as AXP, JPM, and GS have higher-than-average weights.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.4\. Backtesting the eigen portfolios
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We will now try to backtest this algorithm on the test set. We will look at
+    a few of the top performers and the worst performer. For the top performers we
+    look at the 3rd- and 4th-ranked eigen portfolios (*Portfolios 5* and *1*), while
+    the worst performer reviewed was ranked 19th (*Portfolio 14*):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 07in08](Images/mlbf_07in08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 07in09](Images/mlbf_07in09.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![mlbf 07in10](Images/mlbf_07in10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: As shown in the preceding charts, the eigen portfolio return of the top portfolios
+    outperforms the equally weighted index. The eigen portfolio ranked 19th underperformed
+    the market significantly in the test set. The outperformance and underperformance
+    are attributed to the weights of the stocks or sectors in the eigen portfolio.
+    We can drill down further to understand the individual drivers of each portfolio.
+    For example, *Portfolio 1* assigns high weight to several stocks in the health
+    care sector, as discussed previously. This sector saw a significant increase in
+    2017 onwards, which is reflected in the chart for *Eigen Portfolio 1*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given that these eigen portfolios are independent, they also provide diversification
+    opportunities. As such, we can invest across these uncorrelated eigen portfolios,
+    providing other potential portfolio management benefits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we applied dimensionality reduction techniques in the context
+    of portfolio management, using eigenvalues and eigenvectors from PCA to perform
+    asset allocation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We demonstrated that, while some interpretability is lost, the initution behind
+    the resulting portfolios can be matched to risk factors. In this example, the
+    first eigen portfolio represented a systematic risk factor, while others exhibited
+    sector or industry concentration.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Through backtesting, we found that the portfolio with the best result on the
+    training set also achieved the strongest performance on the test set. Several
+    of the portfolios outperformed the index based on the Sharpe ratio, the risk-adjusted
+    performance metric used in this exercise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, we found that using PCA and analyzing eigen portfolios can yield a
+    robust methodology for asset allocation and portfolio management.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 2: Yield Curve Construction and Interest Rate Modeling'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A number of problems in portfolio management, trading, and risk management require
+    a deep understanding and modeling of yield curves.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A yield curve represents interest rates, or yields, across a range of maturities,
+    usually depicted in a line graph, as discussed in [“Case Study 4: Yield Curve
+    Prediction”](ch05.xhtml#CaseStudy4SR) in [Chapter 5](ch05.xhtml#Chapter5). Yield
+    curve illustrates the “price of funds” at a given point in time and, due to the
+    time value of money, often shows interest rates rising as a function of maturity.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Researchers in finance have studied the yield curve and found that shifts or
+    changes in the shape of the yield curve are attributable to a few unobservable
+    factors. Specifically, empirical studies reveal that more than 99% of the movement
+    of various U.S. Treasury bond yields are captured by three factors, which are
+    often referred to as level, slope, and curvature. The names describe how each
+    influences the yield curve shape in response to a shock. A level shock changes
+    the interest rates of all maturities by almost identical amounts, inducing a *parallel
+    shift* that changes the level of the entire curve up or down. A shock to the slope
+    factor changes the difference in short-term and long-term rates. For instance,
+    when long-term rates increase by a larger amount than do short-term rates, it
+    results in a curve that becomes steeper (i.e., visually, the curve becomes more
+    upward sloping). Changes in the short- and long-term rates can also produce a
+    flatter yield curve. The main effects of the shock to the curvature factor focuses
+    on medium-term interest rates, leading to hump, twist, or U-shaped characteristics.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dimensionality reduction breaks down the movement of the yield curve into these
+    three factors. Reducing the yield curve into fewer components means we can focus
+    on a few intuitive dimensions in the yield curve. Traders and risk managers use
+    this technique to condense the curve in risk factors for hedging the interest
+    rate risk. Similarly, portfolio managers then have fewer dimensions to analyze
+    when allocating funds. Interest rate structurers use this technique to model the
+    yield curve and analyze its shape. Overall, it promotes faster and more effective
+    portfolio management, trading, hedging, and risk management.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this case study, we use PCA to generate typical movements of a yield curve
+    and show that the first three principal components correspond to a yield curve’s
+    level, slope, and curvature, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Using Dimensionality Reduction to Generate a Yield Curve
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Our goal in this case study is to use dimensionality reduction techniques to
+    generate the typical movements of a yield curve.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The data used for this case study is obtained from [Quandl](https://www.quandl.com),
+    a premier source for financial, economic, and alternative datasets. We use the
+    data of 11 tenors (or maturities), from 1-month to 30-years, of Treasury curves.
+    These are of daily frequency and are available from 1960 onwards.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The loading of Python packages is similar to the previous dimensionality reduction
+    case study. Please refer to the Jupyter notebook of this case study for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2\. Loading the data
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In the first step, we load the data of different tenors of the Treasury curves
+    from Quandl:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Here, we will take our first look at the data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1\. Descriptive statistics
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In the next step we look at the shape of the dataset:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: The dataset has 14,420 rows and has the data of 11 tenors of the Treasury curve
+    for more than 50 years.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2\. Data visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us look at the movement of the rates from the downloaded data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in11](Images/mlbf_07in11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'In the next step we look at the correlations across tenors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in12](Images/mlbf_07in12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: There is a significant positive correlation between the tenors, as you can see
+    in the output (full-size version available on [GitHub](https://oreil.ly/hjQG7)).
+    This is an indication that reducing the number dimensions may be useful when modeling
+    with the data. Additional visualizations of the data will be performed after implementing
+    the dimensionality reduction models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Data preparation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Data cleaning and transformation are a necessary modeling prerequisite in this
+    case study.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Data cleaning
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Here, we check for NAs in the data and either drop them or fill them with the
+    mean of the column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.2\. Data transformation
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We standardize the variables on the same scale before applying PCA in order
+    to prevent a feature with large values from dominating the result. We use the
+    `StandardScaler` function in sklearn to standardize the dataset’s features onto
+    a unit scale (mean = 0 and variance = 1):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Visualizing the standardized dataset`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in13](Images/mlbf_07in13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 5\. Evaluate algorithms and models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 5.2\. Model evaluation—applying principal component analysis
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'As a next step, we create a function to perform PCA using the sklearn library.
+    This function generates the principal components from the data that will be used
+    for further analysis:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.2.1\. Explained variance using PCA
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  | Explained Variance_Top 5 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0 | 84.36% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 98.44% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2 | 99.53% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 3 | 99.83% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 4 | 99.94% |'
+  prefs: []
+  type: TYPE_TB
+- en: '![mlbf 07in14](Images/mlbf_07in14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The first three principal components account for 84.4%, 14.08%, and 1.09% of
+    variance, respectively. Cumulatively, they describe over 99.5% of all movement
+    in the data. This is an incredibly efficient reduction in dimensions. Recall that
+    in the first case study, we saw the first 10 components account for only 73% of
+    variance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.2\. Intuition behind the principal components
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Ideally, we can have some intuition and interpretation of these principal components.
+    To explore this, we first have a function to determine the weights of each principal
+    component, and then perform the visualization of the principal components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in15](Images/mlbf_07in15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in16](Images/mlbf_07in16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'By plotting the components of the eigenvectors we can make the following interpretation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Principal Component 1
+  prefs: []
+  type: TYPE_NORMAL
+- en: This eigenvector has all positive values, with all tenors weighted in the same
+    direction. This means that the first principal component reflects movements that
+    cause all maturities to move in the same direction, corresponding to *directional
+    movements* in the yield curve. These are movements that shift the entire yield
+    curve up or down.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Principal Component 2
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second eigenvector has the first half of the components negative and the
+    second half positive. Treasury rates on the short end (long end) of the curve
+    are weighted positively (negatively). This means that the second principal component
+    reflects movements that cause the short end to go in one direction and the long
+    end in the other. Consequently, it represents *slope movements* in the yield curve.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Principal Component 3
+  prefs: []
+  type: TYPE_NORMAL
+- en: The third eigenvector has the first third of the components negative, the second
+    third positive, and the last third negative. This means that the third principal
+    component reflects movements that cause the short and long end to go in one direction,
+    and the middle to go in the other, resulting in *curvature movements* of the yield
+    curve.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.3\. Reconstructing the curve using principal components
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'One of the key features of PCA is the ability to reconstruct the initial dataset
+    using the outputs of PCA. Using simple matrix reconstruction, we can generate
+    a near exact replica of the initial data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Mechanically, PCA is just a matrix multiplication:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mi>Y</mi><mo>=</mo><mi>X</mi><mi>W</mi></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'where *Y* is the principal components, *X* is input data, and *W* is a matrix
+    of coefficients, which we can use to recover the original matrix as per the equation
+    below:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math display="block"><mi>X</mi><mo>=</mo><mi>Y</mi><mi>W</mi><mi>′</mi></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: where *W′* is the inverse of the matrix of coefficients *W*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: This figure shows the replicated Treasury rate chart and demonstrates that,
+    using just the first three principal components, we are able to replicate the
+    original chart. Despite reducing the data from 11 dimensions to three, we still
+    retain more than 99% of the information and can reproduce the original data easily.
+    Additionally, we also have intuition around these three drivers of yield curve
+    moments. Reducing the yield curve into fewer components means practictioners can
+    focus on fewer factors that influence interest rates. For example, in order to
+    hedge a portfolio, it may be sufficient to protect the portfolio against moves
+    in the first three principal components only.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in17](Images/mlbf_07in17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we introduced dimensionality reduction to break down the
+    Treasury rate curve into fewer components. We saw that the principal components
+    are quite intuitive for this case study. The first three principal components
+    explain more than 99.5% of the variation and represent directional movements,
+    slope movements, and curvature movements, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By using principal component analysis, analyzing the eigenvectors, and understanding
+    the intuition behind them, we demonstrated how using dimensionality reduction
+    led to fewer intuitive dimensions in the yield curve. Such dimensionality reduction
+    of the yield curve can potentially lead to faster and more effective portfolio
+    management, trading, hedging, and risk management.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Case Study 3: Bitcoin Trading: Enhancing Speed and Accuracy'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As trading becomes more automated, traders will continue to seek to use as many
+    features and technical indicators as they can to make their strategies more accurate
+    and efficient. One of the many challenges in this is that adding more variables
+    leads to ever more complexity, making it increasingly difficult to arrive at solid
+    conclusions. Using dimensionality reduction techniques, we can compress many features
+    and technical indicators into a few logical collections, while still maintaining
+    a significant amount of the variance of the original data. This helps speed up
+    model training and tuning. Additionally, it helps prevent overfitting by getting
+    rid of correlated variables, which can ultimately cause more harm than good. Dimensionality
+    reduction also enhances exploration and visualization of a dataset to understand
+    grouping or relationships, an important task when building and continuously monitoring
+    trading strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this case study, we will use dimensionality reduction to enhance [“Case
+    Study 3: Bitcoin Trading Strategy”](ch06.xhtml#CaseStudy3SC) presented in [Chapter 6](ch06.xhtml#Chapter6).
+    In this case study, we design a trading strategy for bitcoin that considers the
+    relationship between the short-term and long-term prices to predict a buy or sell
+    signal. We create several new intuitive, technical indicator features, including
+    trend, volume, volatility, and momentum. We apply dimensionality reduction techniques
+    on these features in order to achieve better results.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_top.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Blueprint for Using Dimensionality Reduction to Enhance a Trading Strategy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 1\. Problem definition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Our goal in this case study is to use dimensionality reduction techniques to
+    enhance an algorithmic trading strategy. The data and the variables used in this
+    case study are the same as in [“Case Study 3: Bitcoin Trading Strategy”](ch06.xhtml#CaseStudy3SC).
+    For reference, we are using intraday bitcoin price data, volume, and weighted
+    bitcoin price from January 2012 to October 2017\. Steps 3 and 4 presented in this
+    case study use the same steps as the case study in [Chapter 6](ch06.xhtml#Chapter6).
+    As such, these steps are condensed in this case study to avoid repetition.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2\. Getting started—loading the data and Python packages
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 2.1\. Loading the Python packages
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The Python packages used for this case study are the same as those presented
+    in the previous two case studies in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3\. Exploratory data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Refer to [“3\. Exploratory data analysis”](ch06.xhtml#data_analysis_ch6) for
+    more details of this step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4\. Data preparation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We prepare the data for modeling in the following sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1\. Data cleaning
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We clean the data by filling the NAs with the last available values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: 4.2\. Preparing the data for classification
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We attach the following label to each movement: 1 if the short-term price increases
+    compared to the long-term price; 0 if the short-term price decreases compared
+    to the long-term price. This label is assigned to a variable we will call *signal*,
+    which is the predicted variable for this case study. Let us look at the data for
+    prediction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in18](Images/mlbf_07in18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The dataset contains the signal column along with all other columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3\. Feature engineering
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we construct a dataset that contains the predictors that will
+    be used to make the signal prediction. Using the bitcoin intraday price data,
+    including daily open, high, low, close, and volume, we compute the following technical
+    indicators:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Moving Average
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Stochastic Oscillator %K and %D
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Relative Strength Index (RSI)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Rate Of Change (ROC)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Momentum (MOM)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The code for the construction of all of the indicators, along with their descriptions,
+    is presented in [Chapter 6](ch06.xhtml#Chapter6). The final dataset and the columns
+    used are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in19](Images/mlbf_07in19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 4.4\. Data visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us look at the distribution of the predicted variable:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in20](Images/mlbf_07in20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The predicted signal is “buy” 52.9% of the time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5\. Evaluate algorithms and models
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Next, we perform dimensionality reduction and evaluate the models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1\. Train-test split
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we split the dataset into training and test sets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We standardize the variables on the same scale before applying dimensionality
+    reduction. Data standardization is performed using the following Python code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in21](Images/mlbf_07in21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 5.2\. Singular value decomposition (feature reduction)
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Here we will use SVD to perform PCA. Specifically, we are using the `TruncatedSVD`
+    method in the sklearn package to transform the full dataset into a representation
+    using the top five components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in22](Images/mlbf_07in22.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Following the computation, we preserve 92.75% of the variance by using just
+    five components rather than the full 25+ original features. This is a tremendously
+    useful compression for the analysis and iterations of the model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For convenience, we will create a Python dataframe specifically for these top
+    five components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|  | c0 | c1 | c2 | c3 | c4 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2834071 | –2.252 | 1.920 | 0.538 | –0.019 | –0.967 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2836517 | 5.303 | –1.689 | –0.678 | 0.473 | 0.643 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2833945 | –2.315 | –0.042 | 1.697 | –1.704 | 1.672 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2835048 | –0.977 | 0.782 | 3.706 | –0.697 | 0.057 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 2838804 | 2.115 | –1.915 | 0.475 | –0.174 | –0.299 |'
+  prefs: []
+  type: TYPE_TB
+- en: 5.2.1\. Basic visualization of reduced features
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Let us visualize the compressed dataset:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: Pairs-plots
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Pairs-plots are a simple representation of a set of 2D scatterplots, with each
+    component plotted against every other component. The data points are colored according
+    to their signal classification:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE58]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in23](Images/mlbf_07in23.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We can see that there is clear separation of the colored dots (full color version
+    available on [GitHub](https://oreil.ly/GWfug)), meaning that data points from
+    the same signal tend to cluster together. The separation is more distinct for
+    the first components, with the characteristics of signal distributions growing
+    more similar as you progress from the first to the fifth component. That said,
+    the plot provides support for using all five components in our model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3\. t-SNE visualization
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we implement t-SNE and look at the related visualization. We
+    will use the basic implementation available in Scikit-learn:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE59]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![mlbf 07in24](Images/mlbf_07in24.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The plot shows us that there is a good degree of clustering for the trading
+    signal. There is some overlap of the long and short signals, but they can be distinguished
+    quite well using the reduced number of features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.4\. Compare models with and without dimensionality reduction
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'In this step, we analyze the impact of the dimensionality reduction on the
+    classification and the impact on the overall accuracy and computation time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE60]'
+  prefs: []
+  type: TYPE_PRE
+- en: 5.4.1\. Models
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'We first look at the time taken by the model without dimensionality reduction,
+    where we have all the technical indicators:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE61]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE62]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The total time taken without dimensionality reduction is around eight seconds.
+    Let us look at the time it takes with dimensionality reduction, when only the
+    five principal components from the truncated SVD are used:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE63]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE64]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The total time taken with dimensionality reduction is around two seconds—four
+    times a reduction in time, which is a significant improvement. Let us investigate
+    whether there is any decline in the accuracy when using the condensed dataset:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE65]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Output`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE66]'
+  prefs: []
+  type: TYPE_PRE
+- en: Accuracy declines roughly 5%, from 93.6% to 88.7%. The improvement in speed
+    has to be balanced against this loss in accuracy. Whether the loss in accuracy
+    is acceptable likely depends on the problem. If this is a model that needs to
+    be recalibrated very frequently, then a lower computation time will be essential,
+    especially when handling large, high-velocity datasets. The improvement in the
+    computation time does have other benefits, especially in the early stages of trading
+    strategy development. It enables us to test a greater number of features (or technical
+    indicators) in less time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusion
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this case study, we demonstrated the efficiency of dimensionality reduction
+    and principal components analysis in reducing the number of dimensions in the
+    context of a trading strategy. Through dimensionality reduction, we achieved a
+    commensurate accuracy rate with a fourfold improvement in the modeling speed.
+    In trading strategy development involving expansive datasets, such speed enhancements
+    can lead to improvements for the entire process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We demonstrated that both SVD and t-SNE yield reduced datasets that can easily
+    be visualized for evaluating trading signal data. This allowed us to distinguish
+    the long and short signals of this trading strategy in ways not possible with
+    the original number of features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](Images/bracket_bottom.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Chapter Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The case studies presented in this chapter focused on understanding the concepts
+    of the different dimensionality reduction methods, developing intuition around
+    the principal components, and visualizing the condensed datasets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overall, the concepts in Python, machine learning, and finance presented in
+    this chapter through the case studies can used as a blueprint for any other dimensionality
+    reduction–based problem in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next chapter, we explore concepts and case studies for another type of
+    unsupervised learning—clustering.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exercises
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Using dimensionality reduction, extract the different factors from the stocks
+    within a different index and use them to build a trading strategy.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Pick any of the regression-based case studies in [Chapter 5](ch05.xhtml#Chapter5)
+    and use dimensionality reduction to see whether there is any improvement in computation
+    time. Explain the components using the factor loading and develop some high-level
+    intuition of them.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: For case study 3 presented in this chapter, perform factor loading of the principal
+    components and understand the intuition of the different components.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Get the principal components of different currency pairs or different commodity
+    prices. Identify the drivers of the primary principal components and link them
+    to some intuitive macroeconomic variables.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: ^([1](ch07.xhtml#idm45174917893240-marker)) [Eigenvectors and eigenvalues](https://oreil.ly/fDaLg)
+    are concepts of linear algebra.
+  prefs: []
+  type: TYPE_NORMAL

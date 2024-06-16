@@ -1,0 +1,2428 @@
+- en: Chapter 4\. Data-Driven Finance
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: If artificial intelligence is the new electricity, big data is the oil that
+    powers the generators.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Kai-Fu Lee (2018)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Nowadays, analysts sift through non-traditional information such as satellite
+    imagery and credit card data, or use artificial intelligence techniques such as
+    machine learning and natural language processing to glean fresh insights from
+    traditional sources such as economic data and earnings-call transcripts.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Robin Wigglesworth (2019)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: This chapter discusses central aspects of data-driven finance. For the purposes
+    of this book, *data-driven finance* is understood to be a financial context (theory,
+    model, application, and so on) that is primarily driven by and based on insights
+    gained from data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Scientific Method”](#scientific_method) discusses the scientific method,
+    which is about generally accepted principles that should guide scientific effort.
+    [“Financial Econometrics and Regression”](#financial_econometrics) is about financial
+    econometrics and related topics. [“Data Availability”](#data_availability) sheds
+    light on which types of (financial) data are available today and in what quality
+    and quantity via programmatic APIs. [“Normative Theories Revisited”](#norm_theories_revisited)
+    revisits the normative theories of [Chapter 3](ch03.xhtml#normative_finance) and
+    analyzes them based on real financial time series data. Also based on real financial
+    data, [“Debunking Central Assumptions”](#debunking_assumptions) debunks two of
+    the most commonly found assumptions in financial models and theories: *normality
+    of returns* and *linear* *relationships*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scientific Method
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The *scientific method* refers to a set of generally accepted principles that
+    should guide any scientific project. [Wikipedia](https://oreil.ly/AX8jv) defines
+    the scientific method as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The scientific method is an empirical method of acquiring knowledge that has
+    characterized the development of science since at least the 17th century. It involves
+    careful observation, applying rigorous skepticism about what is observed, given
+    that cognitive assumptions can distort how one interprets the observation. It
+    involves formulating hypotheses, via induction, based on such observations; experimental
+    and measurement-based testing of deductions drawn from the hypotheses; and refinement
+    (or elimination) of the hypotheses based on the experimental findings. These are
+    principles of the scientific method, as distinguished from a definitive series
+    of steps applicable to all scientific enterprises.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Given this definition, normative finance, as discussed in [Chapter 3](ch03.xhtml#normative_finance),
+    is in stark contrast to the scientific method. Normative financial theories mostly
+    rely on assumptions and axioms in combination with *deduction* as the major analytical
+    method to arrive at their central results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Expected utility theory (EUT) *assumes* that agents have the same utility function
+    no matter what state of the world unfolds and that they maximize expected utility
+    under conditions of uncertainty.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Mean-variance portfolio (MVP) theory describes how investors *should* invest
+    under conditions of uncertainty *assuming* that only the expected return and the
+    expected volatility of a portfolio over one period count.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The capital asset pricing model (CAPM) *assumes* that only the nondiversifiable
+    market risk *explains* the expected return and the expected volatility of a stock
+    over one period.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Arbitrage pricing theory (APT) *assumes* that a number of identifiable risk
+    factors *explains* the expected return and the expected volatility of a stock
+    over time; admittedly, compared to the other theories, the formulation of APT
+    is rather broad and allows for wide-ranging interpretations.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: What characterizes the aforementioned normative financial theories is that they
+    were originally derived under certain assumptions and axioms using “pen and paper”
+    only, without any recourse to real-world data or observations. From a historical
+    point of view, many of these theories were rigorously tested against real-world
+    data only long after their publication dates. This can be explained primarily
+    with better data availability and increased computational capabilities over time.
+    After all, data and computation are the main ingredients for the application of
+    statistical methods in practice. The discipline at the intersection of mathematics,
+    statistics, and finance that applies such methods to financial market data is
+    typically called *financial econometrics*, the topic of the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial Econometrics and Regression
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Adapting the definition provided by [Investopedia](https://oreil.ly/QErpB)
+    for *econometrics*, one can define *financial econometrics* as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Financial] econometrics is the quantitative application of statistical and
+    mathematical models using [financial] data to develop financial theories or test
+    existing hypotheses in finance and to forecast future trends from historical data.
+    It subjects real-world [financial] data to statistical trials and then compares
+    and contrasts the results against the [financial] theory or theories being tested.'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Alexander (2008b) provides a thorough and broad introduction to the field of
+    financial econometrics. The second chapter of the book covers single- and multifactor
+    models, such as the CAPM and APT. Alexander (2008b) is part of a series of four
+    books called *Market Risk Analysis*. The first in the series, Alexander (2008a),
+    covers theoretical background concepts, topics, and methods, such as MVP theory
+    and the CAPM themselves. The book by Campbell (2018) is another comprehensive
+    resource for financial theory and related econometric research.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One of the major tools in financial econometrics is *regression*, in both its
+    univariate and multivariate forms. Regression is also a central tool in *statistical
+    learning* in general. What is the difference between traditional mathematics and
+    statistical learning? Although there is no general answer to this question (after
+    all, statistics is a sub-field of mathematics), a simple example should emphasize
+    a major difference relevant to the context of this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First is the standard mathematical way. Assume a mathematical function is given
+    as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="f colon double-struck upper R right-arrow double-struck upper
+    R Subscript plus Baseline comma x right-arrow from bar 2 plus one-half x" display="block"><mrow><mi>f</mi>
+    <mo>:</mo> <mi>ℝ</mi> <mo>→</mo> <msub><mi>ℝ</mi> <mo>+</mo></msub> <mo>,</mo>
+    <mi>x</mi> <mo>↦</mo> <mn>2</mn> <mo>+</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac>
+    <mi>x</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Given multiple values of <math alttext="x Subscript i Baseline comma i equals
+    1 comma 2 comma ellipsis comma n"><mrow><msub><mi>x</mi> <mi>i</mi></msub> <mo>,</mo>
+    <mi>i</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo> <mo>...</mo>
+    <mo>,</mo> <mi>n</mi></mrow></math> , one can derive function values for <math
+    alttext="f"><mi>f</mi></math> by applying the above definition:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="y Subscript i Baseline equals f left-parenthesis x Subscript
+    i Baseline right-parenthesis comma i equals 1 comma 2 comma ellipsis comma n"
+    display="block"><mrow><msub><mi>y</mi> <mi>i</mi></msub> <mo>=</mo> <mi>f</mi>
+    <mrow><mo>(</mo> <msub><mi>x</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mo>,</mo>
+    <mi>i</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo> <mo>...</mo>
+    <mo>,</mo> <mi>n</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code illustrates this based on a simple numerical example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Second is the approach taken in statistical learning. Whereas in the preceding
+    example, the function comes first and then the data is derived, this sequence
+    is reversed in statistical learning. Here, the data is generally given and a functional
+    relationship is to be found. In this context, <math alttext="x"><mi>x</mi></math>
+    is often called the *independent* variable and <math alttext="y"><mi>y</mi></math>
+    the *dependent* variable. Consequently, consider the following data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="left-parenthesis x Subscript i Baseline comma y Subscript i Baseline
+    right-parenthesis comma i equals 1 comma 2 comma ellipsis comma n" display="block"><mrow><mo>(</mo>
+    <msub><mi>x</mi> <mi>i</mi></msub> <mo>,</mo> <msub><mi>y</mi> <mi>i</mi></msub>
+    <mo>)</mo> <mo>,</mo> <mi>i</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo>
+    <mo>...</mo> <mo>,</mo> <mi>n</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The problem is to find, for example, parameters <math alttext="alpha comma
+    beta"><mrow><mi>α</mi> <mo>,</mo> <mi>β</mi></mrow></math> such that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="ModifyingAbove f With caret left-parenthesis x Subscript i Baseline
+    right-parenthesis identical-to alpha plus beta x Subscript i Baseline equals ModifyingAbove
+    y With caret Subscript i Baseline almost-equals y Subscript i Baseline comma i
+    equals 1 comma 2 comma ellipsis comma n" display="block"><mrow><mover accent="true"><mi>f</mi>
+    <mo>^</mo></mover> <mrow><mo>(</mo> <msub><mi>x</mi> <mi>i</mi></msub> <mo>)</mo></mrow>
+    <mo>≡</mo> <mi>α</mi> <mo>+</mo> <mi>β</mi> <msub><mi>x</mi> <mi>i</mi></msub>
+    <mo>=</mo> <msub><mover accent="true"><mi>y</mi> <mo>^</mo></mover> <mi>i</mi></msub>
+    <mo>≈</mo> <msub><mi>y</mi> <mi>i</mi></msub> <mo>,</mo> <mi>i</mi> <mo>=</mo>
+    <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo> <mo>...</mo> <mo>,</mo> <mi>n</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Another way of writing this is by including residual values <math alttext="epsilon
+    Subscript i Baseline comma i equals 1 comma 2 comma ellipsis comma n"><mrow><msub><mi>ϵ</mi>
+    <mi>i</mi></msub> <mo>,</mo> <mi>i</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn>
+    <mo>,</mo> <mo>...</mo> <mo>,</mo> <mi>n</mi></mrow></math> :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="alpha plus beta x Subscript i Baseline plus epsilon Subscript
+    i Baseline equals y Subscript i Baseline comma i equals 1 comma 2 comma ellipsis
+    comma n" display="block"><mrow><mi>α</mi> <mo>+</mo> <mi>β</mi> <msub><mi>x</mi>
+    <mi>i</mi></msub> <mo>+</mo> <msub><mi>ϵ</mi> <mi>i</mi></msub> <mo>=</mo> <msub><mi>y</mi>
+    <mi>i</mi></msub> <mo>,</mo> <mi>i</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn>
+    <mo>,</mo> <mo>...</mo> <mo>,</mo> <mi>n</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the context of ordinary least-squares (OLS) regression, <math alttext="alpha
+    comma beta"><mrow><mi>α</mi> <mo>,</mo> <mi>β</mi></mrow></math> are chosen to
+    minimize the mean-squared error between the approximated values <math alttext="ModifyingAbove
+    y With caret Subscript i"><msub><mover accent="true"><mi>y</mi> <mo>^</mo></mover>
+    <mi>i</mi></msub></math> and the real values <math alttext="y Subscript i"><msub><mi>y</mi>
+    <mi>i</mi></msub></math> . The minimization problem, then, is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="min Underscript alpha comma beta Endscripts StartFraction 1 Over
+    n EndFraction sigma-summation Underscript i Overscript n Endscripts left-parenthesis
+    ModifyingAbove y With caret Subscript i Baseline minus y Subscript i Baseline
+    right-parenthesis squared" display="block"><mrow><munder><mo movablelimits="true"
+    form="prefix">min</mo> <mrow><mi>α</mi><mo>,</mo><mi>β</mi></mrow></munder> <mfrac><mn>1</mn>
+    <mi>n</mi></mfrac> <munderover><mo>∑</mo> <mi>i</mi> <mi>n</mi></munderover> <msup><mrow><mo>(</mo><msub><mover
+    accent="true"><mi>y</mi> <mo>^</mo></mover> <mi>i</mi></msub> <mo>-</mo><msub><mi>y</mi>
+    <mi>i</mi></msub> <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the case of *simple OLS regression*, as described previously, the optimal
+    solutions are known in closed form and are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout Enlarged left-brace 1st Row  beta equals StartFraction
+    Cov left-parenthesis x comma y right-parenthesis Over Var left-parenthesis x right-parenthesis
+    EndFraction 2nd Row  alpha equals y overbar minus beta x overbar EndLayout" display="block"><mfenced
+    separators="" open="{" close=""><mtable><mtr><mtd columnalign="left"><mrow><mi>β</mi>
+    <mo>=</mo> <mfrac><mrow><mtext>Cov</mtext><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo></mrow>
+    <mtext>Var(x)</mtext></mfrac></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>α</mi>
+    <mo>=</mo> <mover accent="true"><mi>y</mi> <mo>¯</mo></mover> <mo>-</mo> <mi>β</mi>
+    <mover accent="true"><mi>x</mi> <mo>¯</mo></mover></mrow></mtd></mtr></mtable></mfenced></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here, <math alttext="Cov left-parenthesis right-parenthesis"><mrow><mtext>Cov</mtext>
+    <mo>(</mo> <mo>)</mo></mrow></math> stands for the *covariance*, <math alttext="Var
+    left-parenthesis right-parenthesis"><mrow><mtext>Var</mtext> <mo>(</mo> <mo>)</mo></mrow></math>
+    for the *variance*, and <math alttext="x overbar comma y overbar"><mrow><mover
+    accent="true"><mi>x</mi> <mo>¯</mo></mover> <mo>,</mo> <mover accent="true"><mi>y</mi>
+    <mo>¯</mo></mover></mrow></math> for the *mean values* of <math alttext="x comma
+    y"><mrow><mi>x</mi> <mo>,</mo> <mi>y</mi></mrow></math> .
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Returning to the preceding numerical example, these insights can be used to
+    derive optimal parameters <math alttext="alpha comma beta"><mrow><mi>α</mi> <mo>,</mo>
+    <mi>β</mi></mrow></math> and, in this particular case, to recover the original
+    definition of <math alttext="f left-parenthesis x right-parenthesis"><mrow><mi>f</mi>
+    <mo>(</mo> <mi>x</mi> <mo>)</mo></mrow></math> :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="beta"><mi>β</mi></math> as derived from the covariance matrix
+    and the variance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO1-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="alpha"><mi>α</mi></math> as derived from <math alttext="beta"><mi>β</mi></math>
+    and the mean values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO1-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimated values <math alttext="ModifyingAbove y With caret Subscript i Baseline
+    comma i equals 1 comma 2 comma ellipsis comma n"><mrow><msub><mover accent="true"><mi>y</mi>
+    <mo>^</mo></mover> <mi>i</mi></msub> <mo>,</mo> <mi>i</mi> <mo>=</mo> <mn>1</mn>
+    <mo>,</mo> <mn>2</mn> <mo>,</mo> <mo>...</mo> <mo>,</mo> <mi>n</mi></mrow></math>
+    , given <math alttext="alpha comma beta"><mrow><mi>α</mi> <mo>,</mo> <mi>β</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO1-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether <math alttext="ModifyingAbove y With caret Subscript i Baseline
+    comma y Subscript i Baseline"><mrow><msub><mover accent="true"><mi>y</mi> <mo>^</mo></mover>
+    <mi>i</mi></msub> <mo>,</mo> <msub><mi>y</mi> <mi>i</mi></msub></mrow></math>
+    values are numerically equal
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The preceding example and those in [Chapter 1](ch01.xhtml#artificial_intelligence)
+    illustrate that the application of OLS regression to a given data set is in general
+    straightforward. There are more reasons why OLS regression has become one of the
+    central tools in econometrics and financial econometrics. Among them are the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Centuries old
+  prefs: []
+  type: TYPE_NORMAL
+- en: The least-squares approach, particularly in combination with regression, has
+    been used for more than 200 years.^([1](ch04.xhtml#idm45625324920136))
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simplicity
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mathematics behind OLS regression is easy to understand and easy to implement
+    in programming.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scalability
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is basically no limit regarding the data size to which OLS regression
+    can be applied.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Flexibility
+  prefs: []
+  type: TYPE_NORMAL
+- en: OLS regression can be applied to a wide range of problems and data sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Speed
+  prefs: []
+  type: TYPE_NORMAL
+- en: OLS regression is fast to evaluate, even on larger data sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Availability
+  prefs: []
+  type: TYPE_NORMAL
+- en: Efficient implementations in Python and many other programming languages are
+    readily available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, as easy and straightforward as the application of OLS regression might
+    be in general, the method rests on a number of assumptions—most of them related
+    to the residuals—that are not always satisfied in practice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Linearity
+  prefs: []
+  type: TYPE_NORMAL
+- en: The model is linear in its parameters, with regard to both the coefficients
+    and the residuals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Independence
+  prefs: []
+  type: TYPE_NORMAL
+- en: Independent variables are not perfectly (to a high degree) correlated with each
+    other (no *multicollinearity*).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Zero mean
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mean value of the residuals is (close to) zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: No correlation
+  prefs: []
+  type: TYPE_NORMAL
+- en: Residuals are not (strongly) correlated with the independent variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Homoscedasticity
+  prefs: []
+  type: TYPE_NORMAL
+- en: The standard deviation of the residuals is (almost) constant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: No autocorrelation
+  prefs: []
+  type: TYPE_NORMAL
+- en: The residuals are not (strongly) correlated with each other.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In practice, it is in general quite simple to test for the validity of the assumptions
+    given a specific data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data Availability
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Financial econometrics is driven by statistical methods, such as regression,
+    and the availability of financial data. From the 1950s to the 1990s, and even
+    into the early 2000s, theoretical and empirical financial research was mainly
+    driven by relatively small data sets compared to today’s standards, and was mostly
+    comprised of end-of-day (EOD) data. Data availability is something that has changed
+    dramatically over the last decade or so, with more and more types of financial
+    and other data available in ever increasing granularity, quantity, and velocity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Programmatic APIs
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: With regard to data-driven finance, what is important is not only what data
+    is available but also how it can be accessed and processed. For quite a while
+    now, finance professionals have relied on data terminals from companies such as
+    Refinitiv (see [Eikon Terminal](https://oreil.ly/gcBey)) or Bloomberg (see [Bloomberg
+    Terminal](https://oreil.ly/Y1dEC)), to mention just two of the leading providers.
+    Newspapers, magazines, financial reports, and the like have long been replaced
+    by such terminals as the primary source for financial information. However, the
+    sheer volume and variety of data provided by such terminals cannot be consumed
+    systematically by a single user or even large groups of finance professionals.
+    Therefore, the major breakthrough in data-driven finance is to be seen in the
+    *programmatic availability* of data via application programming interfaces (APIs)
+    that allow the usage of computer code to select, retrieve, and process arbitrary
+    data sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The remainder of this section is devoted to the illustration of such APIs by
+    which even academics and retail investors can retrieve a wealth of different data
+    sets. Before such examples are provided, [Table 4-1](#ddf_data_types_table) offers
+    an overview of categories of data that are in general relevant in a financial
+    context, as well as typical examples. In the table, *structured* data refers to
+    numerical data types that often come in tabular structures, while *unstructured*
+    data refers to data in the form of standard text that often has no structure beyond
+    headers or paragraphs, for example. *Alternative* data refers to data types that
+    are typically *not* considered financial data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 4-1\. Relevant types of financial data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Time | Structured data | Unstructured data | Alternative data |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Historical | Prices, fundamentals | News, texts | Web, social media, satellites
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Streaming | Prices, volumes | News, filings | Web, social media, satellites,
+    Internet of Things |'
+  prefs: []
+  type: TYPE_TB
+- en: Structured Historical Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: First, structured historical data types will be retrieved programmatically.
+    To this end, the following Python code uses the [Eikon Data API](https://oreil.ly/uDMSk).^([2](ch04.xhtml#idm45625324874120))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To access data via the Eikon Data API, a local application, such as [Refinitiv
+    Workspace](https://oreil.ly/NPEav), must be running and the API access must be
+    configured on the Python level:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'If these requirements are met, historical structured data can be retrieved
+    via a single function call. For example, the following Python code retrieves EOD
+    data for a set of symbols and a specified time interval:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines a list of `RICs` (symbols) to retrieve data for^([3](ch04.xhtml#idm45625324543064))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves EOD `Close` prices for the list of `RICs`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the meta information for the returned `DataFrame` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO2-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the final rows of the `DataFrame` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Similarly, one-minute bars with `OHLC` fields can be retrieved with appropriate
+    adjustments of the parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves one-minute bars with all available fields for a single `RIC`
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One can retrieve more than structured financial time series data from the Eikon
+    Data API. Fundamental data can also be retrieved for a number of `RICs` and a
+    number of different data fields at the same time, as the following Python code
+    illustrates:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves data for multiple `RICs` and multiple data fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: Programmatic Data Availability
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Basically all structured financial data is available nowadays in programmatic
+    fashion. Financial time series data, in this context, is the paramount example.
+    However, other structured data types such as fundamental data are available in
+    the same way, simplifying the work of quantitative analysts, traders, portfolio
+    managers, and the like significantly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Structured Streaming Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Many applications in finance require real-time structured data, such as in
+    algorithmic trading or market risk management. The following Python code makes
+    use of the API of the [Oanda Trading Platform](http://oanda.com) and streams in
+    real time a number of time stamps, bid quotes, and ask quotes for the Bitcoin
+    price in USD:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Connects to the Oanda API
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Streams a fixed number of ticks for a given symbol
+  prefs: []
+  type: TYPE_NORMAL
+- en: Printing out the streamed data fields is, of course, only for illustration.
+    Certain financial applications might require sophisticated processing of the retrieved
+    data and the generation of signals or statistics, for instance. Particularly during
+    weekdays and trading hours, the number of price ticks streamed for financial instruments
+    increases steadily, demanding powerful data processing capabilities on the end
+    of financial institutions that need to process such data in real time or at least
+    in near-real time (“near time”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The significance of this observation becomes clear when looking at Apple Inc.
+    stock prices. One can calculate that there are roughly <math alttext="252 dot
+    40 equals 10 comma 080"><mrow><mn>252</mn> <mo>·</mo> <mn>40</mn> <mo>=</mo> <mn>10</mn>
+    <mo>,</mo> <mn>080</mn></mrow></math> EOD closing quotes for the Apple stock over
+    a period of 40 years. (Apple Inc. went public on December 12, 1980.) The following
+    code retrieves *tick data* for the Apple stock price for one hour only. The retrieved
+    data set, which might not even be complete for the given time interval, has 50,000
+    data rows, or five times as many tick quotes as the EOD quotes accumulated over
+    40 years of trading:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves tick data for the Apple stock price
+  prefs: []
+  type: TYPE_NORMAL
+- en: EOD Versus Tick Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Most of the financial theories still applied today have their origin in when
+    EOD data was basically the only type of financial data available. Today, financial
+    institutions, and even retail traders and investors, are confronted with never-ending
+    streams of real-time data. The example of Apple stock illustrates that for a single
+    stock during one trading hour, there might be four times as many ticks coming
+    in as the amount of EOD data accumulated over a period of 40 years. This not only
+    challenges actors in financial markets, but also puts into question whether existing
+    financial theories can be applied to such an environment at all.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unstructured Historical Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Many important data sources in finance provide unstructured data only, such
+    as financial news or company filings. Undoubtedly, machines are much better and
+    faster than humans at crunching large amounts of structured, numerical data. However,
+    recent advances in *natural language processing* (NLP) make machines better and
+    faster at processing financial news too, for example. In 2020, data service providers
+    ingest roughly 1.5 million news articles on a daily basis. It is clear that this
+    vast amount of text-based data cannot be processed properly by human beings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Fortunately, unstructured data is also to a large extent available these days
+    via programmatic APIs. The following Python code retrieves a number of news articles
+    from the Eikon Data API related to the company Tesla, Inc. and its production.
+    One article is selected and shown in full:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves metadata for a number of news articles that fall in the parameter
+    range
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects one `storyId` for which to retrieve the full text
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the full text for the selected article and shows it
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unstructured Streaming Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In the same way that historical unstructured data is retrieved, programmatic
+    APIs can be used to stream unstructured news data, for example, in real time or
+    at least near time. One such API is available for [DNA](https://oreil.ly/kVm18):
+    the Data, News, Analytics platform from Dow Jones. [Figure 4-1](#figure_ddf_dna_01)
+    shows the screenshot of a web application that streams “Commodity and Financial
+    News” articles and processes these with NLP techniques in real time.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0401](Images/aiif_0401.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-1\. News-streaming application based on DNA (Dow Jones)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The news-streaming application has the following main features:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Full text
+  prefs: []
+  type: TYPE_NORMAL
+- en: The full text of each article is available by clicking on the article header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Keyword summary
+  prefs: []
+  type: TYPE_NORMAL
+- en: A keyword summary is created and printed on the screen.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sentiment analysis
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sentiment scores are calculated and visualized as colored arrows. Details become
+    visible through a click on the arrows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Word cloud
+  prefs: []
+  type: TYPE_NORMAL
+- en: A word cloud summary bitmap is created, shown as a thumbnail and visible after
+    a click on the thumbnail (see [Figure 4-2](#figure_ddf_dna_02)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0402](Images/aiif_0402.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-2\. Word cloud bitmap shown in news-streaming application
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Alternative Data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Nowadays, financial institutions, and in particular hedge funds, systematically
+    mine a number of alternative data sources to gain an edge in trading and investing.
+    A recent article by [Bloomberg](http://bit.ly/aiif_alt_data) lists, among others,
+    the following alternative data sources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Web-scraped data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Crowd-sourced data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Credit cards and point-of-sales (POS) systems
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Social media sentiment
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Search trends
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Web traffic
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Supply chain data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Energy production data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Consumer profiles
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Satellite imagery/geospacial data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: App installs
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ocean vessel tracking
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Wearables, drones, Internet of Things (IoT) sensors
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In the following, the usage of alternative data is illustrated by two examples.
+    The first retrieves and processes Apple Inc. press releases in the form of HTML
+    pages. The following Python code makes use of a set of helper functions as shown
+    in [“Python Code”](#nlp_functions). In the code, a list of URLs is defined, each
+    representing an HTML page with a press release from Apple Inc. The raw HTML code
+    is then retrieved for each press release. Then the raw code is cleaned up, and
+    an excerpt for one press release is printed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imports the NLP helper functions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the URLs for the three press releases
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the raw HTML codes for the three press releases
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cleans up the raw HTML codes (for example, HTML tags are removed)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_data_driven_finance_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prints an excerpt from one press release
+  prefs: []
+  type: TYPE_NORMAL
+- en: Of course, defining alternative data as broadly as is done in this section implies
+    that there is a limitless amount of data that one can retrieve and process for
+    financial purposes. At its core, this is the business of search engines such as
+    the one from Google LLC. In a financial context, it would be of paramount importance
+    to specify exactly what unstructured alternative data sources to tap into.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The second example is about the retrieval of data from the social network Twitter,
+    Inc. To this end, Twitter provides API access to tweets on its platform, provided
+    one has set up a Twitter account appropriately. The following Python code connects
+    to the Twitter API and retrieves and prints the five most recent tweets from my
+    home timeline and user timeline, respectively:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Connects to the Twitter API
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves and prints five (most recent) tweets from home timeline
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves and prints five (most recent) tweets from user timeline
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The Twitter API allows also for searches, based on which most recent tweets
+    can be retrieved and processed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Searches for tweets with hashtag “Python” and prints the five most recent ones
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One can also collect a larger number of tweets from a Twitter user and create
+    a summary in the form of a word cloud (see [Figure 4-3](#figure_ddf_wc)). The
+    following Python code again makes use of the NLP helper functions as shown in
+    [“Python Code”](#nlp_functions):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the 50 most recent tweets for the user `elonmusk`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO11-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Collects the texts in a `list` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO11-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows excerpts for the final five tweets
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates a word cloud summary and shows it
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0403](Images/aiif_0403.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-3\. Word cloud as summary for larger number of tweets
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Once a financial practitioner defines the “relevant financial data” to go beyond
+    structured financial time series data, the data sources seem limitless in terms
+    of volume, variety, and velocity. The way the tweets are retrieved from the Twitter
+    API is almost in near time since the most recent tweets are accessed in the examples.
+    These and similar API-based data sources therefore provide a never-ending stream
+    of alternative data for which, as previously pointed out, it is important to specify
+    exactly what one is looking for. Otherwise, any financial data science effort
+    might easily drown in too much data and/or too noisy data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normative Theories Revisited
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '[Chapter 3](ch03.xhtml#normative_finance) introduces normative financial theories
+    such as the MVP theory or the CAPM. For quite a long time, students and academics
+    learning and studying such theories were more or less constrained to the theory
+    itself. With all the available financial data, as discussed and illustrated in
+    the previous section, in combination with powerful open source software for data
+    analysis—such as Python, `NumPy`, `pandas`, and so on—it has become pretty easy
+    and straightforward to put financial theories to real-world tests. It does not
+    require small teams and larger studies anymore to do so. A typical notebook, internet
+    access, and a standard Python environment suffice. This is what this section is
+    about. However, before diving into data-driven finance, the following sub-section
+    discusses briefly some famous paradoxes in the context of EUT and how corporations
+    model and predict the behavior of individuals in practice.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Expected Utility and Reality
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In economics, *risk* describes a situation in which possible future states and
+    probabilities for those states to unfold are known in advance to the decision
+    maker. This is the standard assumption in finance and the context of EUT. On the
+    other hand, *ambiguity* describes situations in economics in which probabilities,
+    or even possible future states, are not known in advance to a decision maker.
+    *Uncertainty* subsumes the two different decision-making situations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a long tradition of analyzing the concrete decision-making behavior
+    of individuals (“agents”) under uncertainty. Innumerable studies and experiments
+    have been conducted to observe and analyze how agents behave when faced with uncertainty
+    as compared to what theories such as EUT predict. For centuries, *paradoxa* have
+    played an important role in decision-making theory and research.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One such paradox, the *St. Petersburg paradox*, gave rise to the invention of
+    utility functions and EUT in the first place. Daniel Bernoulli presented the paradox—and
+    a solution to it—in 1738\. The paradox is based on the following coin tossing
+    game <math alttext="upper G"><mi>G</mi></math> . An agent is faced with a game
+    during which a (perfect) coin is tossed potentially infinitely many times. If
+    after the first toss heads prevails, the agent receives a payoff of 1 (currency
+    unit). As long as heads is observed, the coin is tossed again. Otherwise the game
+    ends. If heads prevails a second time, the agent receives an additional payoff
+    of 2\. If it does a third time, the additional payoff is 4\. For the fourth time
+    it is 8, and so on. This is a situation of risk since all possible future states,
+    as well as their associated probabilities, are known in advance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The expected payoff of this game is *infinite*. This can be seen from the following
+    infinite sum of which every element is strictly positive:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E left-parenthesis upper G right-parenthesis equals
+    one-half dot 1 plus one-fourth dot 2 plus one-eighth dot 4 plus one-sixteenth
+    dot 8 plus ellipsis equals sigma-summation Underscript k equals 1 Overscript normal
+    infinity Endscripts StartFraction 1 Over 2 Superscript k Baseline EndFraction
+    2 Superscript k minus 1 Baseline equals sigma-summation Underscript k equals 1
+    Overscript normal infinity Endscripts one-half equals normal infinity" display="block"><mrow><mi>𝐄</mi>
+    <mrow><mo>(</mo> <mi>G</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac>
+    <mo>·</mo> <mn>1</mn> <mo>+</mo> <mfrac><mn>1</mn> <mn>4</mn></mfrac> <mo>·</mo>
+    <mn>2</mn> <mo>+</mo> <mfrac><mn>1</mn> <mn>8</mn></mfrac> <mo>·</mo> <mn>4</mn>
+    <mo>+</mo> <mfrac><mn>1</mn> <mn>16</mn></mfrac> <mo>·</mo> <mn>8</mn> <mo>+</mo>
+    <mo>...</mo> <mo>=</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>∞</mi></munderover> <mfrac><mn>1</mn> <msup><mn>2</mn> <mi>k</mi></msup></mfrac>
+    <msup><mn>2</mn> <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msup> <mo>=</mo>
+    <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>∞</mi></munderover>
+    <mfrac><mn>1</mn> <mn>2</mn></mfrac> <mo>=</mo> <mi>∞</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, faced with such a game, a decision maker in general would be willing
+    to pay a *finite* sum only to play the game. A major reason for this is the fact
+    that relatively large payoffs only happen with a relatively small probability.
+    Consider the potential payoff <math alttext="upper W equals 511"><mrow><mi>W</mi>
+    <mo>=</mo> <mn>511</mn></mrow></math> :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper W equals 1 plus 2 plus 4 plus 8 plus 16 plus 32 plus 64
+    plus 128 plus 256 equals 511" display="block"><mrow><mi>W</mi> <mo>=</mo> <mn>1</mn>
+    <mo>+</mo> <mn>2</mn> <mo>+</mo> <mn>4</mn> <mo>+</mo> <mn>8</mn> <mo>+</mo> <mn>16</mn>
+    <mo>+</mo> <mn>32</mn> <mo>+</mo> <mn>64</mn> <mo>+</mo> <mn>128</mn> <mo>+</mo>
+    <mn>256</mn> <mo>=</mo> <mn>511</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The probability of winning such a payoff is pretty low. To be exact, it is
+    only <math alttext="upper P left-parenthesis x equals upper W right-parenthesis
+    equals StartFraction 1 Over 512 EndFraction equals"><mrow><mi>P</mi> <mrow><mo>(</mo>
+    <mi>x</mi> <mo>=</mo> <mi>W</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mn>1</mn>
+    <mn>512</mn></mfrac> <mo>=</mo></mrow></math> 0.001953125\. The probability for
+    such a payoff or a smaller one, on the other hand, is pretty high:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="upper P left-parenthesis x less-than-or-equal-to upper W right-parenthesis
+    equals sigma-summation Underscript k equals 1 Overscript 9 Endscripts StartFraction
+    1 Over 2 Superscript k Baseline EndFraction equals 0.998046875" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>x</mi> <mo>≤</mo> <mi>W</mi> <mo>)</mo></mrow> <mo>=</mo>
+    <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mn>9</mn></munderover>
+    <mfrac><mn>1</mn> <msup><mn>2</mn> <mi>k</mi></msup></mfrac> <mo>=</mo> <mn>0</mn>
+    <mo>.</mo> <mn>998046875</mn></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In other words, in 998 out of 1,000 games the payoff is 511 or smaller. Therefore,
+    an agent would probably not wager much more than 511 to play this game. The way
+    out of this paradox is the introduction of a utility function with *positive but
+    decreasing marginal utility*. In the context of the St. Petersburg paradox, this
+    means that there is a function <math alttext="u colon double-struck upper R Subscript
+    plus Baseline right-arrow double-struck upper R"><mrow><mi>u</mi> <mo>:</mo> <msub><mi>ℝ</mi>
+    <mo>+</mo></msub> <mo>→</mo> <mi>ℝ</mi></mrow></math> that assigns to every positive
+    payoff <math alttext="x"><mi>x</mi></math> a real value <math alttext="u left-parenthesis
+    x right-parenthesis"><mrow><mi>u</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo></mrow></math>
+    . Positive but decreasing marginal utility then formally translates into the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartFraction normal partial-differential
+    u Over normal partial-differential x EndFraction 2nd Column greater-than 3rd Column
+    0 2nd Row 1st Column StartFraction normal partial-differential squared u Over
+    normal partial-differential x squared EndFraction 2nd Column less-than 3rd Column
+    0 EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><mi>∂</mi><mi>u</mi></mrow>
+    <mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></mtd> <mtd><mo>></mo></mtd> <mtd><mn>0</mn></mtd></mtr>
+    <mtr><mtd><mfrac><mrow><msup><mi>∂</mi> <mn>2</mn></msup> <mi>u</mi></mrow> <mrow><mi>∂</mi><msup><mi>x</mi>
+    <mn>2</mn></msup></mrow></mfrac></mtd> <mtd><mo><</mo></mtd> <mtd><mn>0</mn></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As seen in [Chapter 3](ch03.xhtml#normative_finance), one such candidate function
+    is <math alttext="u left-parenthesis x right-parenthesis equals ln left-parenthesis
+    x right-parenthesis"><mrow><mi>u</mi> <mo>(</mo> <mi>x</mi> <mo>)</mo> <mo>=</mo>
+    <mo form="prefix">ln</mo> <mo>(</mo> <mi>x</mi> <mo>)</mo></mrow></math> with:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column StartFraction normal partial-differential
+    u Over normal partial-differential x EndFraction 2nd Column equals 3rd Column
+    StartFraction 1 Over x EndFraction 2nd Row 1st Column StartFraction normal partial-differential
+    squared u Over normal partial-differential x squared EndFraction 2nd Column equals
+    3rd Column minus StartFraction 1 Over x squared EndFraction EndLayout" display="block"><mtable><mtr><mtd><mfrac><mrow><mi>∂</mi><mi>u</mi></mrow>
+    <mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></mtd> <mtd><mo>=</mo></mtd> <mtd><mfrac><mn>1</mn>
+    <mi>x</mi></mfrac></mtd></mtr> <mtr><mtd><mfrac><mrow><msup><mi>∂</mi> <mn>2</mn></msup>
+    <mi>u</mi></mrow> <mrow><mi>∂</mi><msup><mi>x</mi> <mn>2</mn></msup></mrow></mfrac></mtd>
+    <mtd><mo>=</mo></mtd> <mtd><mrow><mo>-</mo> <mfrac><mn>1</mn> <msup><mi>x</mi>
+    <mn>2</mn></msup></mfrac></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The expected utility then is *finite*, as the calculation of the following
+    infinite sum illustrates:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="bold upper E left-parenthesis u left-parenthesis upper G right-parenthesis
+    right-parenthesis equals sigma-summation Underscript k equals 1 Overscript normal
+    infinity Endscripts StartFraction 1 Over 2 Superscript k Baseline EndFraction
+    u left-parenthesis 2 Superscript k minus 1 Baseline right-parenthesis equals sigma-summation
+    Underscript k equals 1 Overscript normal infinity Endscripts StartFraction ln
+    left-parenthesis 2 Superscript k minus 1 Baseline right-parenthesis Over 2 Superscript
+    k Baseline EndFraction equals left-parenthesis sigma-summation Underscript k equals
+    1 Overscript normal infinity Endscripts StartFraction left-parenthesis k minus
+    1 right-parenthesis Over 2 Superscript k Baseline EndFraction right-parenthesis
+    dot ln left-parenthesis 2 right-parenthesis equals ln left-parenthesis 2 right-parenthesis
+    less-than normal infinity" display="block"><mrow><mi>𝐄</mi> <mfenced separators=""
+    open="(" close=")"><mi>u</mi> <mo>(</mo> <mi>G</mi> <mo>)</mo></mfenced> <mo>=</mo>
+    <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>∞</mi></munderover>
+    <mfrac><mn>1</mn> <msup><mn>2</mn> <mi>k</mi></msup></mfrac> <mi>u</mi> <mfenced
+    separators="" open="(" close=")"><msup><mn>2</mn> <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msup></mfenced>
+    <mo>=</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>∞</mi></munderover> <mfrac><mrow><mo form="prefix">ln</mo><mfenced separators=""
+    open="(" close=")"><msup><mn>2</mn> <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msup></mfenced></mrow>
+    <msup><mn>2</mn> <mi>k</mi></msup></mfrac> <mo>=</mo> <mfenced separators="" open="("
+    close=")"><munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>∞</mi></munderover>
+    <mfrac><mrow><mo>(</mo><mi>k</mi><mo>-</mo><mn>1</mn><mo>)</mo></mrow> <msup><mn>2</mn>
+    <mi>k</mi></msup></mfrac></mfenced> <mo>·</mo> <mo form="prefix">ln</mo> <mrow><mo>(</mo>
+    <mn>2</mn> <mo>)</mo></mrow> <mo>=</mo> <mo form="prefix">ln</mo> <mrow><mo>(</mo>
+    <mn>2</mn> <mo>)</mo></mrow> <mo><</mo> <mi>∞</mi></mrow></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: The expected utility of <math alttext="ln left-parenthesis 2 right-parenthesis"><mrow><mo
+    form="prefix">ln</mo> <mo>(</mo> <mn>2</mn> <mo>)</mo></mrow></math> = 0.693147
+    is obviously a pretty small number in comparison to the expected payoff of infinity.
+    Bernoulli utility functions and EUT resolve the St. Petersburg paradox.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Other paradoxa, such as the *Allais paradox* published in Allais (1953), address
+    the EUT itself. This paradox is based on an experiment with four different games
+    that test subjects should rank. [Table 4-2](#ddf_allais_table) shows the four
+    games <math alttext="left-parenthesis upper A comma upper B comma upper A prime
+    comma upper B prime right-parenthesis"><mrow><mo>(</mo> <mi>A</mi> <mo>,</mo>
+    <mi>B</mi> <mo>,</mo> <msup><mi>A</mi> <mo>'</mo></msup> <mo>,</mo> <msup><mi>B</mi>
+    <mo>'</mo></msup> <mo>)</mo></mrow></math> . The ranking is to be done for the
+    two pairs <math alttext="left-parenthesis upper A comma upper B right-parenthesis"><mrow><mo>(</mo>
+    <mi>A</mi> <mo>,</mo> <mi>B</mi> <mo>)</mo></mrow></math> and <math alttext="left-parenthesis
+    upper A prime comma upper B prime right-parenthesis"><mrow><mo>(</mo> <msup><mi>A</mi>
+    <mo>'</mo></msup> <mo>,</mo> <msup><mi>B</mi> <mo>'</mo></msup> <mo>)</mo></mrow></math>
+    . The *independence axiom* postulates that the first row in the table should not
+    have any influence on the ordering of <math alttext="left-parenthesis upper A
+    prime comma upper B prime right-parenthesis"><mrow><mo>(</mo> <msup><mi>A</mi>
+    <mo>'</mo></msup> <mo>,</mo> <msup><mi>B</mi> <mo>'</mo></msup> <mo>)</mo></mrow></math>
+    since the payoff is the same for both games.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 4-2\. Games in Allais paradox
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Probability | Game A | Game B | Game A’ | Game B’ |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0.66 | 2,400 | 2,400 | 0 | 0 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0.33 | 2,500 | 2,400 | 2,500 | 2,400 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0.01 | 0 | 2,400 | 0 | 2,400 |'
+  prefs: []
+  type: TYPE_TB
+- en: 'In experiments, the majority of decision makers rank the games as follows:
+    <math alttext="upper B succeeds upper A"><mrow><mi>B</mi> <mo>≻</mo> <mi>A</mi></mrow></math>
+    and <math alttext="upper A prime upper B prime"><mrow><mi>A</mi> <mo>''</mo> <mo>≻</mo>
+    <msup><mi>B</mi> <mo>''</mo></msup></mrow></math> . The ranking <math alttext="upper
+    B succeeds upper A"><mrow><mi>B</mi> <mo>≻</mo> <mi>A</mi></mrow></math> leads
+    to the following inequalities, where <math alttext="u 1 identical-to u left-parenthesis
+    2400 right-parenthesis comma u 2 identical-to u left-parenthesis 2500 right-parenthesis
+    comma u 3 identical-to u left-parenthesis 0 right-parenthesis"><mrow><msub><mi>u</mi>
+    <mn>1</mn></msub> <mo>≡</mo> <mi>u</mi> <mrow><mo>(</mo> <mn>2400</mn> <mo>)</mo></mrow>
+    <mo>,</mo> <msub><mi>u</mi> <mn>2</mn></msub> <mo>≡</mo> <mi>u</mi> <mrow><mo>(</mo>
+    <mn>2500</mn> <mo>)</mo></mrow> <mo>,</mo> <msub><mi>u</mi> <mn>3</mn></msub>
+    <mo>≡</mo> <mi>u</mi> <mrow><mo>(</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></math>
+    :'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column u 1 2nd Column greater-than 3rd
+    Column 0.66 dot u 1 plus 0.33 dot u 2 plus 0.01 dot u 3 2nd Row 1st Column 0.34
+    dot u 1 2nd Column greater-than 3rd Column 0.33 dot u 2 plus 0.01 dot u 3 EndLayout"
+    display="block"><mtable><mtr><mtd><msub><mi>u</mi> <mn>1</mn></msub></mtd> <mtd><mo>></mo></mtd>
+    <mtd><mrow><mn>0</mn> <mo>.</mo> <mn>66</mn> <mo>·</mo> <msub><mi>u</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mn>0</mn> <mo>.</mo> <mn>33</mn> <mo>·</mo> <msub><mi>u</mi> <mn>2</mn></msub>
+    <mo>+</mo> <mn>0</mn> <mo>.</mo> <mn>01</mn> <mo>·</mo> <msub><mi>u</mi> <mn>3</mn></msub></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mn>0</mn> <mo>.</mo> <mn>34</mn> <mo>·</mo> <msub><mi>u</mi>
+    <mn>1</mn></msub></mrow></mtd> <mtd><mo>></mo></mtd> <mtd><mrow><mn>0</mn> <mo>.</mo>
+    <mn>33</mn> <mo>·</mo> <msub><mi>u</mi> <mn>2</mn></msub> <mo>+</mo> <mn>0</mn>
+    <mo>.</mo> <mn>01</mn> <mo>·</mo> <msub><mi>u</mi> <mn>3</mn></msub></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The ranking <math alttext="upper A prime upper B prime"><mrow><mi>A</mi> <mo>''</mo>
+    <mo>≻</mo> <msup><mi>B</mi> <mo>''</mo></msup></mrow></math> in turn leads to
+    the following inequalities:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: <math alttext="StartLayout 1st Row 1st Column 0.33 dot u 2 plus 0.01 dot u 3
+    2nd Column greater-than 3rd Column 0.33 dot u 1 plus 0.01 dot u 1 2nd Row 1st
+    Column 0.34 dot u 1 2nd Column less-than 3rd Column 0.33 dot u 2 plus 0.01 dot
+    u 3 EndLayout" display="block"><mtable><mtr><mtd><mrow><mn>0</mn> <mo>.</mo> <mn>33</mn>
+    <mo>·</mo> <msub><mi>u</mi> <mn>2</mn></msub> <mo>+</mo> <mn>0</mn> <mo>.</mo>
+    <mn>01</mn> <mo>·</mo> <msub><mi>u</mi> <mn>3</mn></msub></mrow></mtd> <mtd><mo>></mo></mtd>
+    <mtd><mrow><mn>0</mn> <mo>.</mo> <mn>33</mn> <mo>·</mo> <msub><mi>u</mi> <mn>1</mn></msub>
+    <mo>+</mo> <mn>0</mn> <mo>.</mo> <mn>01</mn> <mo>·</mo> <msub><mi>u</mi> <mn>1</mn></msub></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mn>0</mn> <mo>.</mo> <mn>34</mn> <mo>·</mo> <msub><mi>u</mi>
+    <mn>1</mn></msub></mrow></mtd> <mtd><mo><</mo></mtd> <mtd><mrow><mn>0</mn> <mo>.</mo>
+    <mn>33</mn> <mo>·</mo> <msub><mi>u</mi> <mn>2</mn></msub> <mo>+</mo> <mn>0</mn>
+    <mo>.</mo> <mn>01</mn> <mo>·</mo> <msub><mi>u</mi> <mn>3</mn></msub></mrow></mtd></mtr></mtable></math>
+  prefs: []
+  type: TYPE_NORMAL
+- en: These inequalities obviously contradict each other and lead to the Allais paradox.
+    One possible explanation is that decision makers in general value certainty higher
+    than the typical models, such as EUT, predict. Most people would probably rather
+    choose to receive $1 million with certainty than play a game in which they can
+    win $100 million with a probability of 5%, although there are a number of suitable
+    utility functions available that under EUT would have the decision maker choose
+    the game instead of the certain amount.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another explanation lies in *framing* decisions and the psychology of decision
+    makers. It is well known that more people would accept a surgery if it has a “95%
+    chance of success” than a “5% chance of death.” Simply changing the wording might
+    lead to behavior that is inconsistent with decision-making theories such as EUT.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another famous paradox addressing shortcomings of EUT in its subjective form,
+    according to Savage (1954, 1972), is the *Ellsberg paradox*, which dates back
+    to the seminal paper by Ellsberg (1961). It addresses the importance of ambiguity
+    in many real-world decision situations. A standard setting for this paradox comprises
+    two different urns, both of which contain exactly 100 balls. For urn 1, it is
+    known that it contains exactly 50 black and 50 red balls. For urn 2, it is only
+    known that it contains black and red balls but not in which proportion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Test subjects can choose among the following game options:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Game 1: red 1, black 1, or indifferent'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Game 2: red 2, black 2, or indifferent'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Game 3: red 1, red 2, or indifferent'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Game 4: black 1, black 2, or indifferent'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Here, “red 1,” for example, means that a red ball is drawn from urn 1\. Typically,
+    a test subject would answer as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Game 1: indifferent'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Game 2: indifferent'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Game 3: red 1'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Game 4: black 1'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This set of decisions—which is not the only one to be observed but is a common
+    one—exemplifies what is called *ambiguity aversion*. Since the probabilities for
+    black and red balls, respectively, are not known for urn 2, decision makers prefer
+    a situation of *risk* instead of *ambiguity*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The two paradoxa of Allais and Ellsberg show that real test subjects quite often
+    behave contrary to what well-established decision theories in economics predict.
+    In other words, human beings as decision makers can in general not be compared
+    to machines that carefully collect data and then crunch the numbers to make a
+    decision under uncertainty, be it in the form of risk or ambiguity. Human behavior
+    is more complex than most, if not all, theories currently suggest. How difficult
+    and complex it can be to explain human behavior is clear after reading, for example,
+    the 800-page book *Behave* by Sapolsky (2018). It covers multiple facets of this
+    topic, ranging from biochemical processes to genetics, human evolution, tribes,
+    language, religion, and more, in an integrative manner.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If standard economic decision paradigms such as EUT do not explain real-world
+    decision making too well, what alternatives are available? Economic experiments
+    that build the basis for the Allais and Ellsberg paradoxa are a good starting
+    point in learning how decision makers behave in specific, controlled situations.
+    Such experiments and their sometimes surprising and paradoxical results have indeed
+    motivated a great number of researchers to come up with alternative theories and
+    models that resolve the paradoxa. The book *The Experiment in the History of Economics*
+    by Fontaine and Leonard (2005) is about the historical role of experiments in
+    economics. There is, for example, a whole string of literature that addresses
+    issues arising from the Ellsberg paradox. This literature deals with, among other
+    topics, nonadditive probabilities, Choquet integrals, and decision heuristics
+    such as *maximizing the minimum payoff* (“max-min”) or *minimizing the maximum
+    loss* (“min-max”). These alternative approaches have proven superior to EUT, at
+    least in certain decision-making scenarios. But they are far from being mainstream
+    in finance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What, after all, has proven to be useful in practice? Not too surprisingly,
+    the answer lies in *data and machine learning algorithms*. The internet, with
+    its billions of users, generates a treasure trove of data describing real-world
+    human behavior, or what is sometimes called *revealed preferences*. The big data
+    generated on the web has a scale that is multiple orders of magnitude larger than
+    what single experiments can generate. Companies such as Amazon, Facebook, Google,
+    and Twitter are able to make billions of dollars by recording user behavior (that
+    is, their revealed preferences) and capitalizing on the insights generated by
+    ML algorithms trained on this data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The default ML approach taken in this context is supervised learning. The algorithms
+    themselves are in general *theory- and model-free*; variants of neural networks
+    are often applied. Therefore, when companies today predict the behavior of their
+    users or customers, more often than not a model-free ML algorithm is deployed.
+    Traditional decision theories like EUT or one of its successors generally do not
+    play a role at all. This makes it somewhat surprising that such theories still,
+    at the beginning of the 2020s, are a cornerstone of most economic and financial
+    theories applied in practice. And this is not even to mention the large number
+    of financial textbooks that cover traditional decision theories in detail. If
+    one of the most fundamental building blocks of financial theory seems to lack
+    meaningful empirical support or practical benefits, what about the financial models
+    that build on top of it? More on this appears in subsequent sections and chapters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data-Driven Predictions of Behavior
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Standard economic decision theories are intellectually appealing to many, even
+    to those who, faced with a concrete decision under uncertainty, would behave in
+    contrast to the theories’ predictions. On the other hand, big data and model-free,
+    supervised learning approaches prove useful and successful in practice for predicting
+    user and customer behavior. In a financial context, this might imply that one
+    should not really worry about why and how financial agents decide the way they
+    decide. One should rather focus on their indirectly revealed preferences based
+    on features data (new information) that describes the state of a financial market
+    and labels data (outcomes) that reflects the impact of the decisions made by financial
+    agents. This leads to a data-driven instead of a theory- or model-driven view
+    of decision making in financial markets. Financial agents become data-processing
+    organisms that can be much better modeled, for example, by complex neural networks
+    than, say, a simple utility function in combination with an assumed probability
+    distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mean-Variance Portfolio Theory
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Assume a data-driven investor wants to apply MVP theory to invest in a portfolio
+    of technology stocks and wants to add a gold-related exchange-traded fund (ETF)
+    for diversification. Probably, the investor would access relevant historical price
+    data via an API to a trading platform or a data provider. To make the following
+    analysis reproducible, it relies on a CSV data file stored in a remote location.
+    The following Python code retrieves the data file, selects a number of symbols
+    given the investor’s goal, and calculates log returns from the price time series
+    data. [Figure 4-4](#figure_ddf_01) compares the normalized price time series for
+    the selected symbols:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves historical EOD data from a remote location
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO12-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the symbols (`RICs`) to be invested in
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO12-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns for all time series
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO12-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the normalized financial time series for the selected symbols
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0404](Images/aiif_0404.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-4\. Normalized financial time series data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The data-driven investor wants to first set a baseline for performance as given
+    by an equally weighted portfolio over the whole period of the available data.
+    To this end, the following Python code defines functions to calculate the portfolio
+    return, the portfolio volatility, and the portfolio Sharpe ratio given a set of
+    weights for the selected symbols:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO13-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equally weighted portfolio
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO13-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Portfolio return
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO13-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Portfolio volatility
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO13-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Portfolio Sharpe ratio (with zero short rate)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The investor also wants to analyze which combinations of portfolio risk and
+    return—and consequently Sharpe ratio—are roughly possible by applying Monte Carlo
+    simulation to randomize the portfolio weights. Short sales are excluded, and the
+    portfolio weights are assumed to add up to 100%. The following Python code implements
+    the simulation and visualizes the results (see [Figure 4-5](#figure_ddf_02)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO14-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simulates portfolio weights adding up to 100%
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO14-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the resulting portfolio volatilities and returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO14-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the resulting Sharpe ratios
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0405](Images/aiif_0405.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-5\. Simulated portfolio volatilities, returns, and Sharpe ratios
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The data-driven investor now wants to backtest the performance of a portfolio
+    that was set up at the beginning of 2011\. The optimal portfolio composition was
+    derived from the financial time series data available from 2010\. At the beginning
+    of 2012, the portfolio composition was adjusted given the available data from
+    2011, and so on. To this end, the following Python code derives the *portfolio
+    weights* for every relevant year that *maximizes the Sharpe ratio*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO15-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the bounds for the single asset weights
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO15-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies that all weights need to add up to 100%
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO15-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the relevant data set for the given year
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO15-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the portfolio weights that maximize the Sharpe ratio
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_data_driven_finance_CO15-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores these weights in a `dict` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: The optimal portfolio compositions as derived for the relevant years illustrate
+    that MVP theory in its original form quite often leads to (relative) extreme situations
+    in the sense that one or more assets are not included at all or that even a single
+    asset makes up 100% of the portfolio. Of course, this can be actively avoided
+    by setting, for example, a minimum weight for every asset considered. The results
+    also indicate that this approach leads to significant rebalancings in the portfolio,
+    driven by the previous year’s realized statistics and correlations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To complete the backtest, the following code compares the expected portfolio
+    statistics (from the optimal composition of the previous year applied to the previous
+    year’s data) with the realized portfolio statistics for the current year (from
+    the optimal composition from the previous year applied to the current year’s data):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO16-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Expected portfolio statistics
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO16-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Realized portfolio statistics
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 4-6](#figure_ddf_03) compares the expected and realized portfolio volatilities
+    for the single years. MVP theory does quite a good job in predicting the portfolio
+    volatility. This is also supported by a relatively high correlation between the
+    two time series:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0406](Images/aiif_0406.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-6\. Expected versus realized portfolio volatilities
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'However, the conclusions are the opposite when comparing the expected with
+    the realized portfolio returns (see [Figure 4-7](#figure_ddf_04)). MVP theory
+    obviously fails in predicting the portfolio returns, as is confirmed by the negative
+    correlation between the two time series:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0407](Images/aiif_0407.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-7\. Expected versus realized portfolio returns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Similar, or even worse, conclusions need to be drawn with regard to the Sharpe
+    ratio (see [Figure 4-8](#figure_ddf_05)). For the data-driven investor who aims
+    at maximizing the Sharpe ratio of the portfolio, the theory’s predictions are
+    generally significantly off from the realized values. The correlation between
+    the two time series is even lower than for the returns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0408](Images/aiif_0408.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-8\. Expected versus realized portfolio Sharpe ratios
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Predictive Power of MVP Theory
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: MVP theory applied to real-world data reveals its practical shortcomings. Without
+    additional constraints, optimal portfolio compositions and rebalancings can be
+    extreme. The predictive power with regard to portfolio return and Sharpe ratio
+    is pretty bad in the numerical example, whereas the predictive power with regard
+    to portfolio risk seems acceptable. However, investors generally are interested
+    in risk-adjusted performance measures, such as the Sharpe ratio, and this is the
+    statistic for which MVP theory fails worst in the example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Capital Asset Pricing Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A similar approach can be applied to put the CAPM to a real-world test. Assume
+    that the data-driven technology investor from before wants to apply the CAPM to
+    derive expected returns for the four technology stocks from before. The following
+    Python code first derives the beta for every stock for a given year, and then
+    calculates the expected return for the stock in the next year, given its beta
+    and the performance of the market portfolio. The market portfolio is approximated
+    by the S&P 500 stock index:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO17-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifies the risk-less short rate
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO17-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the market portfolio
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO17-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the beta of the stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO17-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the expected return given previous year’s beta and current year market
+    portfolio performance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_data_driven_finance_CO17-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the realized performance of the stock for the current year
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_data_driven_finance_CO17-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Collects and prints all results
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The preceding code provides the following output:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 4-9](#figure_ddf_06) compares the predicted (expected) return for a
+    single stock, given the beta from the previous year and market portfolio performance
+    of the current year, with the realized return of the stock for the current year.
+    Obviously, the CAPM in its original form does not prove really useful in predicting
+    a stock’s performance based on beta only:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0409](Images/aiif_0409.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-9\. CAPM-predicted versus realized stock returns for a single stock
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 4-10](#figure_ddf_07) compares the averages of the CAPM-predicted stock
+    returns with the averages of the realized returns. Also here, the CAPM does not
+    do a good job.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'What is easy to see is that the CAPM predictions do not vary that much on average
+    for the stocks analyzed; they are between 12.2% and 14.4%. However, the realized
+    average returns of the stocks show a high variability; these are between 9.4%
+    and 29.2%. Market portfolio performance and beta alone obviously cannot account
+    for the observed returns of the (technology) stocks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0410](Images/aiif_0410.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-10\. Average CAPM-predicted versus average realized stock returns for
+    multiple stocks
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Predictive Power of the CAPM
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The predictive power of the CAPM with regard to the future performance of stocks,
+    relative to the market portfolio, is pretty low or even nonexistent for certain
+    stocks. One of the reasons is probably the fact that the CAPM rests on the same
+    central assumptions as MVP theory, namely that investors care about only the (expected)
+    return and (expected) volatility of a portfolio and/or stock. From a modeling
+    point of view, one can ask whether the single risk factor is enough to explain
+    variability in stock returns or whether there might be a nonlinear relationship
+    between a stock’s return and the market portfolio performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arbitrage Pricing Theory
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The predictive power of the CAPM seems quite limited given the results from
+    the previous numerical example. A valid question is whether the market portfolio
+    performance alone is enough to explain variability in stock returns. The answer
+    of the APT is *no*—there can be more (even many more) factors that together explain
+    variability in stock returns. [“Arbitrage Pricing Theory”](ch03.xhtml#ap_theory)
+    formally describes the framework of APT that also relies on a linear relationship
+    between the factors and a stock’s return.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The data-driven investor recognizes that the CAPM is not sufficient to reliably
+    predict a stock’s performance relative to the market portfolio performance. Therefore,
+    the investor decides to add to the market portfolio three additional factors that
+    might drive a stock’s performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market volatility (as represented by the VIX index, `.VIX`)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Exchange rates (as represented by the EUR/USD rate, `EUR=`)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Commodity prices (as represented by the gold price, `XAU=`)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The following Python code implements a simple APT approach by using the four
+    factors in combination with multivariate regression to explain a stock’s future
+    performance in relation to the factors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO18-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The four factors
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO18-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The multivariate regression
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO18-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The APT-predicted return of the stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO18-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The realized return of the stock
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The preceding code provides the following output:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 4-11](#figure_ddf_08) compares the APT-predicted returns for a stock
+    and its realized stock returns over time. Compared to the single-factor CAPM,
+    there seems to be hardly any improvement:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0411](Images/aiif_0411.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-11\. APT-predicted versus realized stock returns for a stock
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The same picture arises in [Figure 4-12](#figure_ddf_09), produced by the following
+    snippet, which compares the averages for multiple stocks. Because there is hardly
+    any variation in the average APT predictions, there are large average differences
+    to the realized returns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: Of course, the selection of the risk factors is of paramount importance in this
+    context. The data-driven investor decides to find out what risk factors are typically
+    considered relevant ones for stocks. After studying the paper by Bender et al.
+    (2013), the investor replaces the original risk factors with a new set. In particular,
+    the investor chooses the set as presented in [Table 4-3](#ddf_factors_table).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0412](Images/aiif_0412.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-12\. Average APT-predicted versus average realized stock returns for
+    multiple stocks
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Table 4-3\. Risk factors for APT
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Factor | Description | `RIC` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Market | MSCI World Gross Return Daily USD (PUS = Price Return) | `.dMIWO00000GUS`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Size | MSCI World Equal Weight Price Net Index EOD | `.dMIWO0000ENUS` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Volatility | MSCI World Minimum Volatility Net Return | `.dMIWO0000YNUS`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Value | MSCI World Value Weighted Gross (NUS for Net) | `.dMIWO000PkGUS`
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Risk | MSCI World Risk Weighted Gross USD EOD | `.dMIWO000PlGUS` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Growth | MSCI World Quality Net Return USD | `.MIWO0000vNUS` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Momentum | MSCI World Momentum Gross Index USD EOD | `.dMIWO0000NGUS` |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The following Python code retrieves a respective data set from a remote location
+    and visualizes the normalized time series data (see [Figure 4-13](#figure_ddf_10)).
+    Already a brief look reveals that the time series seem to be highly positively
+    correlated:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO19-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves factors time series data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO19-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes and plots the data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0413](Images/aiif_0413.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-13\. Normalized factors time series data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'This impression is confirmed by the following calculation and the resulting
+    correlation matrix for the factor returns. All correlation factors are about 0.75
+    or higher:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO20-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines start and end dates for data selection
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO20-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selects the relevant returns data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO20-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates and processes the log returns for the factors
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO20-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the correlation matrix for the factors
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code derives factor loadings for the original stocks but
+    with the new factors. They are derived from the first half of the data set and
+    applied to predict the stock return for the second half given the performance
+    of the single factors. The realized return is also calculated. Both time series
+    are compared in [Figure 4-14](#figure_ddf_11). As to be expected given the high
+    correlation of the factors, the explanatory power of the APT approach is not much
+    higher compared to the CAPM:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0414](Images/aiif_0414.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-14\. APT-predicted returns based on typical factors compared to realized
+    returns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The data-driven investor is not willing to dismiss the APT completely. Therefore,
+    an additional test might shed some more light on the explanatory power of APT.
+    To this end, the factor loadings are used to test whether APT can explain movements
+    of the stock price over time (correctly). And indeed, although APT does not predict
+    the absolute performance correctly (it is off by 10+ percentage points), it predicts
+    the direction of the stock price movement correctly in the majority of cases (see
+    [Figure 4-15](#figure_ddf_12)). The correlation between the predicted and realized
+    returns is also pretty high at around 85%. However, the analysis uses realized
+    factor returns to generate the APT predictions—something, of course, not available
+    in practice a day before the relevant trading day:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO21-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicts the daily stock price returns given the realized factor returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO21-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stores the results in a `DataFrame` object and adds column and index data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO21-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds the realized stock price returns to the `DataFrame` object
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_data_driven_finance_CO21-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the annualized returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_data_driven_finance_CO21-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the annualized volatility
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_data_driven_finance_CO21-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the correlation factor
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0415](Images/aiif_0415.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-15\. APT-predicted performance and real performance over time (gross)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'How accurately does APT predict the direction of the stock price movement given
+    the realized factor returns? The following Python code shows that the accuracy
+    score is a bit better than 75%:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: Debunking Central Assumptions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The previous section provides a number of numerical, real-world examples showing
+    how popular normative financial theories might fail in practice. This section
+    argues that one of the major reasons is that central assumptions of these popular
+    financial theories are invalid; that is, they simply do not describe the reality
+    of financial markets. The two assumptions analyzed are *normally distributed returns*
+    and *linear* *relationships*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normally Distributed Returns
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As a matter of fact, only a normal distribution is completely specified through
+    its first (expectation) and second moment (standard deviation).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sample data sets
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'For illustration, consider a randomly generated set of standard normally distributed
+    numbers as generated by the following Python code.^([4](ch04.xhtml#idm45625313161960))
+    [Figure 4-16](#figure_ddf_13) shows the typical bell shape of the resulting histogram:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO22-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Draws standard normally distributed random numbers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO22-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Corrects the first moment (expectation) to 0.0
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO22-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Corrects the second moment (standard deviation) to 1.0
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0416](Images/aiif_0416.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-16\. Standard normally distributed random numbers
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Now consider a set of random numbers that share the same first and second moment
+    values but have a completely different distribution than [Figure 4-17](#figure_ddf_14)
+    illustrates. Although the moments are the same, this distribution only consists
+    of three discrete values:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO23-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A set of numbers with three discrete values only
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO23-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Corrects the first moment (expectation) to 0.0
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_data_driven_finance_CO23-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Corrects the second moment (standard deviation) to 1.0
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 0417](Images/aiif_0417.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-17\. Distribution with first and second moment of 0.0 and 1.0, respectively
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: First and Second Moment
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The first and second moment of a probability distribution only describe a normal
+    distribution completely. There are infinitely many other distributions that might
+    share the first two moments with a normal distribution while being completely
+    different.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In preparation for a test of real financial returns, consider the following
+    Python functions that allow one to visualize data as a histogram and to add a
+    probability density function (PDF) of a normal distribution with the first two
+    moments of the data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_data_driven_finance_CO24-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the histogram of the data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_data_driven_finance_CO24-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the PDF of the corresponding normal distribution
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 4-18](#figure_ddf_15) shows how well the histogram approximates the
+    PDF for the standard normally distributed random numbers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0418](Images/aiif_0418.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-18\. Histogram and PDF for standard normally distributed numbers
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'By contrast, [Figure 4-19](#figure_ddf_16) illustrates that the PDF of the
+    normal distribution has nothing to do with the data shown as a histogram:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0419](Images/aiif_0419.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-19\. Histogram and normal PDF for discrete numbers
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Another way of comparing a normal distribution to data is the Quantile-Quantile
+    (Q-Q) plot. As [Figure 4-20](#figure_ddf_17) shows, for normally distributed numbers,
+    the numbers themselves lie (mostly) on a straight line in the Q-Q plane:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0420](Images/aiif_0420.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-20\. Q-Q plot for standard normally distributed numbers
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Again, the Q-Q plot as shown in [Figure 4-21](#figure_ddf_18) for the discrete
+    numbers looks completely different to the one in [Figure 4-20](#figure_ddf_17):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0421](Images/aiif_0421.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-21\. Q-Q plot for discrete numbers
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Finally, one can also use statistical tests to check whether a set of numbers
+    is normally distributed or not.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python function implements three tests:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Test for normal skew.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Test for normal kurtosis.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Test for normal skew and kurtosis combined.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'A p-value below 0.05 is generally considered to be a counter-indicator for
+    normality; that is, the hypothesis that the numbers are normally distributed is
+    rejected. In that sense, as in the preceding figures, the p-values for the two
+    data sets speak for themselves:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: Real financial returns
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The following Python code retrieves EOD data from a remote source, as done
+    earlier in the chapter, and calculates the log returns for all financial time
+    series contained in the data set. [Figure 4-22](#figure_ddf_19) shows that the
+    log returns of the S&P 500 stock index represented as a histogram show a much
+    higher peak and fatter tails when compared to the normal PDF with the sample expectation
+    and standard deviation. These two insights are *stylized facts* because they can
+    be consistently observed for different financial instruments:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0422](Images/aiif_0422.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-22\. Frequency distribution and normal PDF for S&P 500 log returns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Similar insights can be gained when considering the Q-Q plot for the S&P 500
+    log returns in [Figure 4-23](#figure_ddf_20). In particular, the Q-Q plot visualizes
+    the fat tails pretty well (points below the straight line to the left and above
+    the straight line to the right):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0423](Images/aiif_0423.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-23\. Q-Q for S&P 500 log returns
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The Python code that follows conducts the statistical tests regarding the normality
+    of the real financial returns for a selection of the financial time series from
+    the data set. Real financial returns regularly fail such tests. Therefore, it
+    is safe to conclude that the normality assumption about financial returns hardly,
+    if at all, describes financial reality:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: Normality Assumption
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Although the normality assumption is a good approximation for many real-world
+    phenomena, such as in physics, it is not appropriate and can even be dangerous
+    when it comes to financial returns. Almost no financial return sample data set
+    passes statistical normality tests. Beyond the fact that it has proven useful
+    in other domains, a major reason why this assumption is found in so many financial
+    models is that it leads to elegant and relatively simple mathematical models,
+    calculations, and proofs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Linear Relationships
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Similar to the “omnipresence” of the normality assumption in financial models
+    and theories, *linear relationships* between variables seem to be another widespread
+    benchmark. This sub-section considers an important one, namely the assumed linear
+    relationship in the CAPM between the beta of a stock and its expected (realized)
+    return. Generally speaking, the higher the beta is, the higher the expected return
+    given a positive market performance will be—in a fixed proportional way as given
+    by the beta value itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recall the calculation of the betas, the CAPM expected returns, and the realized
+    returns for a selection of technology stocks from the previous section, which
+    is repeated in the following Python code for convenience. This time, the beta
+    values are added to the results’ `DataFrame` object as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following analysis calculates the <math alttext="upper R squared"><msup><mi>R</mi>
+    <mn>2</mn></msup></math> score for a linear regression for which the beta is the
+    independent variable and the *expected CAPM return*, given the market portfolio
+    performance, is the dependent variable. <math alttext="upper R squared"><msup><mi>R</mi>
+    <mn>2</mn></msup></math> refers to the *coefficient of determination* and measures
+    how well a model performs compared to a baseline predictor in the form of a simple
+    mean value. The linear regression can only explain around 10% of the variability
+    in the expected CAPM return, a pretty low value, which is also confirmed through
+    [Figure 4-24](#figure_ddf_21):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0424](Images/aiif_0424.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-24\. Expected CAPM return versus beta (including linear regression)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'For the *realized return*, the explanatory power of the linear regression is
+    even lower, with about 4.5% (see [Figure 4-25](#figure_ddf_22)). The linear regressions
+    recover the positive relationship between beta and stock returns—“the higher the
+    beta, the higher the return given the (positive) market portfolio performance”—as
+    indicated by the positive slope of the regression lines. However, they only explain
+    a small part of the observed overall variability in the stock returns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 0425](Images/aiif_0425.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4-25\. Expected CAPM return versus beta (including linear regression)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Linear Relationships
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: As with the normality assumptions, linear relationships can often be observed
+    in the physical world. However, in finance there are hardly any cases in which
+    variables depend on each other in a clearly linear way. From a modeling point
+    of view, linear relationships lead, as does the normality assumption, to elegant
+    and relatively simple mathematical models, calculations, and proofs. In addition,
+    the standard tool in financial econometrics, OLS regression, is well suited to
+    dealing with linear relationships in data. These are major reasons why normality
+    and linearity are often deliberately chosen as convenient building blocks of financial
+    models and theories.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Science has been driven for centuries by the rigorous generation and analysis
+    of data. However, finance used to be characterized by normative theories based
+    on simplified mathematical models of the financial markets, relying on assumptions
+    such as normality of returns and linear relationships. The almost universal and
+    comprehensive availability of (financial) data has led to a shift in focus from
+    a *theory-first* approach to *data-driven* finance. Several examples based on
+    real financial data illustrate that many popular financial models and theories
+    cannot survive a confrontation with financial market realities. Although elegant,
+    they might be too simplistic to capture the complexities, changing nature, and
+    nonlinearities of financial markets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Allais, M. 1953\. “Le Comportement de l’Homme Rationnel devant le Risque: Critique
+    des Postulats et Axiomes de l’Ecole Americaine.” *Econometrica* 21 (4): 503-546.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Alexander, Carol. 2008a. *Quantitative Methods in Finance*. Market Risk Analysis
+    I, West Sussex: John Wiley & Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '⸻. 2008b. *Practical Financial Econometrics*. Market Risk Analysis II, West
+    Sussex: John Wiley & Sons.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bender, Jennifer et al. 2013\. “Foundations of Factor Investing.” *MSCI Research
+    Insight*. [*http://bit.ly/aiif_factor_invest*](http://bit.ly/aiif_factor_invest).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Campbell, John Y. 2018\. *Financial Decisions and Markets: A Course in Asset
+    Pricing.* Princeton and Oxford: Princeton University Press.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Ellsberg, Daniel. 1961\. “Risk, Ambiguity, and the Savage Axioms.” *Quarterly
+    Journal of Economics* 75 (4): 643-669.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Fontaine, Philippe and Robert Leonard. 2005\. *The Experiment in the History
+    of Economics*. London and New York: Routledge.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Kopf, Dan. 2015\. “The Discovery of Statistical Regression.” *Priceonomics*,
+    November 6, 2015\. [*http://bit.ly/aiif_ols*](http://bit.ly/aiif_ols).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Lee, Kai-Fu. 2018\. *AI Superpowers: China, Silicon Valley, and the New World
+    Order.* Boston and New York: Houghton Mifflin Harcourt.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Sapolsky, Robert M. 2018\. *Behave: The Biology of Humans at Our Best and Worst.*
+    New York: Penguin Books.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Savage, Leonard J. (1954) 1972\. *The Foundations of Statistics.* 2nd ed. New
+    York: Dover Publications.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Wigglesworth, Robin. 2019\. “How Investment Analysts Became Data Miners.” *Financial
+    Times*, November 28, 2019\. [*https://oreil.ly/QJGtd*](https://oreil.ly/QJGtd).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python Code
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The following Python file contains a number of helper functions to simplify
+    certain tasks in NLP:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch04.xhtml#idm45625324920136-marker)) See, for example, Kopf (2015).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch04.xhtml#idm45625324874120-marker)) This data service is only available
+    via a paid subscription.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch04.xhtml#idm45625324543064-marker)) `RIC` stands for *Reuters Instrument
+    Code*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch04.xhtml#idm45625313161960-marker)) Numbers generated by the random
+    number generator of `NumPy` are *pseudorandom numbers*, although they are referenced
+    throughout the book as *random numbers*.
+  prefs: []
+  type: TYPE_NORMAL

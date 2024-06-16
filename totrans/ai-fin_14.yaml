@@ -1,0 +1,669 @@
+- en: Chapter 10\. Vectorized Backtesting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Tesla’s chief executive and serial technology entrepreneur, Elon Musk, has said
+    his company’s cars will be able to be summoned and drive autonomously across the
+    US to pick up their owners within the next two years.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Samuel Gibbs (2016)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Big money is made in the stock market by being on the right side of the major
+    moves.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Martin Zweig
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The term *vectorized backtesting* refers to a technical approach to backtesting
+    algorithmic trading strategies, such as those based on a dense neural network
+    (DNN) for market prediction. The books by Hilpisch (2018, ch. 15; 2020, ch. 4)
+    cover vectorized backtesting based on a number of concrete examples. *Vectorized*
+    in this context refers to a programming paradigm that relies heavily or even exclusively
+    on vectorized code (that is, code without any looping on the Python level). Vectorization
+    of code is good practice with such packages such as `Numpy` or `pandas` in general
+    and has been used intensively in previous chapters as well. The benefits of vectorized
+    code are more concise and easy-to-read code, as well as faster execution in many
+    important scenarios. On the other hand, it might not be as flexible in backtesting
+    trading strategies as, for example, event-based backtesting, which is introduced
+    and used in [Chapter 11](ch11.xhtml#risk_management).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having a good AI-powered predictor available that beats a simple baseline predictor
+    is important but is generally not enough to generate *alpha* (that is, above-market
+    returns, possibly adjusted for risk). For example, it is also important for a
+    prediction-based trading strategy to predict the large market movements correctly
+    and not just the majority of the (potentially pretty small) market movements.
+    Vectorized backtesting is an easy and fast way of figuring out the economic potential
+    of a trading strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Compared to autonomous vehicles (AVs), vectorized backtesting is like testing
+    the AI of AVs in virtual environments just to see how it performs “in general”
+    in a risk-free environment. However, for the AI of an AV it is not only important
+    to perform well *on average*, but it is also of paramount importance to see how
+    it masters critical or even extreme situations. Such an AI is supposed to cause
+    “zero casualties” on average, not 0.1 or 0.5\. For a financial AI, it is similarly—even
+    if not equally—important to get the large market movements correct. Whereas this
+    chapter focuses on the pure performance of financial AI agents (trading bots),
+    [Chapter 11](ch11.xhtml#risk_management) goes deeper into risk assessment and
+    the backtesting of standard risk measures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[“Backtesting an SMA-Based Strategy”](#vb_sma_eod_exmple) introduces vectorized
+    backtesting based on a simple example using simple moving averages as technical
+    indicators and end-of-day (EOD) data. This allows for insightful visualizations
+    and an easier understanding of the approach when getting started. [“Backtesting
+    a Daily DNN-Based Strategy”](#vb_dnn_eod_example) trains a DNN based on EOD data
+    and backtests the resulting prediction-based strategy for its economic performance.
+    [“Backtesting an Intraday DNN-Based Strategy”](#vb_dnn_id_example) then does the
+    same with intraday data. In all examples, proportional transaction costs are included
+    in the form of assumed bid-ask spreads.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtesting an SMA-Based Strategy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This section introduces vectorized backtesting based on a classical trading
+    strategy that uses simple moving averages (SMAs) as technical indicators. The
+    following code realizes the necessary imports and configurations and retrieves
+    EOD data for the EUR/USD currency pair:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves EOD data for EUR/USD
+  prefs: []
+  type: TYPE_NORMAL
+- en: The idea of the strategy is the following. Calculate a shorter `SMA1`, say for
+    42 days, and a longer `SMA2`, say for 258 days. Whenever `SMA1` is above `SMA2`,
+    go long on the financial instrument. Whenever `SMA1` is below `SMA2`, go short
+    on the financial instrument. Because the example is based on EUR/USD, going long
+    or short is easily accomplished.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following Python code calculates in vectorized fashion the SMA values and
+    visualizes the resulting time series alongside the original time series (see [Figure 10-1](#figure_vb_01)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the shorter `SMA1`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the longer `SMA2`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO2-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the three time series
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equipped with the SMA time series data, the resulting positions can, again in
+    vectorized fashion, be derived. Note the shift of the resulting position time
+    series by one day to avoid foresight bias in the data. This shift is necessary
+    since the calculation of the SMAs includes the closing values from the same day.
+    Therefore, the position derived from the SMA values from one day needs to be applied
+    to the next day for the whole time series.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1001](Images/aiif_1001.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-1\. Time series data for EUR/USD and SMAs
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '[Figure 10-2](#figure_vb_02) visualizes the resulting positions as an overlay
+    to the other time series:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deletes rows containing `NaN` values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the position values based on same-day SMA values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shifts the position values by one day to avoid foresight bias
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the position values as derived from the SMAs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1002](Images/aiif_1002.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-2\. Time series data for EUR/USD, SMAs, and resulting positions
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'One crucial step is missing: the combination of the positions with the returns
+    of the financial instrument. Since positions are conveniently represented by a
+    `+1` for a long position and a `-1` for a short position, this step boils down
+    to multiplying two columns of the `DataFrame` object—in vectorized fashion again.
+    The SMA-based trading strategy outperforms the passive benchmark investment by
+    a considerable margin, as [Figure 10-3](#figure_vb_03) illustrates:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the strategy returns
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the gross performances
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the net performances
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the gross performances over time
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1003](Images/aiif_1003.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-3\. Gross performance of passive benchmark investment and SMA strategy
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'So far, the performance figures are not considering transaction costs. These
+    are, of course, a crucial element when judging the economic potential of a trading
+    strategy. In the current setup, proportional transaction costs can be easily included
+    in the calculations. The idea is to determine when a trade takes place and to
+    reduce the performance of the trading strategy by a certain value to account for
+    the relevant bid-ask spread. As the following calculations show, and as is obvious
+    from [Figure 10-2](#figure_vb_02), the trading strategy does not change positions
+    too often. Therefore, in order to have some meaningful effects of transaction
+    costs, they are assumed to be quite a bit higher than typically seen for EUR/USD.
+    The net effect of subtracting transaction costs is a few percentage points under
+    the given assumptions (see [Figure 10-4](#figure_vb_04)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the number of trades, including entry and exit trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO5-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the proportional transaction costs (deliberately set quite high)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO5-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the strategy performance for the transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO5-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the strategy performance for the *entry* trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO5-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjusts the strategy performance for the *exit* trade
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_vectorized_backtesting_CO5-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the adjusted performance values for the regular trades
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1004](Images/aiif_1004.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-4\. Gross performance of the SMA strategy before and after transaction
+    costs
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'What about the resulting risk of the trading strategy? For a trading strategy
+    that is based on directional predictions and that takes long or short positions
+    only, the risk, expressed as the volatility (standard deviation of the log returns),
+    is exactly the same as for the passive benchmark investment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Daily volatility
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO6-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Annualized volatility
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vectorized Backtesting
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Vectorized backtesting is a powerful and efficient approach to backtesting the
+    “pure” performance of a prediction-based trading strategy. It can also accommodate
+    proportional transaction costs, for instance. However, it is not well suited to
+    including typical risk management measures, such as (trailing) stop loss orders
+    or take profit orders. This is addressed in [Chapter 11](ch11.xhtml#risk_management).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtesting a Daily DNN-Based Strategy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The previous section lays out the blueprint for vectorized backtesting on the
+    basis of a simple, easy-to-visualize trading strategy. The same blueprint can
+    be applied, for example, to DNN-based trading strategies with minimal technical
+    adjustments. The following trains a `Keras` DNN model, as discussed in [Chapter 7](ch07.xhtml#dense_networks).
+    The data that is used is the same as in the previous example. However, as in [Chapter 7](ch07.xhtml#dense_networks),
+    different features and lags thereof need to be added to the `DataFrame` object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following Python code accomplishes additional imports and defines the `set_seeds()`
+    and `create_model()` functions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Based on a sequential train-test split of the historical data, the following
+    Python code first trains the DNN model based on normalized features data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Splits the data into training and test data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the frequency of the labels classes
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes the training features data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO7-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creates the DNN model
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO7-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trains the DNN model on the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_vectorized_backtesting_CO7-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the performance of the model on the training data
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So far, this basically repeats the core approach of [Chapter 7](ch07.xhtml#dense_networks).
+    Vectorized backtesting can now be applied to judge the economic performance of
+    the DNN-based trading strategy *in-sample* based on the model’s predictions (see
+    [Figure 10-5](#figure_vb_05)). In this context, an upward prediction is naturally
+    interpreted as a long position and a downward prediction as a short position:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the binary predictions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Translates the predictions into position values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the number of long and short positions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the strategy performance values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the gross and net performances (in-sample)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](Images/6.png)](#co_vectorized_backtesting_CO8-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Visualizes the gross performances over time (in-sample)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1005](Images/aiif_1005.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-5\. Gross performance of the passive benchmark investment and the
+    daily DNN strategy (in-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Next is the same sequence of calculations for the test data set. Whereas the
+    out-performance in-sample is significant, the numbers out-of-sample are not as
+    impressive but are still convincing (see [Figure 10-6](#figure_vb_06)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generates the test data sub-set
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normalizes the test data
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Evaluates the model performance on the test data
+  prefs: []
+  type: TYPE_NORMAL
+- en: The DNN-based trading strategy leads to a larger number of trades as compared
+    to the SMA-based strategy. This makes the inclusion of transaction costs an even
+    more important aspect when judging the economic performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1006](Images/aiif_1006.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-6\. Gross performance of the passive benchmark investment and the
+    daily DNN strategy (out-of-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'The following code assumes now realistic bid-ask spreads for EUR/USD on the
+    level of 1.2 pips (that is, 0.00012 in terms of currency units).^([1](ch10.xhtml#idm45625271705592))
+    To simplify the calculations, an average value for the proportional transaction
+    costs `pc` is calculated based on the average closing price for EUR/USD (see [Figure 10-7](#figure_vb_07)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixes the average bid-ask spread
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the average proportional transaction costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1007](Images/aiif_1007.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-7\. Gross performance of the daily DNN strategy before and after transaction
+    costs (out-of-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The DNN-based trading strategy seems promising both before and after typical
+    transaction costs. However, would a similar strategy be economically viable intraday
+    as well, when even more trades are observed? The next section analyzes a DNN-based
+    intraday strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtesting an Intraday DNN-Based Strategy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'To train and backtest a DNN model on intraday data, another data set is required:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves intraday data for EUR/USD and picks the closing prices
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO11-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resamples the data to five-minute bars
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The procedure of the previous section can now be repeated with the new data
+    set. First, train the DNN model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In-sample, the performance looks promising, as illustrated in [Figure 10-8](#figure_vb_08):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![aiif 1008](Images/aiif_1008.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-8\. Gross performance of the passive benchmark investment and the
+    DNN intraday strategy (in-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Out-of-sample, the performance also looks promising before transaction costs.
+    The strategy seems to systematically outperform the passive benchmark investment
+    (see [Figure 10-9](#figure_vb_09)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: The final litmus test with regard to pure economic performance comes when adding
+    transaction costs. The strategy leads to hundreds of trades over a relatively
+    short period of time. As the following analysis suggests, based on standard retail
+    bid-ask spreads, the DNN-based strategy is not viable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1009](Images/aiif_1009.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-9\. Gross performance of the passive benchmark investment and the
+    DNN intraday strategy (out-of-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'Reducing the spread to a level that professional, high-volume traders might
+    achieve, the strategy still does not break even but rather loses a large proportion
+    of the profits to the transaction costs (see [Figure 10-10](#figure_vb_10)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO12-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assumes bid-ask spread on retail level
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO12-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assumes bid-ask spread on professional level
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![aiif 1010](Images/aiif_1010.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10-10\. Gross performance of the DNN intraday strategy before and after
+    higher/lower transaction costs (out-of-sample)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Intraday Trading
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Intraday algorithmic trading in the form discussed in this chapter often seems
+    appealing from a statistical point of view. Both in-sample and out-of-sample,
+    the DNN model reaches a high accuracy when predicting the market direction. Excluding
+    transaction costs, this also translates both in-sample and out-of-sample into
+    a significant outperformance of the DNN-based strategy when compared to the passive
+    benchmark investment. However, adding transaction costs to the mix reduces the
+    performance of the DNN-based strategy considerably, making it unviable for typical
+    retail bid-ask spreads and not really attractive for lower, high-volume bid-ask
+    spreads.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Vectorized backtesting proves to be an efficient and valuable approach for backtesting
+    the performance of AI-powered algorithmic trading strategies. This chapter first
+    explains the basic idea behind the approach based on a simple example using two
+    SMAs to derive signals. This allows for a simple visualization of the strategy
+    and resulting positions. It then proceeds by backtesting a DNN-based trading strategy,
+    as discussed in detail in [Chapter 7](ch07.xhtml#dense_networks), in combination
+    with EOD data. Both before and after transaction costs, the *statistical inefficiencies*
+    as discovered in [Chapter 7](ch07.xhtml#dense_networks) translate into *economic
+    inefficiencies*, which means profitable trading strategies. When using the same
+    vectorized backtesting approaches with intraday data, the DNN strategy also shows
+    a significant outperformance both in- and out-of-sample when compared to the passive
+    benchmark investment—at least before transaction costs. Adding transaction costs
+    to the backtesting illustrates that these must be pretty low, on a level often
+    not even achieved by big professional traders, to render the trading strategy
+    economically viable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Books and papers cited in this chapter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Gibbs Samuel. 2016\. “Elon Musk: Tesla Cars Will Be Able to Cross Us with No
+    Driver in Two Years.” *The Guardian*. January 11, 2016\. [*https://oreil.ly/C508Q*](https://oreil.ly/C508Q).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance.*
+    2nd ed. Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '⸻. 2020\. *Python for Algorithmic Trading: From Idea to Cloud Deployment.*
+    Sebastopol: O’Reilly.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^([1](ch10.xhtml#idm45625271705592-marker)) This, for example, is a typical
+    spread that [Oanda](http://oanda.com) offers retail traders.
+  prefs: []
+  type: TYPE_NORMAL

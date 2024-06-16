@@ -1,0 +1,897 @@
+- en: Chapter 8\. CFD Trading with Oanda
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Today, even small entities that trade complex instruments or are granted sufficient
+    leverage can threaten the global financial system.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Paul Singer
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Today, it is easier than ever to get started with trading in the financial
+    markets. There is a large number of online trading platforms (brokers) available
+    from which an algorithmic trader can choose. The choice of a platform might be
+    influenced by multiple factors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instruments
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first criterion that comes to mind is the type of instrument one is interested
+    in to trade. For example, one might be interested in trading stocks, exchange
+    traded funds (ETFs), bonds, currencies, commodities, options, or futures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some traders are interested in long-only strategies, while others require short
+    selling as well. Some focus on single-instrument strategies, while others focus
+    on those involving multiple instruments at the same time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixed and variable transaction costs are an important factor for many traders.
+    They might even decide whether a certain strategy is profitable or not (see, for
+    instance, Chapters [4](ch04.html#vectorized_backtesting) and [6](ch06.html#event_based_backtesting)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technology
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technology has become an important factor in the selection of trading platforms.
+    First, there are the tools that the platforms offer to traders. Trading tools
+    are available, in general, for desktop/notebook computers, tablets, and smart
+    phones. Second, there are the application programming interfaces (APIs) that can
+    be accessed programmatically by traders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jurisdiction
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial trading is a heavily regulated field with different legal frameworks
+    in place for different countries or regions. This might prohibit certain traders
+    from using certain platforms and/or financial instruments depending on their residence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This chapter focuses on [Oanda](http://oanda.com), an online trading platform
+    that is well suited to deploy automated, algorithmic trading strategies, even
+    for retail traders. The following is a brief description of Oanda along the criteria
+    as outlined previously:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instruments
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oanda offers a wide range of so-called *contracts for difference* (CFD) products
+    (see also [“Contracts for Difference (CFDs)”](#cfds) and [“Disclaimer”](ch09.html#disclaimer)).
+    Main characteristics of CFDs are that they are leveraged (for example, 10:1 or
+    50:1) and traded on margin such that losses might exceed the initial capital.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oanda allows both to go long (buy) and to go short (sell) CFDs. Different order
+    types are available, such as market or limit orders, with or without profit targets
+    and/or (trailing) stop losses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Costs
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are no fixed transaction costs associated with the trading of CFDs at
+    Oanda. However, there is a bid-ask spread that leads to variable transaction costs
+    when trading CFDs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technology
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oanda provides the trading application fxTrade (Practice), which retrieves data
+    in real time and allows the (manual, discretionary) trading of all instruments
+    (see [Figure 8-1](#oanda_01_a)). There is also a browser-based trading application
+    available (see [Figure 8-2](#oanda_01_b)). A major strength of the platform are
+    the RESTful and streaming APIs (see [Oanda v20 API](https://oreil.ly/_AHHI)) via
+    which traders can programmatically access historical and streaming data, place
+    buy and sell orders, or retrieve account information. A Python wrapper package
+    is available (see [v20 on PyPi](https://oreil.ly/iZuuV)). Oanda offers free paper
+    trading accounts that provide full access to all technological capabilities, which
+    is really helpful in getting started on the platform. This also simplifies the
+    transitioning from paper to live trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jurisdiction
+  prefs: []
+  type: TYPE_NORMAL
+- en: Depending on the residence of the account holder, the selection of CFDs that
+    can be traded changes. FX-related CFDs are available basically everywhere Oanda
+    is active. CFDs on stock indices, for instance, might not be available in certain
+    jurisdictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0801](assets/pfat_0801.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-1\. Oanda trading application fxTrade Practice
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pfat 0802](assets/pfat_0802.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-2\. Oanda browser-based trading application
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The chapter is organized as follows. [“Setting Up an Account”](#oanda_setup)
+    briefly discusses how to set up an account. [“The Oanda API”](#oanda_api) illustrates
+    the necessary steps to access the API. Based on the API access, [“Retrieving Historical
+    Data”](#oanda_historical) retrieves and works with historical data for a certain
+    CFD. [“Working with Streaming Data”](#oanda_streaming) introduces the streaming
+    API of Oanda for data retrieval and visualization. [“Implementing Trading Strategies
+    in Real Time”](#oanda_trading) implements an automated, algorithmic trading strategy
+    in real time. Finally, [“Retrieving Account Information”](#oanda_account) deals
+    with retrieving data about the account itself, such as the current balance or
+    recent trades. Throughout, the code makes use of a Python wrapper class called
+    `tpqoa` (see [GitHub repository](https://oreil.ly/E95UV)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The goal of this chapter is to make use of the approaches and technologies as
+    introduced in previous chapters to automatically trade on the Oanda platform.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Setting Up an Account
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The process for setting up an account with Oanda is simple and efficient. You
+    can choose between a real account and a free demo (“practice”) account, which
+    absolutely suffices to implement what follows (see Figures [8-3](#oanda_02) and
+    [8-4](#oanda_03)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0803](assets/pfat_0803.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-3\. Oanda account registration (account types)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: If the registration is successful and you are logged in to the account on the
+    platform, you should see a starting page, as shown in [Figure 8-5](#oanda_04).
+    In the middle, you will find a download link for the `fxTrade Practice for Desktop`
+    application, which you should install. Once it is running, it looks similar to
+    the screenshot shown in [Figure 8-1](#oanda_01_a).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0804](assets/pfat_0804.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-4\. Oanda account registration (registration form)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: '![pfat 0805](assets/pfat_0805.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-5\. Oanda account starting page
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: The Oanda API
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: After registration, getting access to the APIs of Oanda is an easy affair. The
+    major ingredients needed are the account number and the access token (API key).
+    You will find the account number, for instance, in the area `Manage Funds`. The
+    access token can be generated in the area `Manage API Access` (see [Figure 8-6](#oanda_05)).^([1](ch08.html#idm45785354036712))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From now on, the [`configparser`](https://oreil.ly/UaQyo) module is used to
+    manage account credentials. The module expects a text file—with a filename, say,
+    of *pyalgo.cfg*—in the following format for use with an Oanda practice account:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![pfat 0806](assets/pfat_0806.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-6\. Oanda API access managing page
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: To access the API via Python, it is recommended to use the Python wrapper package
+    `tpqoa` (see [GitHub repository](http://github.com/yhilpisch/tpqoa)) that in turn
+    relies on the `v20` package from Oanda (see [GitHub repository](https://oreil.ly/F_cB2)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is installed with the following command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'With these prerequisites, you can connect to the API with a single line of
+    code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO1-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjust the path and filename if required.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This is a major milestone: being connected to the Oanda API allows for the
+    retrieval of historical data, the programmatic placement of orders, and more.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The upside of using the `configparser` module is that it simplifies the storage
+    and management of account credentials. In algorithmic trading, the number of accounts
+    needed can quickly grow. Examples are a cloud instance or server, data service
+    provider, online trading platform, and so on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The downside is that the account information is stored in the form of plain
+    text, which represents a considerable security risk, particularly since the information
+    about multiple accounts is stored in a single file. When moving to production,
+    you should therefore apply, for example, file encryption methods to keep the credentials
+    safe.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Historical Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: A major benefit of working with the Oanda platform is that the complete price
+    history of all Oanda instruments is accessible via the RESTful API. In this context,
+    *complete history* refers to the different CFDs themselves, not the underlying
+    instruments they are defined on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Looking Up Instruments Available for Trading
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'For an overview of what instruments can be traded for a given account, use
+    the `.get_instruments()` method. It only retrieves the display names and technical
+    instruments, names from the API. More details are available via the API, such
+    as minimum position size:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Backtesting a Momentum Strategy on Minute Bars
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The example that follows uses the instrument `EUR_USD` based on the EUR/USD
+    currency pair. The goal is to backtest *momentum-based strategies on one-minute
+    bars*. The data used is for two days in May 2020\. The first step is to *retrieve
+    the raw data* from Oanda:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO2-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the docstring (help text) for the `.get_history()` method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO2-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the parameter values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO2-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieves the raw data from the API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO2-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the meta information for the retrieved data set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_cfd_trading_with_oanda_CO2-9)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows the first five data rows for two columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second step is to *implement the vectorized backtesting*. The idea is to
+    simultaneously backtest a couple of momentum strategies. The code is straightforward
+    and concise (see also [Chapter 4](ch04.html#vectorized_backtesting)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: For simplicity, the following code uses close (`c`) values of mid prices only:^([2](ch08.html#idm45785352515432))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO3-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns based on the `close` values of the mid prices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO3-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instantiates an empty `list` object to collect column names.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO3-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the time interval in minute bars for the momentum strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO3-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines the name of the column to be used for storage in the `DataFrame` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_cfd_trading_with_oanda_CO3-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adds the strategy positionings as a new column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_cfd_trading_with_oanda_CO3-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends the name of the column to the `list` object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The final step is the *derivation and plotting of the absolute performance*
+    of the different momentum strategies. The plot [Figure 8-7](#oanda_plot_1) shows
+    the performances of the momentum-based strategies graphically and compares them
+    to the performance of the base instrument itself:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO4-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defines another `list` object to store the column names to be plotted later
+    on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO4-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Iterates over columns with the positionings for the different strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO4-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Derives the name for the new column in which the strategy performance is stored.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO4-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculates the log returns for the different strategies and stores them as new
+    columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_cfd_trading_with_oanda_CO4-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Appends the column names to the `list` object for later plotting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_cfd_trading_with_oanda_CO4-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plots the cumulative performances for the instrument and the strategies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0807](assets/pfat_0807.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-7\. Gross performance of different momentum strategies for `EUR_USD`
+    instrument (minute bars)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Factoring In Leverage and Margin
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In general, when you buy a share of a stock for, say, 100 USD, the profit and
+    loss (P&L) calculations are straightforward: if the stock price rises by 1 USD,
+    you earn 1 USD (unrealized profit); if the stock price falls by 1 USD, you lose
+    1 USD (unrealized loss). If you buy 10 shares, just multiply the results by 10.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trading CFDs on the Oanda platform involves leverage and margin. This significantly
+    influences the P&L calculation. For an introduction to and overview of this topic
+    refer to [Oanda fxTrade Margin Rules](https://oreil.ly/8I5Eg). A simple example
+    can illustrate the major aspects in this context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider that a EUR-based algorithmic trader wants to trade the `EUR_USD` instrument
+    on the Oanda platform and wants to get a long exposure of 10,000 EUR at an ask
+    price of 1.1\. Without leverage and margin, the trader (or Python program) would
+    buy 10,000 units of the CFD.^([3](ch08.html#idm45785353211096)) If the price of
+    the instrument (exchange rate) rises to 1.105 (as the midpoint rate between bid
+    and ask prices), the absolute profit is 10,000 x 0.005 = 50 or 0.5%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What impact do leverage and margining have? Suppose the algorithmic trader chooses
+    a leverage ratio of 20:1, which translates into a 5% margin (= 100% / 20). This
+    in turn implies that the trader only needs to put up a margin upfront of 10,000
+    EUR x 5% = 500 EUR to get the same exposure. If the price of the instrument then
+    rises to 1.105, the absolute profit stays the same at 50 EUR, but the relative
+    profit rises to 50 EUR / 500 EUR = 10%. The return is considerably amplified by
+    a factor of 20; this is the benefit of leverage when things go as desired.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What happens if things go south? Assume the instrument price drops to 1.08 (as
+    the midpoint rate between bid and ask prices), leading to a loss of 10,000 x (1.08
+    - 1.1) = -200 EUR. The relative loss now is -200 EUR / 500 EUR = -40%. If the
+    account the algorithmic trader is trading with has less than 200 EUR left in equity/cash,
+    the position needs to be closed out since the (regulatory) margin requirements
+    cannot be met anymore. If losses eat up the margin completely, additional funds
+    need to be allocated as margin to keep the trade alive.^([4](ch08.html#idm45785353206904))
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Figure 8-8](#oanda_plot_2) shows the amplifying effect on the performance
+    of the momentum strategies for a leverage ratio of 20:1\. The initial margin of
+    5% suffices to cover potential losses since it is not eaten up even in the worst
+    case depicted:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO5-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multiplies the log returns by a factor of 20 according to the leverage ratio
+    assumed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Leveraged trading does not only amplify potentials profits, but it also amplifies
+    potential losses. With leveraged trading based on a 10:1 factor (10% margin),
+    a 10% adverse move in the base instrument already wipes out the complete margin.
+    In other words, a 10% move leads to a 100% loss. Therefore, you should make sure
+    to fully understand all risks involved in leveraged trading. You should also make
+    sure to apply appropriate risk measures, such as stop loss orders, that are in
+    line with your risk profile and appetite.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![pfat 0808](assets/pfat_0808.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8-8\. Gross performance of momentum strategies for `EUR_USD` instrument
+    with 20:1 leverage (minute bars)
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Working with Streaming Data
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Working with streaming data is again made simple and straightforward by the
+    Python wrapper package `tpqoa`. The package, in combination with the `v20` package,
+    takes care of the socket communication such that the algorithmic trader only needs
+    to decide what to do with the streaming data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO6-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `stop` parameter stops the streaming after a certain number of ticks retrieved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Placing Market Orders
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Similarly, it is straightforward to place market buy or sell orders with the
+    `create_order()` method:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO7-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shows all options for placing market, limit, and market-if-touched orders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO7-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Opens a long position via market order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO7-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Goes short after closing the long position via market order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO7-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes the short position via market order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although the Oanda API allows the placement of different order types, this chapter
+    and the following chapter mainly focus on *market orders* to instantly go long
+    or short whenever a new signal appears.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implementing Trading Strategies in Real Time
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: "This section presents a custom class that automatically trades the `EUR_USD`\
+    \ instrument on the Oanda platform based on a momentum strategy. It is called\
+    \ `MomentumTrader` and is presented in [“Python Script”](#oanda_momentum_trader).\
+    \ The following walks through the class line by line, beginning with the `\x96\
+    0\x97` method. The class itself inherits from the `tpqoa` class:"
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO8-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Initial position value (market neutral).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO8-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instrument to be traded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO8-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Length of the bar for the resampling of the tick data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO8-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of intervals for momentum calculation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_cfd_trading_with_oanda_CO8-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number of units to be traded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_cfd_trading_with_oanda_CO8-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An empty `DataFrame` object to be filled with tick data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_cfd_trading_with_oanda_CO8-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The initial minimum bar length for the start of the trading itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The major method is the `.on_success()` method, which implements the trading
+    logic for the momentum strategy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO9-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This method is called whenever new tick data arrives.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO9-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The number of ticks retrieved is printed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO9-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tick data is collected and stored.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO9-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tick data is then resampled to the appropriate bar length.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_cfd_trading_with_oanda_CO9-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The mid prices are calculated…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_cfd_trading_with_oanda_CO9-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …based on which the log returns are derived.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![7](assets/7.png)](#co_cfd_trading_with_oanda_CO9-7)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The signal (positioning) is derived based on the `momentum` parameter/attribute
+    (via an online algorithm).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![8](assets/8.png)](#co_cfd_trading_with_oanda_CO9-8)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: When there is enough or new data, the trading logic is applied and the minimum
+    length is increased by one every time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![9](assets/9.png)](#co_cfd_trading_with_oanda_CO9-10)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether the latest positioning (“signal”) is `1` (long).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![10](assets/10.png)](#co_cfd_trading_with_oanda_CO9-11)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the current market position is `0` (neutral)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![11](assets/11.png)](#co_cfd_trading_with_oanda_CO9-12)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …a buy order for `self.units` is initiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![12](assets/12.png)](#co_cfd_trading_with_oanda_CO9-13)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If it is `-1` (short)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![13](assets/13.png)](#co_cfd_trading_with_oanda_CO9-14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: "…a buy order for `\x960\x97` is initiated."
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![14](assets/14.png)](#co_cfd_trading_with_oanda_CO9-15)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The market position `self.position` is set to `+1` (long).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![15](assets/15.png)](#co_cfd_trading_with_oanda_CO9-16)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Checks whether the latest positioning (“signal”) is `-1` (short).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![16](assets/16.png)](#co_cfd_trading_with_oanda_CO9-17)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the current market position is `0` (neutral)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![17](assets/17.png)](#co_cfd_trading_with_oanda_CO9-18)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: …a sell order for `-self.units` is initiated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![18](assets/18.png)](#co_cfd_trading_with_oanda_CO9-19)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If it is `+1` (long)…
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![19](assets/19.png)](#co_cfd_trading_with_oanda_CO9-20)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: "…a sell order for `\x960\x97` is initiated."
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![20](assets/20.png)](#co_cfd_trading_with_oanda_CO9-21)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The market position `self.position` is set to -1 (short).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Based on this class, getting started with automated, algorithmic trading is
+    just four lines of code. The Python code that follows initiates an automated trading
+    session:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO10-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The configuration file with the credentials.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![2](assets/2.png)](#co_cfd_trading_with_oanda_CO10-2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `instrument` parameter is specified.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![3](assets/3.png)](#co_cfd_trading_with_oanda_CO10-3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `bar_length` parameter for the resampling is provided.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![4](assets/4.png)](#co_cfd_trading_with_oanda_CO10-4)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `momentum` parameter is defined, which is applied to the resampled data
+    intervals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![5](assets/5.png)](#co_cfd_trading_with_oanda_CO10-5)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `units` parameter is set, which specifies the position size for long and
+    short positions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[![6](assets/6.png)](#co_cfd_trading_with_oanda_CO10-6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This starts the streaming and therewith the trading; it stops after 100 ticks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The preceding code provides the following output:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Finally, close out the final position:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[![1](assets/1.png)](#co_cfd_trading_with_oanda_CO11-1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Closes out the final position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrieving Account Information
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'With regard to account information, transaction history, and the like, the
+    Oanda RESTful API is also convenient to work with. For example, after the execution
+    of the momentum strategy in the previous section, the algorithmic trader might
+    want to inspect the current balance of the trading account. This is possible via
+    the `.get_account_summary()` method:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Information about the last few trades is received with the `.get_transactions()`
+    method:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'For a concise overview, there is also the `.print_transactions()` method available:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: Conclusions
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: The Oanda platform allows for an easy and straightforward entry into the world
+    of automated, algorithmic trading. Oanda specializes in so-called contracts for
+    difference (CFDs). Depending on the country of residence of the trader, there
+    is a great variety of instruments that can be traded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A major advantage of Oanda from a technological point of view is the modern,
+    powerful APIs that can be easily accessed via a dedicated Python wrapper package
+    (`v20`). This chapter shows how to set up an account, how to connect to the APIs
+    with Python, how to retrieve historical data (one minute bars) for backtesting
+    purposes, how to retrieve streaming data in real time, how to automatically trade
+    a CFD based on a momentum strategy, and how to retrieve account information and
+    the detailed transaction history.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References and Further Resources
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Visit the help and support pages of Oanda under [Help and Support](https://oreil.ly/-CMwk)
+    to learn more about the Oanda platform and important aspects of CFD trading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The developer portal of Oanda [Getting Started](https://oreil.ly/oO_eV) provides
+    a detailed description of the APIs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Python Script
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'The following Python script contains an Oanda custom streaming class that automatically
+    trades a momentum strategy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: ^([1](ch08.html#idm45785354036712-marker)) The naming of certain objects is
+    not completely consistent in the context of the Oanda APIs. For example, *API
+    key* and *access token* are used interchangeably. Also, *account ID* and *account
+    number* refer to the same number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch08.html#idm45785352515432-marker)) This implicitely neglects transaction
+    costs in the form of bid-ask spreads when selling and buying units of the instrument,
+    respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([3](ch08.html#idm45785353211096-marker)) Note that for some instruments, *one
+    unit* means 1 USD, like for currency-related CFDs. For others, like for index-related
+    CFDs (for example, `DE30_EUR`), *one unit* means a currency exposure at the (bid/ask)
+    price of the CFD (for example, 11,750 EUR).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([4](ch08.html#idm45785353206904-marker)) The simplified calculations neglect,
+    for example, *financing costs* that might become due for leveraged trading.
+  prefs: []
+  type: TYPE_NORMAL

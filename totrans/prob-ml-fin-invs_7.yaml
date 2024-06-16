@@ -1,0 +1,1359 @@
+- en: Chapter 7\. Probabilistic Machine Learning with Generative Ensembles
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Don’t look for the needle in the haystack. Just buy the haystack!
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: — John Bogle, inventor of the index fund and founder of the Vanguard Group
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Most of us probably didn’t know we were learning one of the most powerful and
+    robust ML algorithms in high school when we were finding the line of best fit
+    to a scatter of data points. The ordinary least squares (OLS) algorithm that is
+    used to estimate the parameters of linear regression models was developed by Adrien-Marie
+    Legendre and Carl Gauss more than two hundred years ago. These types of models
+    have the longest history and are viewed as the baseline machine learning models
+    in general. Linear regression and classification models are considered to be the
+    most basic artificial neural networks. It is for these reasons that linear models
+    are considered to be the “mother of all parametric models.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Linear regression models play a pivotal role in modern financial practice,
+    academia, and research. The two foundational models of financial theory are linear
+    regression models: the capital asset pricing model (CAPM) is a simple linear regression
+    model; and the model of arbitrage pricing theory (APT) is a multiple regression
+    model. Factor models used extensively by investment managers are just multiple
+    regression models with public and proprietary factors. A factor is a financial
+    feature such as the inflation rate. Linear models are also the model of choice
+    for many high-frequency traders (HFT), who are some of the most sophisticated
+    algorithmic traders in the industry.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are many reasons why linear regression models are so popular. These models
+    have a sound mathematical foundation and have been applied extensively in various
+    fields—from astronomy to medicine to economics—for over two centuries. They are
+    viewed as base models and the first approximations for any solution. Linear regression
+    models have a closed-form analytical solution that most people learn in high school.
+    These models are easy to build and interpret. Most spreadsheet software packages
+    have this algorithm already built in with associated statistical analysis. Linear
+    regression models can be trained very quickly and handle noisy financial data
+    well. They are highly scalable to large datasets and become even more powerful
+    in higher-dimensional spaces.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, we examine how a probabilistic linear regression model is fundamentally
+    different from a conventional/frequentist linear regression model that is based
+    on maximum likelihood estimates (MLE) of parameters. Probabilistic models are
+    more useful than MLE models because they are less wrong in their modeling of financial
+    realities. As usual, probabilistic models demonstrate this usefulness by including
+    the additional dimension of epistemic uncertainty about the model’s parameters
+    and by explicitly including our prior knowledge or ignorance about them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The inclusion of epistemic uncertainty in the model transforms probabilistic
+    machine learning into a form of ensemble machine learning since each set of possible
+    parameters generates a different regression model. This also has the desirable
+    effect of increasing the uncertainty of the model’s predictions when the ensemble
+    has to extrapolate beyond the training or test data. As discussed in [Chapter 6](ch06.html#the_dangers_of_conventional_ai_systems),
+    we want our ML system to be aware of its ignorance. A model should know its limitations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We demonstrate these fundamental differences in approach by developing a probabilistic
+    market model (MM) that transforms the MLE-based MM that we worked on in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
+    We also use credible intervals instead of flawed confidence intervals. Furthermore,
+    our probabilistic models seamlessly simulate data before and after being trained
+    on in-sample data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Numerical computations of probabilistic models present a major challenge in
+    applying probabilistic machine learning (PML) models to real-world problems. The
+    grid approximation method that we used in the previous chapter does not scale
+    as the number of parameters increases. In the previous chapter, we introduced
+    the Markov chain Monte Carlo (MCMC) sampling methods. In this chapter, we will
+    build our PML model using the PyMC library, the most popular open source probabilistic
+    machine learning library in Python. PyMC has a syntax that is close to how probabilistic
+    models are developed in practice. It has several advanced MCMC and other probabilistic
+    algorithms, such as Hamiltonian Monte Carlo (HMC) and automatic differentiation
+    variational inference (ADVI), which are arguably some of the most sophisticated
+    algorithms in machine learning. These advanced MCMC sampling algorithms can be
+    applied to problems with a basic understanding of the complex mathematics underpinning
+    them, as discussed in [Chapter 6](ch06.html#the_dangers_of_conventional_ai_systems).
+  prefs: []
+  type: TYPE_NORMAL
+- en: MLE Regression Models
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Deterministic linear models, such as those found in physics and engineering,
+    make mind-blowingly precise estimates and predictions that market participants
+    can only dream about for their financial models. On the other hand, all nondeterministic
+    or statistical linear models include a random component that captures the difference
+    between a model’s prediction (Y) and its observed value (Y′). This difference
+    is called the residual and is depicted in [Figure 7-1](#the_line_of_best_fit_of_a_linear_regres)
+    by the vertical lines that go from the line of best fit to the observed data points.
+    The goal of training the model is to learn the optimal parameters that minimize
+    some average of the residuals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![The line of best fit of a linear regression model. The residuals are the
+    vertical lines between the observed data and the fitted line.](assets/pmlf_0701.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-1\. The line of best fit of a linear regression model. The residuals
+    are the vertical lines between the observed data and the fitted line.^([1](ch07.html#ch07fn1))
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: 'As shown in [Figure 7-1](#the_line_of_best_fit_of_a_linear_regres), the target
+    (Y) of a simple linear regression model has only one feature (X) and is expressed
+    as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Y = a + b × X + e, where a and b are constants to be learned from training data
+    by minimizing the residual, e = Y − Y′.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'A multiple linear regression model uses a linear combination of more than one
+    feature for predicting the target. The general form of linear regression is expressed
+    as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Y = b[0] + b[1] × X[1] + b[2] × X[2] + …+ b[n] × X[n] + e, where b[0] − b[n]
+    are constants to be learned from training data by minimizing the residual, e =
+    Y − Y′.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is important to note that in a linear model, it is the coefficients (b[0]
+    – b[n]) that have to be linear, and not the features. Recall from [Chapter 4](ch04.html#the_dangers_of_conventional_statistical)
+    that a financial analyst, relying on modern portfolio theory and the practice
+    of the frequentist statistical approach, incorrectly assumes that there is an
+    underlying, time-invariant, stochastic process generating the price data of an
+    asset such as a stock.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'This stochastic process can be modeled as an MM, which is basically a simple
+    linear regression model of the realized excess returns of the stock (target) regressed
+    on the realized excess returns of the overall market (feature), as formulated
+    here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: (R − F) = a + b (M − F) + e                      *(Equation 7.1)*
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Y = (R – F) is the target, X = (M − F) is the feature.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: R is the realized return of the stock.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: F is the return on a risk-free asset (such as the 10-year US Treasury note).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: M is the realized return of a market portfolio (such as the S&P 500 index).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: a (alpha) is the expected stock-specific return.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: b (beta) is the level of systematic risk exposure to the market.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: e (residual) is the unexpected stock-specific return.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Even though the alpha and beta parameters of this underlying random process
+    may be unknown or unknowable, the analyst is made to believe that these parameters
+    are constant and have “true” values. The assumed time-invariant nature of this
+    stochastic process implies that model parameters can be estimated from any random
+    sample of price data of the various securities involved over a reasonably long
+    amount of time. This implicit assumption is known as the stationary ergodic condition.
+    It is the randomness of sample-to-sample data that creates aleatory uncertainty
+    in the estimates of the true, fixed parameters, according to frequentists. The
+    aleatory uncertainty of the parameters is captured by the residual, e = (Y – Y′).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Model Assumptions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Many analysts are generally not aware that in order to make sound inferences
+    about the model parameters, they have to make further assumptions about the residuals
+    based on the Gauss-Markov theorem, namely:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The residuals are independent and identically distributed.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The expected mean of the residuals is zero.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The variance of the residuals is constant and finite.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Learning Parameters Using MLE
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If the analyst assumes that the residuals are normally distributed, then it
+    can be shown with basic calculus that the maximum likelihood estimate (MLE) for
+    both parameters, alpha and beta, have the same values as those obtained using
+    the OLS algorithm we learned in high school and applied in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical)
+    using the Statsmodels library. This is because both algorithms are minimizing
+    the mean squared error or the expected value of the square of the residuals E[(Y
+    − Y′)²)]. However, the MLE algorithm is preferred over the OLS algorithm because
+    it can be applied to many different types of likelihood functions.^([2](ch07.html#ch07fn2))
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is common knowledge that while financial data are abundant, they have very
+    low signal-to-noise ratios. One of the biggest risks in financial ML is that of
+    variance or overfitting of data. When the model is trained on data, the algorithm
+    learns the noise instead of the signal. This results in model parameter estimates
+    that vary wildly from sample to sample. Consequently, the model performs poorly
+    in out-of-sample testing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In multiple linear regression, overfitting of the data also occurs because the
+    model might have highly correlated features. This is also called multicollinearity
+    and is common in the financial and business world, where most features are interconnected,
+    especially in times of financial distress.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conventional statisticians have developed two ad hoc methods called regularizations
+    to reduce this overfitting of noisy data by creating a penalty term in the optimization
+    algorithm for reducing the impact of any one parameter. Never mind that this is
+    the antithesis of the frequentist decree of letting “only the data speak for themselves.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are two types of regularization methods that penalize model complexity:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Lasso or L1 regularization
+  prefs: []
+  type: TYPE_NORMAL
+- en: Penalizes the sum of the absolute values of the parameters. In Lasso regression,
+    many of the parameters are shrunk to zero. Lasso is also used to eliminate correlated
+    features and improve the interpretation of complex models.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ridge or L2 regularization
+  prefs: []
+  type: TYPE_NORMAL
+- en: Penalizes the sum of the coefficients squared of the parameters. In ridge regression,
+    all parameters are shrunk to near zero, which reduces the impact of any one feature
+    on the target variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In other words, instead of “only letting the data speak for themselves,” L2
+    regularization stifles all the voices, while L1 regularization silences many of
+    them. Of course, models are regularized to make them useful in finance and investing,
+    where data are extremely noisy, and the following Fisher’s dictum results in regression
+    models failing abysmally and losing money.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Quantifying Parameter Uncertainty with Confidence Intervals
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: After estimating the model parameters from training data, the analyst computes
+    the confidence intervals for alpha and beta to quantify their aleatory uncertainty.
+    Most analysts are unaware about the three types of errors of using confidence
+    intervals and don’t understand their flaws, as was discussed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
+    If they did, they would never use confidence intervals in financial analysis except
+    in special cases when the central limit theorem applies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Predicting and Simulating Model Outputs
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Now that the linear model has been built, it is tested on unseen data to evaluate
+    its usefulness for estimating and predicting. The same type of scoring algorithms
+    that are used to evaluate the performance of the model on training data are used
+    on testing data to compute its usefulness. However, to simulate data, the analyst
+    will have to set up a separate Monte Carlo simulation (MCS) model, as discussed
+    in [Chapter 3](ch03.html#quantifying_output_uncertainty_with_mon). This is because
+    MLE models are not generative models. They do not learn the underlying statistical
+    structure of the data and so are unable to simulate data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probabilistic Linear Ensembles
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In MLE modeling, the financial analyst tries to build models that are expected
+    to emulate a “true” model that is supposedly optimal, elegant, and eternal. In
+    probabilistic modeling, the financial analyst is freed from such ideological burdens.
+    They don’t have to apologize for their financial models being approximate, messy,
+    and transient because they merely reflect mathematical and market realities. We
+    know that all models are wrong regardless of whether they are treated as prophetic
+    or pathetic. We only evaluate them on their usefulness in achieving our financial
+    goals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The financial analyst using the probabilistic framework not only applies the
+    inverse probability rule, but also inverts the MLE modeling paradigm. Spurning
+    ideological dictums of orthodox statistics in favor of common sense and the principles
+    of the scientific method, they invert the conventional treatment of data and parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Training data of excess returns, such as Y = (R − F) and X = (M − F), are treated
+    as constants because their values have already been realized and recorded and
+    will never change. That is the epitome of what a constant means.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Model parameters, such as alpha (a), beta (b), and the residual (e), are treated
+    as variables with probability distributions since their values are unknown and
+    uncertain. Financial model parameters have aleatory, epistemic, and ontological
+    uncertainty. Their estimates keep changing depending on the sample used, assumptions
+    applied, and the time period involved. That is the quintessence of what a variable
+    means.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The analyst understands that the search for any “true” constant parameter value
+    of a financial model is a fool’s errand. This is because the dynamic randomness
+    of markets and their participants ensure that probability distributions are never
+    stationary ergodic. These analysts are painfully aware that creative, free-willed,
+    emotional human beings make a mockery of theoretical, MLE-based “absolutist” financial
+    models almost every day. The frequentist claim that financial model parameters
+    have “true” values is simply unscientific, ideological drivel.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We will use the probabilistic framework to explicitly state our assumptions
+    and assign specific probability distributions to all the terms of the probabilistic
+    framework so far discussed. Each probability distribution has additional parameters
+    that will have to be estimated by the analyst. The analyst will have to specify
+    the reasons for their choices. If the models fail during the testing phase, the
+    analysts will change any and all probability distributions, including their parameters.
+    All financial models are developed based on the most fundamental of heuristic
+    techniques: trial and error.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In a probabilistic framework, we apply the inverse probability rule to estimate
+    our model parameters, as developed in [Chapter 5](ch05.html#the_probabilistic_machine_learning_fram).
+    After we have designed our model, we will develop it in Python using the PyMC
+    library. Based on the terms defined for the MM, the probabilistic linear ensemble
+    (PLE) is formulated as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: P(a, b, e| X, Y) = P(Y| a, b, e, X) P(a, b, e) / P(Y|X) where
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Y = a + b × X + e, as expressed in the MLE linear model, but without its explicit
+    or implicit assumptions. These will be specified explicitly in the PLE.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(a, b, e) are the prior probabilities of all model parameters before observing
+    the training data (X, Y).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(Y| a, b, e, X) is the likelihood of observing the target training data Y given
+    the parameters a, b, e, and feature training data X.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(Y|X) is the marginal likelihood of observing the training values of target
+    Y given the training values of feature X averaged over all possible prior values
+    of the parameters (a, b, e).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: P(a, b, e| X, Y) is the posterior probabilities of the parameters a, b, e given
+    the training data (X,Y).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: We now discuss each component of the PLE model in more detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Prior Probability Distributions P(a, b, e)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before the analyst sees any training data (X,Y), they may specify the prior
+    probability distributions of the PLE parameters (a, b, e) and quantify their epistemic
+    uncertainty. All prior distributions are assumed to be independent of one another.
+    These prior distributions may be based on personal, institutional, experiential,
+    or common knowledge. If the analyst does not have any prior knowledge about the
+    parameters, they can express their ignorance with uniform distributions that consider
+    each value between the upper and lower limits equally likely. Remember that having
+    bounds of 0 and 1 should be avoided unless you are absolutely certain that a parameter
+    can take these values. The main objective is to specify one of the most important
+    model assumptions explicitly and quantitatively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Given the tendency of models to overfit noisy financial data that don’t have
+    any persistent structural unity, the analyst is aware that it is foolish to follow
+    the orthodox dictum of “only letting the data speak for themselves.” The ad hoc
+    use of regularization methods in MLE models to manage this overfitting risk are
+    merely prior probability distributions in disguise. It can be shown mathematically
+    that L1 regularization is equivalent to using a Laplacian prior, and L2 regularization
+    is equivalent to using a Gaussian prior.^([3](ch07.html#ch07fn3))
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The analyst systematically follows the probabilistic framework and explicitly
+    quantifies their knowledge, or ignorance, about the model parameters with prior
+    probability distributions. This makes the model transparent so it can be changed
+    and critiqued by anyone, especially the portfolio manager. For instance, the analyst
+    could assume that:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'alpha is normally distributed: a ~Normal()'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'beta is normally distributed: b ~Normal()'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Residual is Half-Student’s t-distributed: e ~HalfStudentT()'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Likelihood Function P(Y| a, b, e, X)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: After the analyst observes the training data (X,Y), they need to formulate a
+    likelihood function that best fits that data and quantifies the aleatory uncertainty
+    of the model parameters (a, b, e). This is the same likelihood function that was
+    used in the MLE linear model. In standard linear regression, the likelihood function
+    for the residuals (e) is assumed to be a Gaussian or normal distribution. However,
+    instead of using a normal probability distribution, the analyst uses Student’s
+    t-distribution to model the financial realities of fat-tailed asset price returns.
+    Also, if the likelihood function can accommodate outliers as well as the Student’s
+    t-distribution does, the linear regression is termed a robust linear regression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Student’s t-distribution is a family of distributions that can approximate
+    a range of other probability distributions based on its degrees of freedom parameter,
+    v, which is a real number that can range from 0 to infinity. Student’s t-distributions
+    are fat-tailed for lower values of v and get more normally distributed as v gets
+    larger. It is important to note that for:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: v ≤ 1, t-distributions have no defined mean and variance
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 1 < v ≤ 2, t-distributions have a defined mean but no defined variance
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: v > 30, t-distributions are approximately normally distributed
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Say the analyst assigns a Student’s t-distribution with v = 6 to the likelihood
+    function. Why v = 6? Financial research and practice has shown that this t-distribution
+    does a good job of describing the fat-tailed stock price returns. So we are applying
+    prior common knowledge to the choice of the likelihood function. The specific
+    likelihood function can be expressed mathematically as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Y ~StudentT(u, e, v = 6) where u = a + b × X and (a, b, e) are as defined by
+    their prior probability distributions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Marginal Likelihood Function P(Y|X)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: This is the hardest function to compute given it is averaging the likelihood
+    functions over all the model’s parameters. The complexity increases as the types
+    of probability distributions and number of parameters increase. As was mentioned
+    earlier, we need groundbreaking algorithms to approximate this function numerically.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Posterior Probability Distributions P(a, b, e| X, Y)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Now that we have our model specified, we can compute the posterior probabilities
+    for all our model’s parameters (a, b, e) given our training data (X,Y). To recap,
+    our model is specified as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Y ~StudentT(u, e, v = 6)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: u = a + b × X
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: a ~Normal(), b ~Normal(), e ~HalfStudentT()
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: X,Y are training data pairs in a sample time period that reflect the current
+    market conditions.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Model parameters, their probability distributions, and their relationships are
+    displayed in [Figure 7-2](#probabilistic_market_model_showing_prio).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Probabilistic market model showing prior distributions used for parameters
+    and the likelihood function used to fit training data](assets/pmlf_0702.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-2\. Probabilistic market model showing prior distributions used for
+    parameters and the likelihood function used to fit training data
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Because of the complexity of any realistic model, especially the marginal likelihood
+    function, we can only approximate the posterior distributions of each of its parameters.
+    PyMC uses the appropriate state-of-the-art MCMC algorithm to simulate the posterior
+    distribution by sampling from it as discussed in Chapter 6\. We then use the ArviZ
+    library to explore these samples, enabling us to draw inferences and make predictions
+    from them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assembling PLEs with PyMC and ArviZ
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Let’s now build our PLE in Python by leveraging its extensive ecosystem of powerful
+    libraries. In addition to the standard Python stack of NumPy, pandas, and Matplotlib,
+    we will also be using PyMC, ArviZ, and Xarray libraries. As mentioned earlier,
+    PyMC is the most popular probabilistic machine learning library in Python. ArviZ
+    is a probabilistic language-agnostic tool for analyzing and visualizing probabilistic
+    ensembles. It converts inference data of probabilistic ensembles into Xarray objects,
+    which are labeled, multidimensional arrays. You can search the web for links to
+    the relevant documentation of the previously mentioned libraries.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Building an ensemble of any kind requires a systematic process, and our PLE
+    is no exception. We will follow the high-level ensemble-building process outlined
+    in [Figure 7-3](#high_level_process_for_assembling_proba). Each phase and its
+    constituent parts will be explained along with the relevant code. It is important
+    to note that even though we will go through our ensemble building process sequentially,
+    this is an iterative, nonlinear process in practice. For instance, you could easily
+    go back and forth from the training phase to the analyze features and target data
+    phase. With that nonlinearity in mind, let’s go to the first phase.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![High-level process for assembling probabilistic learning ensembles](assets/pmlf_0703.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7-3\. High-level process for assembling probabilistic learning ensembles
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+- en: Define Ensemble Performance Metrics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Our financial objectives and activities should drive the effort of building
+    our PLE. Consequently, this influences the metrics we use to evaluate its performance.
+    Our financial tasks are generally to estimate the parameters of a financial model
+    or to forecast its outputs or both. As you know by now, probabilistic machine
+    learning systems are ideally suited to both these tasks because they do inverse
+    propagation and forward propagation seamlessly. More importantly, these generative
+    ensembles direct us to consider the aleatory and epistemic uncertainties of the
+    problem we are addressing and its possible solutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Financial activities
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Plausible estimates of the regression parameters alpha and beta in Equation
+    7.1 are required for several financial activities that are practiced in the industry:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jensen’s alpha
+  prefs: []
+  type: TYPE_NORMAL
+- en: By regressing the returns of a fund against the returns of its benchmark portfolio,
+    investors evaluate the skill of the fund’s manager by estimating the regression’s
+    alpha parameter. This metric is known as Jensen’s alpha in the industry.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Market neutral strategies
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alpha can also be viewed as the asset-specific expected return regardless of
+    the movements of the market. If a fund manager finds this return significantly
+    attractive, they can try to isolate it and capture it by hedging out the asset’s
+    exposure to market movements. This also involves estimating the asset’s beta,
+    or sensitivity to the market. The portfolio consisting of the asset and the hedge
+    becomes indifferent or neutral to the vagaries of the market.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cross-hedging
+  prefs: []
+  type: TYPE_NORMAL
+- en: By assuming constant variance of the residuals in Equation 7.1, the beta parameter
+    can also be shown mathematically to correlate the volatility of one asset (Y)
+    with the volatility of another related asset (X). Cross-hedging programs in corporate
+    treasury departments use this beta-related correlation to hedge a commodity required
+    by their company, say jet fuel, with another related commodity, such as oil. Treasury
+    departments buy or sell financial instruments, such as futures, in the open market
+    to hedge their input costs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cost of equity capital
+  prefs: []
+  type: TYPE_NORMAL
+- en: Corporate financial analysts estimate the cost of their company’s equity capital
+    by estimating the realized return, R, in the regression Equation 7.1\. This is
+    supposedly the expected return on their stock that their public shareholders are
+    demanding. Many analysts still use their stock’s CAPM model and estimate R by
+    making alpha = 0 in Equation 7.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, we will focus on estimating Apple’s equity price returns by
+    using its MM, and not its CAPM, for the reasons detailed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
+    We will estimate the posterior probability distribution of Apple’s excess returns
+    (R - F) given the current market regime. The generative linear ensemble can be
+    applied to all the financial activities discussed earlier.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Objective function
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: A rule that is formulated to measure the performance of a model or ensemble
+    is called an objective function. This function generally measures the difference
+    between the ensemble’s estimates or predictions compared with the corresponding
+    realized or observed values. Common objective functions that measure the difference
+    between predicted and observed values in machine learning regression models are
+    mean squared error (MSE) and median absolute errors (MAE). The choice of an objective
+    function depends on the business problem we are trying to solve. An objective
+    function that reduces losses/costs is called a loss/cost function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Another regression objective function is R-squared. In frequentist statistics,
+    it is defined as the variance of the predicted values divided by the total variance
+    of the data. Note that R-squared can be interpreted mathematically as a standardized
+    MSE objective function that needs to be maximized:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: R-squared(Y) = 1 – MSE(Y)/Var(Y)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Since we are dealing with aleatory and epistemic uncertainties in our probabilistic
+    models, this R-squared formula has to be modified so that its value does not exceed
+    1\. The probabilistic version of R-squared is modified to equal the variance of
+    the predicted values divided by the variance of predicted values plus the expected
+    variance of the errors. It can be interpreted as a variance decomposition.^([4](ch07.html#ch07fn4))
+    We will call this version of the R-squared objective function *probabilistic R-squared*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance metrics
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'As mentioned earlier, financial data are very noisy, which implies that we
+    need to be realistic about the performance metrics we establish for each development
+    phase. At a minimum, we want our model to do better than random guessing, i.e.,
+    we want performance scores greater than 50%. We would like our PLE to meet or
+    exceed the following performance metrics:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probabilistic R-squared prior score > 55%
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Probabilistic R-squared training score > 60%
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Probabilistic R-squared test score > 65%
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Highest-density intervals (HDIs): 90% HDI to include almost all training and
+    test data (HDI will be explained shortly)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Keep in mind that all these metrics will be based on personal and organization
+    preferences and are imperfect, as are the models used to produce them. It requires
+    judgment and domain expertise. Regardless, we will use these metrics as another
+    input to help us to evaluate our PLE, critique it, and revise it. In practice,
+    we revise our PLE until we are confident that it will give us a high enough positive
+    expected value in the financial activity we want to apply it to. Only then do
+    we deploy our PLE out of the lab.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Analyze Data and Engineer Features
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We have already done data analysis of the target and features in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical)
+    and in rewriting Equation 7.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data exploration
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In general, in this phase you would define your target of interest, such as
+    predicting asset price returns or estimating volatility. These target variables
+    are real valued numbers and are termed as regression targets. Alternatively, a
+    target of interest could also be classification of a company’s creditworthiness
+    based on predictions of whether it will default or not. These are classification
+    targets that take on discrete numbers like 0 or 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You would then identify various sources of data that will enable you to analyze
+    your target and features in sufficient detail. Data sources can be expensive,
+    and you will have to figure out how to get them in a cost-effective manner. Cleaning
+    and processing data from various sources is generally quite time-consuming.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Feature engineering
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Recall that a feature is some representation of data that serves as an independent
+    variable enabling inference or prediction of a model’s target variable. Feature
+    engineering is the practice of selecting, designing, and developing a useful set
+    of features that work together to enable reliable inferences or predictions of
+    the target variable(s) in out-of-sample data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To predict a target variable, such as price returns, a model can have many
+    different types of features. Here are examples of various types of features:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fundamental
+  prefs: []
+  type: TYPE_NORMAL
+- en: Company sales, interest rates, exchange rates, GDP growth rate
+  prefs: []
+  type: TYPE_NORMAL
+- en: Technical
+  prefs: []
+  type: TYPE_NORMAL
+- en: Momentum indicators, fund flows, liquidity
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sentiment
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consumer sentiment, investor sentiment
+  prefs: []
+  type: TYPE_NORMAL
+- en: Other
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proprietary mathematical or statistical indicators
+  prefs: []
+  type: TYPE_NORMAL
+- en: After you have selected and developed a possible set of features, it is generally
+    a good idea to use relative changes in feature levels, rather than absolute levels,
+    as inputs into your features’ dataframe. This reduces the serial autocorrelation
+    endemic in financial time series. Serial correlation occurs when a variable is
+    correlated with past values of itself over time. Traders and investors are generally
+    interested in understanding if a good or bad condition is getting better or worse.
+    So market participants are continually reacting to relative changes in levels
+    in terms of percentages or differences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we have more than one feature, we need to check if some of them are highly
+    correlated with one another. Recall that this issue is called multicollinearity.
+    Highly correlated features can unduly amplify the same signal in data, leading
+    to invalid inferences and predictions. Ideally, there should be zero correlation
+    or no multicollinearity among features. Unfortunately, that almost never happens
+    in practice. Coming up with a threshold variance above which you would remove
+    redundant features is a judgment call based on the business context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Feature engineering is critical to the performance of all ML systems. It requires
+    domain expertise, judgment, experience, common sense, and a lot of trial and error.
+    These are the qualities that enable human intelligence to distinguish correlation
+    from causation, which AI-enabled agents cannot do to this day.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We are going to keep our feature engineering simple in this primer and leverage
+    a vast body of financial knowledge and experience on market models. Our PLE has
+    a single feature: the market as represented by the S&P 500 index.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Data analysis
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: PLEs demonstrate their strengths when we have small datasets, such that a weak
+    or flat prior is not overwhelmed by the likelihood function. Here we will look
+    at 31 days of data in the last two months of last year, from 11/15/2022 to 12/31/22\.
+    This period covers two Federal Reserve meetings and was exceptionally volatile.
+    We will train our PLE on the first 21 days of data and test it on the last 10
+    days of data. This is called the time series split method of cross-validation.
+    Because financial time series have strong serial correlation, we cannot use the
+    standard cross-validation method, since it assumes that each data sample is independent
+    and identically distributed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s actually download price data for Apple Inc., S&P 500, and the 10-year
+    treasury note, and compute the daily price returns as we did for our linear MM
+    in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: Develop and Retrodict Prior Ensemble
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s start developing our PLE using the PyMC library. At this point, we explicitly
+    state the assumptions of our ensemble in the prior probability distributions of
+    the parameters and the likelihood function. This also includes our hypothesis
+    about the functional form of the underlying data-generating process, i.e., linear
+    with some noise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After that, we check to see if the ensemble’s prior predictive distribution
+    generates data that is plausible and may have occurred in the past, and are now
+    in our training data sample. A prediction of a past event is called retrodiction
+    and is used as a model check, before and after it is trained. If the data generated
+    by the prior ensemble are implausible, because they don’t fall within our highest
+    density interval, we revise all of our model assumptions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specify distributions and their parameters
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We incorporate our prior knowledge into the ensemble by specifying the prior
+    probability distributions of its parameters, P(a), P(b), and P(e). After that,
+    we specify the likelihood of observing our data given the parameters, P(D | a,
+    b, e).
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the following Python code block, we have chosen a Student’s t-distribution
+    with nu = 6 for the likelihood function of our ensemble. Of course, we could also
+    add nu as another unknown parameter that needs to be inferred. However, that would
+    merely increase the complexity without adding much in terms of increasing your
+    understanding of the development process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[Figure 7-2](#probabilistic_market_model_showing_prio) was generated by the
+    `graphviz` method shown in the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Sample distributions and simulate data
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Before we train our model, we should check the usefulness of the assumptions
+    of our prior ensemble. The goal is to make sure that the ensemble is good enough
+    for the training phase. This is done by conducting what is called a prior predictive
+    check. We use the ensemble’s prior predictive distribution to simulate a data
+    distribution that may have been realized in the past. Recall that this is called
+    a retrodiction as opposed to a prediction, which simulates a data distribution
+    that is most likely to occur in the future.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the following code block, we simulate 21,000 data samples from the prior
+    predictive distribution. We let ArviZ return the `InferenceData` object so that
+    we can visualize and analyze the generated data samples. Expand the display after
+    the inference object is returned to examine the structure of the various groups.
+    We will need them for analysis and inference:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in01.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Let’s plot the marginal prior distributions of each parameter before we conduct
+    prior predictive checks. Note that a kernel density estimate is a smoothed-out
+    histogram of a continuous variable:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in02.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in03.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in04.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Let’s create a prior ensemble of 1000 regression lines, one for each value
+    of the ensemble’s parameters (a, b) sampled from its prior distributions, and
+    plot the epistemic uncertainty around the prior mean of the untrained linear ensemble.
+    We also use the prior predictive distribution of the ensemble to simulate data.
+    This displays the epistemic and aleatory uncertainties of the data distributions.
+    Note that the training data is plotted to give us some context and a baseline
+    for the ensemble’s retrodictions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in05.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'It is very important to observe that the linear ensemble’s epistemic uncertainty
+    increases as we move away from the center of the plot. Confessions of ignorance
+    is what we are seeking in any model: it should become increasingly unsure about
+    its expected values as it moves into regions where it has no data and must extrapolate.
+    Our ensemble knows its limitations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This is seen more clearly in the next plot where we generate and distribute
+    the prior predictive data samples into a 90% high-density interval (HDI) and then
+    conduct a prior predictive check:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in07.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Evaluate and revise untrained model
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Specifying a probabilistic model is never easy, and requires many revisions.
+    Let’s use qualitative and quantitative prior predictive checks to see if our prior
+    model is plausible and ready for training. From the recent plots, we can see that
+    our ensemble has simulated all the training data within the 90% HDI band. However,
+    the prior predictive check shows some low probability, extreme returns that have
+    not occurred in the recent past. Let’s now compute the probabilistic R-squared
+    measure to evaluate the ensemble’s retrodictions before it has been trained:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: The probabilistic R-squared metric of the prior ensemble is 61%, with a standard
+    deviation of 10%. This exceeds our performance benchmark of 55% for the prior
+    model.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Please note that this performance is a result of many revisions to the prior
+    model I made by changing the values of the various parameters of the prior distributions.
+    I also experimented with different distributions, including a uniform prior for
+    the alpha parameter. All the prior scores were greater than 55%, and the one you
+    see here is closer to the median score. Feel free to make your own revisions to
+    the prior model until you are satisfied that your ensemble is plausible and ready
+    to be trained by in-sample data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Train and Retrodict Posterior Model
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We now have an ensemble that is ready to be trained, and we are confident it
+    reflects our prior knowledge, including the epistemic uncertainty of its parameters
+    and the aleatory uncertainty of the data it might generate. Let’s train it with
+    actual in-sample data our ensemble has been anticipating by computing the posterior
+    distribution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Train and sample posterior
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'We execute the default sampler of PyMC, the Hamiltonian Monte Carlo (HMC) algorithm,
+    a second-generation MCMC algorithm. PyMC directs HMC to generate dependent random
+    samples from the joint posterior distribution of all the parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in08.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Evaluating the quality of the MCMC sampling is an advanced topic and will not
+    be covered in this primer. Since we have no divergences in the Markov chains,
+    let’s analyze the marginal distribution of each parameter and make inferences
+    about each of them:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in09.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'We can summarize the posterior distributions in a pandas DataFrame as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'This statistical summary gives you the mean, standard deviation, and a 94%
+    credible interval for all our parameters. Note that the 94% credible intervals
+    are computed as the differences between the highest density intervals (HDI): hdi_97%
+    – hdi_3% = hdi_94%.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Unlike the shenanigans of frequentist confidence intervals discussed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical),
+    a credible interval is exactly what a confidence interval pretends to be but is
+    not. Credible intervals are a postdata methodology for making valid statistical
+    inferences from a single experiment. This is exactly what we want as researchers,
+    scientists, and practitioners in any field. For instance, the 94% credible interval
+    for beta in the summary table means the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a 94% probability that beta is in the *specific interval [1.12 and
+    1.55].* It is as simple as that. Unlike confidence intervals, we don’t have to
+    deal with some warped definition that defies any semblance of common sense to
+    interpret credible intervals.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: There are no assumptions of asymptotic normality of any distribution.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: There are no underhanded invocations to the central limit theorem.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Beta is not a point estimate with only aleatory uncertainty.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: We are ignorant of the exact value of beta. It is highly unlikely that we will
+    ever know the exact values of any model parameter for any realistic scenario in
+    the social and economic sciences.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Parameters like beta are better interpreted as probability distributions with
+    both aleatory and epistemic uncertainties.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is much more realistic to model and interpret parameters like beta as unknowable
+    variables rather than as unknowable constants.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is important to note that credible intervals are not unique within a posterior
+    distribution. Our preferred way is to choose the narrowest interval with the highest
+    probability density within the posterior distribution. Such an interval is also
+    known as the highest-density interval (HDI) and is the method we have been following
+    in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You might be wondering why PyMC/ArviZ developers have chosen the default credible
+    interval to be 94%. It is a reminder that there are no physical or socioeconomic
+    laws that dictate that we choose 95% or any other specific percentage. I believe
+    it is a subtle dig at the conventional statistical community for sanctifying the
+    95% significance level in the social and economic sciences. At any rate, ArviZ
+    provides a method for changing the default interval, as shown in the following
+    code block:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'It helps to visualize the posterior distributions of our model parameters for
+    credible intervals with different probabilities. The following plot shows 70%
+    credible intervals for all three parameters:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'More often than not, we have to evaluate point estimates in making our financial
+    and investment decisions. We can estimate how plausible any point estimate of
+    a parameter is based on where it lies within its posterior probability distribution.
+    For instance, if we want to evaluate the point estimate = 1.15 for beta, we can
+    use it as a reference value and compare it to an HDI, as shown in the following
+    code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This plot implies that 94.5% of the distribution is above beta = 1.15\. Beta
+    = 1.15 is in the left tail of the distribution since only 5.5% of the distribution
+    is below it. Note that the two percentages may not add up to 100% because of rounding
+    errors. So, it is reasonable to conclude that beta = 1.15 is not the best estimate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Retrodict and simulate training data
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'We now use the posterior predictive distribution (PPD) to simulate data from
+    the trained ensemble and follow the same steps we did with the ensemble’s prior
+    predictive distribution. This will help us to evaluate how well the ensemble has
+    been trained:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Evaluate and revise trained model
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'As we did earlier, let’s use qualitative and quantitative checks to see if
+    our posterior model is plausible and ready for testing. The posterior predictive
+    check shows us a range of returns that are more consistent with the recent historical
+    returns of Apple. From its retrodictions, we can see that our ensemble has simulated
+    most of the training data it has been trained on within the 90% HDI band. Let’s
+    now compute the probabilistic R-squared measure to evaluate the trained ensemble’s
+    performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The probabilistic R-squared metric of the posterior ensemble is 65%, with a
+    standard deviation of 8%. This is a performance improvement compared to that of
+    the untrained ensemble. We can make this comparison because we are using the same
+    dataset to make the performance comparison. It also exceeds the training score
+    benchmark of 60%. Our ensemble is ready for its main test: predictions based on
+    out-of-sample or unseen test data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Test and Evaluate Ensemble Predictions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We are now confident that our trained ensemble reflects both our prior knowledge
+    and new learnings from the in-sample data that were observed. Moreover, the ensemble
+    has updated its parameter probability distributions in light of the training data,
+    including their epistemic uncertainties. Consequently, the data distributions
+    that the ensemble will generate have also been updated, including their aleatory
+    uncertainties.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The various steps that led us here are all necessary but not sufficient for
+    us to decide if we are going to commit hard-earned capital to the predictions
+    of our ensemble. One of the most important tests for any ML system is how well
+    it performs on previously unseen, out-of-sample test data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Swap data and resample posterior predictive distribution
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: PyMC provides mutable data containers that enable the swapping of training data
+    for test data without any other changes to the ensemble. We now have to resample
+    the posterior predictive distribution with the new test data for our target and
+    features.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Predict and simulate test data
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'This creates a new inference group called predictions. We repeat the same steps
+    as we did in the training phase but use test data instead:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](assets/pmlf_07in18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Evaluate, revise, or deploy ensemble
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'From the recent plot we can see that our ensemble has simulated all of the
+    test data within the 90% HDI band. Let’s also compute the probabilistic R-squared
+    measure to evaluate the ensemble’s predictive performance:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: The probabilistic R-squared metric of the tested ensemble is 69%, with a standard
+    deviation of 13%. It is better than our training score and exceeds the test score
+    benchmark of 65%. We are ready to deploy our tested ensemble into our paper trading
+    system or other simulated financial system that uses real-time data feeds with
+    fictitious capital. This enables us to evaluate how our ensemble performs in real
+    time before we are ready to deploy it into production and commit real hard-earned
+    capital to our system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: In this chapter, we saw how probabilistic linear regression (PLE) modeling is
+    fundamentally different from conventional linear regression (MLE) modeling. The
+    probabilistic framework provides a systematic method for modeling physical phenomena
+    in general and financial realities in particular.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conventional financial models use the MLE method to compute the optimal values
+    of parameters that fit the data. That would be appropriate if we were dealing
+    with time-invariant statistical distributions. It is inappropriate in finance
+    because we don’t have such time-invariant distributions. Learning optimal parameter
+    values from noisy financial data is suboptimal and risky. Instead of relying on
+    one expert in such a situation, we are better off relying on a council of experts
+    for the many possible scenarios that are plausible and synthesize their expertise.
+    This is exactly what a probabilistic ensemble does for us. It gives us the weighted
+    average of all the estimates of model parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In probabilistic regression modeling, as opposed to conventional linear modeling,
+    data are treated as fixed and parameters are treated as variables because common
+    sense and facts support such an approach. There is no need for the conventional
+    use of ad hoc methods like L1 and L2 regularization, which are merely prior probability
+    distributions in disguise. Most importantly, in the probabilistic paradigm, we
+    are freed from ideological dictums like “let only the data speak for themselves”
+    and unscientific claims of the existence of “true models” or “true parameters.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Probabilistic ensembles make no pretense to analytical elegance. They do not
+    lull us into a false sense of security about our financial activities with point
+    estimates and bogus analytical solutions fit only for toy problems. Probabilistic
+    ensembles are numerical and messy models that quantify aleatory and epistemic
+    uncertainties. These models are suited for endemic uncertainties of finance and
+    investing. Most importantly, it reminds us of the uncertainty of our knowledge,
+    inferences, and predictions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next chapter, we will explore how to apply our probabilistic estimates
+    and predictions to decision making in the face of three-dimensional uncertainty
+    and incomplete information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Dürr, Oliver, and Beate Sick. *Probabilistic Deep Learning with Python, Keras,
+    and TensorFlow Probability*. Manning Publications, 2020.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Gelman Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. “R-Squared for Bayesian
+    Regression Models.” *The American Statistician* 73, no. 3 (2019): 307–309\. [*https://doi.org/10.1080/00031305.2018.1549100*](https://doi.org/10.1080/00031305.2018.1549100).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Murphy, Kevin P. *Machine Learning: A Probabilistic Perspective*. Cambridge,
+    MA: The MIT Press, 2012.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Further Reading
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'Martin, Osvaldo A., Ravin Kumar, and Junpeng Lao. *Bayesian Modeling and Computation
+    in Python*. 1st ed. Boca Raton, FL: CRC Press, 2021.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([1](ch07.html#ch07fn1-marker)) Adapted from an image on Wikimedia Commons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^([2](ch07.html#ch07fn2-marker)) Oliver Dürr and Beate Sick, “Building Loss
+    Functions with the Likelihood Approach,” in *Probabilistic Deep Learning with
+    Python, Keras, and TensorFlow Probability* (Manning Publications, 2020), 93–127.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([3](ch07.html#ch07fn3-marker)) Kevin P. Murphy, “Sparse Linear Models,” in
+    *Machine Learning: A Probabilistic Perspective* (Cambridge, MA: The MIT Press,
+    2012), 421–78.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '^([4](ch07.html#ch07fn4-marker)) Andrew Gelman et al., “R-Squared for Bayesian
+    Regression Models,” *The American Statistician* 73, no. 3 (2019): 307–309, [*https://doi.org/10.1080/00031305.2018.1549100*](https://doi.org/10.1080/00031305.2018.1549100).'
+  prefs: []
+  type: TYPE_NORMAL

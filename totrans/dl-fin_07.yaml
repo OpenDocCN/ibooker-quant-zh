@@ -1,60 +1,82 @@
 - en: Chapter 7\. Machine Learning Models for Time Series Prediction
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第7章。时间序列预测的机器学习模型
 - en: Machine learning is a subfield of AI that focuses on the development of algorithms
     and models that enable computers to learn and make predictions or decisions without
     being explicitly programmed, hence the term *learning*. Machine learning deals
     with the design and construction of systems that can automatically learn and improve
     from experience, typically by analyzing and extracting patterns from large amounts
     of data.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 机器学习是人工智能的一个子领域，专注于开发能够使计算机在没有明确编程的情况下学习和进行预测或决策的算法和模型，因此被称为*学习*。机器学习涉及设计和构建能够从经验中自动学习和改进的系统，通常通过分析和从大量数据中提取模式来实现。
 - en: This chapter presents the framework of using machine learning models for time
     series prediction and discusses a selection of known algorithms.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了使用机器学习模型进行时间序列预测的框架，并讨论了一些已知的算法选择。
 - en: The Framework
+  id: totrans-3
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 框架
 - en: 'The *framework* is very important, as it organizes the way the whole research
     process is done (from data collection to performance evaluation). Having a proper
     framework ensures harmony across the backtests, which allows for proper comparison
     among different machine learning models. The framework may follow these chronological
     steps:'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*框架*非常重要，因为它组织了整个研究过程的方式（从数据收集到性能评估）。拥有适当的框架确保在回测中保持协调，从而允许在不同的机器学习模型之间进行适当的比较。框架可能遵循以下时间顺序步骤：'
 - en: Import and preprocess the historical data, which must contain a sufficient number
     of values to ensure a decent backtest and evaluation.
+  id: totrans-5
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 导入和预处理历史数据，这些数据必须包含足够数量的值，以确保良好的回测和评估。
 - en: Perform a *train-test* split, which splits the data into two parts where the
     first part of the data (e.g., from 2000 to 2020) is reserved for training the
     algorithm so that it understands the mathematical formula to predict the future
     values, and the second part of the data (e.g., from 2020 to 2023) is reserved
     for testing the algorithm’s performance on data that it has never seen before.
+  id: totrans-6
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 进行*训练-测试*拆分，将数据分为两部分，其中数据的第一部分（例如从2000年到2020年）保留用于训练算法，以便理解预测未来值的数学公式，而数据的第二部分（例如从2020年到2023年）保留用于测试算法在其从未见过的数据上的表现。
 - en: Fit (train) and predict (test) the data using the algorithm.
+  id: totrans-7
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用算法对数据进行拟合（训练）和预测（测试）。
 - en: Run a performance evaluation algorithm to understand the model’s performance
     in the past.
+  id: totrans-8
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 运行性能评估算法以了解模型在过去的表现。
 - en: Note
+  id: totrans-9
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The *training set* is also called the *in-sample data*, and the *test set* is
     also called the *out-of-sample data*.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '*训练集*也称为*样本内数据*，而*测试集*也称为*样本外数据*。'
 - en: The first step of the framework was discussed in [Chapter 6](ch06.html#ch06).
     You should now be able to easily import historical data using Python. The train-test
     split divides the historical data into a training (in-sample) set where the model
@@ -64,8 +86,10 @@
     on the test set, it is likely that you have a potential candidate for a trading
     strategy, but this is just a first step and the reality is much more complicated
     than that.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 框架的第一步已在[第6章](ch06.html#ch06)中讨论过。现在您应该能够使用Python轻松导入历史数据。训练-测试拆分将历史数据分为训练（样本内）集，其中模型被拟合（训练），以找到一个隐含的预测函数，以及测试（样本外）集，在测试集上应用和评估在训练集上计算的预测函数。理论上，如果模型在测试集上表现良好，那么您可能有一个潜在的交易策略候选，但这仅仅是第一步，现实远比这复杂得多。
 - en: So that everything goes smoothly, download *master_function.py* from the [GitHub
     repository](https://oreil.ly/5YGHI), and then set the directory of the Python
     interpreter (e.g., Spyder) in the same location as the downloaded file so that
@@ -73,49 +97,75 @@
     the file to your desktop, you may want to set the directory as shown in [Figure 6-5](ch06.html#figure-6-5)
     in [Chapter 6](ch06.html#ch06). The choice of the directory is typically found
     on the top-right corner in Spyder (above the variable explorer).
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了一切顺利，从 [GitHub 仓库](https://oreil.ly/5YGHI) 下载 *master_function.py*，然后设置 Python
+    解释器（例如 Spyder）的目录与下载的文件位于同一位置，以便您可以将其作为库导入并使用其函数。例如，如果您将文件下载到桌面，您可能希望将目录设置为 [第 6-5 图](ch06.html#figure-6-5)
+    所示的 [第 6 章](ch06.html#ch06) 的位置。通常可以在 Spyder 的右上角找到目录选项（变量资源管理器上方）。
 - en: Note
+  id: totrans-13
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: If you prefer not to import *master_function.py*, you can just open it in the
     interpreter as a normal file and execute it so that Python defines the functions
     inside. However, you have to do this every time you restart the kernel.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您不想导入 *master_function.py*，您可以像正常文件一样在解释器中打开它并执行它，以便 Python 定义内部的函数。但是，每次重新启动内核时都必须执行此操作。
 - en: 'Now, preprocess (transform) and split the time series into four different arrays
     (or dataframes if you wish), with each array having a utility:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，对时间序列进行预处理（转换）并将其分割成四个不同的数组（或数据框），每个数组都具有以下实用性：
 - en: Array `x_train`
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 数组 `x_train`
 - en: The in-sample set of features (i.e., independent variables) that explain the
     variations of the variable that you want to forecast. They are the predictors.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 解释您希望预测变量变化的样本内特征集（即独立变量）。它们是预测器。
 - en: Array `y_train`
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 数组 `y_train`
 - en: The in-sample set of dependent variables (i.e., the right answers) that you
     want the model to calibrate its forecasting function on.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内的因变量集（即正确答案），您希望模型在其上校准其预测函数。
 - en: Array `x_test`
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 数组 `x_test`
 - en: The out-of-sample set of features that will be used as a test of the model to
     see how it performs on this never-before-seen data.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为模型的测试的样本外特征集，以查看它在此前未见数据上的表现。
 - en: Array `y_test`
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 数组 `y_test`
 - en: Contains the real values that the model must approach. In other words, these
     are the right answers that will be compared with the model’s forecasts.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 包含模型必须接近的实际值。换句话说，这些是将与模型预测进行比较的正确答案。
 - en: 'Before the split, it is important to know what is being forecasted and what
     is being used to forecast it. In this chapter, lagged price differences (returns)
     will be used for the forecast. Normally, a few tests must be made before doing
@@ -123,253 +173,377 @@
     EURUSD returns have predictive power over the current return, which means that
     you can find a predictive formula that uses the last 500 observations to observe
     the next one:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 在分割之前，了解正在预测的内容以及用于预测的内容非常重要。在本章中，滞后价格差（收益率）将用于预测。通常，在执行此操作之前必须进行一些测试，但为了简单起见，让我们将它们略过，并假设最近的
+    500 个日常 EURUSD 收益率对当前收益率具有预测能力，这意味着您可以找到一个预测公式，该公式使用最近的 500 个观测值来观察下一个观测值：
 - en: Dependent variable (forecast)
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 因变量（预测）
 - en: The t+1 return of the EURUSD in the daily time frame. This is also referred
     to as the *y* variable.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: EURUSD 日间时间框架中的 t+1 回报。这也称为 *y* 变量。
 - en: Independent variables (inputs)
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 自变量（输入）
 - en: The last 500 daily returns of the EURUSD. These are also referred to as the
     *x* variables.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: EURUSD 的最近 500 个日回报。这些也称为 *x* 变量。
 - en: '[Figure 7-1](#figure-7-1) shows the EURUSD daily returns over a certain time
     period. Notice its stationary appearance. According to the ADF test (seen in [Chapter 3](ch03.html#ch03)),
     the returns dataset seems stationary and is valid for a regression analysis.'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-1](#figure-7-1) 显示了某一时间段内 EURUSD 的日收益率。注意其稳态外观。根据 ADF 测试（见 [第 3 章](ch03.html#ch03)），收益率数据集似乎是稳态的，适合进行回归分析。'
 - en: '![](assets/dlff_0701.png)'
+  id: totrans-30
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0701.png)'
 - en: Figure 7-1\. The EURUSD daily returns.
+  id: totrans-31
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-1\. EURUSD 的日收益率。
 - en: Note
+  id: totrans-32
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: In this chapter, the features (*x* values) will be the lagged daily price differences
     of the EURUSD.^([1](ch07.html#id600)) In subsequent chapters, the features used
     will be either lagged returns or values of technical indicators. Note that you
     can use whichever features you think are worthy of being considered as predictive.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，特征（*x* 值）将是 EURUSD 滞后日价格差。^([1](ch07.html#id600)) 在后续章节中，将使用滞后收益率或技术指标值作为特征。请注意，您可以使用任何您认为值得被视为预测的特征。
 - en: The choice of the time frame (daily) is ideal for traders who want an intraday
     view that will help them trade the market and close the position before the end
     of the day.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间框架（每日）的选择非常适合希望获得一日市场视图并在当天结束前关闭仓位的交易者。
 - en: 'Let’s use the dummy regression model as a first basic example. *Dummy regression*
     is a comparison machine learning algorithm that is only used as a benchmark, as
     it uses very simple rules for predictions that are unlikely to add any real forecasting
     value. The real utility of the dummy regression is to see whether your real model
     outperforms it or not. As a reminder, the process followed by the machine learning
     algorithms is composed of the following steps:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们首先使用虚拟回归模型作为第一个基本示例。*虚拟回归*是一种比较机器学习算法，仅用作基准，因为它使用非常简单的规则进行预测，不太可能增加任何真正的预测价值。虚拟回归的真正实用性在于看看你的真实模型是否胜过它。作为提醒，机器学习算法遵循以下步骤：
 - en: Import the data.
+  id: totrans-36
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 导入数据。
 - en: Preprocess and split the data.
+  id: totrans-37
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 预处理并分割数据。
 - en: Train the algorithm.
+  id: totrans-38
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 训练算法。
 - en: Predict on test data using the training parameters. Also, predict on training
     data for comparison.
+  id: totrans-39
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用训练参数在测试数据上进行预测。此外，为了比较，还要在训练数据上进行预测。
 - en: Plot and evaluate the results.
+  id: totrans-40
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 绘制和评估结果。
 - en: 'Start by importing the libraries required for this chapter:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先导入本章所需的库：
 - en: '[PRE0]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Now import the specific library for the algorithm you will use:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在导入您将使用的算法的特定库：
 - en: '[PRE1]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'The next step is to import and transform the close price data. Remember, you
     are trying to forecast daily returns, which means that you must select only the
     close column and then apply a differencing function on it so that prices become
     differenced:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是导入和转换收盘价数据。请记住，您正在尝试预测每日收益，这意味着您必须仅选择收盘列，然后对其应用差分函数，以使价格差异化：
 - en: '[PRE2]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Note
+  id: totrans-47
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: In finance, the term *returns* typically refers to the gain or loss generated
     by an investment or a certain asset, and it can be calculated by taking the difference
     between the current value of an asset and its value at a previous point in time.
     This is essentially a form of differencing, as you are calculating the change
     or difference in the asset’s value.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融中，术语*收益*通常指的是投资或某种资产产生的收益或损失，它可以通过当前资产价值与先前某个时间点的价值之间的差异来计算。这本质上是一种差分形式，因为您正在计算资产价值的变化或差异。
 - en: In time series analysis, differencing is a common technique used to make time
     series data stationary, which can be helpful for various analyses. Differencing
     involves subtracting consecutive observations from each other to remove trends
     or seasonality, thereby focusing on the changes in the data.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 在时间序列分析中，差分是一种常用技术，用于使时间序列数据平稳化，这对于各种分析都很有帮助。差分涉及从彼此减去连续观测值，以消除趋势或季节性，从而关注数据的变化。
 - en: 'Next, set the hyperparameters of the algorithm. In the case of these basic
     algorithms, it would be the number of lags (number of predictors) and the percentage
     split of data:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，设置算法的超参数。对于这些基本算法而言，这将是滞后数（预测器数）和数据的百分比分割：
 - en: '[PRE3]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: A `train_test_split` of 0.80 means that 80% of the data will be used for training
     while the remaining 20% will be used for testing.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 0.80的`train_test_split`表示80%的数据将用于训练，而剩余的20%将用于测试。
 - en: 'The function to split and define the four necessary arrays for the backtest
     can be defined as follows:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于拆分和定义回测所需的四个数组的函数可以定义如下：
 - en: '[PRE4]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'Call the function to create the four arrays:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用函数创建四个数组：
 - en: '[PRE5]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'You should now see four new arrays appearing in the variable explorer. The
     next step is to train the data using the chosen algorithm:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 您现在应该看到变量资源管理器中出现了四个新数组。下一步是使用所选算法对数据进行训练：
 - en: '[PRE6]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'Note that the dummy regression can take any of the following strategies as
     arguments:'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，虚拟回归可以采用以下任何策略作为参数：
 - en: '`mean`'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '`mean`'
 - en: Always predicts the mean of the training set
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 总是预测训练集的均值
 - en: '`median`'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '`median`'
 - en: Always predicts the median of the training set
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 总是预测训练集的中位数
 - en: '`quantile`'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '`quantile`'
 - en: Always predicts a specified quantile of the training set, provided with the
     quantile parameter
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 总是预测训练集的指定分位数，由分位数参数提供
 - en: '`constant`'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '`constant`'
 - en: Always predicts a constant value that is provided by the user
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 总是预测由用户提供的常量值
 - en: As you can see from the previous code, the selected parameter is `mean`. Naturally,
     this signifies that all the predictions made will simply be the mean of the training
     set (`y_train`). This is why dummy regression is only used as a benchmark and
     not as a serious machine learning model.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 如你从前面的代码中看到的，所选参数是`mean`。这自然意味着所有的预测都将简单地是训练集`y_train`的均值。这就是为什么虚拟回归只被用作基准，而不是作为严肃的机器学习模型。
 - en: 'The next step is to predict on the test data, as well as on the training data
     as a means of comparison. Note that the predictions on the training data have
     no value since the algorithm has already seen the data during training, but it
     is interesting to know how worse or better the algorithm performs on data that
     has never been seen before:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是对测试数据进行预测，以及对训练数据进行比较。请注意，对训练数据的预测没有价值，因为算法在训练期间已经见过数据，但了解算法在从未见过的数据上表现得更好或更差是很有意思的：
 - en: '[PRE7]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'To make sure your reasoning is correct with regard to using the dummy regression
     algorithm, manually calculate the mean of `y_train` and compare it to the value
     you get in every `y_predicted`. You will see that it’s the same:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了确保你对使用虚拟回归算法的推理是正确的，手动计算`y_train`的平均值，并将其与每个`y_predicted`的值进行比较。你会发现它们是相同的：
 - en: '[PRE8]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'The output should be as follows:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出应该如下所示：
 - en: '[PRE9]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'Finally, use the following function to plot the last training data followed
     by the first test data and the equivalent predicted data:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，使用以下函数绘制最后的训练数据，然后是第一个测试数据和相应的预测数据：
 - en: '[PRE10]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: Note
+  id: totrans-77
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: You can find the definition of the `plot_train_test_values()` function in this
     book’s [GitHub repository](https://oreil.ly/5YGHI).
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以在本书的[GitHub仓库](https://oreil.ly/5YGHI)中找到`plot_train_test_values()`函数的定义。
 - en: '[Figure 7-2](#figure-7-2) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.
     Naturally, the dummy regression algorithm predicts a constant value, which is
     why the prediction line alongside the test values is a straight line.'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-2](#figure-7-2)展示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。显然，虚拟回归算法预测一个常数值，这就是为什么在测试值旁边的预测线是一条直线。'
 - en: '![](assets/dlff_0702.png)'
+  id: totrans-80
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0702.png)'
 - en: Figure 7-2\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the dummy regression algorithm.
+  id: totrans-81
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-2\. 训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线代表测试期的开始。所使用的模型是虚拟回归算法。
 - en: Note
+  id: totrans-82
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: If you want the figures to be plotted in a separate window, type `**%matplotlib
     qt**` in the console. If you want the figures to be inside the plots explorer,
     type `**%matplotlib inline**` in the console.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你想要在单独的窗口中绘制图形，请在控制台中输入`**%matplotlib qt**`。如果你想要图形显示在绘图资源管理器中，请在控制台中输入`**%matplotlib
+    inline**`。
 - en: 'How can you tell whether a model is performing well or not? *Performance evaluation*
     is a key concept in trading and algorithmic development as it ensures that you
     pick the right model and take it live. However, the task is not simple, due to
     an ironically simple question: *If the past performance was good, what guarantees
     it continues to be good?*'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 你如何判断一个模型表现好还是不好？*性能评估*是交易和算法开发中的关键概念，因为它确保你选择了正确的模型并将其实施。然而，由于一个讽刺的简单问题，任务并不简单：*如果过去的表现很好，能保证未来也会表现良好吗？*
 - en: 'This question is painful, but it points toward the right direction. The answer
     to this question is subjective. For now, let’s talk about the different ways to
     measure the performance of a model. To simplify the task, I will split the performance
@@ -377,34 +551,48 @@
     evaluation* deals with the algorithm’s performance in its forecasts, while *trading
     evaluation* deals with the financial performance of a system that trades using
     the algorithm (an example of a trading evaluation metric is the net profit).'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个问题很痛苦，但它指向了正确的方向。对这个问题的答案是主观的。现在，让我们谈谈衡量模型性能的不同方法。为了简化任务，我将性能和评估指标分为两部分：模型评估和交易评估。*模型评估*关注算法在预测中的表现，而*交易评估*关注使用算法进行交易的系统的财务表现（交易评估指标的一个示例是净利润）。
 - en: 'Let’s start with model evaluation. *Accuracy* is the first metric that comes
     to mind when comparing forecasts to real values, especially in the financial markets.
     Theoretically, if you predict the direction (up or down) and you get it right,
     you should make money (excluding transaction costs). Accuracy is also referred
     to as the *hit ratio* in financial jargon and is calculated as follows:'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从模型评估开始。*准确率* 是比较预测与实际值时首先考虑的指标，尤其是在金融市场中。理论上，如果您预测方向（上涨或下跌）并且预测正确，您应该赚钱（不包括交易成本）。在金融术语中，准确率也称为*命中率*，计算方法如下：
 - en: <math alttext="Accuracy equals StartFraction Correct predictions Over Total
     predictions EndFraction times 100"><mrow><mtext>Accuracy</mtext> <mo>=</mo> <mstyle
     displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Correct</mtext><mtext>predictions</mtext></mrow>
     <mrow><mtext>Total</mtext><mtext>predictions</mtext></mrow></mfrac></mstyle> <mo>×</mo>
     <mn>100</mn></mrow></math>
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="Accuracy equals StartFraction Correct predictions Over Total
+    predictions EndFraction times 100"><mrow><mtext>Accuracy</mtext> <mo>=</mo> <mstyle
+    displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Correct</mtext><mtext>predictions</mtext></mrow>
+    <mrow><mtext>Total</mtext><mtext>predictions</mtext></mrow></mfrac></mstyle> <mo>×</mo>
+    <mn>100</mn></mrow></math>
 - en: For example, if you made 100 predictions last year and 73 of them were correct,
     you would have a 73% accuracy.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果您去年进行了100次预测，其中73次正确，那么您的准确率为73%。
 - en: 'Forecasting can also be evaluated by how close the predicted values (`y_predicted`)
     are to the real values (`y_test`). This is done by loss functions. A *loss function*
     is a mathematical calculation that measures the difference between the predictions
     and the real (test) values. The most basic loss function is the *mean absolute
     error* (MAE). It measures the average of the absolute differences between the
     predicted and actual values. The mathematical representation of MAE is as follows:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测还可以通过预测值（`y_predicted`）与实际值（`y_test`）的接近程度来评估。这是通过损失函数完成的。*损失函数* 是衡量预测值与实际（测试）值之间差异的数学计算。最基本的损失函数是*平均绝对误差*（MAE）。它衡量预测值和实际值之间绝对差异的平均值。MAE的数学表示如下：
 - en: <math alttext="upper M upper A upper E equals StartFraction sigma-summation
     Underscript i equals 1 Overscript n Endscripts StartAbsoluteValue ModifyingAbove
     y With caret minus y Subscript i Baseline EndAbsoluteValue Over n EndFraction"><mrow><mi>M</mi>
@@ -412,26 +600,44 @@
     <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></msubsup> <mrow><mo>|</mo><mover
     accent="true"><mi>y</mi> <mo>^</mo></mover><mo>-</mo><msub><mi>y</mi> <mi>i</mi></msub>
     <mo>|</mo></mrow></mrow> <mi>n</mi></mfrac></mstyle></mrow></math>
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper M upper A upper E equals StartFraction sigma-summation
+    Underscript i equals 1 Overscript n Endscripts StartAbsoluteValue ModifyingAbove
+    y With caret minus y Subscript i Baseline EndAbsoluteValue Over n EndFraction"><mrow><mi>M</mi>
+    <mi>A</mi> <mi>E</mi> <mo>=</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><msubsup><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></msubsup> <mrow><mo>|</mo><mover
+    accent="true"><mi>y</mi> <mo>^</mo></mover><mo>-</mo><msub><mi>y</mi> <mi>i</mi></msub>
+    <mo>|</mo></mrow></mrow> <mi>n</mi></mfrac></mstyle></mrow></math>
 - en: <math alttext="StartLayout 1st Row  ModifyingAbove y With caret is the predicted
     value 2nd Row  y is the real value EndLayout"><mtable><mtr><mtd columnalign="left"><mrow><mover
     accent="true"><mi>y</mi> <mo>^</mo></mover> <mtext>is</mtext> <mtext>the</mtext>
     <mtext>predicted</mtext> <mtext>value</mtext></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>y</mi>
     <mtext>is</mtext> <mtext>the</mtext> <mtext>real</mtext> <mtext>value</mtext></mrow></mtd></mtr></mtable></math>
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  ModifyingAbove y With caret is the predicted
+    value 2nd Row  y is the real value EndLayout"><mtable><mtr><mtd columnalign="left"><mrow><mover
+    accent="true"><mi>y</mi> <mo>^</mo></mover> <mtext>is</mtext> <mtext>the</mtext>
+    <mtext>predicted</mtext> <mtext>value</mtext></mrow></mtd></mtr> <mtr><mtd columnalign="left"><mrow><mi>y</mi>
+    <mtext>is</mtext> <mtext>the</mtext> <mtext>real</mtext> <mtext>value</mtext></mrow></mtd></mtr></mtable></math>
 - en: Therefore, MAE calculates the average distance (or positive difference) between
     the predicted and real values. The lower the MAE, the more accurate the model.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，MAE计算预测值和实际值之间的平均距离（或正差异）。MAE越低，模型越准确。
 - en: 'The *mean squared error* (MSE) is one of the commonly used loss functions for
     regression. It measures the average of the squared differences between the predicted
     and actual values. You can think of MSE as the equivalent of the variance metric
     seen in [Chapter 3](ch03.html#ch03). The mathematical representation of MSE is
     as follows:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '*均方误差*（MSE）是回归常用的损失函数之一。它衡量预测值和实际值之间平方差的平均值。您可以将MSE视为第3章中所见方差指标的等价物。MSE的数学表示如下：'
 - en: <math alttext="upper M upper S upper E equals StartFraction sigma-summation
     Underscript i equals 1 Overscript n Endscripts left-parenthesis ModifyingAbove
     y With caret minus y Subscript i Baseline right-parenthesis squared Over n EndFraction"><mrow><mi>M</mi>
@@ -439,8 +645,16 @@
     <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></msubsup> <msup><mrow><mo>(</mo><mover
     accent="true"><mi>y</mi> <mo>^</mo></mover><mo>-</mo><msub><mi>y</mi> <mi>i</mi></msub>
     <mo>)</mo></mrow> <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mstyle></mrow></math>
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper M upper S upper E equals StartFraction sigma-summation
+    Underscript i equals 1 Overscript n Endscripts left-parenthesis ModifyingAbove
+    y With caret minus y Subscript i Baseline right-parenthesis squared Over n EndFraction"><mrow><mi>M</mi>
+    <mi>S</mi> <mi>E</mi> <mo>=</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><msubsup><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></msubsup> <msup><mrow><mo>(</mo><mover
+    accent="true"><mi>y</mi> <mo>^</mo></mover><mo>-</mo><msub><mi>y</mi> <mi>i</mi></msub>
+    <mo>)</mo></mrow> <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mstyle></mrow></math>
 - en: 'Hence, MSE calculates the average squared distance between the predicted and
     the real values. Similar to the MAE, the lower the MSE, the more accurate the
     model. With this in mind, it helps to compare apples to apples (such as with variance
@@ -448,8 +662,10 @@
     *root mean squared error* (RMSE) has been developed to tackle this problem (hence,
     scaling the error metric back to the same units as the target variable). The mathematical
     representation of RMSE is as follows:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，MSE计算预测值和实际值之间的平方距离的平均值。与MAE类似，MSE值越低，模型越准确。有鉴于此，比较同类产品（例如方差和标准差，如第3章所示）非常有帮助。因此，*均方根误差*（RMSE）已被开发用于解决此问题（因此，将误差指标缩放回与目标变量相同的单位）。RMSE的数学表示如下：
 - en: <math alttext="upper R upper M upper S upper E equals StartRoot StartFraction
     sigma-summation Underscript i equals 1 Overscript n Endscripts left-parenthesis
     ModifyingAbove y With caret minus y Subscript i Baseline right-parenthesis squared
@@ -458,44 +674,67 @@
     <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></msubsup> <msup><mrow><mo>(</mo><mover
     accent="true"><mi>y</mi> <mo>^</mo></mover><mo>-</mo><msub><mi>y</mi> <mi>i</mi></msub>
     <mo>)</mo></mrow> <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mstyle></msqrt></mrow></math>
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper R upper M upper S upper E equals StartRoot StartFraction
+    sigma-summation Underscript i equals 1 Overscript n Endscripts left-parenthesis
+    ModifyingAbove y With caret minus y Subscript i Baseline right-parenthesis squared
+    Over n EndFraction EndRoot"><mrow><mi>R</mi> <mi>M</mi> <mi>S</mi> <mi>E</mi>
+    <mo>=</mo> <msqrt><mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><msubsup><mo>∑</mo>
+    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow> <mi>n</mi></msubsup> <msup><mrow><mo>(</mo><mover
+    accent="true"><mi>y</mi> <mo>^</mo></mover><mo>-</mo><msub><mi>y</mi> <mi>i</mi></msub>
+    <mo>)</mo></mrow> <mn>2</mn></msup></mrow> <mi>n</mi></mfrac></mstyle></msqrt></mrow></math>
 - en: The RMSE is the equivalent of the standard deviation in descriptive statistics.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: RMSE 相当于描述性统计中的标准偏差。
 - en: Note
+  id: totrans-98
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: MAE is relatively less sensitive to outliers than MSE, and it is often used
     when the data contains extreme values or when the absolute magnitude of the error
     is more important than its squared value. On the other hand, as MSE gives more
     weight to larger errors, it is the go-to loss function when trying to improve
     the performance of the model.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: MAE对异常值的敏感性相对较低，比MSE更少，通常在数据包含极端值或错误的绝对值比其平方值更重要时使用。另一方面，由于MSE更重视较大的错误，因此在试图提高模型性能时是首选的损失函数。
 - en: 'When evaluating models using MAE, MSE, or RMSE, it is important to have a baseline
     for comparison:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用MAE、MSE或RMSE评估模型时，重要的是有一个比较基准：
 - en: If you have built multiple regression models, you can compare their metrics
     to determine which model performs better. The model with the lower metric is generally
     considered to be more accurate in its predictions.
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果您已建立多个回归模型，则可以比较它们的度量标准，以确定哪个模型表现更好。通常情况下，具有较低度量标准的模型被认为在预测中更准确。
 - en: Depending on the specific problem, you may have a threshold value for what is
     considered an acceptable level of prediction error. For example, in some cases,
     an RMSE below a certain threshold may be considered satisfactory, while values
     above that threshold may be considered unacceptable.
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 根   根据具体问题，您可能会对被视为可接受的预测误差水平设定一个阈值。例如，在某些情况下，低于某个阈值的 RMSE 可能被认为是令人满意的，而高于该阈值的值可能被认为是不可接受的。
 - en: You can compare the loss functions of the training data with the loss functions
     of the test data.
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 您可以将训练数据的损失函数与测试数据的损失函数进行比较。
 - en: 'Algorithms may sometimes be directionally biased for many reasons (either structurally
     or externally). A *biased model* takes on significantly more trades in one direction
     than the other (an example would be an algorithm having 200 long positions and
@@ -503,68 +742,102 @@
     of long positions by the number of short positions. The ideal model bias is around
     1.00, which implies a balanced trading system. The mathematical representation
     of model bias is as follows:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法有时可能会出现多种原因的方向性偏见（无论是结构上的还是外部的）。*有偏模型* 在一个方向上进行的交易明显多于另一个方向（例如，一个算法有 200 个多头和
+    30 个空头）。*模型偏差* 将这种情况表示为一个比值，通过将多头头寸数除以空头头寸数。理想的模型偏差约为 1.00，这意味着一个平衡的交易系统。模型偏差的数学表示如下：
 - en: <math alttext="Model bias equals StartFraction Number of bullish signals Over
     Number of bearish signals EndFraction"><mrow><mtext>Model</mtext> <mtext>bias</mtext>
     <mo>=</mo> <mfrac><mrow><mtext>Number</mtext><mtext>of</mtext><mtext>bullish</mtext><mtext>signals</mtext></mrow>
     <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>bearish</mtext><mtext>signals</mtext></mrow></mfrac></mrow></math>
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="Model bias equals StartFraction Number of bullish signals Over
+    Number of bearish signals EndFraction"><mrow><mtext>Model</mtext> <mtext>bias</mtext>
+    <mo>=</mo> <mfrac><mrow><mtext>Number</mtext><mtext>of</mtext><mtext>bullish</mtext><mtext>signals</mtext></mrow>
+    <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>bearish</mtext><mtext>signals</mtext></mrow></mfrac></mrow></math>
 - en: If a model has had 934 long positions and 899 short positions this year, then
     the model bias metric is 1.038, which is acceptable. This means that the model
     is not really biased. It is worth noting that a model bias of 0.0 represents the
     absence of any bullish signals, and a model bias that has an undefined value represents
     the absence of any bearish signals (due to the division by zero).
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个模型今年有 934 个多头和 899 个空头，那么该模型的偏差度量为 1.038，这是可以接受的。这意味着该模型实际上没有偏见。值得注意的是，偏差度量为
+    0.0 表示没有任何看涨信号，而具有未定义值的偏差度量表示没有任何看跌信号（因为被零除）。
 - en: 'Now we’ll turn our attention to trading evaluation. Finance pioneers have been
     developing metrics that measure the performance of strategies and portfolios.
     Let’s discuss the most common and most useful ones. The most basic metric is the
     *net return*, which is essentially the return over the invested capital after
     a trading period that has at least one closed trade. The mathematical representation
     of the net return is as follows:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们将把注意力转向交易评估。金融先驱们一直在开发度量标准，用于衡量策略和投资组合的表现。让我们讨论一下最常见和最有用的度量标准。最基本的度量标准是*净收益*，它实质上是在至少有一个已平仓交易的交易期之后的投资资本回报。净收益的数学表示如下：
 - en: <math alttext="Net return equals left-parenthesis StartFraction Final value
     Over Initial value EndFraction minus 1 right-parenthesis times 100"><mrow><mtext>Net</mtext>
     <mtext>return</mtext> <mo>=</mo> <mo>(</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Final</mtext><mtext>value</mtext></mrow>
     <mrow><mtext>Initial</mtext><mtext>value</mtext></mrow></mfrac></mstyle> <mo>-</mo>
     <mn>1</mn> <mo>)</mo> <mo>×</mo> <mn>100</mn></mrow></math>
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="Net return equals left-parenthesis StartFraction Final value
+    Over Initial value EndFraction minus 1 right-parenthesis times 100"><mrow><mtext>Net</mtext>
+    <mtext>return</mtext> <mo>=</mo> <mo>(</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Final</mtext><mtext>value</mtext></mrow>
+    <mrow><mtext>Initial</mtext><mtext>value</mtext></mrow></mfrac></mstyle> <mo>-</mo>
+    <mn>1</mn> <mo>)</mo> <mo>×</mo> <mn>100</mn></mrow></math>
 - en: The word *net* implies a result after deducting fees; otherwise, it is referred
     to as a *gross* return. For example, if you start the year with $52,000 and finish
     at $67,150, you would have made 29.13% (a net profit of $15,150).
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '*净值* 一词意味着扣除费用后的结果；否则，它被称为*毛收益*。例如，如果您年初有 52,000 美元，年底为 67,150 美元，您将获得 29.13%
+    的收益率（净利润为 15,150 美元）。'
 - en: 'Another profitability metric is the *profit factor,* which is the ratio of
     the total gross profits to the total gross losses. Intuitively, a profit factor
     above 1.00 implies a profitable strategy, and a profit factor below 1.00 implies
     a losing strategy. The mathematical representation of the profit factor is as
     follows:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个盈利能力度量标准是*利润因子*，它是总毛利润与总毛亏损的比率。直观地，利润因子大于 1.00 意味着一个盈利策略，而小于 1.00 意味着一个亏损策略。利润因子的数学表示如下：
 - en: <math alttext="Profit factor equals StartFraction Gross profits Over Gross losses
     EndFraction"><mrow><mtext>Profit</mtext> <mtext>factor</mtext> <mo>=</mo> <mstyle
     displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Gross</mtext><mtext>profits</mtext></mrow>
     <mrow><mtext>Gross</mtext><mtext>losses</mtext></mrow></mfrac></mstyle></mrow></math>
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="Profit factor equals StartFraction Gross profits Over Gross losses
+    EndFraction"><mrow><mtext>Profit</mtext> <mtext>factor</mtext> <mo>=</mo> <mstyle
+    displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Gross</mtext><mtext>profits</mtext></mrow>
+    <mrow><mtext>Gross</mtext><mtext>losses</mtext></mrow></mfrac></mstyle></mrow></math>
 - en: The profit factor is a useful metric for evaluating the profitability of a trading
     strategy because it takes into account both the profits and losses generated by
     the strategy, rather than just looking at one side of the equation. The profit
     factor of a trading strategy that has generated $54,012 in profits and $29,988
     in losses is 1.80.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 利润因子是评估交易策略盈利能力的一个有用度量标准，因为它同时考虑了策略产生的利润和损失，而不仅仅是看一方面。一个交易策略的利润因子，其利润为 54,012
+    美元，损失为 29,988 美元，为 1.80。
 - en: 'The next interesting metric relates to individual trades. The *average gain*
     per trade calculates the average profits (or positive returns) per trade based
     on historical data, and the *average loss* per trade calculates losses (or negative
     returns) per trade based on historical data. These two metrics give an expected
     return depending on the outcome. Both metrics are calculated following these formulas:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一个有趣的指标与个别交易有关。*每笔交易的平均盈利*计算基于历史数据的每笔交易的平均利润（或正收益），而*每笔交易的平均亏损*计算基于历史数据的每笔交易的亏损（或负收益）。这两个指标根据以下公式计算：
 - en: <math alttext="StartLayout 1st Row  Average gain equals StartFraction Total
     profit Over Number of winning trades EndFraction 2nd Row  Average loss equals
     StartFraction Total losses Over Number of losing trades EndFraction EndLayout"><mtable><mtr><mtd
@@ -572,8 +845,16 @@
     <mfrac><mrow><mtext>Total</mtext><mtext>profit</mtext></mrow> <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>winning</mtext><mtext>trades</mtext></mrow></mfrac></mrow></mtd></mtr>
     <mtr><mtd columnalign="left"><mrow><mtext>Average</mtext> <mtext>loss</mtext>
     <mo>=</mo> <mfrac><mrow><mtext>Total</mtext><mtext>losses</mtext></mrow> <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>losing</mtext><mtext>trades</mtext></mrow></mfrac></mrow></mtd></mtr></mtable></math>
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row  Average gain equals StartFraction Total
+    profit Over Number of winning trades EndFraction 2nd Row  Average loss equals
+    StartFraction Total losses Over Number of losing trades EndFraction EndLayout"><mtable><mtr><mtd
+    columnalign="left"><mrow><mtext>Average</mtext> <mtext>gain</mtext> <mo>=</mo>
+    <mfrac><mrow><mtext>Total</mtext><mtext>profit</mtext></mrow> <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>winning</mtext><mtext>trades</mtext></mrow></mfrac></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mtext>Average</mtext> <mtext>loss</mtext>
+    <mo>=</mo> <mfrac><mrow><mtext>Total</mtext><mtext>losses</mtext></mrow> <mrow><mtext>Number</mtext><mtext>of</mtext><mtext>losing</mtext><mtext>trades</mtext></mrow></mfrac></mrow></mtd></mtr></mtable></math>
 - en: 'The next metric relates to risk and is one of the most important measures of
     evaluation. *Maximum drawdown* is a metric that measures the largest percentage
     decline in the value of an investment or portfolio from its highest historical
@@ -582,124 +863,182 @@
     and its value subsequently drops to $50,000 before recovering, the maximum drawdown
     would be 50%, which is the percentage decline from the peak value to the trough.
     Maximum drawdown is calculated as follows:'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一个指标与风险相关，是评估的最重要指标之一。*最大回撤*是一种衡量投资或投资组合价值从历史最高峰值到最低点的最大百分比下降的指标。它通常用于评估投资或投资组合的下行风险。例如，如果一个投资的峰值为
+    10 万美元，其价值随后下跌至 5 万美元后恢复，那么最大回撤将为 50%，即从峰值到谷底的百分比下降。最大回撤的计算方法如下：
 - en: <math alttext="Maximum drawdown equals left-parenthesis StartFraction Trough
     value minus Peak value Over Peak value EndFraction right-parenthesis times 100"><mrow><mtext>Maximum</mtext>
     <mtext>drawdown</mtext> <mo>=</mo> <mo>(</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Trough</mtext><mtext>value</mtext><mo>-</mo><mtext>Peak</mtext><mtext>value</mtext></mrow>
     <mrow><mtext>Peak</mtext><mtext>value</mtext></mrow></mfrac></mstyle> <mo>)</mo>
     <mo>×</mo> <mn>100</mn></mrow></math>
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="Maximum drawdown equals left-parenthesis StartFraction Trough
+    value minus Peak value Over Peak value EndFraction right-parenthesis times 100"><mrow><mtext>Maximum</mtext>
+    <mtext>drawdown</mtext> <mo>=</mo> <mo>(</mo> <mstyle displaystyle="false" scriptlevel="0"><mfrac><mrow><mtext>Trough</mtext><mtext>value</mtext><mo>-</mo><mtext>Peak</mtext><mtext>value</mtext></mrow>
+    <mrow><mtext>Peak</mtext><mtext>value</mtext></mrow></mfrac></mstyle> <mo>)</mo>
+    <mo>×</mo> <mn>100</mn></mrow></math>
 - en: 'Finally, let’s discuss a well-known profitability ratio called the *Sharpe
     ratio*. It measures how much return is generated by units of excess risk. The
     formula of the ratio is as follows:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，让我们讨论一个众所周知的盈利能力比率，称为*夏普比率*。它衡量了单位超额风险所产生的回报。该比率的公式如下：
 - en: <math alttext="upper S h a r p e equals StartFraction mu minus r Over sigma
     EndFraction"><mrow><mi>S</mi> <mi>h</mi> <mi>a</mi> <mi>r</mi> <mi>p</mi> <mi>e</mi>
     <mo>=</mo> <mfrac><mrow><mi>μ</mi><mo>-</mo><mi>r</mi></mrow> <mi>σ</mi></mfrac></mrow></math>
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S h a r p e equals StartFraction mu minus r Over sigma
+    EndFraction"><mrow><mi>S</mi> <mi>h</mi> <mi>a</mi> <mi>r</mi> <mi>p</mi> <mi>e</mi>
+    <mo>=</mo> <mfrac><mrow><mi>μ</mi><mo>-</mo><mi>r</mi></mrow> <mi>σ</mi></mfrac></mrow></math>
 - en: μ is the net return
+  id: totrans-119
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: μ 是净收益
 - en: '*r* is the risk-free rate'
+  id: totrans-120
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*r* 是无风险利率'
 - en: σ is the volatility of returns
+  id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: σ 是收益波动率
 - en: So, if the net return is 5% and the risk-free rate is 2% while the volatility
     of returns is 2.5%, the Sharpe ratio is 1.20\. Anything above 1.00 is desirable
     as it implies that the strategy is generating positive excess risk-adjusted return.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，如果净收益率为 5%，无风险利率为 2%，而收益波动率为 2.5%，则夏普比率为 1.20。任何高于 1.00 的值都是理想的，因为它意味着策略产生了正的超额风险调整回报。
 - en: The focus of this book is on developing machine and deep learning algorithms,
     so the performance evaluation step will solely focus on accuracy, RMSE, and model
     bias (with the correlation between the predicted variables as an extra metric).
     The performance functions can be found in the GitHub repository, along with the
     complete scripts.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的重点是开发机器和深度学习算法，因此性能评估步骤将仅专注于准确性、RMSE 和模型偏差（附带预测变量之间的相关性作为额外指标）。性能函数可以在 GitHub
+    存储库中找到，以及完整的脚本。
 - en: 'The model’s results on the EURUSD after applying the performance metrics are
     as follows:'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用性能指标后，模型在 EURUSD 上的结果如下：
 - en: '[PRE11]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: With a bias of 0.0, it’s easy to see that this is a dummy regression model.
     The bias means that according to the formula, all the forecasts are bearish. Taking
     a look at the details of the predictions, you will see that they are all constant
     values.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 偏差为 0.0 时，很容易看出这是一个虚拟的回归模型。偏差意味着根据公式，所有的预测都是看跌的。仔细查看预测的细节，你会发现它们都是恒定值。
 - en: Note
+  id: totrans-127
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: 'The key takeaways from this section are as follows:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节的主要要点如下：
 - en: Automatic data import and creation saves you time and allows you to concentrate
     on the main issues of the algorithm.
+  id: totrans-129
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 自动数据导入和创建节省时间，让您可以专注于算法的主要问题。
 - en: For a proper backtest, the data must be split into a training set and a test
     set.
+  id: totrans-130
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为了进行适当的回测，数据必须分成训练集和测试集。
 - en: The training set contains `x_train` and `y_train`, with the former containing
     the values that are supposed to have a predictive power over the latter.
+  id: totrans-131
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 训练集包含`x_train`和`y_train`，前者包含了被认为对后者具有预测能力的值。
 - en: The test set contains `x_test` and `y_test`, with the former containing the
     values that are supposed to have a predictive power (even though the model hasn’t
     encountered them in its training) over the latter.
+  id: totrans-132
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 测试集包含`x_test`和`y_test`，前者包含了被认为对后者具有预测能力的值（即使模型在训练中没有遇到过它们）。
 - en: Fitting the data is when the algorithm runs on the training set; predicting
     the data is when the algorithm runs on the test set.
+  id: totrans-133
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将数据拟合是指算法在训练集上运行；预测数据是指算法在测试集上运行。
 - en: The predictions are stored in a variable called `y_predicted` that is compared
     to `y_test` for performance evaluation purposes.
+  id: totrans-134
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 预测存储在名为`y_predicted`的变量中，用于性能评估目的与`y_test`进行比较。
 - en: The main aim of the algorithms is to have good accuracy and stable, low-volatility
     returns.
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 算法的主要目标是具有良好的准确性和稳定的低波动率回报。
 - en: Machine Learning Models
+  id: totrans-136
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 机器学习模型
 - en: This section presents a selection of machine learning models using the framework
     developed so far. It is important to understand every model’s strengths and weaknesses
     so that you know which model to choose depending on the forecasting task.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了一些使用迄今为止开发的框架的机器学习模型的选择。了解每个模型的优缺点非常重要，这样您就知道根据预测任务选择哪种模型。
 - en: Linear Regression
+  id: totrans-138
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 线性回归
 - en: The *linear regression* algorithm works by finding the best-fitting line that
     minimizes the sum of squared differences between the predicted and actual target
     values. The most used optimization technique in this algorithm is the *ordinary
     least squares* (OLS) method.^([2](ch07.html#id626))
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '*线性回归*算法通过找到最佳拟合线来最小化预测值和实际目标值之间的平方差。在此算法中最常用的优化技术是*普通最小二乘*（OLS）方法。^([2](ch07.html#id626))'
 - en: The model is trained on the training set using the OLS method, which estimates
     the coefficients that minimize the sum of squared differences between the predicted
     and actual target values to find the optimal coefficients for the independent
@@ -707,81 +1046,117 @@
     line, respectively). The output is a linear function that gives the expected return
     given the explanatory variables weighted by the coefficient with an adjustment
     for noise and the intercept.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 该模型使用OLS方法在训练集上进行训练，该方法估计最小化预测值和实际目标值之间平方差的系数，以找到独立变量的最优系数（系数分别代表最佳拟合线的*y*-截距和斜率）。输出是一个线性函数，根据系数加权解释变量给出期望的回报，并对噪声和截距进行调整。
 - en: 'To import the linear regression library from *sklearn*, use the following code:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 要从*sklearn*导入线性回归库，请使用以下代码：
 - en: '[PRE12]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'Now let’s look at the algorithm’s implementation:'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看看算法的实现：
 - en: '[PRE13]'
+  id: totrans-144
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: The model assumes that the linear relationship that has held in the past will
     still hold in the future. This is unrealistic, and it ignores the fact that market
     dynamics and drivers are constantly shifting whether in the short term or the
     long term. They are also nonlinear.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 该模型假设过去保持的线性关系在未来仍将保持不变。这是不现实的，并忽视了市场动态和驱动因素不断变化的事实，无论是短期还是长期。它们也是非线性的。
 - en: '[Figure 7-3](#figure-7-3) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-3](#figure-7-3)展示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0703.png)'
+  id: totrans-147
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0703.png)'
 - en: Figure 7-3\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the linear regression algorithm.
+  id: totrans-148
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-3\. 训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。使用的模型是线性回归算法。
 - en: 'The model’s results on the EURUSD after applying the performance metrics are
     as follows:'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 在应用性能指标后，EURUSD的模型结果如下：
 - en: '[PRE14]'
+  id: totrans-150
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: The results indicate poor performance coming from the linear regression algorithm,
     with an accuracy below 50.00%. As you can see, the accuracy generally drops after
     switching to the test set. The correlation between the in-sample predictions and
     the real in-sample values also drops from 0.373 to 0.014\. The model bias is close
     to equilibrium, which means that the number of long signals is close to the number
     of short signals.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果表明，线性回归算法的表现不佳，准确率低于50.00%。正如您所看到的，切换到测试集后，准确率通常会下降。样本内预测与实际样本值之间的相关性也从0.373下降到0.014。模型偏差接近均衡，这意味着长信号数量接近短信号数量。
 - en: 'There are a few things to note regarding the model’s results:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型结果有几个要注意的地方：
 - en: The transaction costs have not been incorporated, and therefore, these are gross
     results (not net results).
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 交易成本未被纳入考虑，因此这些是毛收益结果（非净结果）。
 - en: There is no risk management system, as this is a pure time series machine learning
     model and not a full trading algorithm that incorporates stops and targets. Therefore,
     as this is a purely directional model, the job is to try to maximize the number
     of correct forecasts. With a daily horizon, you are searching for accuracy.
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于这是一个纯粹的时间序列机器学习模型，而不是包含止损和目标的完整交易算法，因此没有风险管理系统。因此，由于这是一个纯粹的定向模型，任务是尽量提高正确预测的数量。在每日时间段内，您正在寻找准确性。
 - en: Different FX data providers may have small differences in the historical data
     that may cause some differences between backtests.
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不同的外汇数据提供商可能在历史数据上有细微差异，这可能导致回测之间的一些差异。
 - en: 'Models are made to be optimized and tweaked. The process of optimization may
     include any of the following techniques:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型被设计为优化和调整。优化过程可能包括以下任一技术：
 - en: Choosing the right predictors is paramount to a model’s success
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择正确的预测因子对模型的成功至关重要。
 - en: In this chapter, the predictors used are the lagged returns. This has been chosen
     arbitrarily and is not necessarily the right choice. Predictors must be chosen
     based on economic and statistical intuition. For example, it may be reasonable
@@ -791,25 +1166,35 @@
     correlation may harbor hidden patterns between the returns of both instruments.
     Another way of choosing predictors is to use technical indicators such as the
     relative strength index (RSI) and moving averages.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，使用的预测因子是滞后收益率。这是任意选择的，并不一定是正确的选择。必须基于经济和统计直觉选择预测因子。例如，选择黄金的回报来解释（预测）标准普尔500指数的波动可能是合理的，因为它们在经济上有关联。避险资产如黄金在经济不确定时期上涨，而股市则倾向于下跌。这种负相关可能隐藏了这两种工具之间的潜在模式。选择预测因子的另一种方法是使用技术指标，如相对强度指数（RSI）和移动平均线。
 - en: Proper splitting is crucial to evaluate the model properly
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 适当的分割对正确评估模型至关重要。
 - en: Train-test splits are important as they determine the window of evaluation.
     Typically, 20/80 and 30/70 are used, which means that 20% (30%) of the data is
     used for the testing sample and 80% (70%) is used for the training sample.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练测试分离很重要，因为它们决定评估的窗口。通常使用20/80和30/70，这意味着数据的20%（30%）用于测试样本，80%（70%）用于训练样本。
 - en: Regularization techniques can help prevent biases
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则化技术可以帮助防止偏差。
 - en: Ridge regression and Lasso regression are two common regularization methods
     used in linear regression. *Ridge regression* adds a penalty term to the OLS function
     to reduce the impact of large coefficients, while *Lasso regression* can drive
     some coefficients to zero, effectively performing feature selection.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 岭回归和Lasso回归是线性回归中常见的两种正则化方法。*岭回归*在OLS函数中增加惩罚项，以减少大系数的影响，而*Lasso回归*可以将一些系数驱动为零，有效进行特征选择。
 - en: The model seen in this section is called an *autoregressive model* since the
     dependent variable depends on its past values and not on exogenous data. Also,
     since at every time step, 500 different variables (with their coefficients) have
@@ -817,34 +1202,50 @@
     linear regression* model. In contrast, when the model only uses one dependent
     variable to predict the dependent variable, it is referred to as a *simple linear
     regression* model.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节中看到的模型被称为*自回归模型*，因为因变量取决于其过去的值，而不是外生数据。此外，由于在每个时间步骤中使用了500个不同的变量（及其系数）来预测下一个变量，因此该模型被称为*多元线性回归*模型。相比之下，当模型仅使用一个因变量来预测依赖变量时，它被称为*简单线性回归*模型。
 - en: 'The advantages of linear regression are:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归的优点是：
 - en: It is easy to implement and train. It also does not consume a lot of memory.
+  id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 实施和训练都很容易。它也不会消耗大量内存。
 - en: It outperforms when the data has a linear dependency.
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在数据具有线性依赖性时表现优越。
 - en: 'The disadvantages of linear regression are:'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归的缺点是：
 - en: It is sensitive to outliers.
+  id: totrans-168
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对异常值敏感。
 - en: It is easily biased (more on this type of bias in [“Overfitting and Underfitting”](#overfit_and_underfit)).
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它很容易出现偏差（更多关于这种类型偏差的信息请参见[“过拟合与欠拟合”](#overfit_and_underfit)）。
 - en: It has unrealistic assumptions, such as the independence of data.
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它具有不切实际的假设，例如数据的独立性。
 - en: Before moving on to the next section, it is important to note that some linear
     regression models do not transform the data. You may see extremely high accuracy
     and a prediction that is very close to the real data, but the reality is that
@@ -852,23 +1253,31 @@
     prediction is simply the last real value. Let’s prove this using the previous
     example. Use the same code as before, but omit the price differencing code. You
     should see [Figure 7-4](#figure-7-4).
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 在进入下一节之前，重要的是注意一些线性回归模型不会对数据进行转换。你可能看到非常高的准确度和非常接近真实数据的预测，但实际上预测是滞后一个时间步长的。这意味着在每个时间步长，预测值只是上一个真实值。让我们用之前的例子来证明这一点。使用与之前相同的代码，但省略价格差分代码。你应该看到[图7-4](#figure-7-4)。
 - en: '![](assets/dlff_0704.png)'
+  id: totrans-172
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0704.png)'
 - en: Figure 7-4\. Nonstationary training data followed by test data (dashed line)
     and the predicted data (thin line); the vertical dashed line represents the start
     of the test period. The model used is the linear regression algorithm.
+  id: totrans-173
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-4\. 非平稳训练数据接着测试数据（虚线）和预测数据（细线）；垂直虚线代表测试期的开始。使用的模型是线性回归算法。
 - en: Notice how it’s simply lagging the real values and not adding any predictive
     information. Always transform nonstationary data when dealing with such models.
     Nonstationary data cannot be forecasted using this type of algorithm (there are
     exceptions, though, which you will see later on).
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意它仅仅是滞后于真实值，并没有添加任何预测信息。处理此类模型时，始终要对非平稳数据进行转换。非平稳数据不能使用此类算法进行预测（当然也有例外，稍后会看到）。
 - en: 'Using linear regression on nonstationary data, such as market prices, and observing
     that the forecasts are the same as the last value might indicate an issue known
     as *naive forecasting*. This occurs when the most recent observation (in this
@@ -876,61 +1285,86 @@
     While this approach can sometimes work for certain types of data, it is generally
     not a sophisticated forecasting method and may not capture the underlying patterns
     or trends in the data. There are a few reasons why this might happen:'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 在非平稳数据（如市场价格）上使用线性回归，并观察到预测结果与上一个值相同可能表明存在一种称为*天真预测*的问题。这种情况发生在最近的观察值（在本例中是上一个值）仅被用作下一个时间段的预测值。虽然这种方法有时对某些类型的数据有效，但通常不是一种复杂的预测方法，可能无法捕捉数据中的潜在模式或趋势。导致这种情况发生的原因有几个：
 - en: Lack of predictive power
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 缺乏预测能力
 - en: Linear regression assumes that there is a linear relationship between the independent
     variable(s) and the dependent variable. If the data is highly nonstationary and
     lacks a clear linear relationship, then the linear regression model may not be
     able to capture meaningful patterns and will default to a simplistic forecast
     like naive forecasting.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归假设自变量与因变量之间存在线性关系。如果数据高度非平稳且缺乏明确的线性关系，那么线性回归模型可能无法捕捉到有意义的模式，并会默认为类似天真预测的简单预测。
 - en: Lagging indicators
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 滞后指标
 - en: Market prices often exhibit strong autocorrelation, meaning that the current
     price is highly correlated with the previous price. In such cases, if the model
     only takes into account lagged values as predictors, it might simply replicate
     the last value as the forecast.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场价格通常表现出强烈的自相关性，这意味着当前价格与先前价格高度相关。在这种情况下，如果模型仅考虑滞后值作为预测因子，它可能只是将最后一个值复制为预测值。
 - en: Lack of feature engineering
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 缺乏特征工程
 - en: Linear regression models rely on the features (predictors) you provide to make
     forecasts. If you’re using only lagged values as predictors and not incorporating
     other relevant features, the model might struggle to generate meaningful forecasts.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归模型依赖于您提供的特征（预测因子）来进行预测。如果您只使用滞后值作为预测因子，而没有整合其他相关特征，模型可能会难以生成有意义的预测。
 - en: Model complexity
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型复杂性
 - en: Linear regression is a relatively simple modeling technique. If the underlying
     relationship in the data is more complex than can be captured by a linear equation,
     the model might not be able to make accurate forecasts.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归是一种相对简单的建模技术。如果数据中的基本关系比线性方程能够捕捉到的更复杂，那么该模型可能无法进行准确的预测。
 - en: Support Vector Regression
+  id: totrans-184
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 支持向量回归
 - en: '*Support vector regression* (SVR) is a machine learning algorithm that belongs
     to the family of *support vector machines* (SVMs). SVR is specifically designed
     for regression problems, where the goal is to predict continuous numerical values
     (such as return values).'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '*支持向量回归*（SVR）是一种机器学习算法，属于 *支持向量机*（SVM）家族。SVR 专门设计用于回归问题，其目标是预测连续的数值（例如返回值）。'
 - en: SVR performs regression by finding a hyperplane in a high-dimensional feature
     space that best approximates the relationship between the input features and the
     target variable. Unlike traditional regression techniques that aim to minimize
     the errors between the predicted and actual values, SVR focuses on finding a hyperplane
     that captures the majority of the data within a specified margin, known as the
     *epsilon tube* (loss function).
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: SVR 通过在高维特征空间中找到一个最佳超平面来执行回归，该超平面最佳地逼近输入特征和目标变量之间的关系。与传统回归技术不同，传统回归技术旨在最小化预测值与实际值之间的误差，SVR
+    则专注于找到一个能够捕捉数据中大部分数据的超平面，即所谓的 *epsilon tube*（损失函数）。
 - en: 'The key idea behind SVR is to transform the original input space into a higher-dimensional
     space using a kernel function. This transformation allows SVR to implicitly map
     the data into a higher-dimensional feature space, where it becomes easier to find
@@ -938,26 +1372,35 @@
     function calculates the similarity between two data points, enabling the SVR algorithm
     to work effectively in nonlinear regression problems. The steps performed in the
     SVR process are as follows:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: SVR 的关键思想是使用核函数将原始输入空间转换为更高维度的空间。这种转换允许 SVR 隐式地将数据映射到更高维的特征空间，在这个空间中更容易找到特征与目标变量之间的线性关系。核函数计算两个数据点之间的相似性，使得
+    SVR 算法能够有效地处理非线性回归问题。SVR 过程中执行的步骤如下：
 - en: The algorithm employs a kernel function to transform the input features into
     a higher-dimensional space. Common kernel functions include the linear kernel,
     polynomial kernel, radial basis function (RBF) kernel, and sigmoid kernel. The
     choice of kernel depends on the data and the underlying problem.
+  id: totrans-188
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 算法使用核函数将输入特征转换为更高维度的空间。常见的核函数包括线性核函数、多项式核函数、径向基函数（RBF）核函数和 sigmoid 核函数。核的选择取决于数据和潜在问题。
 - en: The algorithm then aims to find the hyperplane that best fits the data points
     within the epsilon tube. The training process involves solving an optimization
     problem to minimize the error (using a loss function such as MSE) while controlling
     the margin.
+  id: totrans-189
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 算法然后旨在找到最佳拟合数据点的超平面，这些数据点在 epsilon 管道内。训练过程涉及解决优化问题，以最小化误差（使用例如 MSE 的损失函数）同时控制间隔。
 - en: Note
+  id: totrans-190
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The RBF kernel is a popular choice for SVR because it can capture nonlinear
     relationships effectively. It is suitable when there is no prior knowledge about
     the specific form of the relationship. The RBF kernel calculates the similarity
@@ -965,121 +1408,177 @@
     parameter called *gamma*, which determines the influence of each training example
     on the model. Higher gamma values make the model focus more on individual data
     points, potentially leading to errors.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: RBF 核函数是 SVR 的流行选择，因为它能有效捕捉非线性关系。当对关系的具体形式没有先验知识时，它是合适的选择。RBF 核函数根据输入空间中特征向量之间的距离计算它们的相似性。它使用一个称为
+    *gamma* 的参数，决定每个训练样本对模型的影响。较高的 gamma 值使模型更加关注单个数据点，可能导致错误。
 - en: By finding an optimal hyperplane within the epsilon tube, SVR can effectively
     capture the underlying patterns and relationships in the data, even in the presence
     of noise or outliers. It is a powerful technique for regression tasks, especially
     when dealing with nonlinear relationships between features and target variables.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过在 epsilon 管道内找到一个最优超平面，SVR 可以有效地捕捉数据中的潜在模式和关系，即使在存在噪声或异常值的情况下也是如此。对于回归任务，特别是处理特征与目标变量之间的非线性关系时，它是一种强大的技术。
 - en: As SVR is sensitive to the scale of the features, it’s important to bring all
     the features to a similar scale. Common scaling methods include *standardization*
     (mean subtraction and division by standard deviation) and *normalization* (scaling
     features to a range, e.g., [0, 1]).
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于 SVR 对特征的尺度敏感，将所有特征带到相似的尺度上是很重要的。常见的缩放方法包括 *标准化*（减去平均值并除以标准差）和 *归一化*（将特征缩放到范围，例如
+    [0, 1]）。
 - en: 'Let’s take a look at SVR in action. Once again, the aim is to predict the next
     EURUSD return given the previous returns. To import the SVR library and the scaling
     library, use the following code:'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看SVR的运作方式。再次，目标是根据先前的收益预测下一个EURUSD的收益。要导入SVR库和缩放库，请使用以下代码：
 - en: '[PRE15]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'For the SVR algorithm, a little tweaking was done to get acceptable forecasts.
     The tweak was to reduce the number of lagged values from 500 to 50:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于SVR算法，进行了一些微调以获得可接受的预测结果。调整是将滞后值的数量从500减少到50：
 - en: '[PRE16]'
+  id: totrans-197
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: This allows the SVR algorithm to improve its forecasts. You will see throughout
     the book that part of performing these types of backtests is tweaking and calibrating
     the models.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 这使得SVR算法能够改善其预测能力。在本书中您将看到，执行这些类型的回测的一部分是调整和校准模型。
 - en: 'Next, to implement the algorithm, use the following code:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，要实现算法，请使用以下代码：
 - en: '[PRE17]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[Figure 7-5](#figure-7-5) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-5](#figure-7-5)展示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变过程。'
 - en: '![](assets/dlff_0705.png)'
+  id: totrans-202
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0705.png)'
 - en: Figure 7-5\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the SVR algorithm.
+  id: totrans-203
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-5。训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。使用的模型是SVR算法。
 - en: 'The model’s results are as follows:'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下：
 - en: '[PRE18]'
+  id: totrans-205
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'The advantages of SVR are:'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: SVR的优点包括：
 - en: It performs well even in high-dimensional feature spaces, where the number of
     features is large compared to the number of samples. It is particularly useful
     when dealing with complex datasets.
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它在高维特征空间中表现良好，即特征数量远远大于样本数量时。在处理复杂数据集时特别有用。
 - en: It can capture nonlinear relationships between input features and the target
     variable by using kernel functions.
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可以通过使用核函数捕捉输入特征与目标变量之间的非线性关系。
 - en: It is robust to outliers in the training data due to the epsilon-tube formulation.
     The model focuses on fitting the majority of the data within the specified margin,
     reducing the influence of outliers.
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于ε-tube公式的存在，它对训练数据中的异常值具有鲁棒性。该模型专注于将大多数数据拟合在指定边界内，从而减少异常值的影响。
 - en: 'The disadvantages of SVR are:'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: SVR的缺点包括：
 - en: It has several hyperparameters that need to be tuned for optimal performance.
     Selecting appropriate hyperparameters can be a challenging task and may require
     extensive experimentation.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它有几个需要调整以达到最佳性能的超参数。选择适当的超参数可能是一项具有挑战性的任务，并且可能需要进行广泛的实验。
 - en: It can be computationally expensive, especially for large datasets or when using
     complex kernel functions.
+  id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可能计算成本较高，特别是对于大型数据集或使用复杂核函数时。
 - en: It can be sensitive to the choice of hyperparameters. Poorly chosen hyperparameters
     can lead to fitting issues.
+  id: totrans-213
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可能对超参数的选择敏感。选择不当的超参数可能导致拟合问题。
 - en: Stochastic Gradient Descent Regression
+  id: totrans-214
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 随机梯度下降回归
 - en: '*Gradient descent* (GD) is a general optimization algorithm used to minimize
     the cost or loss function of a model, and it serves as the foundation for various
     optimization algorithms.'
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: '*梯度下降*（GD）是一种常用的优化算法，用于最小化模型的成本或损失函数，它也是各种优化算法的基础。'
 - en: Note
+  id: totrans-216
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: '*Gradient* simply refers to a surface’s slope or tilt. To get to the lowest
     point on the surface, one must literally descend a slope.'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: '*梯度*简单地指的是表面的斜率或倾斜度。要到达表面的最低点，必须沿着斜坡下降。'
 - en: '*Stochastic gradient descent* (SGD) is an iterative optimization algorithm
     commonly used for training machine learning models, including regression models.
     It is particularly useful for large datasets and online learning scenarios. When
@@ -1087,8 +1586,10 @@
     that capture temporal patterns and make predictions based on historical data.
     SGD is therefore a type of linear regression that uses stochastic gradient descent
     optimization to find the best-fitting line.'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '*随机梯度下降*（SGD）是一种常用的迭代优化算法，用于训练机器学习模型，包括回归模型。它特别适用于大型数据集和在线学习场景。当应用于时间序列预测时，SGD可用于训练能够捕捉时间模式并基于历史数据进行预测的回归模型。因此，SGD是一种使用随机梯度下降优化的线性回归类型。'
 - en: Unlike ordinary least squares, SGD updates the model’s parameters iteratively,
     making it more suitable for large datasets (which are treated in small batches).
     Instead of using the entire dataset for each update step, SGD randomly selects
@@ -1097,16 +1598,22 @@
     optima (you can refer to [Chapter 4](ch04.html#ch04) for more information on optimization).
     The main difference between GD and SGD lies in how they update the model’s parameters
     during optimization.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 与普通的最小二乘法不同，SGD会迭代地更新模型的参数，使其更适用于大型数据集（以小批量方式处理）。SGD不是使用整个数据集进行每次更新步骤，而是随机选择训练数据集中的一小批样本或单个样本。这种随机选择有助于引入随机性并避免陷入局部最优解（您可以参考[第四章](ch04.html#ch04)了解更多关于优化的信息）。GD和SGD之间的主要区别在于它们在优化期间如何更新模型的参数。
 - en: Note
+  id: totrans-220
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: SGD does not belong to any particular family of machine learning models; it
     is essentially an optimization technique.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: SGD不属于任何特定的机器学习模型家族；它本质上是一种优化技术。
 - en: GD computes the gradients over the entire training dataset, updating the model’s
     parameters once per epoch, while SGD computes the gradients based on a single
     training example or mini batch, updating the parameters more frequently. SGD is
@@ -1114,226 +1621,324 @@
     convergence trajectory. SGD is also more robust to local minima. The choice between
     GD and SGD depends on the specific requirements of the problem, the dataset size,
     and the trade-off between computational efficiency and convergence behavior.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: GD计算整个训练数据集上的梯度，每个时代更新一次模型的参数，而SGD基于单个训练示例或小批量计算梯度，更频繁地更新参数。SGD更快但表现更不稳定，而GD更慢但具有更平滑的收敛轨迹。SGD对局部最小值也更具鲁棒性。选择GD还是SGD取决于问题的具体要求、数据集的大小以及计算效率和收敛行为之间的权衡。
 - en: 'As usual, the first step is to import the necessary libraries:'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 与往常一样，第一步是导入必要的库：
 - en: '[PRE19]'
+  id: totrans-224
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 'Next, to implement the algorithm, use the following code:'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，要实现该算法，请使用以下代码：
 - en: '[PRE20]'
+  id: totrans-226
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[Figure 7-6](#figure-7-6) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-6](#figure-7-6)显示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0706.png)'
+  id: totrans-228
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](assets/dlff_0706.png)'
 - en: Figure 7-6\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the SGD algorithm.
+  id: totrans-229
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-6。训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。所使用的模型是SGD算法。
 - en: 'The model’s results are as follows:'
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下：
 - en: '[PRE21]'
+  id: totrans-231
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'The advantages of SGD are:'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: SGD的优点包括：
 - en: It performs well with large datasets since it updates the model parameters incrementally
     based on individual or small subsets of training examples.
+  id: totrans-233
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它在大型数据集上表现良好，因为它根据单个或小型训练示例逐步更新模型参数。
 - en: It can escape local minima and find better global optima (due to its stochastic
     nature).
+  id: totrans-234
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可以逃脱局部最小值并找到更好的全局最优解（由于其随机性质）。
 - en: It can improve generalization by exposing the model to different training examples
     in each iteration, thereby reducing overfitting.
+  id: totrans-235
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可以通过在每次迭代中将模型暴露于不同的训练样本来提高泛化能力，从而减少过拟合。
 - en: 'The disadvantages of SGD are:'
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: SGD的缺点包括：
 - en: The convergence path can be noisy and exhibit more fluctuations compared to
     deterministic optimization algorithms. This can result in slower convergence or
     oscillations around the optimal solution.
+  id: totrans-237
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 收敛路径可能会有噪声并且比确定性优化算法表现出更多的波动。这可能导致较慢的收敛或在最优解周围的振荡。
 - en: It is impacted by feature scaling, which means it is sensitive to such techniques.
+  id: totrans-238
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它受特征缩放的影响，这意味着它对这种技术敏感。
 - en: Nearest Neighbors Regression
+  id: totrans-239
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 最近邻回归
 - en: The *nearest neighbors regression* algorithm, also known as *k*-nearest neighbors
     (KNN) regression, is a nonparametric^([3](ch07.html#id644)) algorithm used for
     regression tasks. It predicts the value of a target variable based on the values
     of its nearest neighbors in the feature space. The algorithm starts by determining
     *k*, which is the number of nearest neighbors to consider when making predictions.
     This is a hyperparameter that you need to choose based on the problem at hand.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: '*最近邻回归*算法，也被称为*k*最近邻（KNN）回归，是一种非参数^([3](ch07.html#id644))算法，用于回归任务。它基于特征空间中最近邻的值来预测目标变量的值。该算法首先确定*k*，即在进行预测时要考虑的最近邻的数量。这是一个需要根据具体问题选择的超参数。'
 - en: Note
+  id: totrans-241
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: A larger *k* value provides a smoother prediction, while a smaller *k* value
     captures more local variations but may be more prone to noise.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 较大的*k*值提供了更平滑的预测，而较小的*k*值捕捉更多局部变化，但可能更容易受到噪音的影响。
 - en: Then the model calculates the distance between the new, unseen data point and
     all the data points in the training set. The choice of distance metric depends
     on the nature of the input features. Common distance metrics include Euclidean
     distance, Manhattan distance, and Minkowski distance. Next, the algorithm selects
     the *k* data points with the shortest distances to the query point. These data
     points are the *nearest neighbors* and will be used to make predictions.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，模型计算新的未见数据点与训练集中所有数据点之间的距离。距离度量的选择取决于输入特征的性质。常见的距离度量包括欧氏距离、曼哈顿距离和闵可夫斯基距离。接下来，算法选择距离查询点最近的*k*个数据点。这些数据点是*最近邻*，将用于进行预测。
 - en: 'To import the KNN regressor, use the following code:'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入KNN回归器，请使用以下代码：
 - en: '[PRE22]'
+  id: totrans-245
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 'Now let’s look at the algorithm’s implementation. Fit the model with *k* =
     10:'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来看看算法的实现。使用*k* = 10来拟合模型：
 - en: '[PRE23]'
+  id: totrans-247
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '[Figure 7-7](#figure-7-7) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-7](#figure-7-7)展示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0707.png)'
+  id: totrans-249
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0707.png)'
 - en: Figure 7-7\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the KNN regression algorithm.
+  id: totrans-250
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-7\. 训练数据，随后是测试数据（虚线），以及预测数据（细线）；垂直虚线表示测试期的开始。使用的模型是KNN回归算法。
 - en: 'The choice of the number of neighbors in a time series prediction using the
     KNN regressor depends on several factors, including the characteristics of your
     dataset and the desired level of accuracy. There is no definitive answer as to
     how many neighbors to choose, as it is often determined through experimentation
     and validation. Typically, selecting an appropriate value for the number of neighbors
     involves a trade-off between bias and variance:'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用KNN回归器进行时间序列预测时，选择邻居数量取决于多个因素，包括数据集的特性和所需的精度水平。没有一个确定的答案来确定选择多少个邻居，通常通过实验和验证来确定。通常选择适当的邻居数量涉及偏差和方差之间的权衡：
 - en: Small *k* values are associated with a model that can capture local patterns
     in the data, but it may also be sensitive to noise or outliers.
+  id: totrans-252
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 较小的*k*值与能够捕捉数据中局部模式的模型相关联，但也可能对噪声或异常值敏感。
 - en: Larger *k* values are associated with a model that can become more robust to
     noise or outliers but may overlook local patterns in the data.
+  id: totrans-253
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 较大的*k*值与能够更加抗噪声或异常值的模型相关联，但可能忽略数据中的局部模式。
 - en: Note
+  id: totrans-254
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: If you take the limit as *k* approaches the size of the dataset, you will get
     a model that just predicts the class that appears more frequently in the dataset.
     This is known as the *Bayes error*.
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果将*k*趋向于数据集大小的极限，将得到一个仅预测数据集中频率最高类别的模型。这被称为*贝叶斯误差*。
 - en: 'The model’s results are as follows:'
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下：
 - en: '[PRE24]'
+  id: totrans-257
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: Note
+  id: totrans-258
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: It’s essential to consider the temporal aspect of your time series data. If
     there are clear trends or patterns that span multiple data points, a larger *k*
     value might be appropriate to capture those dependencies. However, if the time
     series exhibits rapid changes or short-term fluctuations, a smaller k value could
     be more suitable.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 在考虑您的时间序列数据时，考虑其时间特性是至关重要的。如果存在跨多个数据点的明显趋势或模式，较大的*k*值可能更适合捕捉这些依赖关系。然而，如果时间序列展示出快速变化或短期波动，较小的*k*值可能更合适。
 - en: The size of your dataset can also influence the choice of *k*. If you have a
     small dataset, choosing a smaller value for *k* might be preferable to avoid overfitting.
     Conversely, a larger dataset can tolerate a higher value for *k*.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的数据集的大小也可能影响*k*的选择。如果数据集很小，选择较小的*k*值可能更好，以避免过拟合。相反，较大的数据集可以容忍更高的*k*值。
 - en: 'The advantages of KNN are:'
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: KNN 的优点包括：
 - en: Its nonlinearity allows it to capture complex patterns in financial data, which
     can be advantageous for predicting returns series that may exhibit nonlinear behavior.
+  id: totrans-262
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它的非线性允许捕捉金融数据中的复杂模式，这对于预测可能表现出非线性行为的回报序列有优势。
 - en: It can adapt to changing market conditions or patterns. As the algorithm is
     instance based, it does not require retraining the model when new data becomes
     available. This adaptability can be beneficial in the context of financial returns,
     where market dynamics can change over time.
+  id: totrans-263
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可以适应变化的市场条件或模式。由于算法是基于实例的，当新数据可用时，不需要重新训练模型。这种适应性在金融回报的情境中可能是有益的，因为市场动态可以随时间变化。
 - en: It provides intuitive interpretations for predictions. Since the algorithm selects
     the *k* nearest neighbors to make predictions, it can be easier to understand
     and explain compared to more complex algorithms.
+  id: totrans-264
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它为预测提供直观的解释。由于该算法选择*k*个最近邻来进行预测，相对于更复杂的算法，理解和解释可能更容易。
 - en: 'The disadvantages of KNN are:'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: KNN 的缺点包括：
 - en: Its performance can degrade when dealing with high-dimensional data. Financial
     returns series often involve multiple predictors (such as technical indicators
     and other correlated returns), and KNN may struggle to find meaningful neighbors
     in high-dimensional spaces.
+  id: totrans-266
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在处理高维数据时，其性能可能会下降。金融回报序列通常涉及多个预测因子（如技术指标和其他相关回报），KNN可能难以在高维空间中找到有意义的邻居。
 - en: As the dataset grows in size, the computational requirements of KNN can become
     significant.
+  id: totrans-267
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 随着数据集的增大，KNN的计算要求可能变得显著。
 - en: It is sensitive to noisy or outlier data points since the algorithm considers
     all neighbors equally.
+  id: totrans-268
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它对噪声或异常数据点敏感，因为该算法平等地考虑所有邻居。
 - en: Decision Tree Regression
+  id: totrans-269
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 决策树回归
 - en: '*Decision trees* are versatile and intuitive machine learning models. They
     are graphical representations of a series of decisions or choices based on feature
     values that lead to different outcomes. Decision trees are structured as a hierarchical
     flowchart, where each internal node represents a decision based on a feature,
     each branch represents an outcome of that decision, and each leaf node represents
     the final prediction or class label.'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: '*决策树*是多功能且直观的机器学习模型。它们是基于特征值的一系列决策或选择的图形表示，这些选择导致不同的结果。决策树结构化为分层流程图，其中每个内部节点代表基于特征的决策，每个分支表示该决策的结果，每个叶节点表示最终的预测或类标签。'
 - en: At the root of the decision tree, consider all the input features and choose
     the one that best separates the data based on a specific criterion (e.g., the
     information gain metric discussed in [Chapter 2](ch02.html#ch02)). Create a decision
@@ -1343,115 +1948,165 @@
     node. Stop the recursion when a stopping criterion is met, such as reaching a
     maximum depth, reaching a minimum number of samples in a node, or no further improvement
     in impurity or gain.
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 在决策树的根部，考虑所有的输入特征，并选择基于特定标准（例如在[第二章](ch02.html#ch02)中讨论的信息增益度量）最佳分离数据的特征。创建与所选特征相关联的决策节点。根据所选特征的可能值来分割数据。递归地重复前面的步骤，考虑每个节点处剩余的特征，直到达到停止条件为止，例如达到最大深度、节点中的最小样本数，或者在纯度或增益上不再有进一步的改善。
 - en: 'To import the decision tree regressor, use the following code:'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入决策树回归器，请使用以下代码：
 - en: '[PRE25]'
+  id: totrans-273
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: 'Now let’s look at the algorithm’s implementation:'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看一下算法的实现：
 - en: '[PRE26]'
+  id: totrans-275
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Note
+  id: totrans-276
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The argument `random_state` is often used to initialize the randomization within
     algorithms that involve randomness such as initializing weights. This ensures
     that if you train a model multiple times with the same `random_state`, you’ll
     get the same results, which is important for comparing different algorithms or
     hyperparameters.
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: 参数`random_state`通常用于初始化包含随机性的算法，比如初始化权重。这确保了如果你多次使用相同的`random_state`来训练模型，你将得到相同的结果，这对于比较不同的算法或超参数是很重要的。
 - en: '[Figure 7-8](#figure-7-8) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-8](#figure-7-8)显示了预测任务从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的演变。'
 - en: '![](assets/dlff_0708.png)'
+  id: totrans-279
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0708.png)'
 - en: Figure 7-8\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the decision tree regression algorithm.
+  id: totrans-280
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-8\. 训练数据接着是测试数据（虚线）和预测数据（细线）；垂直虚线代表测试期的开始。使用的模型是决策树回归算法。
 - en: 'The model’s results are as follows:'
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下：
 - en: '[PRE27]'
+  id: totrans-282
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: Notice how the accuracy of the training set is extremely high. This is clearly
     evidence of overfitting (supported by the RMSE of the training data).
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意训练集的准确度非常高。这明显是过度拟合的证据（受训练数据的RMSE支持）。
 - en: 'The advantages of decision trees are:'
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 决策树的优点是：
 - en: They require minimal data preprocessing and can handle missing values.
+  id: totrans-285
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它们需要最少的数据预处理并且可以处理缺失值。
 - en: They can capture nonlinear relationships, interactions, and variable importance.
+  id: totrans-286
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它们可以捕捉非线性关系、交互作用和变量重要性。
 - en: 'The disadvantages of decision trees are:'
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: 决策树的缺点是：
 - en: They can be sensitive to small changes in the data and can easily overfit if
     not properly regularized.
+  id: totrans-288
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果没有适当正则化，它们可能对数据中的细微变化敏感，容易过度拟合。
 - en: They may struggle to capture complex relationships that require deeper trees.
+  id: totrans-289
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它们可能难以捕捉需要更深树的复杂关系。
 - en: The next section presents another breed of machine learning algorithms. These
     are called *ensemble algorithms.* Decision trees can be combined using ensemble
     methods to create more robust and accurate models. Random forest, an algorithm
     seen in the next section, combines multiple decision trees to enhance predictive
     ability and, especially, to reduce the risk of overfitting.
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一节介绍了另一类机器学习算法。这些被称为*集成算法*。可以使用集成方法将决策树组合起来以创建更稳健和准确的模型。随机森林是下一节中看到的算法，它结合了多个决策树以增强预测能力，尤其是减少过度拟合的风险。
 - en: Random Forest Regression
+  id: totrans-291
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 随机森林回归
 - en: '*Random forest* is a machine learning algorithm that harnesses the power of
     multiple decision trees to form a single output (prediction). It is flexible and
     does not require much tuning. It is also less prone to overfitting due to its
     ensemble learning technique. *Ensemble learning* refers to the combination of
     multiple learners (models) to improve the final prediction.'
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: '*随机森林*是一种利用多个决策树的力量形成单一输出（预测）的机器学习算法。它灵活且不需要太多调整。由于其集成学习技术，它也不太容易过度拟合。*集成学习*指的是将多个学习器（模型）组合起来以改善最终预测。'
 - en: With random forest, the multiple learners are different decision trees that
     converge toward a single prediction.
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用随机森林，多个学习器是不同的决策树，它们会汇聚到一个单一的预测。
 - en: 'Therefore, one of the hyperparameters that can be tuned in random forest algorithms
     is the number of decision trees. The algorithm uses the bagging method. In the
     context of random forests, *bagging* refers to the technique of *bootstrap aggregating*
     that aims to improve the performance and robustness of machine learning models,
     such as decision trees, by reducing biases. Here’s how bagging works within the
     random forest algorithm:'
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，在随机森林算法中可以调整的超参数之一是决策树的数量。该算法使用装袋法。在随机森林的背景下，*装袋*指的是*自助聚合*技术，旨在通过减少偏差来改善机器学习模型（如决策树）的性能和鲁棒性。以下是随机森林算法中装袋的工作原理：
 - en: '*Bootstrap sampling*: Random forest employs bootstrapping, which means creating
     multiple subsets of the original training data by sampling with replacement. Each
     subset has the same size as the original dataset but may contain duplicate instances
     and exclude some of them. This process is performed independently for each tree
     in the random forest.'
+  id: totrans-295
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*自助采样*：随机森林采用自助采样，这意味着通过替换抽样创建原始训练数据的多个子集。每个子集的大小与原始数据集相同，但可能包含重复实例并排除其中一些。这个过程对随机森林中的每棵树都是独立进行的。'
 - en: '*Tree construction and feature selection*: For each bootstrap sample, a decision
     tree is constructed using a process called *recursive partitioning* where data
     is split based on features in order to create branches that optimize the separation
@@ -1459,246 +2114,360 @@
     features is considered for splitting. This helps introduce diversity among the
     trees in the forest and prevents them from relying too heavily on a single dominant
     feature.'
+  id: totrans-296
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*树构建和特征选择*：对于每个自助采样，使用一种称为*递归分区*的过程构建决策树，其中数据基于特征进行分割，以创建优化目标变量分离的分支。在决策树的每个节点，考虑一个随机子集的特征进行分割。这有助于在森林中引入多样性，并防止它们过于依赖单一主导特征。'
 - en: '*Ensemble prediction*: Once all the trees are constructed, predictions are
     made by aggregating the outputs of individual trees. For regression tasks, the
     predictions are averaged.'
+  id: totrans-297
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*集成预测*：一旦所有树都构建完成，通过聚合各个树的输出进行预测。对于回归任务，预测值取平均值。'
 - en: 'To import the random forest regressor, use the following code:'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入随机森林回归器，请使用以下代码：
 - en: '[PRE28]'
+  id: totrans-299
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: 'Now let’s look at the algorithm’s implementation:'
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来看看算法的实现：
 - en: '[PRE29]'
+  id: totrans-301
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: Note
+  id: totrans-302
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The `max_depth` hyperparameter controls the depth of each decision tree in the
     random forest. A decision tree with a larger depth can capture more intricate
     patterns in the data, but it also becomes more prone to overfitting, which means
     it might perform very well on the training data but poorly on unseen data. On
     the other hand, a shallower tree might not capture all the details of the data
     but could generalize better to new, unseen data.
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: '`max_depth`超参数控制随机森林中每棵决策树的深度。深度较大的决策树可以捕捉数据中更复杂的模式，但也更容易过拟合，这意味着在训练数据上表现很好但在未见数据上表现不佳。另一方面，较浅的树可能无法捕捉数据的所有细节，但在新的未见数据上可能更具一般化能力。'
 - en: '[Figure 7-9](#figure-7-9) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-9](#figure-7-9)显示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务演变过程。'
 - en: '![](assets/dlff_0709.png)'
+  id: totrans-305
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0709.png)'
 - en: Figure 7-9\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the random forest regression algorithm.
+  id: totrans-306
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-9\. 训练数据后跟测试数据（虚线），以及预测数据（细线）；垂直虚线表示测试期的开始。所用模型是随机森林回归算法。
 - en: 'The model’s results are as follows:'
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下：
 - en: '[PRE30]'
+  id: totrans-308
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'The advantages of random forest regression are as follows:'
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机森林回归的优点如下：
 - en: It generally has accurate forecasts on data due to its ensemble nature. With
     financial time series being highly noisy and borderline random, its results need
     to be optimized nevertheless.
+  id: totrans-310
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于其集成的特性，通常对数据有准确的预测。由于金融时间序列具有高噪声和边际随机性，尽管如此，其结果仍需优化。
 - en: It exhibits robustness to noise and outliers due to its averaging nature.
+  id: totrans-311
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于其平均化的特性，它对噪声和异常值表现出鲁棒性。
 - en: 'The disadvantages of random forest regression are as follows:'
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机森林回归的缺点如下：
 - en: It may be difficult to interpret from time to time. Since it uses an aggregating
     method, the true and final decision may be lost when a large number of trees is
     used.
+  id: totrans-313
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 有时可能难以解释。由于使用聚合方法，当使用大量树时可能会丢失真实和最终决策。
 - en: As the number of trees increases, the computational time of the algorithm takes
     more time to train, resulting in a slow process.
+  id: totrans-314
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 随着树的数量增加，算法的计算时间变长，训练过程缓慢。
 - en: AdaBoost Regression
+  id: totrans-315
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: AdaBoost回归
 - en: Before understanding what AdaBoost is about, let’s discuss gradient boosting
     so that it becomes easier to comprehend the algorithm behind it. *Gradient boosting*
     is a technique to build models based on the idea of improving *weak learners*
     (which means models that perform only slightly better than random).
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 在理解AdaBoost算法之前，让我们先讨论梯度提升，这样就更容易理解其背后的算法。*梯度提升*是一种基于改进*弱学习器*（指表现略好于随机的模型）思想构建模型的技术。
 - en: The way to improve these weak learners is to target their weak spots by creating
     other weak learners that can handle the weak spots. This gave birth to what is
     known as *Adaptive Boosting*, or *AdaBoost* for short. Hence, in layperson’s terms,
     *boosting* is all about combining weak learners to form better models.
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: 提升这些弱学习器的方法是针对它们的弱点创建其他能处理这些弱点的弱学习器。这就诞生了所谓的*自适应增强*，简称*AdaBoost*。因此，通俗来说，*增强*就是将弱学习器结合起来形成更好的模型。
 - en: The learners in AdaBoost (which, as discussed, are weak) are single-split decision
     trees (referred to as *stumps*). They are weighted, with more weight put on instances
     that are more difficult to classify and less weight put on the rest. At the same
     time, new learners are incorporated to be trained on the difficult parts, thus
     creating a more powerful model. Therefore, the difficult instances receive greater
     weights until they are solved by new weak learners.
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: AdaBoost中的学习器（如前所述，是弱的）是单分裂的决策树（称为*stumps*）。它们被赋予权重，对于更难分类的实例放置更多的权重，对其余实例放置较少的权重。同时，新的学习器被纳入以在困难部分进行训练，从而创建一个更强大的模型。因此，困难的实例获得更大的权重，直到它们被新的弱学习器解决。
 - en: 'Predictions are based on votes from the weak learners. The majority rule is
     applied in order to maximize accuracy. Gradient boosting therefore can be summarized
     in three steps:'
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测基于弱学习器的投票。采用多数原则以最大化准确性。因此，梯度提升可以概括为三个步骤：
 - en: It builds an ensemble of weak predictive models, typically decision trees, in
     a sequential manner.
+  id: totrans-320
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它按顺序构建了一组弱预测模型，通常是决策树。
 - en: Each subsequent model is built to correct the errors or residuals of the previous
     models using gradient descent, which adjusts the predictions to minimize overall
     error.
+  id: totrans-321
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个后续模型都是为了纠正先前模型的错误或残差而构建的，使用梯度下降来调整预测以最小化总体错误。
 - en: The predictions from all the models are combined by taking a weighted average
     or sum, determined by the learning rate, to produce the final prediction.
+  id: totrans-322
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 所有模型的预测通过加权平均或总和来组合，加权由学习率确定，以产生最终预测。
 - en: 'To import the AdaBoost regressor, use the following code:'
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入AdaBoost回归器，请使用以下代码：
 - en: '[PRE31]'
+  id: totrans-324
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'Now let’s look at the algorithm’s implementation:'
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看一下算法的实现：
 - en: '[PRE32]'
+  id: totrans-326
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: '[Figure 7-10](#figure-7-10) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-327
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-10](#figure-7-10)显示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0710.png)'
+  id: totrans-328
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0710.png)'
 - en: Figure 7-10\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the AdaBoost regression algorithm.
+  id: totrans-329
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-10\. 训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。所使用的模型是AdaBoost回归算法。
 - en: 'The model’s results are as follows:'
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下：
 - en: '[PRE33]'
+  id: totrans-331
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 'The advantages of AdaBoost are:'
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: AdaBoost的优点是：
 - en: It generally has good accuracy.
+  id: totrans-333
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它通常具有很高的准确性。
 - en: It is easy to comprehend.
+  id: totrans-334
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它很容易理解。
 - en: 'The disadvantages of AdaBoost are:'
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: AdaBoost的缺点是：
 - en: It is impacted by outliers and sensitive to noise.
+  id: totrans-336
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它受异常值的影响，对噪声敏感。
 - en: It is slow and not optimized.
+  id: totrans-337
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它速度较慢，且未经优化。
 - en: XGBoost Regression
+  id: totrans-338
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: XGBoost回归
 - en: '*XGBoost* is a fast and performant gradient-boosted decision tree algorithm.
     The name may be complicated, but the concept is not hard to understand if you
     understood gradient boosting from the previous section on AdaBoost. XGBoost stands
     for *extreme gradient boosting* and was created by Tianqi Chen. Here’s how it
     works:'
+  id: totrans-339
   prefs: []
   type: TYPE_NORMAL
+  zh: '*XGBoost*是一种快速且性能优异的梯度提升决策树算法。这个名字可能很复杂，但如果你理解了AdaBoost上一节中的梯度提升，就不难理解。XGBoost代表*极端梯度提升*，是由陈天奇创建的。它的工作原理如下：'
 - en: XGBoost starts with a simple base model, usually a decision tree.
+  id: totrans-340
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: XGBoost从一个简单的基础模型开始，通常是一个决策树。
 - en: It defines an objective function that measures the performance of the model.
+  id: totrans-341
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它定义了一个衡量模型性能的目标函数。
 - en: Using gradient descent optimization, it iteratively improves the model’s predictions
     by adjusting the model based on the gradient of the objective function.
+  id: totrans-342
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用梯度下降优化，通过根据目标函数的梯度调整模型来迭代地改进模型的预测。
 - en: New decision trees are added to the ensemble to correct errors made by previous
     models.
+  id: totrans-343
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 新的决策树被添加到集合中以纠正先前模型的错误。
 - en: Regularization techniques, such as learning rate and column subsampling, are
     employed to enhance performance and prevent fitting issues.
+  id: totrans-344
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 采用正则化技术，如学习率和列子采样，以增强性能并防止拟合问题。
 - en: The final prediction is obtained by combining the predictions from all the models
     in the ensemble.
+  id: totrans-345
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最终预测是通过组合集合中所有模型的预测得到的。
 - en: The implementation of XGBoost in Python takes more steps than the previous algorithms.
     The first step is to `pip install` the required module. Type the following command
     in the prompt:^([4](ch07.html#id662))
+  id: totrans-346
   prefs: []
   type: TYPE_NORMAL
+  zh: Python中XGBoost的实现比前面的算法需要更多步骤。第一步是`pip install`所需的模块。在提示符中输入以下命令：^([4](ch07.html#id662))
 - en: '[PRE34]'
+  id: totrans-347
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 'To import the XGBoost library, use the following code:'
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入 XGBoost 库，请使用以下代码：
 - en: '[PRE35]'
+  id: totrans-349
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: 'The implementation of the algorithm is as follows:'
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法的实现如下所示：
 - en: '[PRE36]'
+  id: totrans-351
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: Note
+  id: totrans-352
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The argument `n_estimators` is a hyperparameter that determines the number of
     boosting rounds or trees to be built in the ensemble. As the algorithm combines
     the predictions of multiple weak learners (individual decision trees) to create
@@ -1706,8 +2475,10 @@
     tree to the ensemble, and the algorithm learns from the mistakes made by previous
     trees. The `n_estimators` hyperparameter controls the maximum number of trees
     that will be added to the ensemble during the training process.
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: 参数`n_estimators`是一个超参数，用于确定要在集成中构建的提升回合或树的数量。由于算法结合多个弱学习器（单个决策树）的预测来创建强预测模型，每个提升回合（迭代）将一个新的决策树添加到集成中，并且算法从之前树的错误中学习。`n_estimators`超参数控制在训练过程中将添加到集成中的树的最大数量。
 - en: AdaBoost and XGBoost are both boosting algorithms used to enhance the predictive
     power of weak learners, usually decision trees. AdaBoost focuses on iteratively
     emphasizing misclassified samples using exponential loss, lacks built-in regularization,
@@ -1715,147 +2486,216 @@
     supports various loss functions, offers regularization, handles missing values,
     scales better through parallelization, provides comprehensive feature importance,
     and allows for more extensive hyperparameter tuning.
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: AdaBoost 和 XGBoost 都是用于增强弱学习器（通常为决策树）预测能力的提升算法。AdaBoost 专注于使用指数损失迭代强调误分类样本，缺乏内置正则化，并且并行化能力有限。相比之下，XGBoost
+    利用梯度提升，支持各种损失函数，提供正则化，处理缺失值，通过并行化更好地扩展，提供全面的特征重要性，并允许更广泛的超参数调整。
 - en: XGBoost therefore offers more advanced features. It is often preferred for its
     overall better performance and ability to handle complex tasks. However, the choice
     between the two depends on the specific problem, dataset, and computational resources
     available.
+  id: totrans-355
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，XGBoost 提供了更高级的功能。它通常因为整体性能更好和处理复杂任务的能力而受到青睐。然而，两者之间的选择取决于具体的问题、数据集和可用的计算资源。
 - en: '[Figure 7-11](#figure-7-11) shows the evolution of the forecasting task from
     the last values of `y_train` to the first values of `y_test` and `y_predicted`.'
+  id: totrans-356
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-11](#figure-7-11)展示了从`y_train`的最后值到`y_test`和`y_predicted`的第一个值的预测任务的演变。'
 - en: '![](assets/dlff_0711.png)'
+  id: totrans-357
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0711.png)'
 - en: Figure 7-11\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the XGBoost regression algorithm.
+  id: totrans-358
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-11。训练数据后跟测试数据（虚线）和预测数据（细线）；垂直虚线表示测试期的开始。使用的模型是 XGBoost 回归算法。
 - en: 'The model’s results are as follows:'
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的结果如下所示：
 - en: '[PRE37]'
+  id: totrans-360
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: Overfitting and Underfitting
+  id: totrans-361
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 过拟合和欠拟合
 - en: Issues will arise in machine-based predictive analytics, and this is completely
     normal, since *perfection* is an impossible word in the world of data science
     (and finance). This section covers the most important issue when it comes to predicting
     data, and that is the *fitting problem*. Overfitting and underfitting are two
     terms that you must thoroughly understand so that you avoid their consequences
     when running your models.
+  id: totrans-362
   prefs: []
   type: TYPE_NORMAL
+  zh: 机器学习预测分析中会出现问题，这是完全正常的，因为在数据科学（和金融）世界中，“完美”是一个不可能的词。本节涵盖了在预测数据时最重要的问题，即“拟合问题”。过度拟合和欠拟合是两个术语，您必须彻底了解它们，以避免在运行模型时遇到它们的后果。
 - en: '*Overfitting* occurs when a model performs extremely well on the training data
     but has bad results on the test data. It is a sign that the model has learned
     not only the details of the in-sample data but also the noise that occurred. Overfitting
     is generally associated with a high variance and low bias model, but what do those
     two terms mean?'
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: '*过拟合*发生在模型在训练数据上表现极好但在测试数据上结果糟糕的情况下。这表明模型不仅学习了样本内数据的细节，还学习了发生的噪声。过拟合通常与高方差和低偏差模型相关，但这两个术语的含义是什么？'
 - en: '*Bias* refers to the difference between the expected value of the model’s predictions
     and the real value of the target variable. A low bias model is one that is complex
     enough to capture the underlying patterns in the data.'
+  id: totrans-364
   prefs: []
   type: TYPE_NORMAL
+  zh: '*偏差*是指模型预测的期望值与目标变量的实际值之间的差异。低偏差模型是足够复杂，可以捕捉数据中的潜在模式。'
 - en: '*Variance* refers to the variability of the model’s predictions for different
     training sets. A high variance model is one that is overly complex and can capture
     random noise and fluctuations in the training data. This can lead to overfitting,
     as the model may be fitting the noise in the data.'
+  id: totrans-365
   prefs: []
   type: TYPE_NORMAL
+  zh: '*方差*指的是模型在不同训练集上预测结果的变化程度。高方差模型过于复杂，可能捕捉到训练数据中的随机噪声和波动，导致过拟合。这会使模型适应数据中的噪声。'
 - en: To prevent overfitting, it’s important to strike a balance between bias and
     variance by selecting a model that is complex enough to capture the underlying
     patterns in the data but not so complex that it captures random noise and fluctuations
     in the data. Regularization techniques can also be used to reduce variance and
     prevent overfitting.
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了避免过拟合，重要的是在偏差和方差之间找到平衡，选择一个足够复杂以捕捉数据中潜在模式的模型，但不要过于复杂以至于捕捉到数据中的随机噪声和波动。正则化技术也可以用来减少方差，防止过拟合。
 - en: 'Overfitting occurs for a number of reasons, notably:'
+  id: totrans-367
   prefs: []
   type: TYPE_NORMAL
+  zh: 过拟合出现的原因有多种，尤其包括：
 - en: Insufficient data
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据不足
 - en: If the training data is not diverse enough, or if there is not enough of it,
     the model may overfit to the training data.
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果训练数据不够多样化，或者数据量不足，模型可能会对训练数据过拟合。
 - en: Overly complex model
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: 过度复杂的模型
 - en: If the model is too complex, it may learn the noise in the data rather than
     the underlying patterns.
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果模型过于复杂，可能会学习到数据中的噪声而非潜在模式。
 - en: Feature overload
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征过载
 - en: If the model is trained on too many features, it may learn irrelevant or noisy
     features that do not generalize to new data.
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果模型训练时使用了过多的特征，可能会学习到不具有泛化能力的无关或噪声特征。
 - en: Lack of regularization
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: 缺乏正则化
 - en: If the model is not regularized properly, it may overfit to the training data.
+  id: totrans-375
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果模型的正则化不合适，可能会导致对训练数据的过拟合。
 - en: Leakage
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: 泄露
 - en: Leakage occurs when information from the test set is inadvertently included
     in the training set. This can lead to overfitting as the model is learning from
     data that it will later see during testing.
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: 泄露发生在测试集的信息被无意中包含在训练集中时。这会导致过拟合，因为模型在学习后期测试时将再次见到这些数据。
 - en: A high bias model is one that is overly simplified and cannot capture the true
     underlying patterns in the data. This can lead to underfitting. Similarly, a low
     variance model is one that is not affected much by small changes in the training
     data and can generalize well to new, unseen data.
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: 高偏差模型过于简化，无法捕捉数据中真实的潜在模式。这可能导致欠拟合。类似地，低方差模型对训练数据的小变化不敏感，并且能够很好地泛化到未见过的新数据。
 - en: 'Underfitting occurs for a number of reasons, notably:'
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: 欠拟合出现的原因有多种，尤其包括：
 - en: Insufficient model complexity
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型复杂性不足
 - en: If the model used is too simple to capture the underlying patterns in the data,
     it may result in underfitting. For example, a linear regression model might not
     be able to capture the nonlinear relationship between the features and the target
     variable.
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果所用模型过于简单，无法捕捉数据中的潜在模式，可能导致欠拟合。例如，线性回归模型可能无法捕捉特征与目标变量之间的非线性关系。
 - en: Insufficient training
+  id: totrans-382
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练不足
 - en: If the model is not trained for long enough, or with enough data, it may not
     be able to capture the underlying patterns in the data.
+  id: totrans-383
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果模型训练时间不够长，或者数据量不足，可能无法捕捉数据中的潜在模式。
 - en: Over-regularization
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 过度正则化
 - en: Regularization is a technique used to prevent overfitting, but if it’s used
     excessively, it can lead to underfitting.
+  id: totrans-385
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则化是一种防止过拟合的技术，但如果使用过度，可能导致欠拟合。
 - en: Poor feature selection
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征选择不当
 - en: If the features selected for the model are not informative or relevant, the
     model may underfit.
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果为模型选择的特征信息量不足或不相关，可能会导致欠拟合。
 - en: '[Figure 7-12](#figure-7-12) shows a comparison between the different fits of
     a model to the data. An underfit model fails to capture the real relationship
     from the start, thus it is bad at predicting the past values and the future ones
@@ -1864,77 +2704,113 @@
     across the time period. An overfit model captures every detail of the past, even
     if it’s noise or random dislocations. The danger of an overfit model is that it
     inhibits a false promise of the future.'
+  id: totrans-388
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-12](#figure-7-12)显示了模型与数据之间不同拟合的比较。欠拟合模型未能从一开始就捕获真实关系，因此在预测过去值和未来值方面表现不佳。良好拟合的模型捕获了数据的一般趋势。它不是精确或完美的模型，但通常在整个时间段内具有令人满意的预测。过拟合模型捕捉了过去的每一个细节，即使是噪音或随机位移。过拟合模型的危险在于它给未来带来了虚假的承诺。'
 - en: '![](assets/dlff_0712.png)'
+  id: totrans-389
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_0712.png)'
 - en: Figure 7-12\. Different fitting situations.
+  id: totrans-390
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-12。不同的拟合情况。
 - en: 'Therefore, when building machine learning models for time series prediction,
     you have to make sure you do not tune the parameters to perfectly fit the past
     values. To reduce fitting biases, make sure you incorporate the following best
     practices in your backtests:'
+  id: totrans-391
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，在构建用于时间序列预测的机器学习模型时，必须确保不调整参数以完美地拟合过去的值。为了减少拟合偏差，请确保在您的回测中包含以下最佳实践：
 - en: Increase training data
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: 增加训练数据
 - en: Collecting more training data helps to capture a broader range of patterns and
     variations in the data, reducing the chances of overfitting.
+  id: totrans-393
   prefs: []
   type: TYPE_NORMAL
+  zh: 收集更多的训练数据有助于捕获数据中更广泛的模式和变化，减少过拟合的机会。
 - en: Feature selection
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征选择
 - en: Carefully select relevant and informative features for your model. Removing
     irrelevant or redundant features reduces noise and complexity in the data, making
     it easier for the model to generalize well to unseen examples.
+  id: totrans-395
   prefs: []
   type: TYPE_NORMAL
+  zh: 仔细选择与您的模型相关且信息丰富的特征。去除无关或冗余的特征可以减少数据中的噪音和复杂性，使模型更容易对未见示例进行良好泛化。
 - en: Regularization techniques
+  id: totrans-396
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则化技术
 - en: Regularization methods explicitly control the complexity of the model to prevent
     overfitting.
+  id: totrans-397
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则化方法明确控制模型的复杂性，以防止过拟合。
 - en: Hyperparameter tuning
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: 超参数调优
 - en: Optimize the hyperparameters of your model to find the best configuration. Hyperparameters
     control the behavior and complexity of the model.
+  id: totrans-399
   prefs: []
   type: TYPE_NORMAL
+  zh: 优化模型的超参数以找到最佳配置。超参数控制模型的行为和复杂性。
 - en: Ensemble methods
+  id: totrans-400
   prefs: []
   type: TYPE_NORMAL
+  zh: 集成方法
 - en: Employ ensemble methods, such as random forests, to combine predictions from
     multiple models. Ensemble methods can reduce overfitting by aggregating the predictions
     of multiple models, smoothing out individual model biases, and improving generalization.
+  id: totrans-401
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用集成方法，如随机森林，将多个模型的预测组合起来。集成方法可以通过聚合多个模型的预测结果，平滑个别模型的偏差，并提高泛化能力，从而减少过拟合。
 - en: Regular model evaluation
+  id: totrans-402
   prefs: []
   type: TYPE_NORMAL
+  zh: 定期模型评估
 - en: Regularly evaluate your model’s performance on unseen data or a dedicated validation
     set. This helps monitor the model’s generalization ability and detect any signs
     of overfitting or degradation in performance.
+  id: totrans-403
   prefs: []
   type: TYPE_NORMAL
+  zh: 定期评估您的模型在未见数据或专门的验证集上的表现。这有助于监控模型的泛化能力，并检测过拟合或性能下降的任何迹象。
 - en: Summary
+  id: totrans-404
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 摘要
 - en: By properly understanding where machine learning algorithms come from, it becomes
     simpler to interpret them and understand their limitations. This chapter gave
     you the required knowledge (theory and practice) to build time series models using
     a few known machine learning algorithms in the hopes of forecasting values using
     past values.
+  id: totrans-405
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过正确理解机器学习算法的来源，更容易解释它们并了解它们的局限性。本章提供了构建时间序列模型所需的知识（理论和实践），使用几种已知的机器学习算法来预测值，希望使用过去的值。
 - en: What you must imperatively know is that past values are not necessarily indicative
     of future outcomes. Backtests are always biased somehow since a lot of tweaking
     is needed to tune the results, which may cause overfitting. Patterns do occur,
@@ -1943,24 +2819,34 @@
     the raw form and with their basic inputs) are not very predictive, but with proper
     combination and the addition of risk management tools and filters, you may have
     a sustainable algorithm that adds value to your whole framework.
+  id: totrans-406
   prefs: []
   type: TYPE_NORMAL
+  zh: 你必须明确知道的是，过去的价值不一定能反映未来的结果。回测总是存在某种程度的偏见，因为需要大量调整来调整结果，这可能会导致过度拟合。模式确实存在，但它们的结果不一定相同。金融时间序列预测的机器学习不断发展，大多数算法（以原始形式及其基本输入）都不太具有预测性，但通过适当的组合和添加风险管理工具和过滤器，您可能会得到一个可持续的算法，为整个框架增加价值。
 - en: ^([1](ch07.html#id600-marker)) Price differences will be referred to as returns
     for simplicity. In general, returns can also represent a percentage return of
     a time series.
+  id: totrans-407
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch07.html#id600-marker)) 为简单起见，价格差异将被称为收益。一般来说，收益也可以表示时间序列的百分比收益。
 - en: ^([2](ch07.html#id626-marker)) The ordinary least squares method uses a mathematical
     formula to estimate the coefficients. It involves matrix algebra and calculus
     to solve for the coefficients that minimize the sum of squared residuals.
+  id: totrans-408
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch07.html#id626-marker)) 普通最小二乘法使用数学公式来估计系数。它涉及矩阵代数和微积分来求解最小化残差平方和的系数。
 - en: ^([3](ch07.html#id644-marker)) A class of statistical methods that do not rely
     on specific assumptions about the underlying probability distribution.
+  id: totrans-409
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch07.html#id644-marker)) 一类不依赖于关于基础概率分布的特定假设的统计方法。
 - en: ^([4](ch07.html#id662-marker)) The prompt is a command-line interface that can
     generally be accessed in the Start menu. It is not the same as the area where
     you type the Python code that will later be executed.
+  id: totrans-410
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch07.html#id662-marker)) 提示符是一个命令行界面，通常可以在“开始”菜单中访问。它不同于您输入后将被执行的Python代码的区域。

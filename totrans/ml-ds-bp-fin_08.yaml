@@ -1,88 +1,122 @@
 - en: 'Chapter 6\. Supervised Learning: Classification'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 6 章。监督学习：分类
 - en: 'Here are some of the key questions that financial analysts attempt to solve:'
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是金融分析师试图解决的一些关键问题：
 - en: Is a borrower going to repay their loan or default on it?
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 借款人会按时还贷款还是违约？
 - en: Will the instrument price go up or down?
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 工具价格会涨还是跌？
 - en: Is this credit card transaction a fraud or not?
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这笔信用卡交易是欺诈还是正常？
 - en: All of these problem statements, in which the goal is to predict the categorical
     class labels, are inherently suitable for classification-based machine learning.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些问题陈述，目标是预测分类类标签，本质上都适合于基于分类的机器学习。
 - en: Classification-based algorithms have been used across many areas within finance
     that require predicting a qualitative response. These include fraud detection,
     default prediction, credit scoring, directional forecasting of asset price movement,
     and buy/sell recommendations. There are many other use cases of classification-based
     supervised learning in portfolio management and algorithmic trading.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 分类算法已广泛应用于金融领域的许多方面，需要预测定性响应。这些包括欺诈检测、违约预测、信用评分、资产价格运动的方向预测以及买入/卖出建议。在投资组合管理和算法交易中也有许多其他基于分类的监督学习用例。
 - en: In this chapter we cover three such classification-based case studies that span
     a diverse set of areas, including fraud detection, loan default probability, and
     formulating a trading strategy.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章我们涵盖了三个基于分类的案例研究，涵盖了多个领域，包括欺诈检测、贷款违约概率和制定交易策略。
 - en: 'In [“Case Study 1: Fraud Detection”](#CaseStudy1SC), we use a classification-based
     algorithm to predict whether a transaction is fraudulent. The focus of this case
     study is also to deal with an unbalanced dataset, given that the fraud dataset
     is highly unbalanced with a small number of fraudulent observations.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '在[“案例研究 1: 欺诈检测”](#CaseStudy1SC)，我们使用基于分类的算法来预测交易是否存在欺诈行为。本案例研究的重点还包括处理不平衡数据集，因为欺诈数据集中欺诈观测数量较少。'
 - en: 'In [“Case Study 2: Loan Default Probability”](#CaseStudy2SC), we use a classification-based
     algorithm to predict whether a loan will default. The case study focuses on various
     techniques and concepts of data processing, feature selection, and exploratory
     analysis.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '在[“案例研究 2: 贷款违约概率”](#CaseStudy2SC)，我们使用基于分类的算法来预测贷款是否会违约。案例研究侧重于数据处理、特征选择和探索性分析的各种技术和概念。'
 - en: 'In [“Case Study 3: Bitcoin Trading Strategy”](#CaseStudy3SC), we use classification-based
     algorithms to predict whether the current trading signal of bitcoin is to buy
     or sell depending on the relationship between the short-term and long-term price.
     We predict the trend of bitcoin’s price using technical indicators. The prediction
     model can easily be transformed into a trading bot that can perform buy, sell,
     or hold actions without human intervention.'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '在[“案例研究 3: 比特币交易策略”](#CaseStudy3SC)，我们使用基于分类的算法来预测比特币当前交易信号是买入还是卖出，具体取决于短期和长期价格之间的关系。我们使用技术指标预测比特币价格的趋势。预测模型可以轻松转化为交易机器人，无需人工干预进行买入、卖出或持有操作。'
 - en: This Chapter’s Code Repository
+  id: totrans-11
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 本章的代码库
 - en: A Python-based master template for supervised classification model, along with
     the Jupyter notebook for the case studies presented in this chapter, is included
     in the folder [*Chapter 6 - Sup. Learning - Classification models*](https://oreil.ly/y19Yc)
     in the code repository for this book. All of the case studies presented in this
     chapter use the standardized seven-step model development process presented in
     [Chapter 2](ch02.xhtml#Chapter2).^([1](ch06.xhtml#idm45174924215160))
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书代码库的[*第 6 章 - 监督学习 - 分类模型*](https://oreil.ly/y19Yc)文件夹中包含有监督分类模型的基于 Python
+    的主模板，以及本章案例研究的 Jupyter 笔记本。本章所有案例研究均使用 [第 2 章](ch02.xhtml#Chapter2) 中提出的标准化的七步模型开发过程。^([1](ch06.xhtml#idm45174924215160))
 - en: For any new classification-based problem, the master template from the code
     repository can be modified with the elements specific to the problem. The templates
     are designed to run on cloud infrastructure (e.g., Kaggle, Google Colab, or AWS).
     In order to run the template on the local machine, all the packages used within
     the template must be installed successfully.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于任何新的基于分类的问题，可以通过代码库中的主模板修改具体问题的元素。这些模板设计为在云基础设施上运行（例如 Kaggle、Google Colab
+    或 AWS）。为了在本地机器上运行模板，必须成功安装模板中使用的所有软件包。
 - en: 'Case Study 1: Fraud Detection'
+  id: totrans-14
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '案例研究 1: 欺诈检测'
 - en: Fraud is one of the most significant issues the finance sector faces. It is
     incredibly costly. According to one study, it is estimated that the typical organization
     loses 5% of its annual revenue to fraud each year. When applied to the 2017 estimated
     Gross World Product of $79.6 trillion, this translates to potential global losses
     of up to $4 trillion.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 欺诈是金融部门面临的重大问题之一，它成本极高。根据一项研究，估计典型组织每年损失其年收入的5%至欺诈。将其应用于2017年估计的全球总生产总值（$79.6万亿），这意味着潜在的全球损失高达4万亿美元。
 - en: Fraud detection is a task inherently suitable for machine learning, as machine
     learning–based models can scan through huge transactional datasets, detect unusual
     activity, and identify all cases that might be prone to fraud. Also, the computations
@@ -91,136 +125,208 @@
     solutions are able to discover the rate of defaulting or fraud propensity for
     each potential customer and transaction, providing key alerts and insights for
     the financial institutions.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 欺诈检测是机器学习天生适合的任务，因为基于机器学习的模型可以扫描庞大的交易数据集，检测异常活动，并识别可能存在欺诈风险的所有案例。此外，与传统基于规则的方法相比，这些模型的计算速度更快。通过从各种来源收集数据，然后映射到触发点，机器学习解决方案能够发现每个潜在客户和交易的违约率或欺诈倾向，为金融机构提供关键的警报和洞察力。
 - en: In this case study, we will use various classification-based models to detect
     whether a transaction is a normal payment or a fraud.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究中，我们将使用各种基于分类的模型来检测交易是正常支付还是欺诈。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Classification Models to Determine Whether a Transaction
     Is Fraudulent
+  id: totrans-19
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用分类模型确定交易是否欺诈的蓝图
 - en: 1\. Problem definition
+  id: totrans-20
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: In the classification framework defined for this case study, the response (or
     target) variable has the column name “Class.” This column has a value of 1 in
     the case of fraud and a value of 0 otherwise.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 在为本案例研究定义的分类框架中，响应（或目标）变量具有列名“Class”。该列在欺诈情况下的值为1，在其他情况下的值为0。
 - en: The dataset used is obtained from [Kaggle](https://oreil.ly/CeFRs). This dataset
     holds transactions by European cardholders that occurred over two days in September
     2013, with 492 cases of fraud out of 284,807 transactions.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的数据集来自[Kaggle](https://oreil.ly/CeFRs)。该数据集包含2013年9月两天内发生的欧洲持卡人的交易，其中包含284,807笔交易中的492起欺诈案例。
 - en: The dataset has been anonymized for privacy reasons. Given that certain feature
     names are not provided (i.e., they are called V1, V2, V3, etc.), the visualization
     and feature importance will not give much insight into the behavior of the model.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于隐私原因，数据集已匿名化处理。鉴于某些特征名称未提供（即它们被称为V1、V2、V3等），可视化和特征重要性不会对模型行为提供太多见解。
 - en: By the end of this case study, readers will be familiar with a general approach
     to fraud modeling, from gathering and cleaning data to building and tuning a classifier.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过本案例研究结束时，读者将熟悉欺诈建模的一般方法，从数据收集和清理到建立和调整分类器。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-26
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: 'The list of the libraries used for data loading, data analysis, data preparation,
     model evaluation, and model tuning are shown below. The packages used for different
     purposes have been separated in the Python code below. The details of most of
     these packages and functions have been provided in [Chapter 2](ch02.xhtml#Chapter2)
     and [Chapter 4](ch04.xhtml#Chapter4):'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面显示了用于数据加载、数据分析、数据准备、模型评估和模型调整的库列表。有关大多数这些包和函数的详细信息已在[第2章](ch02.xhtml#Chapter2)和[第4章](ch04.xhtml#Chapter4)中提供：
 - en: '`Packages for data loading, data analysis, and data preparation`'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于数据加载、数据分析和数据准备的包`'
 - en: '[PRE0]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '`Packages for model evaluation and classification models`'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于模型评估和分类模型的包`'
 - en: '[PRE1]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '`Packages for deep learning models`'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于深度学习模型的包`'
 - en: '[PRE2]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '`Packages for saving the model`'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '`用于保存模型的包`'
 - en: '[PRE3]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 3\. Exploratory data analysis
+  id: totrans-36
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: The following sections walk through some high-level data inspection.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下章节将介绍一些高级数据检查。
 - en: 3.1\. Descriptive statistics
+  id: totrans-38
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述性统计
 - en: 'The first thing we must do is gather a basic sense of our data. Remember, except
     for the transaction and amount, we do not know the names of other columns. The
     only thing we know is that the values of those columns have been scaled. Let’s
     look at the shape and columns of the data:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们必须做的第一件事是对数据有一个基本的了解。请记住，除了交易和金额之外，我们不知道其他列的名称。我们唯一知道的是这些列的值已经被缩放了。让我们来看看数据的形状和列：
 - en: '[PRE4]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '`Output`'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE5]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[PRE6]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '`Output`'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 06in01](Images/mlbf_06in01.png)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in01](Images/mlbf_06in01.png)'
 - en: '`5 rows × 31 columns`'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '`5 行 × 31 列`'
 - en: As shown, the variable names are nondescript (*V1*, *V2*, etc.). Also, the data
     type for the entire dataset is `float`, except `Class`, which is of type integer.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 如图所示，变量名不具描述性（*V1*、*V2*等）。此外，整个数据集的数据类型为`float`，除了`Class`是整数类型。
 - en: 'How many are fraud and how many are not fraud? Let us check:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 有多少是欺诈，多少是非欺诈？让我们来检查一下：
 - en: '[PRE7]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '`Output`'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE8]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: Notice the stark imbalance of the data labels. Most of the transactions are
     nonfraud. If we use this dataset as the base for our modeling, most models will
     not place enough emphasis on the fraud signals; the nonfraud data points will
@@ -228,81 +334,119 @@
     modeling the prediction of fraud, with this imbalance leading the models to simply
     assume *all* transactions are nonfraud. This would be an unacceptable result.
     We will explore some ways of dealing with this issue in the subsequent sections.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意数据标签的明显不平衡。大多数交易都不是欺诈的。如果我们将此数据集用作建模的基础，大多数模型将不会足够重视欺诈信号；非欺诈数据点将淹没任何欺诈信号提供的权重。按照现状，我们可能会在预测欺诈方面遇到困难，因为这种不平衡会导致模型简单地假设*所有*交易都是非欺诈的。这将是一个不可接受的结果。我们将在随后的部分探讨一些解决此问题的方法。
 - en: 3.2\. Data visualization
+  id: totrans-53
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2\. 数据可视化
 - en: Since the feature descriptions are not provided, visualizing the data will not
     lead to much insight. This step will be skipped in this case study.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于未提供特征描述，可视化数据不会带来太多见解。在这个案例研究中，将跳过此步骤。
 - en: 4\. Data preparation
+  id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: This data is from Kaggle and is already in a cleaned format without any empty
     rows or columns. Data cleaning or categorization is unnecessary.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些数据来自Kaggle，并且已经以无任何空行或空列的清理格式提供。数据清理或分类是不必要的。
 - en: 5\. Evaluate models
+  id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估模型
 - en: Now we are ready to split the data and evaluate the models.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们准备好拆分数据并评估模型了。
 - en: 5.1\. Train-test split and evaluation metrics
+  id: totrans-59
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 训练-测试分割和评估指标
 - en: 'As described in [Chapter 2](ch02.xhtml#Chapter2), it is a good idea to partition
     the original dataset into training and test sets. The test set is a sample of
     the data that we hold back from our analysis and modeling. We use it at the end
     of our project to confirm the accuracy of our final model. It is the final test
     that gives us confidence in our estimates of accuracy on unseen data. We will
     use 80% of the dataset for model training and 20% for testing:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 如[第2章](ch02.xhtml#Chapter2)所述，将原始数据集划分为训练集和测试集是一个好主意。测试集是我们从分析和建模中留出的数据样本。我们在项目结束时使用它来确认我们最终模型的准确性。它是最终测试，为我们提供了对未见数据准确性的估计的信心。我们将使用80%的数据集进行模型训练，20%进行测试：
 - en: '[PRE9]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 5.2\. Checking models
+  id: totrans-62
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 检查模型
 - en: In this step, we will evaluate different machine learning models. To optimize
     the various hyperparameters of the models, we use ten-fold cross validation and
     recalculate the results ten times to account for the inherent randomness in some
     of the models and the CV process. All of these models, including cross validation,
     are described in [Chapter 4](ch04.xhtml#Chapter4).
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们将评估不同的机器学习模型。为了优化模型的各种超参数，我们使用十折交叉验证，并重新计算结果十次，以考虑某些模型和CV过程中固有的随机性。所有这些模型，包括交叉验证，都在[第4章](ch04.xhtml#Chapter4)中描述。
 - en: Let us design our test harness. We will evaluate algorithms using the *accuracy
     metric*. This is a gross metric that will give us a quick idea of how correct
     a given model is. It is useful on binary classification problems.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们设计我们的测试工具。我们将使用*准确性指标*评估算法。这是一个粗略的指标，将为我们提供给定模型的正确性的快速概念。它在二元分类问题上很有用。
 - en: '[PRE10]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'Let’s create a baseline of performance for this problem and spot-check a number
     of different algorithms. The selected algorithms include:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们为这个问题创建一个性能基准，并检查多种不同的算法。所选算法包括：
 - en: Linear algorithms
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性算法
 - en: Logistic regression (LR) and linear discriminant analysis (LDA).
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 逻辑回归（LR）和线性判别分析（LDA）。
 - en: Nonlinear algorithms
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 非线性算法
 - en: Classification and regression trees (CART) and *K*-nearest neighbors (KNN).
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 分类与回归树（CART）和*K*-最近邻（KNN）。
 - en: There are good reasons for selecting these models. These models are simpler
     and faster models with good interpretation for problems with large datasets. CART
     and KNN will be able to discern any nonlinear relationships between the variables.
@@ -310,271 +454,411 @@
     complex models, such as ensemble and ANNs, will have poor prediction. We will
     focus on addressing this later in the case study and then will evaluate the performance
     of these types of models.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择这些模型有充分理由。这些模型是简单且快速的模型，对于具有大型数据集的问题具有良好的解释性。CART和KNN能够区分变量之间的非线性关系。关键问题在于使用了不平衡样本。除非我们解决这个问题，否则更复杂的模型（如集成模型和人工神经网络）将预测效果较差。我们将在案例研究的后续部分集中解决这个问题，并评估这些类型模型的性能。
 - en: '[PRE11]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: All the algorithms use default tuning parameters. We will display the mean and
     standard deviation of accuracy for each algorithm as we calculate and collect
     the results for use later.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有算法使用默认调优参数。我们将计算并收集每种算法的准确率的均值和标准偏差，以备后用。
 - en: '[PRE12]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '`Output`'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE13]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[PRE14]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '![mlbf 06in02](Images/mlbf_06in02.png)'
+  id: totrans-78
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in02](Images/mlbf_06in02.png)'
 - en: 'The accuracy of the overall result is quite high. But let us check how well
     it predicts the fraud cases. Choosing one of the model CART from the results above
     and looking at the result on the test set:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 整体结果的准确率非常高。但让我们检查一下它对欺诈案例的预测效果。从上述结果中选择一个CART模型，并查看测试集的结果：
 - en: '[PRE15]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '`Output`'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE16]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'And producing the confusion matrix yields:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成混淆矩阵如下：
 - en: '[PRE17]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '![mlbf 06in03](Images/mlbf_06in03.png)'
+  id: totrans-85
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in03](Images/mlbf_06in03.png)'
 - en: Overall accuracy is strong, but the confusion metrics tell a different story.
     Despite the high accuracy level, 21 out of 100 instances of fraud are missed and
     incorrectly predicted as nonfraud. The *false negative* rate is substantial.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体准确率很高，但混淆矩阵讲述了一个不同的故事。尽管准确率水平高，但有21个欺诈实例中的100个被错过，并错误预测为非欺诈。*假阴性*率相当可观。
 - en: The intention of a fraud detection model is to minimize these false negatives.
     To do so, the first step would be to choose the right evaluation metric.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个欺诈检测模型的意图是尽量减少这些假阴性。因此，第一步是选择正确的评估指标。
 - en: In [Chapter 4](ch04.xhtml#Chapter4), we covered the evaluation metrics, such
     as accuracy, precision, and recall, for a classification-based problem. Accuracy
     is the number of correct predictions made as a ratio of all predictions made.
     Precision is the number of items correctly identified as positive out of total
     items identified as positive by the model. Recall is the total number of items
     correctly identified as positive out of total true positives.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[第四章](ch04.xhtml#Chapter4)中，我们讨论了用于分类问题的评估指标，如准确率、精确率和召回率。准确率是所有预测正确的比例。精确率是模型正确识别为正例的项目数占所有被模型识别为正例的项目总数的比例。召回率是所有正确识别为正例的项目数占所有真实正例的总数的比例。
 - en: For this type of problem, we should focus on recall, the ratio of true positives
     to the sum of true positives and false negatives. So if false negatives are high,
     then the value of recall will be low.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于这种类型的问题，我们应该关注召回率，即真正例占所有真实正例与假阴性之和的比率。因此，如果假阴性较高，则召回率值将较低。
 - en: In the next step, we perform model tuning, select the model using the recall
     metric, and perform under-sampling.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的步骤中，我们进行模型调优，选择使用召回率的模型，并进行欠采样。
 - en: 6\. Model tuning
+  id: totrans-91
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 模型调优
 - en: The purpose of the model tuning step is to perform the grid search on the model
     selected in the previous step. However, since we encountered poor model performance
     in the previous section due to the unbalanced dataset, we will focus our attention
     on that. We will analyze the impact of choosing the correct evaluation metric
     and see the impact of using an adjusted, balanced sample.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型调优步骤的目的是对前一步骤选择的模型进行网格搜索。然而，由于在上一节中由于不平衡数据集而遇到了模型性能不佳的问题，我们将集中注意力解决这个问题。我们将分析选择正确评估指标的影响，并查看使用调整后的平衡样本的影响。
 - en: 6.1\. Model tuning by choosing the correct evaluation metric
+  id: totrans-93
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 6.1\. 通过选择正确的评估指标进行模型调优
 - en: 'As mentioned in the preceding step, if false negatives are high, then the value
     of recall will be low. Models are ranked according to this metric:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 如前所述，如果假阴性较高，则召回率将较低。模型将根据这一指标进行排序：
 - en: '[PRE18]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'Let us spot-check some basic classification algorithms for recall:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们对一些基本分类算法进行召回率的点检查：
 - en: '[PRE19]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 'Running cross validation:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行交叉验证：
 - en: '[PRE20]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '`Output`'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE21]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'We see that the LDA model has the best recall of the four models. We continue
     by evaluating the test set using the trained LDA:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们看到LDA模型在四个模型中具有最佳的召回率。我们继续通过训练后的LDA评估测试集：
 - en: '[PRE22]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '`Output`'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE23]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '![mlbf 06in04](Images/mlbf_06in04.png)'
+  id: totrans-106
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in04](Images/mlbf_06in04.png)'
 - en: LDA performs better, missing only 18 out of 100 cases of fraud. Additionally,
     we find fewer false positives as well. However, there is still improvement to
     be made.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: LDA表现更好，仅错过了100例诈骗案中的18例。此外，我们也发现假阳性更少了。不过，还有改进的空间。
 - en: 6.2\. Model tuning—balancing the sample by random under-sampling
+  id: totrans-108
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 6.2\. 模型调优——通过随机欠采样平衡样本
 - en: The current data exhibits a significant class imbalance, where there are very
     few data points labeled “fraud.” The issue of such class imbalance can result
     in a serious bias toward the majority class, reducing the classification performance
     and increasing the number of false negatives.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前的数据显示了显著的类别不平衡，很少有数据点标记为“欺诈”。这种类别不平衡问题可能导致对多数类的严重偏向，降低分类性能并增加假阴性的数量。
 - en: One of the remedies to handle such situations is to *under-sample* the data.
     A simple technique is to under-sample the majority class randomly and uniformly.
     This might lead to a loss of information, but it may yield strong results by modeling
     the minority class well.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决这种情况的一种方法是*对数据进行欠采样*。一个简单的技术是随机均匀地对多数类进行欠采样。这可能导致信息的丢失，但通过很好地建模少数类，可能会产生强大的结果。
 - en: Next, we will implement random under-sampling, which consists of removing data
     to have a more balanced dataset. This will help ensure that our models avoid overfitting.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们将实施随机欠采样，即删除数据以获得更平衡的数据集。这将有助于确保我们的模型避免过拟合。
 - en: 'The steps to implement random under-sampling are:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 实施随机欠采样的步骤如下：
 - en: First, we determine the severity of the class imbalance by using `value_counts()`
     on the class column. We determine how many instances are considered fraud transactions
     (*fraud = 1*).
+  id: totrans-113
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 首先，我们使用`value_counts()`函数来确定类别列中被视为欺诈交易（*fraud = 1*）的实例数量。
 - en: We bring the nonfraud transaction observation count to the same amount as fraud
     transactions. Assuming we want a 50/50 ratio, this will be equivalent to 492 cases
     of fraud and 492 cases of nonfraud transactions.
+  id: totrans-114
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 我们将非欺诈交易观察计数与欺诈交易数量相同。假设我们想要50/50的比例，这将相当于492例欺诈案和492例非欺诈交易。
 - en: 'We now have a subsample of our dataframe with a 50/50 ratio with regards to
     our classes. We train the models on this subsample. Then we perform this iteration
     again to shuffle the nonfraud observations in the training sample. We keep track
     of the model performance to see whether our models can maintain a certain accuracy
     every time we repeat this process:'
+  id: totrans-115
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 现在我们有一个数据框的子样本，其类别的比例是50/50。我们在这个子样本上训练模型。然后我们再次执行这个迭代，以在训练样本中打乱非欺诈观察。我们跟踪模型性能，看看我们的模型在每次重复此过程时是否能保持一定的准确性：
 - en: '[PRE24]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 'Let us look at the distribution of the classes in the dataset:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看数据集中各类别的分布情况：
 - en: '[PRE25]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '`Output`'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE26]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '![mlbf 06in05](Images/mlbf_06in05.png)'
+  id: totrans-121
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in05](Images/mlbf_06in05.png)'
 - en: 'The data is now balanced, with close to 1,000 observations. We will train all
     the models again, including an ANN. Now that the data is balanced, we will focus
     on accuracy as our main evaluation metric, since it considers both false positives
     and false negatives. Recall can always be produced if needed:'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据现在平衡了，接近1000个观察结果。我们将重新训练所有模型，包括ANN。现在数据已经平衡，我们将专注于准确率作为主要评估指标，因为它考虑了假阳性和假阴性。如果需要，总是可以产生召回率：
 - en: '[PRE27]'
+  id: totrans-123
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: The steps to define and compile an ANN-based deep learning model in Keras, along
     with all the terms (neurons, activation, momentum, etc.) mentioned in the following
     code, have been described in [Chapter 3](ch03.xhtml#Chapter3). This code can be
     leveraged for any deep learning–based classification model.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Keras中定义和编译基于ANN的深度学习模型的步骤，以及以下代码中提到的所有术语（神经元、激活、动量等），已在[第3章](ch03.xhtml#Chapter3)中描述。该代码可用于任何基于深度学习的分类模型。
 - en: '`Keras-based deep learning model:`'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '`基于Keras的深度学习模型：`'
 - en: '[PRE28]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: 'Running the cross validation on the new set of models results in the following:'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 对新模型集进行交叉验证的结果如下：
 - en: '![mlbf 06in06](Images/mlbf_06in06.png)'
+  id: totrans-128
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in06](Images/mlbf_06in06.png)'
 - en: Although a couple of models, including random forest (RF) and logistic regression
     (LR), perform well, GBM slightly edges out the other models. We select this for
     further analysis. Note that the result of the deep learning model using Keras
     (i.e., “DNN”) is poor.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管包括随机森林（RF）和逻辑回归（LR）在内的几个模型表现良好，GBM 稍微领先于其他模型。我们选择进一步分析这个模型。请注意，使用 Keras 的深度学习模型（即“DNN”）的结果较差。
 - en: A grid search is performed for the GBM model by varying the number of estimators
     and maximum depth. The details of the GBM model and the parameters to tune for
     this model are described in [Chapter 4](ch04.xhtml#Chapter4).
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 对 GBM 模型进行网格搜索，通过调整估计器的数量和最大深度。GBM 模型的详细信息和调整参数在[第 4 章](ch04.xhtml#Chapter4)中有描述。
 - en: '[PRE29]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '`Output`'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE30]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'In the next step, the final model is prepared, and the result on the test set
     is checked:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，准备最终模型，并检查在测试集上的结果：
 - en: '[PRE31]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '`Output`'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE32]'
+  id: totrans-137
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 'The accuracy of the model is high. Let’s look at the confusion matrix:'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型的准确率很高。让我们来看看混淆矩阵：
 - en: '`Output`'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 06in07](Images/mlbf_06in07.png)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in07](Images/mlbf_06in07.png)'
 - en: The results on the test set are impressive, with a high accuracy and, importantly,
     no false negatives. However, we see that an outcome of using our under-sampled
     data is a propensity for false positives—cases in which nonfraud transactions
@@ -582,12 +866,16 @@
     would have to consider. There is an inherent cost balance between the operational
     overhead, and possible customer experience impact, from processing false positives
     and the financial loss resulting from missing fraud cases through false negatives.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试集上的结果令人印象深刻，准确率很高，而且最重要的是没有假阴性。然而，我们看到在使用欠采样数据的情况下，一个结果是存在假阳性的倾向——即将非欺诈交易误分类为欺诈交易。这是金融机构必须考虑的一种权衡。在操作开销和可能影响客户体验的潜在财务损失之间存在固有的成本平衡，这是处理假阴性所导致的财务损失。
 - en: Conclusion
+  id: totrans-142
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we performed fraud detection on credit card transactions.
     We illustrated how different classification machine learning models stack up against
     each other and demonstrated that choosing the right metric can make an important
@@ -595,46 +883,64 @@
     improvement, as all fraud cases in the test set were correctly identified after
     applying under-sampling. This came with a trade-off, though. The reduction in
     false negatives came with an increase in false positives.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们对信用卡交易进行了欺诈检测。我们展示了不同分类机器学习模型之间的对比，并且证明选择正确的评估指标在模型评估中可以产生重要的差异。欠采样显示出显著改进，因为在应用欠采样后，测试集中的所有欺诈案例都被正确识别。然而，这也伴随着一个权衡：减少了假阴性的同时增加了假阳性。
 - en: Overall, by using different machine learning models, choosing the right evaluation
     metrics, and handling unbalanced data, we demonstrated how the implementation
     of a simple classification-based model can produce robust results for fraud detection.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，通过使用不同的机器学习模型、选择正确的评估指标和处理不平衡数据，我们展示了如何实施基于简单分类模型的诈骗检测，可以产生稳健的结果。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-145
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 2: Loan Default Probability'
+  id: totrans-146
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究 2：贷款违约概率
 - en: 'Lending is one of the most important activities of the finance industry. Lenders
     provide loans to borrowers in exchange for the promise of repayment with interest.
     That means the lender makes a profit only if the borrower pays off the loan. Hence,
     the two most critical questions in the lending industry are:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 放贷是金融业最重要的活动之一。放贷人向借款人提供贷款，以换取借款人承诺的还款和利息。这意味着只有借款人还清贷款，放贷人才能获利。因此，放贷行业中最关键的两个问题是：
 - en: How risky is the borrower?
+  id: totrans-148
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 借款人的风险有多大？
 - en: Given the borrower’s risk, should we lend to them?
+  id: totrans-149
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 鉴于借款人的风险，我们是否应该向他们放贷？
 - en: Default prediction could be described as a perfect job for machine learning,
     as the algorithms can be trained on millions of examples of consumer data. Algorithms
     can perform automated tasks such as matching data records, identifying exceptions,
     and calculating whether an applicant qualifies for a loan. The underlying trends
     can be assessed with algorithms and continuously analyzed to detect trends that
     might influence lending and underwriting risk in the future.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于机器学习来说，违约预测可以被描述为一项完美的工作，因为算法可以基于数百万个消费者数据示例进行训练。算法可以执行自动化任务，如匹配数据记录、识别异常情况，以及计算申请人是否有资格获得贷款。算法可以评估潜在趋势，并持续分析以检测可能影响未来放贷和核保风险的趋势。
 - en: The goal of this case study is to build a machine learning model to predict
     the probability that a loan will default.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究的目标是建立一个机器学习模型，预测贷款违约的概率。
 - en: In most real-life cases, including loan default modeling, we are unable to work
     with clean, complete data. Some of the potential problems we are bound to encounter
     are missing values, incomplete categorical data, and irrelevant features. Although
@@ -644,26 +950,36 @@
     So one of the focus areas of this case study will be data preparation and cleaning.
     Various techniques and concepts of data processing, feature selection, and exploratory
     analysis are used for data cleaning and organizing the feature space.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 在大多数现实生活案例中，包括贷款违约建模在内，我们无法处理干净完整的数据。我们可能会遇到的一些潜在问题包括缺失值、不完整的分类数据和无关的特征。尽管数据清洗可能不经常被提及，但它对机器学习应用的成功至关重要。我们使用的算法可能非常强大，但如果没有相关或适当的数据，系统可能无法产生理想的结果。因此，本案例研究的一个重点领域将是数据准备和清洗。各种数据处理技术和概念，包括数据清洗、特征选择和探索性分析，都被用来整理特征空间。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-153
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Creating a Machine Learning Model for Predicting Loan Default
     Probability
+  id: totrans-154
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 创造一个用于预测贷款违约概率的机器学习模型的蓝图
 - en: 1\. Problem definition
+  id: totrans-155
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: In the classification framework for this case study, the predicted variable
     is *charge-off*, a debt that a creditor has given up trying to collect on after
     a borrower has missed payments for several months. The predicted variable takes
     a value of 1 in case of charge-off and a value of 0 otherwise.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本案例研究的分类框架中，预测变量是*违约*，即借款人在数月内错过付款后，债权人放弃尝试收回的债务。在违约情况下，预测变量取值为1，否则为0。
 - en: We will analyze data for loans from 2007 to 2017Q3 from Lending Club, [available
     on Kaggle](https://oreil.ly/DG9j5). Lending Club is a US peer-to-peer lending
     company. It operates an online lending platform that enables borrowers to obtain
@@ -673,93 +989,133 @@
     include income, age, credit scores, home ownership, borrower location, collections,
     and many others. We will investigate these 150 predictor variables for feature
     selection.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将分析来自Lending Club的2007年至2017年第3季度的贷款数据，[可在Kaggle上找到](https://oreil.ly/DG9j5)。Lending
+    Club是一家美国的P2P（个人对个人）借贷公司。它运营一个在线借贷平台，允许借款人获得贷款，并允许投资者购买由这些贷款上的支付支持的票据。该数据集包含超过887,000条观察结果，包含150个变量，包含指定时间段内所有贷款的完整贷款数据。这些特征包括收入、年龄、信用评分、住房所有权、借款人位置、收藏等等。我们将调查这150个预测变量以进行特征选择。
 - en: By the end of this case study, readers will be familiar with a general approach
     to loan default modeling, from gathering and cleaning data to building and tuning
     a classifier.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过本案例研究的结束，读者将熟悉从收集和清理数据到构建和调整分类器的贷款违约建模的一般方法。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-159
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 开始—加载数据和Python包
 - en: 2.1\. Loading the Python packages
+  id: totrans-160
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 加载Python包
 - en: The standard Python packages are loaded in this step. The details have been
     presented in the previous case studies. Please refer to the Jupyter notebook for
     this case study for more details.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准的Python包在此步骤中被加载。详细信息已在之前的案例研究中呈现。请参考本案例研究的Jupyter笔记本以获取更多细节。
 - en: 2.2\. Loading the data
+  id: totrans-162
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 加载数据
 - en: 'The loan data for the time period from 2007 to 2017Q3 is loaded:'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 从2007年到2017年第3季度的贷款数据已加载：
 - en: '[PRE33]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 3\. Data preparation and feature selection
+  id: totrans-165
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 数据准备和特征选择
 - en: 'In the first step, let us look at the size of the data:'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE34]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: '`Output`'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE35]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: Given that there are 150 features for each loan, we will first focus on limiting
     the feature space, followed by the exploratory analysis.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: 3.1\. Preparing the predicted variable
+  id: totrans-171
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: Here, we look at the details of the predicted variable and prepare it. The predicted
     variable will be derived from the `loan_status` column. Let’s check the value
     distributions:^([2](ch06.xhtml#idm45174922143032))
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE36]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '`Output`'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE37]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: 'From the data definition documentation:'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: Fully Paid
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: Loans that have been fully repaid.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: Default
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: Loans that have not been current for 121 days or more.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: Charged Off
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
 - en: Loans for which there is no longer a reasonable expectation of further payments.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: 'A large proportion of observations show a status of `Current`, and we do not
@@ -770,32 +1126,43 @@
     a binary classification problem and to analyze in detail the effect of important
     variables on the loan status, we will consider only two major categories—Charged
     Off and Fully Paid:'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE38]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '`Output`'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE39]'
+  id: totrans-186
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: About 79% of the remaining loans have been fully paid and 21% have been charged
     off, so we have a somewhat unbalanced classification problem, but it is not as
     unbalanced as the dataset of fraud detection we saw in the previous case study.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: 'In the next step, we create a new binary column in the dataset, where we categorize
     Fully Paid as 0 and Charged Off as 1\. This column represents the predicted variable
     for this classification problem. A value of 1 in this column indicates the borrower
     has defaulted:'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE40]'
+  id: totrans-189
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: 3.2\. Feature selection—limit the feature space
+  id: totrans-190
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
@@ -804,41 +1171,54 @@
     and reduce both model complexity and overfitting. Training time can also be reduced
     for very large datasets. We’ll eliminate features in the following steps using
     three different approaches:'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: Eliminating features that have more than 30% missing values.
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Eliminating features that are unintuitive based on subjective judgment.
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Eliminating features with low correlation with the predicted variable.
+  id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 3.2.1\. Feature elimination based on significant missing values
+  id: totrans-195
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: 'First, we calculate the percentage of missing data for each feature:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE41]'
+  id: totrans-197
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: '`Output`'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE42]'
+  id: totrans-199
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: This dataset has 92 columns remaining once some of the columns with a significant
     number of missing values are dropped.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: 3.2.2\. Feature elimination based on intuitiveness
+  id: totrans-201
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
@@ -849,101 +1229,157 @@
     that are available to investors when considering an investment in the loan. These
     include features in the loan application and any features added by Lending Club
     when the loan listing was accepted, such as loan grade and interest rate.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了进一步筛选特征，我们检查数据字典中的描述，并保留直观上有助于预测违约的特征。我们保留包含借款人相关信用细节的特征，包括年收入、FICO分数和债务收入比。我们还保留那些在考虑投资贷款时投资者可用的特征，例如贷款等级和利率。
 - en: 'The list of the features retained are shown in the following code snippet:'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码片段显示了保留的特征列表：
 - en: '[PRE43]'
+  id: totrans-204
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: '`Output`'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE44]'
+  id: totrans-206
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: After removing the features in this step, 39 columns remain.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此步骤中删除特征后，剩下39列。
 - en: 3.2.3\. Feature elimination based on the correlation
+  id: totrans-208
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.2.3\. 基于相关性的特征消除
 - en: 'The next step is to check the correlation with the predicted variable. Correlation
     gives us the interdependence between the predicted variable and the feature. We
     select features with a moderate-to-strong relationship with the target variable
     and drop those that have a correlation of less than 3% with the predicted variable:'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是检查与预测变量的相关性。相关性为我们提供了预测变量与特征之间的相互依赖关系。我们选择与目标变量具有中等到强相关性的特征，并且删除那些与预测变量相关性低于3%的特征：
 - en: '[PRE45]'
+  id: totrans-210
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: '`Output`'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '[PRE46]'
+  id: totrans-212
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: 'The columns with low correlation are dropped from the dataset, and we are left
     with only 35 columns:'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据集中相关性较低的列已被删除，我们只剩下35列：
 - en: '[PRE47]'
+  id: totrans-214
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: 4\. Feature selection and exploratory analysis
+  id: totrans-215
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 特征选择和探索性分析
 - en: In this step, we perform the exploratory data analysis of the feature selection.
     Given that many features had to be eliminated, it is preferable that we perform
     the exploratory data analysis after feature selection to better visualize the
     relevant features. We will also continue the feature elimination by visually screening
     and dropping those features deemed irrelevant.
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们执行特征选择的探索性数据分析。考虑到许多特征必须被排除，最好在特征选择后执行探索性数据分析，以更好地可视化相关的特征。我们还将继续通过视觉筛选和删除那些被认为不相关的特征进行特征消除。
 - en: 4.1\. Feature analysis and exploration
+  id: totrans-217
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 特征分析和探索
 - en: In the following sections, we take a deeper dive into the dataset features.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的几节中，我们将深入研究数据集的特征。
 - en: 4.1.1\. Analyzing the categorical features
+  id: totrans-219
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1.1\. 分析分类特征
 - en: Let us look at the some of the categorical features in the dataset.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看数据集中一些分类特征。
 - en: 'First, let’s look at the `id`, `emp_title`, `title`, and `zip_code` features:'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们看看`id`、`emp_title`、`title`和`zip_code`特征：
 - en: '[PRE48]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: '`Output`'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '|  | id | emp_title | title | zip_code |'
+  id: totrans-224
   prefs: []
   type: TYPE_TB
+  zh: '|  | id | emp_title | title | zip_code |'
 - en: '| --- | --- | --- | --- | --- |'
+  id: totrans-225
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- |'
 - en: '| count | 814986 | 766415 | 807068 | 814986 |'
+  id: totrans-226
   prefs: []
   type: TYPE_TB
+  zh: '| count | 814986 | 766415 | 807068 | 814986 |'
 - en: '| unique | 814986 | 280473 | 60298 | 925 |'
+  id: totrans-227
   prefs: []
   type: TYPE_TB
+  zh: '| unique | 814986 | 280473 | 60298 | 925 |'
 - en: '| top | 14680062 | Teacher | Debt consolidation | 945xx |'
+  id: totrans-228
   prefs: []
   type: TYPE_TB
+  zh: '| top | 14680062 | Teacher | Debt consolidation | 945xx |'
 - en: '| freq | 1 | 11351 | 371874 | 9517 |'
+  id: totrans-229
   prefs: []
   type: TYPE_TB
+  zh: '| freq | 1 | 11351 | 371874 | 9517 |'
 - en: IDs are all unique and irrelevant for modeling. There are too many unique values
     for employment titles and titles. Occupation and job title may provide some information
     for default modeling; however, we assume much of this information is embedded
@@ -951,157 +1387,251 @@
     these features, such as standardizing or grouping the titles, would be necessary
     to extract any marginal information. This work is outside the scope of this case
     study but could be explored in subsequent iterations of the model.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: ID是唯一的且与建模无关。雇佣头衔和职位标题有太多的唯一值。职业和职位头衔可能为默认建模提供一些信息；然而，我们假设这些信息的大部分都包含在客户的已验证收入中。此外，对这些特征进行额外的清理步骤，例如标准化或分组头衔，将需要提取任何边际信息。这项工作超出了本案例研究的范围，但可以在模型的后续迭代中探索。
 - en: Geography could play a role in credit determination, and zip codes provide a
     granular view of this dimension. Again, additional work would be necessary to
     prepare this feature for modeling and was deemed outside the scope of this case
     study.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 地理位置可能在信用确定中起到作用，邮政编码提供了这一维度的细致视图。再次强调，需要额外的工作来准备这个特征用于建模，并且被认为超出了这个案例研究的范围。
 - en: '[PRE49]'
+  id: totrans-232
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: Let’s look at the `term` feature.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看 `term` 特征。
 - en: '*Term* refers to the number of payments on the loan. Values are in months and
     can be either 36 or 60\. The 60-month loans are more likely to charge off.'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '*期限* 指的是贷款的支付期数。值以月计，并且可以是36或60。60个月的贷款更有可能违约。'
 - en: 'Let’s convert term to integers and group by the term for further analysis:'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将期限转换为整数，并按期限分组进行进一步分析：
 - en: '[PRE50]'
+  id: totrans-236
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: '`Output`'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE51]'
+  id: totrans-238
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: Loans with five-year periods are more than twice as likely to charge-off as
     loans with three-year periods. This feature seems to be important for the prediction.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 五年期贷款比三年期贷款更有可能违约。该特征似乎对预测很重要。
 - en: 'Let’s look at the `emp_length` feature:'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看 `emp_length` 特征：
 - en: '[PRE52]'
+  id: totrans-241
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: '`Output`'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 06in08](Images/mlbf_06in08.png)'
+  id: totrans-243
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in08](Images/mlbf_06in08.png)'
 - en: 'Loan status does not appear to vary much with employment length (on average);
     hence this feature is dropped:'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 贷款状态在就业年限上似乎变化不大（平均而言）；因此，此特征被舍弃：
 - en: '[PRE53]'
+  id: totrans-245
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: 'Let’s look at the `sub_grade` feature:'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看 `sub_grade` 特征：
 - en: '[PRE54]'
+  id: totrans-247
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: '`Output`'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 06in09](Images/mlbf_06in09.png)'
+  id: totrans-249
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in09](Images/mlbf_06in09.png)'
 - en: As shown in the chart, there’s a clear trend of higher probability of charge-off
     as the sub-grade worsens, and so it is considered to be a key feature.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 如图所示，随着子等级恶化，违约的可能性呈明显趋势，因此被认为是一个关键特征。
 - en: 4.1.2\. Analyzing the continuous features
+  id: totrans-251
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1.2\. 分析连续特征
 - en: 'Let’s look at the `annual_inc` feature:'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看 `annual_inc` 特征：
 - en: '[PRE55]'
+  id: totrans-253
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: '`Output`'
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '|  | annual_inc |'
+  id: totrans-255
   prefs: []
   type: TYPE_TB
+  zh: '|  | 年收入 |'
 - en: '| --- | --- |'
+  id: totrans-256
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| count | 8.149860e+05 |'
+  id: totrans-257
   prefs: []
   type: TYPE_TB
+  zh: '| count | 8.149860e+05 |'
 - en: '| mean | 7.523039e+04 |'
+  id: totrans-258
   prefs: []
   type: TYPE_TB
+  zh: '| mean | 7.523039e+04 |'
 - en: '| std | 6.524373e+04 |'
+  id: totrans-259
   prefs: []
   type: TYPE_TB
+  zh: '| std | 6.524373e+04 |'
 - en: '| min | 0.000000e+00 |'
+  id: totrans-260
   prefs: []
   type: TYPE_TB
+  zh: '| min | 0.000000e+00 |'
 - en: '| 25% | 4.500000e+04 |'
+  id: totrans-261
   prefs: []
   type: TYPE_TB
+  zh: '| 25% | 4.500000e+04 |'
 - en: '| 50% | 6.500000e+04 |'
+  id: totrans-262
   prefs: []
   type: TYPE_TB
+  zh: '| 50% | 6.500000e+04 |'
 - en: '| 75% | 9.000000e+04 |'
+  id: totrans-263
   prefs: []
   type: TYPE_TB
+  zh: '| 75% | 9.000000e+04 |'
 - en: '| max | 9.550000e+06 |'
+  id: totrans-264
   prefs: []
   type: TYPE_TB
+  zh: '| max | 9.550000e+06 |'
 - en: 'Annual income ranges from $0 to $9,550,000, with a median of $65,000\. Because
     of the large range of incomes, we use a log transform of the annual income variable:'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 年收入范围从$0到$9,550,000，中位数为$65,000。由于收入范围很大，我们使用年收入变量的对数变换：
 - en: '[PRE56]'
+  id: totrans-266
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: 'Let’s look at the FICO score (`fico_range_low`, `fico_range_high`) feature:'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看FICO分数（`fico_range_low`，`fico_range_high`）特征：
 - en: '[PRE57]'
+  id: totrans-268
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: '`Output`'
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '|  | fico_range_low | fico_range_high |'
+  id: totrans-270
   prefs: []
   type: TYPE_TB
+  zh: '|  | fico_range_low | fico_range_high |'
 - en: '| --- | --- | --- |'
+  id: totrans-271
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| fico_range_low | 1.0 | 1.0 |'
+  id: totrans-272
   prefs: []
   type: TYPE_TB
+  zh: '| fico_range_low | 1.0 | 1.0 |'
 - en: '| fico_range_high | 1.0 | 1.0 |'
+  id: totrans-273
   prefs: []
   type: TYPE_TB
+  zh: '| fico_range_high | 1.0 | 1.0 |'
 - en: 'Given that the correlation between FICO low and high is 1, it is preferred
     that we keep only one feature, which we take as the average of FICO scores:'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于FICO低和高之间的相关性为1，建议仅保留一个特征，我们采用FICO分数的平均值：
 - en: '[PRE58]'
+  id: totrans-275
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE58]'
 - en: 4.2\. Encoding categorical data
+  id: totrans-276
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 编码分类数据
 - en: 'In order to use a feature in the classification models, we need to convert
     the categorical data (i.e., text features) to its numeric representation. This
     process is called encoding. There can be different ways of encoding. However,
@@ -1109,182 +1639,278 @@
     value between 0 and *n*, where *n* is the number of distinct labels. The `LabelEncoder`
     function from sklearn is used in the following step, and all the categorical columns
     are encoded at once:'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了在分类模型中使用特征，我们需要将分类数据（即文本特征）转换为其数值表示。这个过程称为编码。可以有不同的编码方式。然而，在这个案例研究中，我们将使用*标签编码器*，它将标签编码为介于0和*n*之间的值，其中*n*是不同标签的数量。在以下步骤中使用来自sklearn的`LabelEncoder`函数，一次性对所有分类列进行编码：
 - en: '[PRE59]'
+  id: totrans-278
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE59]'
 - en: 'Let us look at the categorical columns:'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看分类列：
 - en: '[PRE60]'
+  id: totrans-280
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE60]'
 - en: '`Output`'
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE61]'
+  id: totrans-282
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE61]'
 - en: 4.3\. Sampling data
+  id: totrans-283
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.3\. 数据抽样
 - en: Given that the loan data is skewed, it is sampled to have an equal number of
     charge-off and no charge-off observations. Sampling leads to a more balanced dataset
     and avoids overfitting:^([3](ch06.xhtml#idm45174920856536))
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于贷款数据偏斜，对其进行抽样以使违约和无违约观测数量相等。抽样会导致更平衡的数据集，并避免过拟合：^([3](ch06.xhtml#idm45174920856536))
 - en: '[PRE62]'
+  id: totrans-285
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE62]'
 - en: Although sampling may have its advantages, there might be some disadvantages
     as well. Sampling may exclude some data that might not be homogeneous to the data
     that is taken. This affects the level of accuracy in the results. Also, selection
     of the proper size of samples is a difficult job. Hence, sampling should be performed
     with caution and should generally be avoided in the case of a relatively balanced
     dataset.
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然抽样可能有其优势，但也可能存在一些不利因素。抽样可能会排除一些可能与采取的数据不均匀的数据。这会影响结果的准确性水平。此外，选择适当大小的样本是一项困难的工作。因此，在相对平衡的数据集情况下，应谨慎进行抽样，并且通常应该避免。
 - en: 5\. Evaluate algorithms and models
+  id: totrans-287
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: 5.1\. Train-test split
+  id: totrans-288
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.1\. 训练-测试分离
 - en: 'Splitting out the validation dataset for the model evaluation is the next step:'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是为模型评估分离出验证数据集：
 - en: '[PRE63]'
+  id: totrans-290
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE63]'
 - en: 5.2\. Test options and evaluation metrics
+  id: totrans-291
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.2\. 测试选项和评估指标
 - en: In this step, the test options and evaluation metrics are selected. The `roc_auc`
     evaluation metric is selected for this classification. The details of this metric
     were provided in [Chapter 4](ch04.xhtml#Chapter4). This metric represents a model’s
     ability to discriminate between positive and negative classes. An `roc_auc` of
     1.0 represents a model that made all predictions perfectly, and a value of 0.5
     represents a model that is as good as random.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，选择测试选项和评估指标。选择了`roc_auc`评估指标用于此分类。该指标的详细信息在 [第四章](ch04.xhtml#Chapter4)
+    中提供。此指标代表模型区分正类和负类的能力。`roc_auc`为1.0表示模型完美预测所有情况，而0.5表示模型等同于随机预测。
 - en: '[PRE64]'
+  id: totrans-293
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE64]'
 - en: The model cannot afford to have a high amount of false negatives as that leads
     to a negative impact on the investors and the credibility of the company. So we
     can use recall as we did in the fraud detection use case.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型不能承受高数量的假阴性，因为这会对投资者和公司的信誉产生负面影响。因此，我们可以像在欺诈检测用例中一样使用召回率。
 - en: 5.3\. Compare models and algorithms
+  id: totrans-295
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 5.3\. 比较模型和算法
 - en: 'Let us spot-check the classification algorithms. We include ANN and ensemble
     models in the list of models to be checked:'
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们现场检查分类算法。我们在待检查的模型列表中包括ANN和集成模型：
 - en: '[PRE65]'
+  id: totrans-297
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE65]'
 - en: 'After performing the *k*-fold cross validation on the models shown above, the
     overall performance is as follows:'
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 在上述模型上执行*k*折交叉验证后，整体性能如下：
 - en: '![mlbf 06in10](Images/mlbf_06in10.png)'
+  id: totrans-299
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in10](Images/mlbf_06in10.png)'
 - en: The gradient boosting method (GBM) model performs best, and we select it for
     grid search in the next step. The details of GBM along with the model parameters
     are described in [Chapter 4](ch04.xhtml#Chapter4).
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 梯度提升方法（GBM）模型表现最佳，我们选择它进行下一步的网格搜索。GBM的详细信息以及模型参数在 [第四章](ch04.xhtml#Chapter4)
+    中描述。
 - en: 6\. Model tuning and grid search
+  id: totrans-301
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6\. 模型调整和网格搜索
 - en: 'We tune the number of estimator and maximum depth hyperparameters, which were
     discussed in [Chapter 4](ch04.xhtml#Chapter4):'
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们调整了讨论过的[第四章](ch04.xhtml#Chapter4)中的估计器数量和最大深度超参数：
 - en: '[PRE66]'
+  id: totrans-303
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE66]'
 - en: '`Output`'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE67]'
+  id: totrans-305
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE67]'
 - en: A GBM model with `max_depth` of 5 and number of estimators of 150 results in
     the best model.
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有`max_depth`为5和估计器数量为150的GBM模型导致最佳模型。
 - en: 7\. Finalize the model
+  id: totrans-307
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7\. 完成模型
 - en: Now, we perform the final steps for selecting a model.
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们执行最终步骤来选择一个模型。
 - en: 7.1\. Results on the test dataset
+  id: totrans-309
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 7.1\. 测试数据集上的结果
 - en: 'Let us prepare the GBM model with the parameters found during the grid search
     step and check the results on the test dataset:'
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们使用在网格搜索步骤中找到的参数准备 GBM 模型，并在测试数据集上检查结果：
 - en: '[PRE68]'
+  id: totrans-311
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE68]'
 - en: '`Output`'
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE69]'
+  id: totrans-313
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE69]'
 - en: 'The accuracy of the model is a reasonable 89% on the test set. Let us examine
     the confusion matrix:'
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型在测试集上的准确率为合理的 89%。让我们来查看混淆矩阵：
 - en: '![mlbf 06in11](Images/mlbf_06in11.png)'
+  id: totrans-315
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in11](Images/mlbf_06in11.png)'
 - en: Looking at the confusion matrix and the overall result of the test set, both
     the rate of false positives and the rate of false negatives are lower; the overall
     model performance looks good and is in line with the training set results.
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看混淆矩阵和测试集的整体结果，假阳性率和假阴性率都较低；整体模型性能看起来良好，并且与训练集结果一致。
 - en: 7.2\. Variable intuition/feature importance
+  id: totrans-317
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 7.2\. 变量直觉/特征重要性
 - en: 'In this step, we compute and display the variable importance of our trained
     model:'
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们计算并显示了我们训练模型的变量重要性：
 - en: '[PRE70]'
+  id: totrans-319
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE70]'
 - en: '`Output`'
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '![mlbf 06in12](Images/mlbf_06in12.png)'
+  id: totrans-321
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in12](Images/mlbf_06in12.png)'
 - en: The results of the model importance are intuitive. The last payment amount seems
     to be the most important feature, followed by loan term and sub-grade.
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型重要性的结果是直观的。最后一次付款金额似乎是最重要的特征，其次是贷款期限和子等级。
 - en: Conclusion
+  id: totrans-323
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: In this case study, we introduced the classification-based tree algorithm applied
     to loan default prediction. We showed that data preparation is one of the most
     important steps. We addressed this by performing feature elimination using different
@@ -1292,39 +1918,53 @@
     data quality checks of the features. We illustrated that there can be different
     ways of handling and analyzing the categorical data and converting categorical
     data into a usable format for the models.
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们介绍了应用于贷款违约预测的基于分类的树算法。我们展示了数据准备是最重要的步骤之一。我们通过使用不同的技术，如特征直觉、相关性分析、可视化和数据质量检查来进行特征消除。我们说明了处理和分析分类数据以及将分类数据转换为模型可用格式的不同方法。
 - en: We emphasized that performing data processing and establishing an understanding
     of variable importance is key in the model development process. A focus on these
     steps led to the implementation of a simple classification-based model that produced
     robust results for default prediction.
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们强调，在模型开发过程中，进行数据处理并建立变量重要性理解至关重要。专注于这些步骤导致了一个简单的基于分类的模型的实施，为违约预测产生了稳健的结果。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-326
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: 'Case Study 3: Bitcoin Trading Strategy'
+  id: totrans-327
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 案例研究3：比特币交易策略
 - en: First released as open source in 2009 by the pseudonymous Satoshi Nakamoto,
     bitcoin is the longest-running and most well-known cryptocurrency.
+  id: totrans-328
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币由化名为中本聪的人在2009年首次开源发布，是历史最悠久且最知名的加密货币。
 - en: A major drawback of cryptocurrency trading is the volatility of the market.
     Since cryptocurrency markets trade 24/7, tracking cryptocurrency positions against
     quickly changing market dynamics can rapidly become an impossible task to manage.
     This is where automated trading algorithms and trading bots can assist.
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密货币交易的一个主要缺点是市场的波动性。由于加密货币市场24/7交易，跟踪加密货币在快速变化的市场动态中的位置可能迅速变得难以管理。这就是自动化交易算法和交易机器人可以提供帮助的地方。
 - en: 'Various machine learning algorithms can be used to generate trading signals
     in an attempt to predict the market’s movement. One could use machine learning
     algorithms to classify the next day’s movement into three categories: market will
     rise (take a long position), market will fall (take a short position), or market
     will move sideways (take no position). Since we know the market direction, we
     can decide the optimum entry and exit points.'
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 各种机器学习算法可用于生成交易信号，以试图预测市场的运动。可以使用机器学习算法将明天的市场运动分类为三类：市场将上涨（采取多头），市场将下跌（采取空头），或市场将横向移动（不采取任何头寸）。由于我们了解市场走势，我们可以决定最佳的进出点。
 - en: Machine learning has one key aspect called *feature engineering*. It means that
     we can create new, intuitive features and feed them to a machine learning algorithm
     in order to achieve better results. We can introduce different technical indicators
@@ -1332,192 +1972,288 @@
     are derived from market variables such as price or volume and have additional
     information or signals embedded in them. There are many different categories of
     technical indicators, including trend, volume, volatility, and momentum indicators.
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 机器学习有一个关键方面称为*特征工程*。这意味着我们可以创建新的直观特征，并将它们提供给机器学习算法，以获得更好的结果。我们可以引入不同的技术指标作为特征，以帮助预测资产未来的价格。这些技术指标来源于市场变量，如价格或交易量，并在其中嵌入了额外的信息或信号。技术指标有许多不同的类别，包括趋势、交易量、波动率和动量指标。
 - en: In this case study, we will use various classification-based models to predict
     whether the current position signal is buy or sell. We will create additional
     trend and momentum indicators from market prices to leverage as additional features
     in the prediction.
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个案例研究中，我们将使用各种基于分类的模型来预测当前位置信号是买入还是卖出。我们将从市场价格中创建额外的趋势和动量指标，作为预测中的额外特征。
 - en: '![](Images/bracket_top.png)'
+  id: totrans-333
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_top.png)'
 - en: Blueprint for Using Classification-Based Models to Predict Whether to Buy or
     Sell in the Bitcoin Market
+  id: totrans-334
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用基于分类模型预测在比特币市场中买入还是卖出的蓝图
 - en: 1\. Problem definition
+  id: totrans-335
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 1\. 问题定义
 - en: The problem of predicting a buy or sell signal for a trading strategy is defined
     in the classification framework, where the predicted variable has a value of 1
     for buy and 0 for sell. This signal is decided through the comparison of the short-term
     and long-term price trends.
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测交易策略的买卖信号问题在分类框架中定义，其中预测变量的值为1表示买入，0表示卖出。此信号通过比较短期和长期价格趋势来决定。
 - en: The data used is from one of the largest bitcoin exchanges in terms of average
     daily volume, [Bitstamp](https://www.bitstamp.com). The data covers prices from
     January 2012 to May 2017\. Different trend and momentum indicators are created
     from the data and are added as features to enhance the performance of the prediction
     model.
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的数据来自于日均交易量最大的比特币交易所之一，[Bitstamp](https://www.bitstamp.com)。数据涵盖了从2012年1月到2017年5月的价格。从数据中创建不同的趋势和动量指标，并将其作为特征添加以提升预测模型的性能。
 - en: By the end of this case study, readers will be familiar with a general approach
     to building a trading strategy, from cleaning data and feature engineering to
     model tuning and developing a backtesting framework.
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过本案例研究结束时，读者将熟悉建立交易策略的一般方法，从数据清理和特征工程到模型调整和开发回测框架。
 - en: 2\. Getting started—loading the data and Python packages
+  id: totrans-339
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2\. 入门—载入数据和Python包
 - en: Let’s load the packages and the data.
+  id: totrans-340
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们载入必要的包和数据。
 - en: 2.1\. Loading the Python packages
+  id: totrans-341
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.1\. 载入Python包
 - en: The standard Python packages are loaded in this step. The details have been
     presented in the previous case studies. Refer to the Jupyter notebook for this
     case study for more details.
+  id: totrans-342
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准的Python包在这一步中被载入。详细信息已在之前的案例研究中呈现。有关更多细节，请参阅本案例研究的Jupyter笔记本。
 - en: 2.2\. Loading the data
+  id: totrans-343
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 2.2\. 载入数据
 - en: 'The bitcoin data fetched from the Bitstamp website is loaded in this step:'
+  id: totrans-344
   prefs: []
   type: TYPE_NORMAL
+  zh: 从 Bitstamp 网站获取的比特币数据在此步骤中载入：
 - en: '[PRE71]'
+  id: totrans-345
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE71]'
 - en: 3\. Exploratory data analysis
+  id: totrans-346
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3\. 探索性数据分析
 - en: In this step, we will take a detailed look at this data.
+  id: totrans-347
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们将详细查看这些数据。
 - en: 3.1\. Descriptive statistics
+  id: totrans-348
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 3.1\. 描述统计
 - en: 'First, let us look at the shape of the data:'
+  id: totrans-349
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们看看数据的形状：
 - en: '[PRE72]'
+  id: totrans-350
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE72]'
 - en: '`Output`'
+  id: totrans-351
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '[PRE73]'
+  id: totrans-352
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE73]'
 - en: '[PRE74]'
+  id: totrans-353
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE74]'
 - en: '`Output`'
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: '`输出`'
 - en: '|  | Timestamp | Open | High | Low | Close | Volume_(BTC) | Volume_(Currency)
     | Weighted_Price |'
+  id: totrans-355
   prefs: []
   type: TYPE_TB
+  zh: '|  | 时间戳 | 开盘价 | 最高价 | 最低价 | 收盘价 | 比特币交易量 | 交易货币交易量 | 加权平均价 |'
 - en: '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
+  id: totrans-356
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
 - en: '| 2841372 | 1496188560 | 2190.49 | 2190.49 | 2181.37 | 2181.37 | 1.700166 |
     3723.784755 | 2190.247337 |'
+  id: totrans-357
   prefs: []
   type: TYPE_TB
+  zh: '| 2841372 | 1496188560 | 2190.49 | 2190.49 | 2181.37 | 2181.37 | 1.700166 |
+    3723.784755 | 2190.247337 |'
 - en: '| 2841373 | 1496188620 | 2190.50 | 2197.52 | 2186.17 | 2195.63 | 6.561029 |
     14402.811961 | 2195.206304 |'
+  id: totrans-358
   prefs: []
   type: TYPE_TB
+  zh: '| 2841373 | 1496188620 | 2190.50 | 2197.52 | 2186.17 | 2195.63 | 6.561029 |
+    14402.811961 | 2195.206304 |'
 - en: The dataset has minute-by-minute data of OHLC (Open, High, Low, Close) and traded
     volume of bitcoin. The dataset is large, with approximately 2.8 million total
     observations.
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据集包含比特币的开盘价、最高价、最低价、收盘价和交易量的分钟级数据。数据集很大，总共约有280万条观测值。
 - en: 4\. Data preparation
+  id: totrans-360
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4\. 数据准备
 - en: In this part, we will clean the data to prepare for modeling.
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一部分，我们将清理数据以准备建模。
 - en: 4.1\. Data cleaning
+  id: totrans-362
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.1\. 数据清理
 - en: 'We clean the data by filling the NaNs with the last available values:'
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过填充 NaN 值使用最后可用的值来清理数据：
 - en: '[PRE75]'
+  id: totrans-364
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE75]'
 - en: 'The `Timestamp` column is not useful for modeling and is dropped from the dataset:'
+  id: totrans-365
   prefs: []
   type: TYPE_NORMAL
+  zh: '`时间戳`列对于建模不实用，因此从数据集中删除：'
 - en: '[PRE76]'
+  id: totrans-366
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE76]'
 - en: 4.2\. Preparing the data for classification
+  id: totrans-367
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.2\. 准备分类数据
 - en: 'As a first step, we will create the target variable for our model. This is
     the column that will indicate whether the trading signal is buy or sell. We define
     the short-term price as the 10-day rolling average and the long-term price as
     the 60-day rolling average. We attach a label of `1` `(0)` if the short-term price
     is higher (lower) than the long-term price:'
+  id: totrans-368
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为第一步，我们将为我们的模型创建目标变量。这是一个列，指示交易信号是买入还是卖出。我们将短期价格定义为10天滚动平均，长期价格定义为60天滚动平均。如果短期价格高于（低于）长期价格，则附加标签为`1`（`0`）：
 - en: '[PRE77]'
+  id: totrans-369
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE77]'
 - en: 4.3\. Feature engineering
+  id: totrans-370
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.3\. 特征工程
 - en: We begin feature engineering by analyzing the features we expect may influence
     the performance of the prediction model. Based on a conceptual understanding of
     key factors that drive investment strategies, the task at hand is to identify
     and construct new features that may capture the risks or characteristics embodied
     by these return drivers. For this case study, we will explore the efficacy of
     specific momentum technical indicators.
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过分析预期可能影响预测模型性能的特征来开始特征工程。基于对推动投资策略的关键因素的概念理解，当前任务是识别并构建可能捕捉这些回报驱动因素所体现的风险或特征的新特征。对于本案例研究，我们将探索特定动量技术指标的有效性。
 - en: 'The current data of the bitcoin consists of date, open, high, low, close, and
     volume. Using this data, we calculate the following momentum indicators:'
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币的当前数据包括日期、开盘价、最高价、最低价、收盘价和成交量。利用这些数据，我们计算以下动量指标：
 - en: Moving average
+  id: totrans-373
   prefs: []
   type: TYPE_NORMAL
+  zh: 移动平均
 - en: A moving average provides an indication of a price trend by cutting down the
     amount of noise in the series.
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: 移动平均通过减少系列中的噪音来指示价格趋势。
 - en: Stochastic oscillator %K
+  id: totrans-375
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机振荡器 %K
 - en: A stochastic oscillator is a momentum indicator that compares the closing price
     of a security to a range of its previous prices over a certain period of time.
     *%K* and *%D* are slow and fast indicators. The fast indicator is more sensitive
     than the slow indicator to changes in the price of the underlying security and
     will likely result in many transaction signals.
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机振荡器是一种动量指标，它将安全性的收盘价与一定时间内其前期价格范围进行比较。*%K* 和 *%D* 是慢速和快速指标。相比于慢速指标，快速指标对基础安全性价格变动更为敏感，可能导致许多交易信号。
 - en: Relative strength index (RSI)
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: 相对强弱指数（RSI）
 - en: This is a momentum indicator that measures the magnitude of recent price changes
     to evaluate overbought or oversold conditions in the price of a stock or other
     asset. The RSI ranges from 0 to 100\. An asset is deemed to be overbought once
@@ -1525,211 +2261,296 @@
     a good candidate for a pullback. Likewise, if the RSI approaches 30, it is an
     indication that the asset may be getting oversold and is therefore likely to become
     undervalued.
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一种动量指标，用于衡量最近价格变化的幅度，以评估股票或其他资产价格的超买或超卖状况。RSI的范围从0到100。一旦RSI接近70，资产被认为是超买的，意味着资产可能被高估，适合回调。同样，如果RSI接近30，这表明资产可能被超卖，因此可能会被低估。
 - en: Rate of change (ROC)
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: 变动率（ROC）
 - en: This is a momentum oscillator that measures the percentage change between the
     current price and the *n* period past prices. Assets with higher ROC values are
     considered more likely to be overbought; those with lower ROC, more likely to
     be oversold.
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一种动量振荡器，衡量当前价格与*n*期前价格之间的百分比变化。具有较高ROC值的资产被认为更可能被超买；具有较低ROC值的资产更可能被超卖。
 - en: Momentum (MOM)
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 动量（MOM）
 - en: This is the rate of acceleration of a security’s price or volume—that is, the
     speed at which the price is changing.
+  id: totrans-382
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是安全价格或成交量加速度的速率，即价格变化的速度。
 - en: 'The following steps show how to generate some useful features for prediction.
     The features for trend and momentum can be leveraged for other trading strategy
     models:'
+  id: totrans-383
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下步骤展示了如何为预测生成一些有用的特征。趋势和动量的特征可以用于其他交易策略模型中：
 - en: '[PRE78]'
+  id: totrans-384
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE78]'
 - en: With our features completed, we’ll prepare them for use.
+  id: totrans-385
   prefs: []
   type: TYPE_NORMAL
+  zh: 完成特征后，我们将为它们做好准备。
 - en: 4.4\. Data visualization
+  id: totrans-386
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 4.4\. 数据可视化
 - en: 'In this step, we visualize different properties of the features and the predicted
     variable:'
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一步中，我们可视化不同特征和预测变量的不同属性：
 - en: '[PRE79]'
+  id: totrans-388
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE79]'
 - en: '`Output`'
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 06in13](Images/mlbf_06in13.png)'
+  id: totrans-390
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in13](Images/mlbf_06in13.png)'
 - en: The chart illustrates a sharp rise in the price of bitcoin, increasing from
     close to $0 to around $2,500 in 2017\. Also, high price volatility is readily
     visible.
+  id: totrans-391
   prefs: []
   type: TYPE_NORMAL
+  zh: 图表显示比特币价格急剧上涨，从接近0美元增加到2017年左右的2500美元。此外，高价格波动性一目了然。
 - en: 'Let us look at the distribution of the predicted variable:'
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一下预测变量的分布：
 - en: '[PRE80]'
+  id: totrans-393
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE80]'
 - en: '`Output`'
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Output`'
 - en: '![mlbf 06in14](Images/mlbf_06in14.png)'
+  id: totrans-395
   prefs: []
   type: TYPE_IMG
+  zh: '![mlbf 06in14](Images/mlbf_06in14.png)'
 - en: The predicted variable is 1 more than 52% of the time, meaning there are more
     buy signals than sell signals. The predicted variable is relatively balanced,
     especially as compared to the fraud dataset we saw in the first case study.
+  id: totrans-396
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测变量在52%以上的时间内为1，意味着买入信号比卖出信号更多。预测变量相对平衡，特别是与我们在第一个案例研究中看到的欺诈数据集相比。
 - en: 5\. Evaluate algorithms and models
+  id: totrans-397
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5\. 评估算法和模型
 - en: In this step, we will evaluate different algorithms.
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
 - en: 5.1\. Train-test split
+  id: totrans-399
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: 'We first split the dataset into training (80%) and test (20%) sets. For this
     case study we use 100,000 observations for a faster calculation. The next steps
     would be same in the event we want to use the entire dataset:'
+  id: totrans-400
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE81]'
+  id: totrans-401
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE81]'
 - en: 5.2\. Test options and evaluation metrics
+  id: totrans-402
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: 'Accuracy can be used as the evaluation metric since there is not a significant
     class imbalance in the data:'
+  id: totrans-403
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE82]'
+  id: totrans-404
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE82]'
 - en: 5.3\. Compare models and algorithms
+  id: totrans-405
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: In order to know which algorithm is best for our strategy, we evaluate the linear,
     nonlinear, and ensemble models.
+  id: totrans-406
   prefs: []
   type: TYPE_NORMAL
 - en: 5.3.1\. Models
+  id: totrans-407
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: 'Checking the classification algorithms:'
+  id: totrans-408
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE83]'
+  id: totrans-409
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE83]'
 - en: 'After performing the *k*-fold cross validation, the comparison of the models
     is as follows:'
+  id: totrans-410
   prefs: []
   type: TYPE_NORMAL
 - en: '![mlbf 06in15](Images/mlbf_06in15.png)'
+  id: totrans-411
   prefs: []
   type: TYPE_IMG
 - en: Although some of the models show promising results, we prefer an ensemble model
     given the huge size of the dataset, the large number of features, and an expected
     nonlinear relationship between the predicted variable and the features. Random
     forest has the best performance among the ensemble models.
+  id: totrans-412
   prefs: []
   type: TYPE_NORMAL
 - en: 6\. Model tuning and grid search
+  id: totrans-413
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'A grid search is performed for the random forest model by varying the number
     of estimators and maximum depth. The details of the random forest model and the
     parameters to tune are discussed in [Chapter 4](ch04.xhtml#Chapter4):'
+  id: totrans-414
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE84]'
+  id: totrans-415
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE84]'
 - en: '`Output`'
+  id: totrans-416
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE85]'
+  id: totrans-417
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE85]'
 - en: 7\. Finalize the model
+  id: totrans-418
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: Let us finalize the model with the best parameters found during the tuning step
     and perform the variable intuition.
+  id: totrans-419
   prefs: []
   type: TYPE_NORMAL
 - en: 7.1\. Results on the test dataset
+  id: totrans-420
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: 'In this step, we evaluate the selected model on the test set:'
+  id: totrans-421
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE86]'
+  id: totrans-422
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE86]'
 - en: '`Output`'
+  id: totrans-423
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE87]'
+  id: totrans-424
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE87]'
 - en: 'The selected model performs quite well, with an accuracy of 90.75%. Let us
     look at the confusion matrix:'
+  id: totrans-425
   prefs: []
   type: TYPE_NORMAL
 - en: '![mlbf 06in16](Images/mlbf_06in16.png)'
+  id: totrans-426
   prefs: []
   type: TYPE_IMG
 - en: The overall model performance is reasonable and is in line with the training
     set results.
+  id: totrans-427
   prefs: []
   type: TYPE_NORMAL
 - en: 7.2\. Variable intuition/feature importance
+  id: totrans-428
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: 'Let us look into the feature importance of the model:'
+  id: totrans-429
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE88]'
+  id: totrans-430
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE88]'
 - en: '`Output`'
+  id: totrans-431
   prefs: []
   type: TYPE_NORMAL
 - en: '![mlbf 06in17](Images/mlbf_06in17.png)'
+  id: totrans-432
   prefs: []
   type: TYPE_IMG
 - en: The result of the variable importance looks intuitive, and the momentum indicators
     of RSI and MOM over the last 30 days seem to be the two most important features.
     The feature importance chart corroborates the fact that introducing new features
     leads to an improvement in the model performance.
+  id: totrans-433
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3\. Backtesting results
+  id: totrans-434
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
@@ -1737,23 +2558,30 @@
     We create a column for strategy returns by multiplying the daily returns by the
     position that was held at the close of business the previous day and compare it
     against the actual returns.
+  id: totrans-435
   prefs: []
   type: TYPE_NORMAL
 - en: Backtesting Trading Strategies
+  id: totrans-436
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: A backtesting approach similar to the one presented in this case study can be
     used to quickly backtest any trading strategy.
+  id: totrans-437
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE89]'
+  id: totrans-438
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE89]'
 - en: '`Output`'
+  id: totrans-439
   prefs: []
   type: TYPE_NORMAL
 - en: '![mlbf 06in18](Images/mlbf_06in18.png)![mlbf 06in19](Images/mlbf_06in19.png)'
+  id: totrans-440
   prefs: []
   type: TYPE_IMG
 - en: Looking at the backtesting results, we do not deviate significantly from the
@@ -1761,12 +2589,16 @@
     at predicting the price direction to buy or sell in order to make profits. However,
     as our accuracy is not 100% (but more than 96%), we made relatively few losses
     compared to the actual returns.
+  id: totrans-441
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看回测结果，我们与实际市场回报并无显著偏差。事实上，所实现的动量交易策略使我们更善于预测价格方向以便盈利。然而，由于我们的准确率并非100%（但超过96%），与实际回报相比，我们遭受的损失相对较少。
 - en: Conclusion
+  id: totrans-442
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 结论
 - en: This case study demonstrated that framing the problem is a key step when tackling
     a finance problem with machine learning. In doing so, it was detemined that transforming
     the labels according to an investment objective and performing feature engineering
@@ -1776,15 +2608,21 @@
     framework, which allowed us to simulate a trading strategy using historical data.
     This enabled us to generate results and analyze risk and profitability before
     risking any actual capital.
+  id: totrans-443
   prefs: []
   type: TYPE_NORMAL
+  zh: 本案例研究表明，在使用机器学习解决金融问题时，问题的界定是一个关键步骤。通过这样做，我们确定了根据投资目标转换标签并执行特征工程对于这种交易策略是必要的。我们展示了使用与价格趋势和动量相关的直觉特征如何增强模型的预测能力。最后，我们引入了一个回测框架，允许我们使用历史数据模拟交易策略。这使我们能够在冒险使用任何实际资本之前生成结果并分析风险和盈利能力。
 - en: '![](Images/bracket_bottom.png)'
+  id: totrans-444
   prefs: []
   type: TYPE_IMG
+  zh: '![](Images/bracket_bottom.png)'
 - en: Chapter Summary
+  id: totrans-445
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 章节总结
 - en: 'In [“Case Study 1: Fraud Detection”](#CaseStudy1SC), we explored the issue
     of an unbalanced dataset and the importance of having the right evaluation metric.
     In [“Case Study 2: Loan Default Probability”](#CaseStudy2SC), various techniques
@@ -1792,43 +2630,61 @@
     covered. In [“Case Study 3: Bitcoin Trading Strategy”](#CaseStudy3SC), we looked
     at ways to create technical indicators as features in order to use them for model
     enhancement. We also prepared a backtesting framework for a trading strategy.'
+  id: totrans-446
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“案例研究1：欺诈检测”](#CaseStudy1SC)中，我们探讨了非平衡数据集的问题以及正确评估指标的重要性。在[“案例研究2：贷款违约概率”](#CaseStudy2SC)中，涵盖了数据处理、特征选择和探索性分析的各种技术和概念。在[“案例研究3：比特币交易策略”](#CaseStudy3SC)中，我们探讨了如何创建技术指标作为模型增强的特征。我们还为交易策略准备了一个回测框架。
 - en: Overall, the concepts in Python, machine learning, and finance presented in
     this chapter can used as a blueprint for any other classification-based problem
     in finance.
+  id: totrans-447
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，本章介绍的Python、机器学习和金融概念可以作为金融中任何其他基于分类的问题的蓝图。
 - en: Exercises
+  id: totrans-448
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 练习
 - en: Predict whether a stock price will go up or down using the features related
     to the stock or macroeconomic variables (use the ideas from the bitcoin-based
     case study presented in this chapter).
+  id: totrans-449
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用与股票或宏观经济变量相关的特征来预测股价是上涨还是下跌（使用本章介绍的基于比特币案例研究的想法）。
 - en: Create a model to detect money laundering using the features of a transaction.
     A sample dataset for this exercise can be obtained from [Kaggle](https://oreil.ly/GcinN).
+  id: totrans-450
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 创建一个使用交易特征来检测洗钱的模型。可以从[Kaggle](https://oreil.ly/GcinN)获取此练习的示例数据集。
 - en: Perform a credit rating analysis of corporations using the features related
     to creditworthiness.
+  id: totrans-451
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用与信用评级相关的特征对企业进行信用评级分析。
 - en: ^([1](ch06.xhtml#idm45174924215160-marker)) There may be reordering or renaming
     of the steps or substeps based on the appropriateness and intuitiveness of the
     steps/substeps.
+  id: totrans-452
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch06.xhtml#idm45174924215160-marker)) 可能会根据步骤或子步骤的适当性和直觉性重新排序或重命名步骤或子步骤。
 - en: ^([2](ch06.xhtml#idm45174922143032-marker)) The predicted variable is further
     used for correlation-based feature reduction.
+  id: totrans-453
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch06.xhtml#idm45174922143032-marker)) 预测变量进一步用于基于相关性的特征减少。
 - en: '^([3](ch06.xhtml#idm45174920856536-marker)) Sampling is covered in detail in
     [“Case Study 1: Fraud Detection”](#CaseStudy1SC).'
+  id: totrans-454
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch06.xhtml#idm45174920856536-marker)) 详细讨论了[“案例研究1：欺诈检测”](#CaseStudy1SC)中的抽样。

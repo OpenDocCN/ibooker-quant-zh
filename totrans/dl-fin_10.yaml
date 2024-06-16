@@ -3,6 +3,7 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第10章。深度强化学习用于时间序列预测
 - en: '*Reinforcement learning* is a branch of machine learning that deals with sequential
     decision-making problems. Algorithms in this branch learn to make optimal decisions
     by interacting with an environment and receiving feedback in the form of rewards.
@@ -15,6 +16,7 @@
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: '*强化学习*是处理顺序决策问题的机器学习分支。该分支中的算法通过与环境的交互和奖励反馈来学习做出最优决策。在时间序列预测的背景下，它可以用来开发基于历史数据进行顺序预测的模型。传统的预测方法通常依赖于统计方法或监督学习技术，这些方法假设数据点之间是独立的。然而，时间序列数据表现出时间依赖性和模式，这些可以通过强化学习有效地捕捉。'
 - en: Reinforcement learning models for time series forecasting typically involve
     an agent that takes actions based on observed states and receives rewards based
     on the accuracy of its predictions. The agent learns through trial and error to
@@ -24,22 +26,26 @@
   id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于时间序列预测的强化学习模型通常涉及一个基于观察到的状态采取行动并根据其预测准确性获得奖励的代理程序。代理通过试错学习以在时间上最大化累积奖励。关键挑战在于找到*探索*（尝试新行动）与*利用*（使用已学知识）之间的最佳平衡。
 - en: This chapter gives a basic overview of reinforcement learning and deep reinforcement
     learning with regard to predicting time series data.
   id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章概述了关于预测时间序列数据的强化学习和深度强化学习的基本概念。
 - en: Intuition of Reinforcement Learning
   id: totrans-4
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 强化学习的直觉
 - en: Simplification is always the right path toward understanding more advanced details.
     So let’s look at reinforcement learning from a simple point of view before digging
     deeper.
   id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 简化总是理解更高级细节的正确途径。因此，在深入研究之前，让我们从一个简单的角度来看待强化学习。
 - en: Reinforcement learning deals primarily with rewards and penalties. Imagine a
     child who gets a reward for doing good things and a punishment for doing bad things.
     Over time, that child will grow and will develop their experience so that they
@@ -48,6 +54,7 @@
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化学习主要涉及奖励和惩罚。想象一个孩子因做好事而受到奖励，因做坏事而受到惩罚。随着时间的推移，孩子会成长并积累经验，以便做好事并尽量避免做坏事（没有人是完美的）。因此，学习是通过经验来完成的。
 - en: From a time series perspective, the main idea is the same. Imagine training
     a model on past data and letting it then learn by experience, rewarding it for
     good predictions and calibrating its parameters when it makes a mistake so that
@@ -58,6 +65,7 @@
   id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 从时间序列的角度来看，基本思想是一样的。想象在过去数据上训练模型，然后让其通过经验学习，在做出良好预测时奖励它，在犯错时校正其参数，以便下次实现更好的准确性。算法本质上是贪婪的，并且希望最大化其奖励；因此，随着时间的推移，它在预测下一个可能值时变得更加优秀，这当然依赖于分析的时间序列的质量和信噪比。
 - en: 'The term *reinforcement learning* comes from the fact that *positive reinforcement*
     is given to the algorithm when it makes right decisions and *negative reinforcement*
     is given when it makes bad decisions. The first three concepts you must know are
@@ -65,20 +73,24 @@
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '*强化学习*这个术语来源于算法在做出正确决策时给予*正向强化*，在做出错误决策时给予*负向强化*。你必须了解的前三个概念是状态、行动和奖励：'
 - en: States
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: The features at every time step. For example, at a certain time step, the current
     state of the market is its OHLC data and its volume data. In more familiar words,
     states are the explanatory variables.
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个时间步骤的特征。例如，在某个时间步骤，市场的当前状态是其OHLC数据和其交易量数据。更简单的话来说，状态是解释变量。
 - en: Actions
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 行动
 - en: The decisions a trader may make at every time step. They generally involve buying,
     selling, or holding. In more familiar words, actions are the algorithms’ decisions
     when faced with certain states (a simple discretionary example of this would be
@@ -86,48 +98,59 @@
   id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易员在每个时间步骤可能做出的决策。一般涉及买入、卖出或持有。更通俗的说法，动作是算法在面对特定状态时的决策（例如，交易员注意到市场估值过高并决定发起买单的简单自主性例子）。
 - en: Rewards
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励
 - en: The results of correct actions. The simplest reward is the positive return.
     Note that a poorly designed reward function can lead to model issues such as a
     buy-and-hold strategy.^([1](ch10.html#id771))
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 正确动作的结果。最简单的奖励是正回报。请注意，设计不良的奖励函数可能导致模型问题，例如买入并持有策略[^1]。
 - en: '[Table 10-1](#table-10-1) shows the three main elements of reinforcement learning.'
   id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 10-1](#table-10-1) 展示了强化学习的三个主要元素。'
 - en: Table 10-1\. A hypothetical decision table
   id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 10-1\. 一个假设的决策表
 - en: '|   | Time | Open | High | Low | Close | &#124; | **Action** | **Reward** |'
   id: totrans-17
   prefs: []
   type: TYPE_TB
+  zh: '|   | 时间 | 开盘 | 最高 | 最低 | 收盘 | &#124; | **动作** | **奖励** |'
 - en: '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
   id: totrans-18
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
 - en: '| **States** |   1 | 10 | 14 | 8 | 10 | &#124; | BUY |     0 |'
   id: totrans-19
   prefs: []
   type: TYPE_TB
+  zh: '| **状态** |   1 | 10 | 14 | 8 | 10 | &#124; | 买入 |     0 |'
 - en: '| **States** |   2 | 10 | 15 | 6 | 13 | &#124; | BUY |     3 |'
   id: totrans-20
   prefs: []
   type: TYPE_TB
+  zh: '| **状态** |   2 | 10 | 15 | 6 | 13 | &#124; | 买入 |     3 |'
 - en: '| **States** |   3 | 13 | 16 | 8 | 14 | &#124; | SELL |   –1 |'
   id: totrans-21
   prefs: []
   type: TYPE_TB
+  zh: '| **状态** |   3 | 13 | 16 | 8 | 14 | &#124; | 卖出 |   –1 |'
 - en: '| **States** |   4 | 10 | 16 | 8 | 14 | &#124; | HOLD |     0 |'
   id: totrans-22
   prefs: []
   type: TYPE_TB
+  zh: '| **状态** |   4 | 10 | 16 | 8 | 14 | &#124; | 持有 |     0 |'
 - en: States are the rows that go from the Time column to the Close column. Actions
     can be categorical, as you can see from the Action column, and Rewards can either
     be numerical (e.g., a positive or negative profit) or categorical (e.g., profit
@@ -135,6 +158,7 @@
   id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态是从时间列到收盘列的行，动作可以是分类的，正如您从动作列看到的，奖励可以是数值（例如，正或负的利润）或分类的（例如，利润或亏损标签）。
 - en: From the preceding list, it seems complicated to just design a system that looks
     for rewards. A *reward function* quantifies the desirability or utility of being
     in a particular state or taking a specific action. The reward function therefore
@@ -144,6 +168,8 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 从上述列表中可以看出，仅设计一个寻找奖励的系统似乎很复杂。*奖励函数*量化了处于特定状态或采取特定行动的可取性或效用。因此，奖励函数向代理提供反馈，指示其行动的即时质量，并引导其学习过程。在我们详细讨论奖励函数之前，让我们先看看什么是状态-动作表（也称为
+    Q 表）。
 - en: A *Q-table*, short for *quality table*, is a data structure to store and update
     the expected value (called the *Q-value*) of taking a particular action in a given
     state. The Q-value of a state-action pair (*s*, *a*) at time *t* represents the
@@ -153,6 +179,9 @@
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Q 表*，即*质量表*，是一种数据结构，用于存储和更新在给定状态下采取特定行动的期望值（称为*Q 值*）。状态-动作对（*s*, *a*）在时间 *t*
+    的 Q 值表示代理通过遵循特定策略，在状态 *s* 中采取行动 *a* 能够达到的预期累积奖励。因此，Q 表是一种表格结构，将每个状态-动作对映射到其对应的
+    Q 值。'
 - en: Initially, the Q-table is usually initialized with arbitrary values or set to
     zero. As the algorithm explores the environment (market) and receives rewards,
     it updates the Q-values in the table based on the observed rewards and the estimated
@@ -160,11 +189,14 @@
   id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始时，Q 表通常使用任意值或设为零进行初始化。随着算法探索环境（市场）并接收奖励，它基于观察到的奖励和预估的未来奖励更新表中的 Q 值。这一过程通常使用
+    Q 学习等算法完成。
 - en: Note
   id: totrans-27
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注
 - en: Over time, through repeated exploration and exploitation, the Q-table gradually
     converges to more accurate estimates of the optimal Q-values, representing the
     best actions to take in each state. By using the Q-table, the agent can make informed
@@ -173,12 +205,14 @@
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着反复的探索和利用，Q 表逐渐收敛到对最优 Q 值更准确的估计，代表在每个状态下采取的最佳行动。通过使用 Q 表，代理可以做出明智的决策，并学会在给定环境中最大化累积奖励。记住，奖励可以是利润、夏普比率或任何其他绩效指标。
 - en: '*Q-learning* is a popular reinforcement learning algorithm that enables an
     agent to learn optimal actions by iteratively updating its action-value function,
     known as the *Bellman equation*, defined as follows:'
   id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Q-learning* 是一种流行的强化学习算法，通过迭代更新其动作值函数（即 *贝尔曼方程*），使代理程序能够学习到最优的行动：'
 - en: <math alttext="upper Q left-parenthesis s Subscript t Baseline comma a Subscript
     t Baseline right-parenthesis equals upper R left-parenthesis s Subscript t Baseline
     comma a Subscript t Baseline right-parenthesis plus gamma m a x left-bracket upper
@@ -240,38 +274,47 @@
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 学习率（γ）越大，算法越多考虑先前的经验。注意，如果 γ 等于零，那么学习就等同于什么都没学到，因为第二项将会自我抵消。举个简单的例子，考虑 [表格 10-2](#table-10-2)。
 - en: Table 10-2\. R-table
   id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 10-2\. R 表
 - en: '| Time (State) | Act (Action) | Wait (Action) |'
   id: totrans-34
   prefs: []
   type: TYPE_TB
+  zh: '| 时间（状态） | 行动（动作） | 等待（动作） |'
 - en: '| --- | --- | --- |'
   id: totrans-35
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '|        1 | 2 reward units | 0 reward units |'
   id: totrans-36
   prefs: []
   type: TYPE_TB
+  zh: '|        1 | 2 个奖励单位 | 0 个奖励单位 |'
 - en: '|        2 | 2 reward units | 0 reward units |'
   id: totrans-37
   prefs: []
   type: TYPE_TB
+  zh: '|        2 | 2 个奖励单位 | 0 个奖励单位 |'
 - en: '|        3 | 2 reward units | 0 reward units |'
   id: totrans-38
   prefs: []
   type: TYPE_TB
+  zh: '|        3 | 2 个奖励单位 | 0 个奖励单位 |'
 - en: '|        4 | 2 reward units | 0 reward units |'
   id: totrans-39
   prefs: []
   type: TYPE_TB
+  zh: '|        4 | 2 个奖励单位 | 0 个奖励单位 |'
 - en: '|        5 | 2 reward units | 4 reward units |'
   id: totrans-40
   prefs: []
   type: TYPE_TB
+  zh: '|        5 | 2 个奖励单位 | 4 个奖励单位 |'
 - en: 'The table describes the results of actions through time. At every time step,
     acting (doing something) will give a reward of 2, while waiting to act on the
     fifth time step will give a reward of 4\. This means that the agent can make one
@@ -279,21 +322,25 @@
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 该表格描述了随时间的行动结果。每个时间步长，执行（做某事）将获得 2 的奖励，而在第五个时间步长等待行动将获得 4 的奖励。这意味着代理程序可以做出以下选择之一：
 - en: Act now and get 2 reward units.
   id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 立即行动并获得 2 个奖励单位。
 - en: Wait before acting and get 4 reward units.
   id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 等待一段时间再行动，可以获得 4 个奖励单位。
 - en: 'Let’s assume γ = 0.80\. Using the Bellman equation and working backward will
     get you the following results:'
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 γ = 0.80\. 使用贝尔曼方程并向后工作，将得到以下结果：
 - en: <math alttext="StartLayout 1st Row  upper Q left-parenthesis s 1 comma a 1 right-parenthesis
     equals 0 plus 0.8 left-parenthesis 2.04 right-parenthesis equals 1.63 2nd Row  upper
     Q left-parenthesis s 2 comma a 2 right-parenthesis equals 0 plus 0.8 left-parenthesis
@@ -356,101 +403,126 @@
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表格 10-2](#table-10-2) 可能会更新为以下的 [表格 10-3](#table-10-3) 。'
 - en: Table 10-3\. Q-table
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 10-3\. Q 表
 - en: '| Time (State) | Act (Action) | Wait (Action) |'
   id: totrans-48
   prefs: []
   type: TYPE_TB
+  zh: '| 时间（状态） | 行动（动作） | 等待（动作） |'
 - en: '| --- | --- | --- |'
   id: totrans-49
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '|       1 | 2 reward units | 1.63 reward units |'
   id: totrans-50
   prefs: []
   type: TYPE_TB
+  zh: '|       1 | 2 个奖励单位 | 1.63 个奖励单位 |'
 - en: '|       2 | 2 reward units | 2.04 reward units |'
   id: totrans-51
   prefs: []
   type: TYPE_TB
+  zh: '|       2 | 2 个奖励单位 | 2.04 个奖励单位 |'
 - en: '|       3 | 2 reward units | 2.56 reward units |'
   id: totrans-52
   prefs: []
   type: TYPE_TB
+  zh: '|       3 | 2 个奖励单位 | 2.56 个奖励单位 |'
 - en: '|       4 | 2 reward units | 3.20 reward units |'
   id: totrans-53
   prefs: []
   type: TYPE_TB
+  zh: '|       4 | 2 个奖励单位 | 3.20 个奖励单位 |'
 - en: '|       5 | 2 reward units | 4.00 reward units |'
   id: totrans-54
   prefs: []
   type: TYPE_TB
+  zh: '|       5 | 2 个奖励单位 | 4.00 个奖励单位 |'
 - en: Therefore, the Q-table is continuously updated with the implied rewards to help
     maximize the final reward. To understand why the term *max* is in the Bellman
     equation, consider the example in [Table 10-4](#table-10-4).
   id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，Q 表会持续更新隐含的奖励，以帮助最大化最终的奖励。要理解贝尔曼方程中为什么有 *max* 这个术语，可以参考 [表格 10-4](#table-10-4)
+    中的例子。
 - en: Table 10-4\. R-table
   id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 10-4\. R 表
 - en: '| Time (State) | Buy | Sell | Hold |'
   id: totrans-57
   prefs: []
   type: TYPE_TB
+  zh: '| 时间（状态） | 买入 | 卖出 | 持有 |'
 - en: '| --- | --- | --- | --- |'
   id: totrans-58
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '|       1 |  5 |  8 |  8 |'
   id: totrans-59
   prefs: []
   type: TYPE_TB
+  zh: '|       1 |  5 |  8 |  8 |'
 - en: '|       2 |  3 |  2 |  1 |'
   id: totrans-60
   prefs: []
   type: TYPE_TB
+  zh: '|       2 |  3 |  2 |  1 |'
 - en: '|       3 |  2 |  5 |  6 |'
   id: totrans-61
   prefs: []
   type: TYPE_TB
+  zh: '|       3 |  2 |  5 |  6 |'
 - en: Calculate the would-be value of *x* in a Q-table ([Table 10-5](#table-10-5))
     assuming a learning rate of 0.4.
   id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算在 Q 表中（[表格 10-5](#table-10-5)）假设学习率为 0.4 时，*x* 的预期值。
 - en: Table 10-5\. Q-table
   id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 10-5\. Q 表
 - en: '| Time (State) | Buy | Sell | Hold |'
   id: totrans-64
   prefs: []
   type: TYPE_TB
+  zh: '| 时间（状态） | 买入 | 卖出 | 持有 |'
 - en: '| --- | --- | --- | --- |'
   id: totrans-65
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '|      1 |  ?   |  ? |  ? |'
   id: totrans-66
   prefs: []
   type: TYPE_TB
+  zh: '|      1 |  ?   |  ? |  ? |'
 - en: '|      2 |  ? |  x |  ? |'
   id: totrans-67
   prefs: []
   type: TYPE_TB
+  zh: '|      2 |  ? |  x |  ? |'
 - en: '|      3 |  2 |  5 |  6 |'
   id: totrans-68
   prefs: []
   type: TYPE_TB
+  zh: '|      3 |  2 |  5 |  6 |'
 - en: 'Following the formula, you should get this result:'
   id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 按照公式，您应该得到以下结果：
 - en: <math alttext="x equals 2 plus 0.4 left-parenthesis m a x left-parenthesis 2
     comma 5 comma 6 right-parenthesis right-parenthesis equals 4.4"><mrow><mi>x</mi>
     <mo>=</mo> <mn>2</mn> <mo>+</mo> <mn>0</mn> <mo lspace="0%" rspace="0%">.</mo>
@@ -473,6 +545,7 @@
   id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态（特征）必须具有预测性质，以便强化学习算法能够比随机预测更准确地预测下一个值。特征的例子可以是相对强弱指数（RSI）、移动平均和滞后收盘价格的值。
 - en: 'It is crucial to keep in mind that the inputs’ statistical preference remains
     the same, that is, stationary. This begs the question: how are moving averages
     used as inputs if they are not stationary? The simple answer is through the usual
@@ -480,11 +553,13 @@
   id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 在输入统计偏好保持不变的情况下至关重要，即具有固定性。这带来了一个问题：如果移动平均值不是固定的，那么如何将其用作输入？简单的答案是通过通常的转换，即进行百分比差异。
 - en: Note
   id: totrans-73
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: It is possible to use fractional differencing to transform a nonstationary time
     series into a stationary one while retaining its memory.
   id: totrans-74
@@ -778,6 +853,7 @@
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们尚未讨论的一件事是如何通过加倍神经网络架构来减少过度估计。
 - en: The *Double Deep Q-Network* (DDQN) model is an extension of the original DQN
     architecture introduced by DeepMind in 2015\. The primary motivation behind DDQN
     is to address a known issue in the DQN algorithm called *overestimation bias*,
@@ -785,6 +861,7 @@
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '*双深度 Q 网络*（DDQN）模型是由 DeepMind 在 2015 年推出的原始 DQN 架构的扩展。DDQN 的主要动机是解决 DQN 算法中的已知问题，称为*过度估计偏差*，这可能导致次优的动作选择。'
 - en: In the original DQN, the action values (Q-values) for each state-action pair
     are estimated using a single neural network. However, during the learning process,
     the Q-values are estimated using the maximum Q-value among all possible actions
@@ -794,6 +871,8 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 在原始 DQN 中，每个状态-动作对的动作值（Q 值）是使用单个神经网络估算的。然而，在学习过程中，Q 值是使用下一个状态中所有可能动作的最大 Q 值来估算的（查看
+    [表 10-5](#table-10-5)）。这个最大 Q 值有时会导致真实动作值的过度估计，从而导致次优策略。
 - en: 'The DDQN addresses this overestimation bias by utilizing two separate neural
     networks: the Q-network and the target-network. The *Q-network* is a deep neural
     network that approximates the action-value function (Q-function). In other words,
@@ -807,16 +886,21 @@
   id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: DDQN 通过利用两个独立的神经网络解决这种过度估计偏差：Q 网络和目标网络。*Q 网络*是一个深度神经网络，用于逼近动作值函数（Q 函数）。换句话说，它估算了给定状态下每个可能动作的价值。Q
+    网络的参数（权重和偏置）通过训练来学习，以最小化预测 Q 值和目标 Q 值之间的差异。*目标网络*是 Q 网络的一个单独副本，用于在训练期间估算目标 Q 值。它有助于稳定学习过程并改善
+    Q 网络的收敛性。目标网络的权重在训练过程中不会更新；相反，它们会定期更新以匹配 Q 网络的权重。
 - en: The key idea behind the DDQN is to decouple the selection of actions from the
     estimation of their values.
   id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: DDQN 的关键思想是将动作的选择与其值的估算分离开来。
 - en: Note
   id: totrans-116
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The algorithm updates the Q-network regularly and the target network occasionally.
     This is done to avoid the issue of the same model being used to estimate the Q-value
     from the next state and then giving it to the Bellman equation to estimate the
@@ -824,22 +908,26 @@
   id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 算法定期更新 Q 网络和偶尔更新目标网络。这样做是为了避免同一模型用于估算下一个状态的 Q 值，然后将其传递给贝尔曼方程，以估算当前状态的 Q 值的问题。
 - en: 'So, to put these elements into an ordered sequence, here’s how the deep reinforcement
     learning architecture may look:'
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，为了将这些元素放入有序序列中，深度强化学习架构可能如下所示：
 - en: The environment is initialized.
   id: totrans-119
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 初始化环境。
 - en: The epsilon value is selected. Remember, epsilon is the exploration–exploitation
     trade-off parameter used to control the agent’s behavior during training.
   id: totrans-120
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 选择 epsilon 值。请记住，epsilon 是控制训练期间代理行为的探索-利用权衡参数。
 - en: The current state is fetched. Remember, an example of the current state may
     be the OHLC data, the RSI, the standard deviation of the returns, or even the
     day of the week.
@@ -847,6 +935,7 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 获取当前状态。请记住，当前状态的示例可能是 OHLC 数据、RSI、收益标准差，甚至是星期几。
 - en: In the first round, the algorithm selects the action through exploration as
     the model is not trained yet; therefore, the action is randomly selected (e.g.,
     from a choice panel of buy, sell, and hold). If it’s not the first step, then
@@ -856,126 +945,155 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在第一轮中，由于模型尚未训练，算法通过探索选择动作；因此，动作是随机选择的（例如，从买入、卖出和持有的选择面板）。如果不是第一步，则可能使用利用来选择动作。利用是指动作由神经网络模型确定。
 - en: The action is applied.
   id: totrans-123
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 应用动作。
 - en: The previous elements are stored in replay memory.
   id: totrans-124
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将前述元素存储在回放内存中。
 - en: The inputs and the target array are fetched and the Q-network is trained.
   id: totrans-125
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 输入和目标数组被获取，并训练 Q 网络。
 - en: If the round is not over, repeat the process starting at step 3\. Otherwise,
     train the target network and repeat from step 1.
   id: totrans-126
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果轮次尚未结束，请从第 3 步开始重复该过程。否则，训练目标网络并从第 1 步重复。
 - en: To illustrate the algorithm, let’s use it on the synthetic sine wave time series.
     Create the time series and then apply the deep reinforcement learning algorithm
     with the aim of predicting the future values.
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 要说明算法，让我们在合成正弦波时间序列上使用它。创建时间序列，然后应用深度强化学习算法，旨在预测未来值。
 - en: The full code can be found in the [GitHub repository](https://oreil.ly/5YGHI)
     (for replication purposes).
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 完整的代码可以在 [GitHub 仓库](https://oreil.ly/5YGHI) 中找到（供复制目的）。
 - en: '[Figure 10-1](#figure-10-1) shows the test data (solid line) versus the predicted
     data (dashed line) using 1 epoch, 5 inputs (lagged values), a batch size of 64,
     and 1 hidden layer with 6 neurons.'
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 10-1](#figure-10-1) 显示了测试数据（实线）与预测数据（虚线），使用了 1 个周期，5 个输入（滞后值），批量大小为 64，并且有
+    1 个隐藏层，每个隐藏层有 6 个神经元。'
 - en: '![](assets/dlff_1001.png)'
   id: totrans-130
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1001.png)'
 - en: Figure 10-1\. Test data versus predicted data using 1 epoch, 5 inputs, a batch
     size of 64, and 1 hidden layer with 6 neurons
   id: totrans-131
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-1\. 使用了 1 个周期，5 个输入，批量大小为 64，并且有 1 个隐藏层，每个隐藏层有 6 个神经元的测试数据与预测数据对比
 - en: '[Figure 10-2](#figure-10-2) shows the test data (solid line) versus the predicted
     data (dashed line) using 1 epoch, 5 inputs (lagged values), a batch size of 64,
     and 2 hidden layers with each having 6 neurons.'
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 10-2](#figure-10-2) 显示了测试数据（实线）与预测数据（虚线），使用了 1 个周期，5 个输入（滞后值），批量大小为 64，并且有
+    2 个隐藏层，每个隐藏层有 6 个神经元。'
 - en: '![](assets/dlff_1002.png)'
   id: totrans-133
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1002.png)'
 - en: Figure 10-2\. Predicted values versus actual values using 1 epoch, 5 inputs,
     a batch size of 64, and 2 hidden layers with each having 6 neurons
   id: totrans-134
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-2\. 使用了 1 个周期，5 个输入，批量大小为 64，并且有 2 个隐藏层，每个隐藏层有 6 个神经元的预测值与实际值对比
 - en: '[Figure 10-3](#figure-10-3) shows the predictions using 10 epochs, 5 inputs
     (lagged values), a batch size of 32, and 2 hidden layers with each having 6 neurons.'
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 10-3](#figure-10-3) 显示了使用了 10 个周期，5 个输入（滞后值），批量大小为 32，并且有 2 个隐藏层，每个隐藏层有
+    6 个神经元的预测。'
 - en: '![](assets/dlff_1003.png)'
   id: totrans-136
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1003.png)'
 - en: Figure 10-3\. Predicted values versus actual values using 10 epochs, 5 inputs,
     a batch size of 32, and 2 hidden layers with each having 6 neurons
   id: totrans-137
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-3\. 使用了 10 个周期，5 个输入，批量大小为 32，并且有 2 个隐藏层，每个隐藏层有 6 个神经元的预测值与实际值对比
 - en: '[Figure 10-4](#figure-10-4) shows the predictions using 10 epochs, 5 inputs
     (lagged values), a batch size of 32, and 2 hidden layers with each having 24 neurons.'
   id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 10-4](#figure-10-4) 显示了使用了 10 个周期，5 个输入（滞后值），批量大小为 32，并且有 2 个隐藏层，每个隐藏层有
+    24 个神经元的预测。'
 - en: '![](assets/dlff_1004.png)'
   id: totrans-139
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1004.png)'
 - en: Figure 10-4\. Predicted values versus actual values using 10 epochs, 5 inputs,
     a batch size of 32, and 2 hidden layers with each having 24 neurons
   id: totrans-140
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-4\. 使用了 10 个周期，5 个输入，批量大小为 32，并且有 2 个隐藏层，每个隐藏层有 24 个神经元的预测值与实际值对比
 - en: '[Figure 10-5](#figure-10-5) shows the predictions using 10 epochs, 8 inputs
     (lagged values), a batch size of 32, and 2 hidden layers with each having 64 neurons.'
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 10-5](#figure-10-5) 显示了使用了 10 个周期，8 个输入（滞后值），批量大小为 32，并且有 2 个隐藏层，每个隐藏层有
+    64 个神经元的预测。'
 - en: '![](assets/dlff_1005.png)'
   id: totrans-142
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1005.png)'
 - en: Figure 10-5\. Predicted values versus actual values using 10 epochs, 8 inputs,
     a batch size of 32, and 2 hidden layers with each having 64 neurons
   id: totrans-143
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-5\. 使用了 10 个周期，8 个输入，批量大小为 32，并且有 2 个隐藏层，每个隐藏层有 64 个神经元的预测值与实际值对比
 - en: As you know, the more epochs, the better the fit—up to a certain point, where
     overfitting may start to become an issue. Fortunately, by now you know how to
     reduce that risk.
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 如您所知，更多周期意味着更好的拟合——直到某一点，过拟合可能开始成为问题。幸运的是，现在您知道如何减少这种风险。
 - en: Note
   id: totrans-145
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Note that the sine wave example is a very basic one, and more complex data can
     be used with the algorithm. The choice of the sine wave time series is for illustrative
     purposes only, and you must use more sophisticated methods on more complex time
@@ -983,6 +1101,7 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，正弦波示例非常基础，算法可以使用更复杂的数据。选择正弦波时间序列仅用于说明目的，您必须在更复杂的时间序列上使用更复杂的方法来评估算法。
 - en: Reinforcement learning is easily overfit and is more likely to learn simple
     patterns and not hidden and complicated ones. Also, you should now be aware of
     the difficulty of reward function design and choice of features. Furthermore,

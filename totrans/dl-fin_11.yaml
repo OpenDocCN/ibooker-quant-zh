@@ -1,7 +1,9 @@
 - en: Chapter 11\. Advanced Techniques and Strategies
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第11章. 高级技术和策略
 - en: By now, you should have a solid understanding of deep learning algorithms and
     how to develop a model to predict time series data. Even though this is just a
     first step toward deploying a profitable algorithm, you should know that you have
@@ -9,97 +11,134 @@
     independent sections that discuss interesting ways of applying a few advanced
     deep learning techniques and methods for time series prediction and to enhance
     the process.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，您应该对深度学习算法及其如何开发模型以预测时间序列数据有了坚实的理解。尽管这只是部署盈利算法的第一步，但您应该知道，您从本书开始以来已经走了很长一段路。本章分为独立的几节，讨论了应用一些先进的深度学习技术和时间序列预测方法的有趣方式，以及增强该过程。
 - en: Using COT Data to Predict Long-Term Trends
+  id: totrans-2
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 利用 COT 数据预测长期趋势
 - en: 'The *Commitments of Traders* (COT) report is a [weekly publication](https://oreil.ly/PLtaP)
     released by the US Commodity Futures Trading Commission (CFTC). It provides information
     on the positions held by various market participants in futures markets. The report
     is based on data collected from futures exchanges, including the Chicago Mercantile
     Exchange (CME) and the Intercontinental Exchange (ICE). The COT report categorizes
     traders into three main groups:'
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: '*交易者承诺*（COT）报告是由美国商品期货交易委员会（CFTC）发布的[每周发布](https://oreil.ly/PLtaP)，提供了期货市场各种市场参与者持仓情况的信息。该报告基于从期货交易所（包括芝加哥商品交易所（CME）和洲际交易所（ICE））收集的数据。COT
+    报告将交易者分为三大组：'
 - en: Commercial traders (also referred to as dealers or hedgers)
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 商业交易商（也称为经销商或套期保值者）
 - en: These are typically companies that use the futures market to hedge their main
     business activities. For example, a grain producer may use futures contracts to
     protect against price fluctuations in the agricultural market. Their positions
     are generally negatively correlated to the underlying market.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些通常是利用期货市场来对冲其主要业务活动的公司。例如，粮食生产商可能使用期货合约来保护农业市场价格波动。他们的头寸通常与基础市场呈负相关。
 - en: Noncommercial traders (also referred to as funds or leveraged money)
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 非商业交易者（也称为基金或杠杆资金）
 - en: This group consists of large speculators, such as hedge funds and commodity
     trading advisors. Noncommercial traders often take positions based on their market
     outlook and profit-seeking strategies. Their positions are generally positively
     correlated to the underlying market as they have a trend-following nature.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 此组包括大型投机者，如对冲基金和商品交易顾问。非商业交易者通常根据其市场展望和追求利润的策略进行头寸建立。他们的头寸通常与基础市场呈正相关，因为他们具有追随趋势的特性。
 - en: Nonreportable traders
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 非报告类交易者
 - en: This category includes small speculators and traders whose positions do not
     meet the reporting requirements set by the CFTC. They do not have a clear correlation
     with the underlying market.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 此类别包括小型投机者和其头寸不符合 CFTC 设定的报告要求的交易者。他们与基础市场之间没有明确的相关性。
 - en: The report provides a breakdown of the positions held by each group, indicating
     whether they are *net long* (holding more long positions than short positions)
     or *net short* (holding more short positions than long positions) in a particular
     futures market.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 该报告详细说明了每个组的持仓情况，指出它们在特定期货市场中是否*净多头*（持有的多头头寸多于空头头寸）或*净空头*（持有的空头头寸多于多头头寸）。
 - en: 'Traders and investors analyze the COT report to gain insights into the sentiment
     and behavior of different market participants. By monitoring changes in positions,
     they attempt to identify potential trends or reversals in the market. The report
     is especially popular in the commodity and currency markets, where it is used
     as a tool for fundamental analysis and to gauge market sentiment. This section
     covers how to do the following:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易者和投资者分析 COT 报告，以深入了解不同市场参与者的情绪和行为。通过监控头寸变动，他们试图识别市场潜在趋势或反转。该报告在商品和货币市场特别受欢迎，被用作基本分析工具和评估市场情绪。本节介绍了以下内容：
 - en: Create an algorithm to download the COT data automatically and analyze it.
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 创建一个算法自动下载 COT 数据并进行分析。
 - en: Chart and understand the correlations between the COT values and their respective
     underlying markets. Additionally, check for stationarity in the COT values to
     see if they can be used directly in the algorithms.
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 绘制并理解 COT 值与其相应基础市场之间的相关性。此外，检查 COT 值中的平稳性，以查看它们是否可以直接用于算法中。
 - en: Create an LSTM algorithm to forecast the next COT value using lagged values
     and evaluate it. This will be referred to as the *indirect one-step COT model*.
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用滞后值创建一个LSTM算法，以预测下一个COT值并进行评估。这将被称为*间接单步COT模型*。
 - en: Create an LSTM algorithm to forecast a few weeks’ worth of COT observations
     using the direct method. This will be referred to as the *MPF COT direct model*.
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用直接方法创建一个LSTM算法，以预测未来几周的COT观察值。这将被称为*MPF COT直接模型*。
 - en: Create an LSTM algorithm to forecast a few weeks’ worth of COT observations
     using the recursive method. This will be referred to as the *MPF COT recursive
     model*.
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用递归方法创建一个LSTM算法，以预测未来几周的COT观察值。这将被称为*MPF COT递归模型*。
 - en: 'There are mainly four columns of interest in the COT report: the long hedgers,
     the short hedgers, the long funds, and the short funds. They are the four basic
     pillars from which you calculate the net hedgers and the net funds. Some traders
     like to analyze every column before netting and seeing the bigger picture. It
     helps to understand the logic behind every column before proceeding to the netting
     process:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: COT报告中主要有四列感兴趣的内容：长期对冲者、短期对冲者、长期基金和短期基金。它们是计算净对冲者和净基金的四个基本支柱。一些交易者喜欢在进行净值计算和看到更大画面之前分析每一列。在进行净值过程之前了解每一列背后的逻辑有助于理解。
 - en: Long hedgers (the percentage long positions of commercial traders)
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 长期对冲者（商业交易者的多头头寸百分比）
 - en: You can consider these hedgers *consumers* of the asset. A long hedger is an
     entity that buys futures on a certain asset (such as wheat) to hedge its main
     business. The primary goal is to protect itself from the risk of rising prices
@@ -108,40 +147,56 @@
     increase. Therefore, long hedgers buy the asset in fear that it will go up. They
     usually buy it on its way down, which results in a negative correlation with the
     price of the asset.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以将这些对冲者视为资产的*消费者*。长期对冲者是购买某种资产（如小麦）期货以对冲其主要业务的实体。主要目标是通过在未来锁定所需的固定价格来保护自己免受价格上涨的风险。通过这样做，他们可以更准确地计划生产成本，并避免如果小麦价格上涨可能带来的损失。因此，长期对冲者购买资产是出于担心其价格将上涨。他们通常在价格下跌时购买，这导致与资产价格的负相关性。
 - en: Short hedgers (the percentage short positions of commercial traders)
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 短期对冲者（商业交易者的空头头寸百分比）
 - en: You can consider these hedgers *producers* of the asset. A short hedger is an
     entity that sells short futures on a certain asset to hedge its main business.
     The primary goal is to protect itself from the risk of falling prices. Therefore,
     short hedgers sell in fear that it will go down. They usually sell it on its way
     up, which results in a positive correlation with the price of the asset (this
     means that the number of short hedgers rises as the price of the asset rises).
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以将这些对冲者视为资产的*生产者*。短期对冲者是出售某种资产的空头期货以对冲其主要业务的实体。主要目标是保护自己免受价格下跌的风险。因此，短期对冲者在资产价格上涨时卖出。他们通常在价格上涨时出售，这导致与资产价格的正相关性（这意味着随着资产价格的上涨，短期对冲者的数量增加）。
 - en: Long funds (the percentage long positions of noncommercial traders)
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 长期基金（非商业交易者的多头头寸百分比）
 - en: Speculative long fund positions are buyers of futures contracts in anticipation
     that the price will rise. They have a positive correlation with the price of the
     asset on account of their trend-following nature.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 投机性长期基金头寸是未来合约的买方，预期价格将上涨。由于其追随趋势的特性，它们与资产价格有正相关性。
 - en: Short funds (the percentage short positions of noncommercial traders)
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 空头基金（非商业交易者的空头头寸百分比）
 - en: Speculative short fund positions are sellers of futures contracts in anticipation
     that the price will go down. They have a negative correlation with the price of
     the asset on account of their trend-following nature. An example of this would
     be the decreased number of short funds as the asset goes up.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 投机性卖空基金头寸是未来合约的卖方，预期价格将下跌。由于其追随趋势的特性，它们与资产价格有负相关性。例如，当资产上涨时，这些空头基金的数量减少。
 - en: Note
+  id: totrans-26
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注
 - en: Netting the COT report can be done in different ways depending on your needs.
     If you prefer to focus on commercial traders, then you can simply take the difference
     between commercial longs and commercial shorts (or as you may call them, consumers
@@ -150,227 +205,347 @@
     if you prefer a global image, then you can take the difference between the netted
     commercial and noncommercial traders so that you’re left with only one time series
     that summarizes the global picture of the market positioning on a certain asset.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据您的需求，可以以不同方式进行 COT 报告的清算。如果您偏向于商业交易者，那么您可以简单地取商业多头和商业空头之间的差值（或者您可以称之为消费者和生产者）。如果您偏向于非商业交易者，那么您可以取非商业多头和非商业空头之间的差值。如果您偏向于全球视角，那么您可以取商业和非商业交易者的净清算差值，这样您将得到一个只总结特定资产市场定位全局图像的时间序列。
 - en: '[Table 11-1](#table-11-1) sheds some light on the calculation of net COT values.'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '[表 11-1](#table-11-1) 对净 COT 值的计算进行了一些解释。'
 - en: Table 11-1\. COT netting representation
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 表11-1\. COT 净清算表示
 - en: '| Hedger long | Hedger short | Fund long | Fund short | Net hedger | Net fund
     | Net COT |'
+  id: totrans-30
   prefs: []
   type: TYPE_TB
+  zh: '| 套保者多头 | 套保者空头 | 基金多头 | 基金空头 | 净套保者 | 净基金 | 净 COT |'
 - en: '| --- | --- | --- | --- | --- | --- | --- |'
+  id: totrans-31
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- | --- |'
 - en: '| A | B | C | D | E = A – B | F = C – D | G = F – E |'
+  id: totrans-32
   prefs: []
   type: TYPE_TB
+  zh: '| A | B | C | D | E = A - B | F = C - D | G = F - E |'
 - en: 'The net COT value has the following formula:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 净 COT 值具有以下公式：
 - en: Net COT = Net funds – Net hedgers
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: Net COT = 净资金 - 净套保者
 - en: It shares a positive correlation with the underlying price of the asset. [Figure 11-1](#figure-11-1)
     shows the net COT positioning on the Canadian dollar (CAD).
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 它与资产的基础价格呈正相关。[图 11-1](#figure-11-1) 显示了加拿大元（CAD）的净 COT 定位。
 - en: '![](assets/dlff_1101.png)'
+  id: totrans-36
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1101.png)'
 - en: Figure 11-1\. Net COT CAD since 2015; notice the mean-reverting nature of the
     values.
+  id: totrans-37
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-1\. 自2015年以来的净 COT 加元；注意其价值的均值回归性质。
 - en: 'Let’s see how to download COT values using Python. First, `pip install` the
     library that allows you to automatically download COT values from the CFTC website:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何使用 Python 下载 COT 值。首先，`pip install` 允许您自动从 CFTC 网站下载 COT 值的库：
 - en: '[PRE0]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Just in case the library has issues, you can use the predownloaded COT reports
     in Excel format found in the [GitHub repository](https://oreil.ly/5YGHI) (a code
     block at the end of this section is provided for this manual import).
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果库存在问题，您可以使用在[GitHub 仓库](https://oreil.ly/5YGHI)中找到的预下载的 Excel 格式 COT 报告进行手动导入（本节末尾提供了一个代码块）。
 - en: 'Import the required libraries to download the historical observations of the
     COT report. For simplicity, let’s choose CAD positioning:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入必要的库以下载 COT 报告的历史观察结果。为简单起见，让我们选择加元的定位：
 - en: '[PRE1]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'The `import_cot_data()` function that allows you to fetch the COT values of
     a selected market is defined as follows (found in *master_function.py*):'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 允许您获取所选市场 COT 值的 `import_cot_data()` 函数定义如下（在 *master_function.py* 中找到）：
 - en: '[PRE2]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'To import CAD COT values, use the following syntax:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入加元 COT 值，使用以下语法：
 - en: '[PRE3]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'It is worth mentioning that other markets have the following code names that
     you can use to import them:'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 值得一提的是，其他市场有以下代码名称，您可以用来导入它们：
 - en: '[PRE4]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Note
+  id: totrans-49
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: 'In case you have a request error, try applying the following code before running
     the import section (remember to `pip install` the *proxy_requests* library):'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果出现请求错误，请在运行导入部分之前应用以下代码（记得 `pip install` *proxy_requests* 库）：
 - en: '[PRE5]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[Figure 11-2](#figure-11-2) shows the net COT positioning on the CAD versus
     the CADUSD. Notice the strong positive correlation between the two. Calculating
     the Pearson correlation of the last 200 observations gives a whopping 0.66\. In
     other words, tops on the net COT data coincide with tops on the CADUSD. Similarly,
     troughs on the net COT data coincide with troughs on the CADUSD.'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-2](#figure-11-2) 显示了加元相对于加元/美元的净 COT 定位。注意两者之间强烈的正相关性。计算最近200次观察的皮尔逊相关系数为惊人的0.66。换句话说，净
+    COT 数据的高点与加元/美元的高点相吻合。同样，净 COT 数据的低点与加元/美元的低点相吻合。'
 - en: '![](assets/dlff_1102.png)'
+  id: totrans-53
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1102.png)'
 - en: Figure 11-2\. The CADUSD (left scale) versus the CAD net COT positioning (right
     scale).
+  id: totrans-54
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-2\. 加元/美元（左刻度）与加元净 COT 定位（右刻度）。
 - en: Warning
+  id: totrans-55
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 警告
 - en: 'Note that the chart shows the CADUSD and not the USDCAD, the commonly used
     pair. This is because you are trying to understand the CAD; therefore, it helps
     to use it as the base currency so that you can see the positive correlation with
     the CAD speculators and the negative correlation with the CAD hedgers. To obtain
     the CADUSD from the USDCAD observations, take its reciprocal:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，图表显示的是CADUSD而不是常用的USDCAD货币对。这是因为您试图理解CAD；因此，将其作为基础货币有助于您看到CAD投机者的正相关性以及CAD套期保值者的负相关性。要从USDCAD观察中获得CADUSD，请取其倒数：
 - en: <math alttext="upper C upper A upper D upper U upper S upper D equals StartFraction
     1 Over upper U upper S upper D upper C upper A upper D EndFraction"><mrow><mi>C</mi>
     <mi>A</mi> <mi>D</mi> <mi>U</mi> <mi>S</mi> <mi>D</mi> <mo>=</mo> <mstyle displaystyle="false"
     scriptlevel="0"><mfrac><mn>1</mn> <mrow><mi>U</mi><mi>S</mi><mi>D</mi><mi>C</mi><mi>A</mi><mi>D</mi></mrow></mfrac></mstyle></mrow></math>
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper C upper A upper D upper U upper S upper D equals StartFraction
+    1 Over upper U upper S upper D upper C upper A upper D EndFraction"><mrow><mi>C</mi>
+    <mi>A</mi> <mi>D</mi> <mi>U</mi> <mi>S</mi> <mi>D</mi> <mo>=</mo> <mstyle displaystyle="false"
+    scriptlevel="0"><mfrac><mn>1</mn> <mrow><mi>U</mi><mi>S</mi><mi>D</mi><mi>C</mi><mi>A</mi><mi>D</mi></mrow></mfrac></mstyle></mrow></math>
 - en: 'The next step is to check for stationarity on the COT values so as to know
     whether it requires transformation or not. Remember, transformation can be either
     differencing, taking the percentage returns, or even using fractional differentiation
     (as discussed in [Chapter 9](ch09.html#ch09)):'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是检查COT值的平稳性，以了解是否需要进行转换。请记住，转换可以是差分、取百分比回报，甚至使用分数阶差分（如[第9章](ch09.html#ch09)所述）：
 - en: '[PRE6]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'The output is as follows:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出如下：
 - en: '[PRE7]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: The COT values seem to be stationary and ready to be used as inputs in the algorithms.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: COT值似乎是稳定的，可以用作算法的输入。
 - en: 'Algorithm 1: Indirect One-Step COT Model'
+  id: totrans-63
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 算法1：间接单步COT模型
 - en: The goodness of fit model will use long short-term memory (LSTM) to predict
     the next COT value at every time step. The assumption is that predicting a value
     that is directionally correlated to the underlying market may give a bias for
     the expected move during the coming week. For example, if the forecast is for
     a higher COT value in the coming week, then you may have a bullish CAD bias in
     preparation of your weekly trading.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 拟合优度模型将使用长短期记忆（LSTM）来预测每个时间步长的下一个COT值。假设预测与基础市场方向相关的值可能会对未来一周的预期移动产生偏见。例如，如果预测未来一周COT值较高，则您可能会在每周交易准备中有一个看涨CAD的偏好。
 - en: 'First, import the required libraries:'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，导入所需的库：
 - en: '[PRE8]'
+  id: totrans-66
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'Import the required data:'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入所需的数据：
 - en: '[PRE9]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'Set the hyperparameters and create the arrays:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置超参数并创建数组：
 - en: '[PRE10]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'To comply with the LSTM architecture, the independent variables must be transformed
     into three-dimensional arrays. This is done using the following code:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了符合LSTM架构，独立变量必须转换为三维数组。可以使用以下代码完成这一操作：
 - en: '[PRE11]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'Next, create the architecture of the model and predict the values on the training
     set (only to understand the goodness of fit) and the test set:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，创建模型的架构并预测训练集（仅了解拟合优度）和测试集上的值：
 - en: '[PRE12]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'To plot the predictions along the real values, use the following syntax:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制预测值与实际值的图表，请使用以下语法：
 - en: '[PRE13]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[Figure 11-3](#figure-11-3) compares the predicted values with the real test
     values. At first glance, the model seems to capture the variations of the COT
     values well. Let’s have a look at the performance results.'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图11-3](#figure-11-3)将预测值与实际测试值进行了比较。乍看之下，模型似乎很好地捕捉了COT值的变化。让我们来看一下性能结果。'
 - en: '![](assets/dlff_1103.png)'
+  id: totrans-78
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1103.png)'
 - en: Figure 11-3\. COT training data followed by COT test data (dashed line) and
     the predicted COT data (thin line); the vertical dashed line represents the start
     of the test period. The model used is the LSTM regression algorithm.
+  id: totrans-79
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-3\. COT训练数据后跟COT测试数据（虚线）和预测的COT数据（细线）；垂直虚线表示测试期的开始。使用的模型是LSTM回归算法。
 - en: 'The following are the results of the model used on the CADUSD from 2015 to
     2023:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 在从2015年到2023年使用的CADUSD模型结果如下：
 - en: '[PRE14]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Note
+  id: totrans-82
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: An interesting task for you would be to apply the model to forecast the returns
     of the underlying market using COT values as inputs. You can use either the net
     COT value or any of the six other series you have available, such as long hedgers
     and net funds. However, make sure to always check for stationarity.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 对您而言的一个有趣任务是应用模型来预测基础市场的回报，使用COT值作为输入。您可以使用净COT值或其他六个可用的系列之一，例如长期套期保值者和净资金。但请务必始终检查平稳性。
 - en: 'Algorithm 2: MPF COT Direct Model'
+  id: totrans-84
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 算法2：MPF COT直接模型
 - en: 'The MPF COT model will use LSTM to project a trajectory for the COT values
     to lead the way for the main market moves to come. The assumption is that by predicting
     the next COT values, which are less noisy than the market itself, you may have
@@ -379,112 +554,178 @@
     a better chance of having a decent forecast than by using the MPF directly on
     the market. This algorithm uses the direct method (for more information, have
     another look at [Chapter 9](ch09.html#ch09)). First, import the required libraries:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: MPF COT 模型将使用 LSTM 预测 COT 值的轨迹，以引导主要市场走势的到来。假设通过预测下一个 COT 值（比市场本身更少噪音），您可以获得市场预期轨迹的指南。由于
+    COT 值是平稳的，并且与非平稳的市场高度相关，使用 MPF 直接在市场上预测比使用 MPF 在市场上直接预测要有更好的预测机会。该算法使用直接方法（更多信息，请参阅[第
+    9 章](ch09.html#ch09)）。首先，导入所需的库：
 - en: '[PRE15]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'Set the hyperparameters and create the arrays:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置超参数并创建数组：
 - en: '[PRE16]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'To comply with the LSTM architecture, the independent variables must be transformed
     into three-dimensional arrays. This is done using the following code:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了符合 LSTM 结构，必须将独立变量转换为三维数组。可以使用以下代码完成：
 - en: '[PRE17]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 'Next, create the architecture of the model and predict the values using the
     recursive function:'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，创建模型的结构并使用递归函数预测值：
 - en: '[PRE18]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'To plot the predictions along the real values, use the following syntax:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制预测值与实际值的图，使用以下语法：
 - en: '[PRE19]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[Figure 11-4](#figure-11-4) compares the predicted values with the real test
     values.'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-4](#figure-11-4) 将预测值与真实测试值进行了比较。'
 - en: '![](assets/dlff_1104.png)'
+  id: totrans-96
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1104.png)'
 - en: Figure 11-4\. Predicted data versus test data.
+  id: totrans-97
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-4\. 预测数据与测试数据对比。
 - en: 'The following are the results of the model used on the CADUSD:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是对 CADUSD 使用的模型的结果：
 - en: '[PRE20]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: 'Algorithm 3: MPF COT Recursive Model'
+  id: totrans-100
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 算法 3：MPF COT 递归模型
 - en: 'This algorithm uses the recursive method (for more information, have another
     look at [Chapter 9](ch09.html#ch09)). First, import the required libraries:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 该算法使用递归方法（更多信息，请参阅[第 9 章](ch09.html#ch09)）。首先，导入所需的库：
 - en: '[PRE21]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'Set the hyperparameters and create the arrays:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置超参数并创建数组：
 - en: '[PRE22]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 'To comply with the LSTM architecture, the independent variables must be transformed
     into three-dimensional arrays. This is done using the following code:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了符合 LSTM 结构，必须将独立变量转换为三维数组。可以使用以下代码完成：
 - en: '[PRE23]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: 'Next, create the architecture of the model and predict the values using the
     recursive function:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，创建模型的结构并使用递归函数预测值：
 - en: '[PRE24]'
+  id: totrans-108
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 'To plot the predictions along the real values, use the following syntax:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制预测值与实际值的图，使用以下语法：
 - en: '[PRE25]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[Figure 11-5](#figure-11-5) compares the predicted values with the test values.'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-5](#figure-11-5) 将预测值与测试值进行了比较。'
 - en: '![](assets/dlff_1105.png)'
+  id: totrans-112
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1105.png)'
 - en: Figure 11-5\. Multiperiod forecasting of the COT data.
+  id: totrans-113
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-5\. COT 数据的多期预测。
 - en: 'The following are the results of the model used on the CADUSD from 2015 to
     2023:'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是对从 2015 年到 2023 年 CADUSD 使用的模型的结果：
 - en: '[PRE26]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Note
+  id: totrans-116
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Remember that while setting the `random_state` and ensuring reproducibility
     is useful for experimentation, it might also limit the model’s ability to generalize
     well if the data distribution is genuinely random. In many cases, it’s recommended
@@ -492,123 +733,176 @@
     the model’s performance and robustness. This is why many of the models seen in
     this book do not have the `random_state` implementation in their code (except
     a few models in [Chapter 7](ch07.html#ch07)).
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住，在设置 `random_state` 并确保可复现性对于实验是有用的，但如果数据分布确实是随机的，则可能限制模型良好泛化的能力。在许多情况下，建议使用不同的随机种子进行多次运行，以更好地了解模型的性能和稳健性。这就是为什么本书中许多模型的代码中没有
+    `random_state` 实现（除了[第 7 章](ch07.html#ch07)中的少数模型）。
 - en: 'It does not hurt to remember the symptoms of overfitting. Unfortunately, overfitting
     is sometimes not that easily detectable, so consider these general rules:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要忘记过拟合的症状。不幸的是，过拟合有时并不那么容易检测到，因此请考虑这些一般规则：
 - en: High training accuracy and low test accuracy
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 高训练精度和低测试精度
 - en: The model shows excellent performance on the training data but performs poorly
     on the test data. This is a clear indication that the model has memorized the
     training data rather than learning general patterns.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 该模型在训练数据上表现出色，但在测试数据上表现不佳。这清楚地表明，该模型记住了训练数据，而非学习了一般模式。
 - en: Large gap between training and test performance
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练和测试性能之间存在显著差距
 - en: There is a significant difference between the training and test error rates.
     Ideally, the two measures should be close to each other, and a large gap suggests
     overfitting.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练和测试误差率之间存在显著差异。理想情况下，这两个指标应该接近，而较大的差距则表明过拟合。
 - en: Unusually high model complexity
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型复杂度异常高
 - en: If the model is overly complex with a large number of parameters or features,
     it becomes more prone to overfitting. A simpler model may generalize better to
     new data.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果模型过于复杂，具有大量参数或特征，则更容易出现过拟合。较简单的模型可能对新数据泛化效果更好。
 - en: Noisy predictions
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 噪声预测
 - en: Overfit models tend to make erratic and inconsistent predictions on new data.
     This is because they are highly sensitive to small variations in the input data,
     including noise.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 过拟合模型倾向于在新数据上做出错误和不一致的预测。这是因为它们对输入数据的微小变化（包括噪声）非常敏感。
 - en: Putting It All Together
+  id: totrans-127
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 综合应用
 - en: The COT report, released every Friday by the CFTC, outlines the positioning
     of key market participants. It can be transformed into a time series forecasting
     task with the aim of improving market forecasts. The market participants of particular
     interest are the commercial participants (dealers or hedgers) and the noncommercial
     participants (leveraged money or funds).
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 每周五由CFTC发布的COT报告概述了关键市场参与者的持仓情况。它可以转化为时间序列预测任务，旨在改善市场预测。特别感兴趣的市场参与者是商业参与者（交易商或对冲者）和非商业参与者（杠杆资金或基金）。
 - en: Note
+  id: totrans-129
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Make sure to put *master_function.py* in the directory of the interpreter. Alternatively,
     you can simply open *master_function.py* in Python and execute the whole file.
     However, the latter method requires you to do it every time you restart the kernel.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保将*master_function.py*放在解释器的目录中。或者，您可以简单地在Python中打开*master_function.py*并执行整个文件。但是，后一种方法需要您每次重新启动内核时都这样做。
 - en: Deep learning techniques can be applied on COT values to forecast market positioning
     through hidden patterns and seasonal configurations. This section discussed three
     algorithms to squeeze out value from the COT report. You can experiment with machine
     learning models, deep reinforcement learning, and even simple statistical techniques
     to better understand the COT data.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度学习技术可以应用于COT值，以预测市场定位通过隐藏模式和季节配置。本节讨论了三种算法从COT报告中挤出价值。您可以尝试使用机器学习模型、深度强化学习，甚至简单的统计技术来更好地理解COT数据。
 - en: 'To manually import COT values, refer to the historical data found in the [GitHub
     repository](https://oreil.ly/5YGHI) and use the following code (change the path
     of the interpreter to be the same as the location of the downloaded file):'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 要手动导入COT值，请参考在[GitHub仓库](https://oreil.ly/5YGHI)找到的历史数据，并使用以下代码（将解释器的路径更改为下载文件所在的位置）：
 - en: '[PRE27]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: It’s important to remember that the COT report provides a snapshot of market
     participant positioning and should be used in conjunction with other tools and
     analysis methods. While it can offer valuable information, it’s not a standalone
     trading strategy, and careful consideration of other factors is essential for
     making well-informed trading decisions.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要记住COT报告提供了市场参与者持仓的快照，应与其他工具和分析方法结合使用。虽然它可以提供有价值的信息，但它并不是独立的交易策略，而是需要仔细考虑其他因素才能做出明智的交易决策。
 - en: Using Technical Indicators as Inputs
+  id: totrans-135
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用技术指标作为输入
 - en: 'You learned about technical indicators in [Chapter 5](ch05.html#ch05). It’s
     time to use them as inputs to predict the underlying market’s returns. Using lagged
     values implies that there must be value in the past observations, which may translate
     into decent forecasts. This section will explore past that assumption and will
     search for value in other price transformations. You can have the following price-derived
     calculations:'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 您在[第5章](ch05.html#ch05)中学习了技术指标。现在是时候将它们作为输入，以预测底层市场的回报。使用滞后值意味着过去的观察值可能会转化为可观测的预测。本节将探讨这一假设之外的过去，并寻找其他价格变换中的价值。您可以进行以下价格衍生计算：
 - en: Mathematical transformation
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 数学变换
 - en: This type of transformation is likely to be a direct manipulation of the raw
     data. An example of this is a basic differencing or a simple moving average. Normalization
     is also part of mathematical transformation.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种转换类型很可能是对原始数据的直接操作。一个例子是基本差分或简单移动平均。归一化也是数学转换的一部分。
 - en: Technical transformation
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 技术转换
 - en: This type of transformation is less obvious, and the result may not look at
     all like the raw data. An example of this is the RSI, a technical indicator created
     out of recursive rules based on moving averages and normalization.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种类型的转换不太明显，结果可能一点也不像原始数据。例如，RSI就是这样的一个技术指标，它是基于移动平均线和归一化的递归规则创建的。
 - en: Categorical transformation
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 分类转换
 - en: This type of transformation shifts the type of numerical data to categorical
     and vice versa. For example, an algorithm that is known as *OneHotEncoder* takes
     categorical data and transforms it into binary data so that machine learning algorithms
     are able to classify it.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种转换类型将数值数据转换为分类数据，反之亦然。例如，被称为*OneHotEncoder*的算法将分类数据转换为二进制数据，以便机器学习算法能够对其进行分类。
 - en: Before proceeding, there is a data issue that is worth discussing. *Multicollinearity*
     is a statistical phenomenon that occurs in regression analysis when two or more
     independent variables (inputs) in a multiple regression model are highly correlated
@@ -618,260 +912,390 @@
     predictor on the dependent variable (the outcome variable). Obviously, if you
     are using multiple RSIs with different time periods, then you are likely to run
     into multicollinearity. Make sure you look for weakly correlated indicators.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 在继续之前，有一个值得讨论的数据问题。*多重共线性*是回归分析中的统计现象，当多个独立变量（输入）在多元回归模型中彼此高度相关时发生。换句话说，这种情况是指两个或更多预测变量之间存在强线性关系。这种相关性可能会使得回归模型难以区分每个预测变量对依赖变量（结果变量）的个别影响。显然，如果您使用具有不同时间周期的多个RSI指标，则很可能会遇到多重共线性问题。请确保寻找弱相关的指标。
 - en: 'Two technical indicators (or transformations) are used in this example:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 本示例中使用了两个技术指标（或转换）：
 - en: The five-week RSI, a stationary indicator that does not require any transformation.
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 五周RSI，一个不需要任何转换的稳定指标。
 - en: The difference between the weekly close price and the 20-week moving average.
     This is also a stationary calculation that does not require any transformation.
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 周收盘价与20周移动平均线之间的差异。这也是一个不需要任何转换的稳定计算。
 - en: Therefore, the EURUSD’s weekly returns will be forecasted using the previous
     week’s RSI value and the distance between the previous week’s close price and
     the 20-week moving average.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，将使用上周的RSI值和上周收盘价与20周移动平均线之间的距离来预测EURUSD的每周回报。
 - en: 'First, import the required libraries:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，导入所需的库：
 - en: '[PRE28]'
+  id: totrans-149
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: 'Next, import the data using the `mass_import()` function:'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，使用`mass_import()`函数导入数据：
 - en: '[PRE29]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: Define the multiple data preprocessing function, which takes the values of the
     two technical indicators and lags them so that they can be used as inputs to predict
     the EURUSD’s returns. [Table 11-2](#table-11-2) shows the training table `x_train`
     with six lagged values as independent variables to explain and predict the next
     EURUSD return.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义多数据预处理函数，该函数获取两个技术指标的值并对它们进行滞后处理，以便用作预测EURUSD回报的输入。[表 11-2](#table-11-2)显示了训练表`x_train`，其中包含六个滞后值作为独立变量来解释和预测下一个EURUSD回报。
 - en: Table 11-2\. A sample of the training array
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 表11-2。训练数组的示例
 - en: '| RSI t–1 | (Close – MA)t–1 | RSI t–2 | (Close – MA)t–2 | RSI t–3 | (Close
     – MA)t–3 |'
+  id: totrans-154
   prefs: []
   type: TYPE_TB
+  zh: '| RSI t–1 | (Close – MA)t–1 | RSI t–2 | (Close – MA)t–2 | RSI t–3 | (Close
+    – MA)t–3 |'
 - en: '| --- | --- | --- | --- | --- | --- |'
+  id: totrans-155
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- |'
 - en: '| 36.6190 | –0.003804 | 48.5188 | 0.001044 | 42.4396 | –0.001714 |'
+  id: totrans-156
   prefs: []
   type: TYPE_TB
+  zh: '| 36.6190 | –0.003804 | 48.5188 | 0.001044 | 42.4396 | –0.001714 |'
 - en: '| 46.7928 | 0.001674 | 36.6190 | –0.003804 | 48.5188 | 0.001044 |'
+  id: totrans-157
   prefs: []
   type: TYPE_TB
+  zh: '| 46.7928 | 0.001674 | 36.6190 | –0.003804 | 48.5188 | 0.001044 |'
 - en: '| 40.5430 | –0.002518 | 46.7928 | 0.001674 | 36.6190 | –0.003804 |'
+  id: totrans-158
   prefs: []
   type: TYPE_TB
+  zh: '| 40.5430 | –0.002518 | 46.7928 | 0.001674 | 36.6190 | –0.003804 |'
 - en: '| 65.9614 | 0.011340 | 40.5430 | –0.002518 | 46.7928 | 0.001674 |'
+  id: totrans-159
   prefs: []
   type: TYPE_TB
+  zh: '| 65.9614 | 0.011340 | 40.5430 | –0.002518 | 46.7928 | 0.001674 |'
 - en: '| 47.2585 | –0.000390 | 65.9614 | 0.011340 | 40.5430 | –0.002518 |'
+  id: totrans-160
   prefs: []
   type: TYPE_TB
+  zh: '| 47.2585 | –0.000390 | 65.9614 | 0.011340 | 40.5430 | –0.002518 |'
 - en: '| 63.9755 | 0.011302 | 47.2585 | –0.000390 | 65.9614 | 0.011340 |'
+  id: totrans-161
   prefs: []
   type: TYPE_TB
+  zh: '| 63.9755 | 0.011302 | 47.2585 | –0.000390 | 65.9614 | 0.011340 |'
 - en: 'The next function is already defined, but it doesn’t hurt to discuss what it
     does. The `multiple_data_preprocessing()` function simply creates the four needed
     arrays for the backtest, but it uses the two technical indicators as inputs. You
     can define the function for six lagged values (three for the RSI and three for
     the difference between the close and the moving average) as follows:'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一个函数已经定义，但讨论其功能并无害处。`multiple_data_preprocessing()`函数仅为回测创建了四个必需的数组，但使用了两个技术指标作为输入。你可以定义这个函数来处理六个滞后值（三个用于RSI，三个用于收盘价与移动平均值之间的差）如下：
 - en: '[PRE30]'
+  id: totrans-163
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'Set the hyperparameters and create the arrays:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 设定超参数并创建数组：
 - en: '[PRE31]'
+  id: totrans-165
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'To comply with the LSTM architecture, the independent variables must be transformed
     into three-dimensional arrays. This is done using the following code:'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 要符合LSTM架构，独立变量必须转换为三维数组。这可以通过以下代码完成：
 - en: '[PRE32]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 'Next, create the architecture of the model and predict the values on the training
     set (only to understand the goodness of fit) and the test set:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，创建模型的架构并预测训练集（仅了解拟合程度）和测试集上的值：
 - en: '[PRE33]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 'To plot the predictions along the real values, use the following syntax:'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制预测值与实际值，请使用以下语法：
 - en: '[PRE34]'
+  id: totrans-171
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: '[Figure 11-6](#figure-11-6) compares the predicted values with the real test
     values.'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-6](#figure-11-6) 将预测值与真实测试值进行比较。'
 - en: '![](assets/dlff_1106.png)'
+  id: totrans-173
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1106.png)'
 - en: Figure 11-6\. Training data followed by test data (dashed line) and the predicted
     data (thin line); the vertical dashed line represents the start of the test period.
     The model used is the LSTM regression algorithm.
+  id: totrans-174
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-6\. 训练数据随后是测试数据（虚线），以及预测数据（细线）；垂直虚线代表测试期的开始。使用的模型是LSTM回归算法。
 - en: 'The following are the results of the model:'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是模型的结果：
 - en: '[PRE35]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: It is very interesting to tweak the model and see how to improve it. As these
     are weekly predictions, good accuracy could be the first step in shaping your
     swing trading on the condition of optimizing the model and making sure it is not
     overfit.^([1](ch11.html#id806)) It is worth noting that since this algorithm is
     trying to predict the financial returns of an instrument, the `calculate_accuracy()`
     function is used as opposed to `ca⁠lc⁠ul⁠ate_​di⁠re⁠cti⁠on⁠al_accuracy()`.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整模型并看到如何改进是非常有趣的。由于这些是每周的预测，高准确率可能是优化模型和确保不过拟合的第一步。^([1](ch11.html#id806))
+    值得注意的是，由于此算法试图预测工具的财务回报，所以使用`calculate_accuracy()`函数而不是`ca⁠lc⁠ul⁠ate_​di⁠re⁠cti⁠on⁠al_accuracy()`。
 - en: Note
+  id: totrans-178
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Try running the algorithm seen in this section on MPF mode and see what you
     can extract from it. Remember the algorithm’s limitations while doing so.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 尝试在MPF模式下运行本节中看到的算法，并看看你能从中提取什么。记住在执行时算法的限制条件。
 - en: Predicting Bitcoin’s Volatility Using Deep Learning
+  id: totrans-180
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用深度学习预测比特币的波动性
 - en: '*Bitcoin* is a decentralized digital currency that was created in 2009 by an
     unknown person or entity using the pseudonym *Satoshi Nakamoto*. It was the first
     cryptocurrency to be introduced and remains the most well known and widely traded
     cryptocurrency to date. You probably do not need an introduction to Bitcoin considering
     the immense hype over it during these past years, but more knowledge never hurts.'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '*比特币*是一种去中心化的数字货币，由一个使用化名*Satoshi Nakamoto*的未知个人或实体于2009年创造。它是第一个引入的加密货币，至今仍然是最知名和广泛交易的加密货币。考虑到这些年对比特币的巨大炒作，你可能不需要介绍它，但多一些了解永远有好处。'
 - en: Bitcoin operates on a technology called *blockchain*, which is a distributed
     ledger system. Unlike traditional currencies that are issued and regulated by
     governments or central banks, Bitcoin is not controlled by any central authority.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币运行在一种名为*区块链*的技术上，这是一个分布式分类帐系统。与由政府或中央银行发行和监管的传统货币不同，比特币不受任何中央机构控制。
 - en: Instead, it relies on a peer-to-peer network of computers, known as nodes, to
     validate and record transactions. Nowadays, Bitcoin is heavily traded on cryptocurrency
     exchanges and is used for speculative but also hedging operations. The most commonly
     traded pair is BTCUSD, which is the value of 1 bitcoin relative to USD.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，它依赖于一个点对点网络的计算机节点来验证和记录交易。如今，比特币在加密货币交易所上交易频繁，并用于投机和套期保值操作。最常交易的货币对是BTCUSD，即1比特币相对于美元的价值。
 - en: '[Figure 11-7](#figure-11-7) shows the evolution of the BTCUSD (Bitcoin’s value
     priced in US dollars).'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-7](#figure-11-7) 显示了BTCUSD（比特币兑美元的价值）的演变。'
 - en: '![](assets/dlff_1107.png)'
+  id: totrans-185
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1107.png)'
 - en: Figure 11-7\. Historical evolution of BTCUSD since 2014 in a linear scale.
+  id: totrans-186
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 11-7\. 自2014年以来BTCUSD的历史演变，使用线性刻度。
 - en: 'You can generate [Figure 11-7](#figure-11-7) using the following code:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以使用以下代码生成[Figure 11-7](#figure-11-7)：
 - en: '[PRE36]'
+  id: totrans-188
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: Make sure you download the historical BTCUSD values from the [GitHub repository](https://oreil.ly/5YGHI)
     and that you set the directory of the interpreter in the same folder as the downloaded
     file.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保从[GitHub仓库](https://oreil.ly/5YGHI)下载历史BTCUSD值，并将解释器目录设置为与下载文件相同的文件夹中。
 - en: '[Figure 11-7](#figure-11-7) is charted using a linear scale, which means that
     data is represented on a straight and evenly spaced axis (the space between 10
     and 20 is the same as the space between 1230 and 1240). It is also possible to
     use what is known as a logarithmic scale to chart time series that experience
     big jumps.'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 11-7](#figure-11-7)使用线性刻度绘制，这意味着数据在直线和均匀间隔的轴上表示（10和20之间的空间与1230和1240之间的空间相同）。还可以使用所谓的对数刻度来绘制经历大幅跳跃的时间序列。'
 - en: '[Figure 11-8](#figure-11-8) shows the evolution of BTCUSD (Bitcoin’s value
     priced in US dollars) in logarithmic scale.'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 11-8](#figure-11-8)显示了BTCUSD（比特币价值以美元计价）的对数尺度演变。'
 - en: '![](assets/dlff_1108.png)'
+  id: totrans-192
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1108.png)'
 - en: Figure 11-8\. Historical evolution of BTCUSD since 2014 in a semilog scale.
+  id: totrans-193
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 11-8\. 自2014年以来BTCUSD的历史演变，使用半对数尺度。
 - en: 'Use the following code to generate [Figure 11-8](#figure-11-8) using the `plt.semilogy()`
     function:'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用以下代码使用`plt.semilogy()`函数生成[Figure 11-8](#figure-11-8)：
 - en: '[PRE37]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: Note
+  id: totrans-196
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: The word *semilog* refers to transforming one of the two axes into a logarithmic
     scale, while the word *log* refers to transforming both axes into a logarithmic
     scale.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '*semilog*一词指的是将两个轴之一转换为对数刻度，而*log*指的是将两个轴都转换为对数刻度。'
 - en: Since time is linear, you only need to transform the *y*-axis (which means the
     values), and therefore, you are technically using semilog charts. This is why
     the `matplotlib()` function is called `pl⁠t.​se⁠mi⁠log⁠y()`.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于时间是线性的，因此您只需转换*y*-轴（即值），因此您在技术上使用的是半对数图表。这就是为什么`matplotlib()`函数被称为`pl⁠t.​se⁠mi⁠log⁠y()`。
 - en: 'If you prefer to import BTCUSD values using a Python script, use the following:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您喜欢使用Python脚本导入BTCUSD值，请使用以下代码：
 - en: '[PRE38]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: 'Let’s see if deep learning helps forecast BTCUSD’s volatility using its lagged
     values. But first, two questions are begging an answer:'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看深度学习是否有助于利用滞后值预测BTCUSD的波动性。但首先，有两个问题需要回答：
 - en: What is the use of predicting Bitcoin’s volatility?
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 预测比特币波动性的用途是什么？
 - en: How do you calculate Bitcoin’s volatility?
+  id: totrans-203
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如何计算比特币的波动性？
 - en: To answer the first question, by predicting Bitcoin’s volatility, traders can
     potentially identify periods of increased price swings and capitalize on them.
     Similarly, volatility predictions can also provide insights into market sentiment.
     When investors expect uncertain or turbulent market conditions, it may indicate
     a lack of confidence, leading to potential changes in market dynamics.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 要回答第一个问题，通过预测比特币的波动性，交易者可以潜在地识别出价格波动增加的时期，并从中获利。类似地，波动性预测还可以提供市场情绪的见解。当投资者预期不确定或动荡的市场条件时，可能表明缺乏信心，从而导致市场动态的潜在变化。
 - en: To answer the second question, you can use a rolling standard deviation measure
     on the close prices. This allows you to create a new time series that reflects
     the historical volatility of Bitcoin.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 要回答第二个问题，您可以使用收盘价格的滚动标准差测量。这允许您创建一个反映比特币历史波动性的新时间序列。
 - en: Note
+  id: totrans-206
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: Typically, an increase in volatility is a sign of market stress and fear, which
     translates to a bearish tone. In contrast, a decrease in volatility is a sign
     of a healthy and stable market, which translates to a bullish market. This relationship
@@ -882,423 +1306,636 @@
     by a phenomenon called FOMO, an abbreviation of *fear of missing out*. This psychological
     bias is one of the building blocks of a market bubble where everyone keeps buying
     in the hopes of profiting from the move.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，波动率的增加是市场压力和恐惧的迹象，这转化为熊市情绪。相反，波动率的减少是市场健康稳定的迹象，这转化为牛市。这种关系并不完美，其他变量可能会影响它。例如，如果你计算比特币每日收盘价格与10天滚动波动率的相关系数，你会发现它是正的（在某些时期，它非常正）。比特币以兴奋资产而闻名，涨势伴随着一种称为FOMO的现象，即*害怕错过*的缩写。这种心理偏差是市场泡沫的构成要素之一，所有人都希望从中获利而不断买入。
 - en: The first step of predictive analytics is to understand the data you’re dealing
     with. As a reminder, volatility refers to the degree of variation or fluctuation
     in the price of a financial instrument, such as a stock, bond, commodity, or currency,
     over a specific period of time. It is a statistical measure of the dispersion
     for that particular asset.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测分析的第一步是理解你正在处理的数据。提醒一下，波动率指的是金融工具（如股票、债券、大宗商品或货币）价格在特定时间段内的变化或波动程度。它是该特定资产的离散度的统计度量。
 - en: '[Figure 11-9](#figure-11-9) shows the latest values of Bitcoin’s 10-day volatility
     as measured by the rolling standard deviation calculation. The latest values say
     that recently, the price variations hovered around $500 from the 10-day mean most
     of the time (refer to [Chapter 3](ch03.html#ch03) for more in-depth comprehension
     on standard deviation).'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-9](#figure-11-9)显示了比特币的最新10天波动率值，这些值是通过滚动标准差计算得出的。最新的数据表明，最近，价格波动大部分时间都在10天均值周围的500美元左右波动（更深入地了解标准差，请参阅[第3章](ch03.html#ch03)）。'
 - en: '![](assets/dlff_1109.png)'
+  id: totrans-210
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1109.png)'
 - en: Figure 11-9\. Bitcoin’s rolling 10-day standard deviation as a proxy for volatility.
+  id: totrans-211
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-9. 比特币的滚动10天标准差作为波动率的代理。
 - en: 'Let’s get started. For this task, let’s manually import BTCUSD into the interpreter.
     First, start by importing the required libraries:'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们开始吧。对于这个任务，让我们手动将BTCUSD导入解释器。首先，导入所需的库：
 - en: '[PRE39]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: 'Next, import the data using *pandas*:'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，使用*pandas*导入数据：
 - en: '[PRE40]'
+  id: totrans-215
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: 'The next step is to calculate volatility. Its function is defined in `master_function`,
     and as you have imported it already, it should work directly:'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是计算波动率。其函数在`master_function`中定义，因为你已经导入了它，所以应该可以直接使用：
 - en: '[PRE41]'
+  id: totrans-217
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 'You have to check for stationarity. If the data is stationary, then it’s ready
     to be deployed for training. Otherwise, you may have to transform it. The following
     code applies the ADF test on the 10-day volatility of Bitcoin:'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 你必须检查是否平稳。如果数据是平稳的，那么它就准备好用于训练了。否则，你可能需要进行转换。以下代码对比特币的10天波动率应用ADF测试：
 - en: '[PRE42]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: 'Here is the output:'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是输出：
 - en: '[PRE43]'
+  id: totrans-221
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: 'It seems that the volatility values are nonstationary. Let’s try differencing:'
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 看起来波动率值是非平稳的。让我们尝试进行差分：
 - en: '[PRE44]'
+  id: totrans-223
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: Note
+  id: totrans-224
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 注意
 - en: You can also apply fractional differentiation to preserve a hint of memory.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以应用分数阶差分以保留一丝记忆。
 - en: '[Figure 11-10](#figure-11-10) shows the latest values of Bitcoin’s 10-day differenced
     volatility.'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-10](#figure-11-10)显示了比特币的最新10天差异波动率值。'
 - en: '![](assets/dlff_1110.png)'
+  id: totrans-227
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1110.png)'
 - en: Figure 11-10\. Bitcoin’s rolling 10-day standard deviation (differenced).
+  id: totrans-228
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-10. 比特币的滚动10天标准差（差异）。
 - en: 'The next step is to set the hyperparameters and prepare the arrays as usual:'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来是设置超参数并像往常一样准备数组：
 - en: '[PRE45]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: 'To comply with the LSTM architecture, the independent variables must be transformed
     into three-dimensional arrays. This is done using the following code:'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 要符合LSTM架构，独立变量必须转换为三维数组。这可以通过以下代码完成：
 - en: '[PRE46]'
+  id: totrans-232
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: 'Create the deep neural network architecture with a few extra layers:'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建深度神经网络架构，并添加几个额外的层：
 - en: '[PRE47]'
+  id: totrans-234
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: 'Now, fit and predict the data:'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，拟合并预测数据：
 - en: '[PRE48]'
+  id: totrans-236
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: '[Figure 11-11](#figure-11-11) compares the predicted values with the test values.'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-11](#figure-11-11)比较了预测值与测试值。'
 - en: '![](assets/dlff_1111.png)'
+  id: totrans-238
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1111.png)'
 - en: Figure 11-11\. Forecasting Bitcoin’s volatility; the model used is the LSTM
     regression algorithm.
+  id: totrans-239
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-11. 预测比特币的波动性；所使用的模型是 LSTM 回归算法。
 - en: 'The following are the results of the model:'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是模型的结果：
 - en: '[PRE49]'
+  id: totrans-241
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: Keep in mind that the backtesting results may differ significantly due to the
     backtested period, time granularity, transaction costs, different quotations from
     different brokers, different hyperparameters, and different randomization. Optimization
     is a key component, and validation of the results must be done before forming
     an opinion on the algorithm. Your task is therefore to improve the results and
     get a better prediction on volatility.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 请记住，由于回测期间、时间粒度、交易成本、不同经纪人的不同报价、不同超参数和不同随机化，回测结果可能会有显著差异。优化是关键组成部分，必须在对算法形成意见之前对结果进行验证。因此，你的任务是改善结果，并更好地预测波动性。
 - en: 'You may also wonder if you can predict Bitcoin’s returns directly with an accuracy
     better than random. The answer is yes, and if you need a few ideas of inputs that
     may help predict Bitcoin’s returns, check out the following nonexhaustive list:'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能还想知道是否可以直接准确地预测比特币的回报，而不是随机的。答案是肯定的，如果你需要一些可能有助于预测比特币回报的输入的想法，请查看以下非详尽列表：
 - en: '*Historical price data and its derivatives*: Using historical price data is
     a fundamental aspect of predicting returns. You can include features such as daily,
     weekly, or monthly price changes, moving averages, and price volatility.'
+  id: totrans-244
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*历史价格数据及其衍生品*：使用历史价格数据是预测回报的基本方面。你可以包括每日、每周或每月价格变动、移动平均值和价格波动率等特征。'
 - en: '*Trading volume*: The trading volume of Bitcoin provides valuable information
     about the level of market activity and liquidity. Higher trading volumes often
     accompany significant price movements.'
+  id: totrans-245
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*交易量*：比特币的交易量提供了有关市场活动水平和流动性的宝贵信息。更高的交易量通常伴随着重大的价格波动。'
 - en: '*Market sentiment indicators*: Sentiment analysis from social media platforms,
     news articles, or forums can help gauge the overall market sentiment toward Bitcoin.
     Bitcoin’s Fear & Greed index is a good candidate as it’s published on a daily
     basis and uses many fundamental variables to calculate its values.^([2](ch11.html#id815))'
+  id: totrans-246
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*市场情绪指标*：来自社交媒体平台、新闻文章或论坛的情绪分析可以帮助衡量市场对比特币的整体情绪。比特币的恐惧与贪婪指数是一个不错的选择，因为它每天发布一次，并使用许多基本变量来计算其值。'
 - en: '*Network metrics*: Bitcoin’s blockchain data provides useful metrics, such
     as the number of transactions, hash rate, and difficulty level. These metrics
     reflect the activity and health of the Bitcoin network, which can influence prices.'
+  id: totrans-247
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*网络指标*：比特币的区块链数据提供了有用的指标，例如交易数量、哈希率和难度水平。这些指标反映了比特币网络的活动和健康状况，这可能会影响价格。'
 - en: '*Market indicators*: Consider using general market indicators like the S&P
     500 or the VIX as external variables. Cryptocurrencies, including Bitcoin, can
     sometimes exhibit correlations with traditional financial markets.'
+  id: totrans-248
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*市场指标*：考虑使用一般市场指标，如标普 500 指数或恐慌指数作为外部变量。加密货币，包括比特币，有时会与传统金融市场表现出相关性。'
 - en: '*Cryptocurrency-specific indicators*: Other indicators specific to the cryptocurrency
     space, such as the total market capitalization of all cryptocurrencies and dominance
     ratio of Bitcoin, may provide insights into broader market conditions.'
+  id: totrans-249
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*加密货币特定指标*：与加密货币领域特定的其他指标，例如所有加密货币的总市值和比特币的主导比例，可能提供有关更广泛市场情况的见解。'
 - en: '*Technical indicators*: Various technical analysis indicators, such as the
     RSI and volatility, can offer insights into potential price trends and reversals.'
+  id: totrans-250
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*技术指标*：各种技术分析指标，例如 RSI 和波动性，可以提供有关潜在价格趋势和逆转的见解。'
 - en: '*Google trends*: Monitoring the popularity of search terms related to Bitcoin
     on Google Trends can provide insights into public interest and potential price
     movements.'
+  id: totrans-251
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Google 趋势*：监测与比特币相关的搜索词在 Google 趋势上的流行度可以提供有关公众兴趣和潜在价格变动的见解。'
 - en: '*Cryptocurrency exchange data*: Data from cryptocurrency exchanges, such as
     open interest, funding rates, and liquidation data, can offer insights into market
     dynamics and potential price shifts.'
+  id: totrans-252
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*加密货币交易数据*：来自加密货币交易所的数据，例如未平仓合约、资金费率和清算数据，可以提供有关市场动态和潜在价格变动的见解。'
 - en: Real-Time Visualization of Training
+  id: totrans-253
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 训练的实时可视化
 - en: 'What happens during training? Sure, you can see that the training process is
     on-going when you look at the progress bar of every epoch:'
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练过程中发生了什么？当你查看每个时期的进度条时，你会发现训练过程正在进行中：
 - en: Epoch 1/100
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 第 1/100 时期
 - en: '9/9 [=============================] – 3s 77ms/step - loss: 0.0052'
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: '9/9 [=============================] – 3s 77ms/step - loss: 0.0052'
 - en: Epoch 2/100
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: Epoch 2/100
 - en: '9/9 [=============================] – 1s 78ms/step - loss: 0.0026'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: '9/9 [=============================] – 1s 78ms/step - loss: 0.0026'
 - en: Epoch 3/100
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: Epoch 3/100
 - en: '9/9 [=============================] – 1s 68ms/step - loss: 0.0015'
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: '9/9 [=============================] – 1s 68ms/step - loss: 0.0015'
 - en: 'However, you can also code a dynamic plot that shows you the in-sample predictions
     getting updated through epochs as they approach the in-sample real values. This
     will be the first aim of this section. Before proceeding, refresh your knowledge
     of the terminologies:'
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，您还可以编写一个动态图表，显示样本内预测如何通过时期更新并接近样本内的真实值。这将是本节的第一个目标。在继续之前，请刷新您对术语的理解：
 - en: In-sample real values
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 在样本内的真实值
 - en: These are the values contained in `y_train`. They are the real values the model
     uses to calibrate its training. They belong to the training set.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是`y_train`中包含的值。它们是模型用来校准训练的真实值。它们属于训练集。
 - en: In-sample predictions
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内的预测
 - en: These are the values contained in `y_predicted_train`. They are the predictions
     the model outputs during its training. They belong to the training set and suffer
     from *look-ahead bias*, which happens when future information is used to make
     decisions or predictions that should have been made in the past based only on
     historical data available at that time.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是`y_predicted_train`中包含的值。它们是模型在训练过程中输出的预测值。它们属于训练集，并受到*前瞻偏差*的影响，即在做出决策或预测时使用未来信息，而这些决策或预测应该基于当时仅有的历史数据。
 - en: Out-of-sample real values
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本外的真实值
 - en: These are the test values used to test the model’s ability to predict values
     on data that has never been seen before. They belong to the test set.
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是用于测试模型在从未见过的数据上预测值的测试值。它们属于测试集。
 - en: Out-of-sample predictions
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本外的预测
 - en: These are the predictions that follow the training phase. They belong to the
     test set.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是跟随训练阶段的预测值。它们属于测试集。
 - en: 'Let’s take an example that you are familiar with from [Chapter 9](ch09.html#ch09),
     the ISM PMI data. The aim is to create a one-step forecast LSTM model of the differenced
     ISM PMI values while creating a dynamic plot during training that shows predictions
     being calibrated to the training set. First, import the required libraries:'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们举个你在[第9章](ch09.html#ch09)熟悉的例子，ISM PMI数据。目标是创建一个一步预测的LSTM模型，预测ISM PMI值的差分，同时在训练过程中动态绘制图表，显示预测结果如何校准到训练集。首先，导入所需的库：
 - en: '[PRE50]'
+  id: totrans-271
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: 'From the [GitHub repository](https://oreil.ly/5YGHI), import and difference
     the ISM PMI data:'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 从[GitHub代码库](https://oreil.ly/5YGHI)中导入并进行ISM PMI数据的差分：
 - en: '[PRE51]'
+  id: totrans-273
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: 'The next step is to set the hyperparameters and prepare the arrays as usual:'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是设置超参数并像往常一样准备数组：
 - en: '[PRE52]'
+  id: totrans-275
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: 'To comply with the LSTM architecture, the independent variables must be transformed
     into three-dimensional arrays. This is done using the following code:'
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了符合LSTM架构，必须将独立变量转换为三维数组。可以使用以下代码完成：
 - en: '[PRE53]'
+  id: totrans-277
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: 'Create the deep neural network architecture:'
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建深度神经网络架构：
 - en: '[PRE54]'
+  id: totrans-279
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: 'The following code fits the `x_train` data to the `y_train` data while plotting
     the predictions at every epoch:'
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码将`x_train`数据拟合到`y_train`数据，并在每个时期绘制预测结果：
 - en: '[PRE55]'
+  id: totrans-281
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: '[Figure 11-12](#figure-11-12) shows the training at epoch 1\. Notice how the
     algorithm is just starting out and is not quite capturing the relationship between
     the independent and dependent variables yet.'
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图11-12](#figure-11-12)展示了第1个时期的训练情况。注意算法刚刚开始，尚未完全捕捉独立和因变量之间的关系。'
 - en: '![](assets/dlff_1112.png)'
+  id: totrans-283
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1112.png)'
 - en: Figure 11-12\. ISM PMI data training in progress at epoch 1.
+  id: totrans-284
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-12。ISM PMI数据在第1个时期的训练正在进行中。
 - en: '[Figure 11-13](#figure-11-13) shows the training at epoch 21\. It looks like
     the algorithm is still calibrating itself to the features.'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图11-13](#figure-11-13)展示了第21个时期的训练情况。看起来算法仍在校准自身以适应特征。'
 - en: '![](assets/dlff_1113.png)'
+  id: totrans-286
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1113.png)'
 - en: Figure 11-13\. ISM PMI data training in progress at epoch 21.
+  id: totrans-287
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-13。ISM PMI数据在第21个时期的训练正在进行中。
 - en: '[Figure 11-14](#figure-11-14) shows the training at epoch 29\. The model is
     starting to properly fit the data.'
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图11-14](#figure-11-14)展示了第29个时期的训练情况。模型开始适应数据。'
 - en: '![](assets/dlff_1114.png)'
+  id: totrans-289
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1114.png)'
 - en: Figure 11-14\. ISM PMI data training in progress at epoch 29.
+  id: totrans-290
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图11-14。ISM PMI数据在第29个时期的训练正在进行中。
 - en: '[Figure 11-15](#figure-11-15) shows the training at epoch 62\. The model seems
     to fit the data well, although with some errors, but this is not the main aim
     of this section.'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-15](#figure-11-15)展示了第62轮训练。模型似乎很好地拟合了数据，尽管存在一些错误，但这不是本节的主要目的。'
 - en: Dynamic training plots can be an interesting tool to see how the model is learning—and
     whether it’s actually learning something. This helps with the problem of *constant
     predictions*, which occur when the model fails to capture any relationship between
     the dependent and independent variables.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 动态训练图表可以是一个有趣的工具，用于观察模型的学习情况——以及它是否真正在学到东西。这有助于解决*常数预测*的问题，即当模型无法捕捉因变量和自变量之间的任何关系时。
 - en: '![](assets/dlff_1115.png)'
+  id: totrans-293
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1115.png)'
 - en: Figure 11-15\. ISM PMI data training in progress at epoch 62.
+  id: totrans-294
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-15\. ISM PMI数据在第62轮训练中进行中。
 - en: 'Several factors can lead to the problem of constant predictions in deep learning:'
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: 几个因素可能导致深度学习中的常数预测问题：
 - en: Poor model architecture
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 糟糕的模型架构
 - en: If the model is not expressive enough, it may struggle to learn meaningful patterns,
     resorting to a simple, constant prediction instead.
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果模型表达能力不足，可能会难以学习有意义的模式，从而采用简单的常数预测。
 - en: Limited or noisy data
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据有限或噪声过多
 - en: Insufficient or noisy data can hinder the model’s ability to learn meaningful
     patterns. If the data lacks diversity or contains significant errors, the model
     may converge to a constant forecast as the simplest way to minimize the loss.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据不足或噪声过多可能会阻碍模型学习有意义的模式。如果数据缺乏多样性或包含显著错误，模型可能会收敛到常数预测，因为这是最简单的方式来减少损失。
 - en: Improper loss function
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 不恰当的损失函数
 - en: The choice of the loss function plays a vital role in guiding the model during
     training. If the loss function is not appropriate for the task or the model architecture,
     it may not encourage the model to make varied predictions, leading to constant
     forecasts.
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: 损失函数的选择在训练期间对指导模型起着至关重要的作用。如果损失函数不适合任务或模型架构，可能不会鼓励模型做出多样化预测，导致常数预测。
 - en: Poor hyperparameter tuning
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 糟糕的超参数调整
 - en: Hyperparameters, such as the batch size and the number of neurons, can significantly
     impact the training process. If these hyperparameters are not appropriately tuned,
     the model might not converge effectively, leading to constant predictions.
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: 超参数，如批量大小和神经元数量，可以显著影响训练过程。如果这些超参数未得到适当调整，模型可能无法有效收敛，导致常数预测。
 - en: 'At this point, you must have wondered what the architecture you built using
     the `Sequential()` and `Dense()` functions looks like. Naturally, it should look
     like the neural network graphs you have seen previously. To see this, you must
     `pip install` the required libraries from the prompt:'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时，您一定想知道使用`Sequential()`和`Dense()`函数构建的架构是什么样子。自然地，它应该类似于您之前看到的神经网络图。要查看此内容，您必须从提示符中`pip
+    install`所需的库：
 - en: '[PRE56]'
+  id: totrans-305
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: 'Then download the *graphviz* binaries folder from the [official website](https://oreil.ly/SV5FO),
     extract the contents of the file, then set the *bin* folder as one of the paths
     of the Python interpreter (e.g., Spyder). Restart the kernel, and proceed to compile
     your model as usual. Finally, use the following code to print the architecture:'
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 接着，从[官方网站](https://oreil.ly/SV5FO)下载*graphviz*二进制文件夹，解压文件内容，然后将*bin*文件夹设置为Python解释器（例如Spyder）的路径之一。重新启动内核，然后像往常一样编译您的模型。最后，使用以下代码打印架构：
 - en: '[PRE57]'
+  id: totrans-307
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: '[Figure 11-16](#figure-11-16) shows the output of the code.'
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-16](#figure-11-16)展示了代码的输出。'
 - en: '![](assets/dlff_1116.png)'
+  id: totrans-309
   prefs: []
   type: TYPE_IMG
+  zh: '![](assets/dlff_1116.png)'
 - en: Figure 11-16\. Model architecture example.
+  id: totrans-310
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-16\. 模型架构示例。
 - en: The code outputs the current architecture of the compiled LSTM model.
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码输出编译后的LSTM模型当前的架构。
 - en: Summary
+  id: totrans-312
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 概要
 - en: This information-heavy chapter showed you a few ideas for using a selection
     of trading algorithms to forecast returns. It is mostly a way to stimulate critical
     and innovative thinking and to find new and innovative ideas from where trading
@@ -1308,23 +1945,32 @@
     trading strategy with a filter is to take the bullish signals only if the market
     is above its 200-day moving average and to take the bearish signals only if the
     market is below its 200-day moving average.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个信息密集的章节向你展示了使用一些交易算法预测回报的几个想法。它主要是激发批判性和创新性思维的一种方式，并从中找到可以推导交易信号的新想法。例如，你可以尝试在从算法得到的信号上应用过滤器。*过滤器*
+    就像开关一样，根据最终条件是否满足来允许信号。一个带有过滤器的假设交易策略的例子是，仅在市场位于其200日移动平均线之上时采取看涨信号，并且仅在市场位于其200日移动平均线之下时采取看跌信号。
 - en: Your main takeaway should be how things must be structured so that you can understand
     the backtesting process. Compared to this chapter, [Chapter 12](ch12.html#ch12)
     will be a gentle breeze as it explores risk management and fundamental tools aimed
     at enhancing the research process.
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的主要收获应该是如何组织结构，以便理解回测过程。与本章相比，[第12章](ch12.html#ch12)将是一场轻松的旅程，因为它探讨了风险管理和旨在增强研究过程的基本工具。
 - en: ^([1](ch11.html#id806-marker)) Swing trading involves holding positions for
     a short- to medium-term period, typically a few days to a few weeks, to profit
     from price swings or price movements within a larger trend.
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch11.html#id806-marker)) 摇摆交易涉及持有短期到中期的头寸，通常是几天到几周，以从价格波动或大趋势中获利。
 - en: ^([2](ch11.html#id815-marker)) The index is used to gauge the emotions and sentiments
     of investors in the cryptocurrency market. It provides a numerical value on a
     scale from 0 to 100, where lower values indicate extreme fear and higher values
     indicate extreme greed. The index is designed to help traders and investors identify
     potential market turning points based on prevailing emotions.
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch11.html#id815-marker)) 该指数用于衡量加密货币市场投资者的情绪和情绪。它提供了一个从0到100的数值，其中较低的值表示极度恐惧，较高的值表示极度贪婪。该指数旨在帮助交易员和投资者根据当前情绪识别潜在的市场转折点。

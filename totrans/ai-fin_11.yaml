@@ -1,38 +1,53 @@
 - en: Chapter 8\. Recurrent Neural Networks
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 8 章。循环神经网络
 - en: History never repeats itself, but it rhymes.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 历史永远不会重复，但却会押韵。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Mark Twain (probably)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 马克·吐温（可能）
 - en: My life seemed to be a series of events and accidents. Yet when I look back,
     I see a pattern.
+  id: totrans-4
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 我的生活似乎是一连串的事件和意外。然而，当我回顾过去时，我看到了一种模式。
 - en: ''
+  id: totrans-5
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Bernoît Mandelbrot
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 伯诺瓦·曼德布罗特
 - en: This chapter is about *recurrent neural networks* (RNNs). This type of network
     is specifically designed to learn about sequential data, such as text or time
     series data. The discussion in this chapter takes, as before, a practical approach
     and relies mainly on worked-out Python examples, making use of `Keras`.^([1](ch08.xhtml#idm45625292780216))
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章讨论的是*循环神经网络*（RNNs）。这种类型的网络专门设计用于学习顺序数据，例如文本或时间序列数据。本章的讨论采用与之前相同的实用方法，主要依赖于经过详细解释的
+    Python 示例，利用了 `Keras`。^([1](ch08.xhtml#idm45625292780216))
 - en: '[“First Example”](#rnn_first) and [“Second Example”](#rnn_second) introduce
     RNNs on the basis of two simple examples with sample numerical data. The application
     of RNNs to predict sequential data is illustrated. [“Financial Price Series”](#rnn_fin_price_series)
@@ -44,144 +59,228 @@
     the market direction. Three different approaches are illustrated in this section:
     prediction via a shallow RNN for both estimation and classification, as well as
     prediction via a deep RNN for classification.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“第一个示例”](#rnn_first)和[“第二个示例”](#rnn_second)基于两个简单示例介绍了 RNNs，并使用样本数值数据进行说明。展示了将
+    RNNs 应用于预测顺序数据的方法。[“金融价格序列”](#rnn_fin_price_series)然后使用金融价格序列数据，并通过估计方法直接应用 RNN
+    方法来预测这样的序列。[“金融收益序列”](#rnn_fin_ret_series)然后使用回报数据来预测金融工具价格的未来方向，也是通过估计方法。[“金融特征”](#rnn_fin_features)将金融特征添加到混合中—除了价格和回报数据外—以预测市场走向。本节介绍了三种不同的方法：通过浅层
+    RNN 进行估计和分类的预测，以及通过深层 RNN 进行分类的预测。'
 - en: The chapter shows that the application of RNNs to financial time series data
     can achieve a prediction accuracy of well above 60% out-of-sample in the context
     of directional market predictions. However, the results obtained cannot fully
     keep up with those seen in [Chapter 7](ch07.xhtml#dense_networks). This might
     come as a surprise, since RNNs are meant to work well with financial time series
     data, which is the primary focus of this book.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章显示，将 RNNs 应用于金融时间序列数据可以在方向性市场预测的情况下在样本外获得高达 60% 以上的预测准确率。然而，所得结果不能完全跟上[第 7
+    章](ch07.xhtml#dense_networks)中看到的结果。这可能令人惊讶，因为 RNNs 本应在金融时间序列数据中表现良好，而这正是本书的主要关注点。
 - en: First Example
+  id: totrans-10
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第一个示例
 - en: 'To illustrate the training and usage of RNNs, consider a simple example based
     on a sequence of integers. First, some imports and configurations:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明循环神经网络（RNN）的训练和使用，考虑一个基于整数序列的简单示例。首先，进行一些导入和配置：
 - en: '[PRE0]'
+  id: totrans-12
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO1-1)'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO1-1)'
 - en: Function to set all seed values
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置所有种子值的函数
 - en: 'Second is the simple data set that is transformed into an appropriate shape:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个是将简单数据集转换为适当形状的简单数据集：
 - en: '[PRE1]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO2-1)'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO2-1)'
 - en: Sample data
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本数据
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO2-2)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO2-2)'
 - en: Reshaping to two dimensions
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 转换为二维
 - en: 'Using the `TimeseriesGenerator`, the raw data can be transformed into an object
     suited for the training of an RNN. The idea is to use a certain number of lags
     of the original data to train the model to predict the next value in the sequence.
     For example, `0, 1, 2` are the three lagged values (features) used to predict
     the value `3` (label). In the same way, `1, 2, 3` are used to predict `4`:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `TimeseriesGenerator`，原始数据可以被转换为适合训练 RNN 的对象。其思想是使用一定数量的原始数据滞后值来训练模型，以预测序列中的下一个值。例如，`0,
+    1, 2` 是用于预测值 `3`（标签）的三个滞后值（特征）。同样，`1, 2, 3` 用于预测 `4`：
 - en: '[PRE2]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO3-1)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO3-1)'
 - en: '`TimeseriesGenerator` creates batches of lagged sequential data.'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TimeseriesGenerator` 创建滞后连续数据的批次。'
 - en: 'The creation of the RNN model is similar to DNNs. The following Python code
     uses a single hidden layer of type `SimpleRNN` (Chollet 2017, ch. 6; also see
     [Keras recurrent layers](https://oreil.ly/kpuqA)). Even with relatively few hidden
     units, the number of trainable parameters is quite large. The `.fit_generator()`
     method takes as input generator objects such as those created with `TimeseriesGenerator`:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建RNN模型与DNN类似。以下Python代码使用单隐藏层类型为`SimpleRNN`（Chollet 2017，第6章；另见[Keras recurrent
+    layers](https://oreil.ly/kpuqA)）。即使隐藏单元相对较少，可训练参数的数量也非常大。`.fit_generator()`方法以生成器对象为输入，例如使用`TimeseriesGenerator`创建的对象：
 - en: '[PRE3]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO4-1)'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO4-1)'
 - en: The single hidden layer is of type `SimpleRNN`.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 单隐藏层的类型为`SimpleRNN`。
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO4-2)'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO4-2)'
 - en: The summary of the shallow RNN.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 浅层RNN的总结。
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO4-3)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO4-3)'
 - en: The fitting of the RNN based on the generator object.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于生成器对象的RNN拟合。
 - en: 'The performance metrics might show relatively erratic behavior when training
     RNNs (see [Figure 8-1](#figure_rnn_01)):'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 当训练RNN时，性能指标可能表现出相对不稳定的行为（见[图 8-1](#figure_rnn_01)）：
 - en: '[PRE4]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '![aiif 0801](Images/aiif_0801.png)'
+  id: totrans-35
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0801](Images/aiif_0801.png)'
 - en: Figure 8-1\. Performance metrics during RNN training
+  id: totrans-36
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-1\. RNN训练期间的性能指标
 - en: 'Having a trained RNN available, the following Python code generates in-sample
     and out-of-sample predictions:'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 有了训练好的RNN，以下Python代码生成样本内和样本外预测：
 - en: '[PRE5]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO5-1)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO5-1)'
 - en: In-sample prediction
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内预测
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO5-3)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO5-3)'
 - en: Out-of-sample prediction
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本外预测
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO5-4)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO5-4)'
 - en: Far-out-of-sample prediction
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 远期预测
 - en: Even for far-out-of-sample predictions, the results are good in general in this
     simple case. However, the problem at hand could, for example, be perfectly solved
     by the application of OLS regression. Therefore, the effort involved for the training
     of an RNN for such a problem is quite high given the performance of the RNN.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使对于远期预测，总体上在这种简单情况下结果是不错的。然而，在手头问题中，例如通过OLS回归应用可以完美解决。因此，考虑到RNN的性能，对于这样的问题进行训练所需的工作量是相当大的。
 - en: Second Example
+  id: totrans-46
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第二个示例
 - en: 'The first example illustrates the training of an RNN for a simple problem that
     is easy to solve not only by OLS regression but also by a human being inspecting
     the data. The second example is a bit more challenging. The input data is transformed
@@ -189,323 +288,504 @@
     to it. [Figure 8-2](#figure_rnn_02) shows the resulting sequence for the interval
     <math alttext="left-bracket minus 2 pi comma 2 pi"><mrow><mo>[</mo> <mo>-</mo>
     <mn>2</mn> <mi>π</mi> <mo>,</mo> <mn>2</mn> <mi>π</mi></mrow></math> ]:'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个示例说明了对一个简单问题的RNN进行训练，这个问题不仅可以通过OLS回归轻松解决，而且人类检查数据时也能解决。第二个示例稍微有些挑战性。输入数据通过二次项和三角函数项的转换，以及添加白噪声来进行变换。[图 8-2](#figure_rnn_02)展示了在区间<math
+    alttext="left-bracket minus 2 pi comma 2 pi"><mrow><mo>[</mo> <mo>-</mo> <mn>2</mn>
+    <mi>π</mi> <mo>,</mo> <mn>2</mn> <mi>π</mi></mrow></math> ]的结果序列：
 - en: '[PRE6]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO6-1)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO6-1)'
 - en: Deterministic transformation
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定性转换
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO6-2)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO6-2)'
 - en: Stochastic transformation
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机转换
 - en: '![aiif 0802](Images/aiif_0802.png)'
+  id: totrans-53
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0802](Images/aiif_0802.png)'
 - en: Figure 8-2\. Sample sequence data
+  id: totrans-54
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-2\. 样本序列数据
 - en: 'As before, the raw data is reshaped, `TimeseriesGenerator` is applied, and
     the RNN with a single hidden layer is trained:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 如前所述，原始数据被重新塑造，应用`TimeseriesGenerator`，并训练带有单隐藏层的RNN：
 - en: '[PRE7]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'The following Python code predicts sequence values for the interval <math alttext="left-bracket
     minus 6 pi comma 6 pi"><mrow><mo>[</mo> <mo>-</mo> <mn>6</mn> <mi>π</mi> <mo>,</mo>
     <mn>6</mn> <mi>π</mi></mrow></math> ]. This interval is three times the size of
     the training interval and contains out-of-sample predictions both on the left-hand
     side and on the right-hand side of the training interval. [Figure 8-3](#figure_rnn_03)
     shows that the model performs quite well, even out-of-sample:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的 Python 代码预测区间 <math alttext="left-bracket minus 6 pi comma 6 pi"><mrow><mo>[</mo>
+    <mo>-</mo> <mn>6</mn> <mi>π</mi> <mo>,</mo> <mn>6</mn> <mi>π</mi></mrow></math>
+    的序列值。这个区间是训练区间大小的三倍，并包含训练区间左右两侧的样本外预测。[Figure 8-3](#figure_rnn_03) 显示模型表现相当良好，即使在样本外：
 - en: '[PRE8]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO7-1)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO7-1)'
 - en: Enlarges the sample data set
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 扩大样本数据集
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO7-4)'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO7-4)'
 - en: In-sample *and* out-of-sample prediction
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内 *和* 样本外预测
 - en: Simplicity of Examples
+  id: totrans-63
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 示例的简易性
 - en: The first two examples are deliberately chosen to be simple. Both problems posed
     in the examples can be solved more efficiently with OLS regression, for example,
     by allowing for trigonometric basis functions in the second example. However,
     the training of RNNs for nontrivial sequence data, such as financial time series
     data, is basically the same. In such a context, OLS regression, for instance,
     can in general not keep up with the capabilities of RNNs.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 前两个示例故意选择简单。例如，第二个示例可以通过允许在三角函数基础函数中使用 OLS 回归等更高效地解决。然而，对于金融时间序列数据等非平凡序列数据的
+    RNN 训练基本相同。在这种情况下，例如，OLS 回归通常无法与 RNN 的能力相匹敌。
 - en: '![aiif 0803](Images/aiif_0803.png)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0803](Images/aiif_0803.png)'
 - en: Figure 8-3\. In-sample and out-of-sample predictions of the RNN
+  id: totrans-66
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-3\. RNN 的样本内和样本外预测
 - en: Financial Price Series
+  id: totrans-67
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 金融价格序列
 - en: 'As a first application of RNNs to financial time series data, consider intraday
     EUR/USD quotes. With the approach introduced in the previous two sections, the
     training of the RNN on the financial time series is straightforward. First, the
     data is imported and resampled. The data is also normalized and transformed into
     the appropriate `ndarray` object:'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为对金融时间序列数据的 RNN 的第一个应用，考虑日内 EUR/USD 报价。使用前两节介绍的方法，对金融时间序列的 RNN 训练是直接的。首先，导入和重新采样数据。数据也被归一化，并转换为适当的
+    `ndarray` 对象：
 - en: '[PRE9]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO8-1)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO8-1)'
 - en: Selects a single column
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择单列
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO8-2)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO8-2)'
 - en: Renames the column
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 重命名列
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO8-3)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO8-3)'
 - en: Resamples the data
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 对数据进行重新采样
 - en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO8-4)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO8-4)'
 - en: Applies Gaussian normalization
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 进行高斯归一化处理
 - en: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO8-5)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO8-5)'
 - en: Reshapes the data set to two dimensions
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据集重塑为二维
 - en: Second, the RNN is trained based on the generator object. The function `create_rnn_model()`
     allows the creation of an RNN with a `SimpleRNN` or an `LSTM` (*long short-term
     memory*) layer (Chollet 2017, ch. 6; also see [Keras recurrent layers](https://oreil.ly/kpuqA)).
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，基于生成器对象训练 RNN。函数 `create_rnn_model()` 允许创建带有 `SimpleRNN` 或 `LSTM`（长短期记忆）层的
+    RNN（Chollet 2017, ch. 6; 另请参阅 [Keras recurrent layers](https://oreil.ly/kpuqA)）。
 - en: '[PRE10]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO9-1)'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO9-1)'
 - en: Adds a `SimpleRNN` layer or `LSTM` layer
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加 `SimpleRNN` 层或 `LSTM` 层
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO9-3)'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO9-3)'
 - en: Adds an output layer for *estimation* or *classification*
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加用于 *估计* 或 *分类* 的输出层
 - en: 'Third, the in-sample prediction is generated. As [Figure 8-4](#figure_rnn_04)
     illustrates, the RNN is capable of capturing the structure of the normalized financial
     time series data. Based on this visualization, the prediction accuracy seems quite
     good:'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三，生成样本内预测。如 [Figure 8-4](#figure_rnn_04) 所示，RNN 能够捕捉归一化金融时间序列数据的结构。基于这种可视化，预测精度似乎相当不错：
 - en: '[PRE11]'
+  id: totrans-87
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '![aiif 0804](Images/aiif_0804.png)'
+  id: totrans-88
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0804](Images/aiif_0804.png)'
 - en: Figure 8-4\. In-sample prediction for financial price series by the RNN (whole
     data set)
+  id: totrans-89
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 8-4\. RNN 对金融价格序列的样本内预测（整个数据集）
 - en: 'However, the visualization suggests a result that does not hold up upon closer
     inspection. [Figure 8-5](#figure_rnn_05) zooms in and only shows 50 data points
     from the original data set and of the prediction. It becomes clear that the prediction
     values from the RNN are basically just the most previous lag, shifted by one time
     interval. Visually speaking, the prediction line is the financial time series
     itself, moved one time interval to the right:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，可视化结果表明，进一步检查后结果并不成立。[图8-5](#figure_rnn_05)放大并仅显示原始数据集和预测数据集的50个数据点。可以明显看出，RNN的预测值基本上只是前一个滞后，按一定时间间隔移动。从视觉上看，预测线就是金融时间序列本身，向右移动了一个时间间隔。
 - en: '[PRE12]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '![aiif 0805](Images/aiif_0805.png)'
+  id: totrans-92
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0805](Images/aiif_0805.png)'
 - en: Figure 8-5\. In-sample prediction for financial price series by the RNN (data
     sub-set)
+  id: totrans-93
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-5\. RNN对金融价格序列的样本内预测（数据子集）。
 - en: RNNs and Efficient Markets
+  id: totrans-94
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: RNN与有效市场
 - en: The results for the prediction of a financial price series based on an RNN are
     in line with the OLS regression approach used in [Chapter 6](ch06.xhtml#ai_first_finance)
     to illustrate the EMH. There, it is illustrated that, in a least-squares sense,
     today’s price is the best predictor for tomorrow’s price. The application of an
     RNN to price data does not yield any other insight.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于RNN的金融价格序列预测结果与在[第6章](ch06.xhtml#ai_first_finance)中用于说明有效市场假设（EMH）的OLS回归方法一致。在那里，说明了在最小二乘意义下，今天的价格是明天价格的最佳预测值。将RNN应用于价格数据并没有产生其他见解。
 - en: Financial Return Series
+  id: totrans-96
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 金融回报序列。
 - en: 'As previous analyses have shown, it might be easier to predict returns instead
     of prices. Therefore, the following Python code repeats the preceding analysis
     based on log returns:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如前面的分析所示，预测回报可能比预测价格更容易。因此，以下Python代码基于对数回报重复了前述分析：
 - en: '[PRE13]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'As [Figure 8-6](#figure_rnn_06) shows, the RNN’s predictions are not too good
     in absolute terms. However, they seem to get the market direction (sign of the
     return) somehow right:'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 如[图8-6](#figure_rnn_06)所示，RNN的预测在绝对意义上并不太好。然而，它们似乎在某种程度上正确地捕捉了市场方向（回报的符号）。
 - en: '[PRE14]'
+  id: totrans-100
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '![aiif 0806](Images/aiif_0806.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0806](Images/aiif_0806.png)'
 - en: Figure 8-6\. In-sample prediction for financial return series by the RNN (data
     sub-set)
+  id: totrans-102
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图8-6\. RNN对金融回报序列的样本内预测（数据子集）。
 - en: 'While [Figure 8-6](#figure_rnn_06) only provides an indication, the relatively
     high accuracy score supports the assumption that the RNN might perform better
     on a return than on a price series:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然[图8-6](#figure_rnn_06)仅提供了一个指示，但相对较高的准确率得分支持了RNN在回报序列上可能比在价格序列上表现更好的假设。
 - en: '[PRE15]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'However, to get a realistic picture, a train-test split is in order. The accuracy
     score out-of-sample is not as high as the one seen for the whole data set in-sample,
     but it is still high for the problem at hand:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，为了得到一个真实的图像，需要进行训练-测试分割。样本外的准确率评分并不像样本内整体数据集那样高，但对于当前问题来说仍然很高。
 - en: '[PRE16]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO10-1)'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO10-1)'
 - en: Splits the data into train and test data sub-sets
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据分割为训练和测试数据子集。
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO10-4)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO10-4)'
 - en: Fits the model on the training data
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 在训练数据上拟合模型。
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO10-6)'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO10-6)'
 - en: Tests the model on the testing data
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 在测试数据上测试模型。
 - en: Financial Features
+  id: totrans-113
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 金融特征。
 - en: 'The application of RNNs is not restricted to the raw price or return data.
     Additional features can also be included to improve the prediction of the RNN.
     The following Python code adds typical financial features to the data set:'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: RNN的应用不仅限于原始价格或收益数据。还可以添加额外的特征来改善RNN的预测能力。以下Python代码向数据集添加了典型的金融特征：
 - en: '[PRE17]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO11-1)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO11-1)'
 - en: Adds a time series *momentum* feature
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加了时间序列*动量*特征。
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO11-2)'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO11-2)'
 - en: Adds a rolling *volatility* feature
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加了滚动的*波动率*特征。
 - en: Estimation
+  id: totrans-120
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 估计。
 - en: 'The out-of-sample accuracy, maybe somewhat surprisingly, drops significantly
     in the estimation case. In other words, there is no improvement observed from
     adding financial features in this particular case:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 在估计情况下，样本外准确率可能会显著下降，这可能会有些意外。换句话说，在这种特定情况下，添加金融特征并没有观察到改进。
 - en: '[PRE18]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO12-1)'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO12-1)'
 - en: Calculates the first and second moment of the training data
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算训练数据的第一和第二时刻。
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO12-2)'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO12-2)'
 - en: Applies Gaussian normalization to the training data
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 对训练数据应用高斯归一化
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO12-3)'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO12-3)'
 - en: Applies Gaussian normalization to the testing data—based on the statistics from
     the training data
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 对测试数据应用高斯归一化，基于从训练数据中得出的统计数据
 - en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO12-4)'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO12-4)'
 - en: Fits the model on the training data
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 在训练数据上拟合模型
 - en: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO12-6)'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO12-6)'
 - en: Tests the model on the testing data
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 在测试数据上测试模型
 - en: Classification
+  id: totrans-133
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 分类
 - en: 'The analyses so far use a `Keras` RNN model for *estimation* to predict the
     future direction of the price of the financial instrument. The problem at hand
     is probably better cast directly into a *classification* setting. The following
@@ -515,84 +795,132 @@
     only a few training epochs. The approach again takes class imbalance into account
     by adjusting the class weights appropriately. The prediction accuracy is quite
     high in this case with around 65%:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止的分析使用了`Keras`的RNN模型进行*估计*，以预测金融工具价格的未来走向。当前问题可能更适合直接设定为*分类*问题。以下Python代码处理二元标签数据，并直接预测价格走势的方向。这次还使用了LSTM层。即使隐藏单元较少且仅经过少数训练时期，样本外准确率也相当高。该方法再次通过适当调整类别权重考虑了类别不平衡。在这种情况下，预测准确率相当高，约为65%：
 - en: '[PRE19]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO13-1)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO13-1)'
 - en: RNN model for classification
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于分类的RNN模型
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO13-2)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO13-2)'
 - en: Binary training labels
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 二元训练标签
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO13-3)'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO13-3)'
 - en: Class frequency for training labels
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练标签的类别频率
 - en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO13-4)'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO13-4)'
 - en: Binary testing labels
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 二元测试标签
 - en: Deep RNNs
+  id: totrans-144
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 深层RNNs
 - en: 'Finally, consider deep RNNs, which are RNNs with multiple hidden layers. They
     are as easily created as deep DNNs. The only requirement is that for the nonfinal
     hidden layers, the parameter `return_sequences` is set to `True`. The following
     Python function to create a deep RNN also allows for the addition of `Dropout`
     layers to potentially avoid overfitting. The prediction accuracy is comparable
     to the one seen in the previous sub-section:'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，考虑深层RNNs，它们是具有多个隐藏层的RNNs。它们的创建与深度DNNs一样简单。唯一的要求是对于非最终隐藏层，参数`return_sequences`必须设置为`True`。以下Python函数用于创建深层RNN，还允许添加`Dropout`层以潜在地避免过拟合。预测准确率与前一小节中看到的相当：
 - en: '[PRE20]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO14-1)'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_recurrent_neural_networks_CO14-1)'
 - en: A minimum of two hidden layers is ensured.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 至少确保两个隐藏层。
 - en: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO14-2)'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_recurrent_neural_networks_CO14-2)'
 - en: The first hidden layer.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个隐藏层。
 - en: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO14-3)'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_recurrent_neural_networks_CO14-3)'
 - en: The `Dropout` layers.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Dropout`层。'
 - en: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO14-5)'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_recurrent_neural_networks_CO14-5)'
 - en: The final hidden layer.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终隐藏层。
 - en: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO14-6)'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_recurrent_neural_networks_CO14-6)'
 - en: The model is built for classification.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型建立用于分类。
 - en: Conclusions
+  id: totrans-157
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter introduces RNNs with `Keras` and illustrates the application of
     such neural networks to financial time series data. On the Python level, working
     with RNNs is not too different from working with DNNs. One major difference is
@@ -600,39 +928,55 @@
     form to the respective methods. However, this is made easy by the application
     of the `TimeseriesGenerator` function, which transforms sequential data into a
     generator object that `Keras` RNNs can work with.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了使用`Keras`实现的RNN，并展示了这些神经网络在金融时间序列数据中的应用。在Python层面上，使用RNN与使用DNN并没有太大区别。一个主要区别在于，训练和测试数据必须以顺序形式呈现给相应的方法。然而，`TimeseriesGenerator`函数的应用使得将顺序数据转换为`Keras`可处理的生成器对象变得简单。
 - en: The examples in this chapter work with both financial price series and financial
     return series. In addition, financial features, such as time series momentum,
     can also be added easily. The functions presented for model creation allow, among
     other things, for one to use `SimpleRNN` or `LSTM` layers as well as different
     optimizers. They also allow one to model estimation and classification problems
     in the context of shallow and deep neural networks.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的示例适用于金融价格序列和金融收益序列。此外，诸如时间序列动量等金融特征也可以轻松添加。所提供的模型创建功能允许使用`SimpleRNN`或`LSTM`层以及不同的优化器，等等。它们还允许在浅层和深层神经网络的背景下建模估计和分类问题。
 - en: The out-of-sample prediction accuracy, when predicting market direction, is
     relatively high for the classification examples—but it’s not that high and can
     even be quite low for the estimation examples.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 在预测市场方向时，样本外预测准确性对于分类示例相对较高，但对于估计示例来说并不那么高，甚至可能相当低。
 - en: References
+  id: totrans-161
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍和论文：
 - en: 'Chollet, François. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  id: totrans-163
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Chollet，François。2017年。*Python深度学习*。Shelter Island：Manning。
 - en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
     Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  id: totrans-164
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Goodfellow，Ian，Yoshua Bengio和Aaron Courville。2016年。*深度学习*。剑桥：MIT Press。[*http://deeplearningbook.org*](http://deeplearningbook.org)
 - en: ^([1](ch08.xhtml#idm45625292780216-marker)) For technical details of RNNs, refer
     to Goodfellow et al. (2016, ch. 10). For the practical implementation, refer to
     Chollet (2017, ch. 6).
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch08.xhtml#idm45625292780216-marker)) 对于RNN的技术细节，请参考Goodfellow等人（2016年，第10章）。至于实际实现，请参考Chollet（2017年，第6章）。

@@ -1,21 +1,28 @@
 - en: Chapter 9\. Reinforcement Learning
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 9 章 强化学习
 - en: Like a human, our agents learn for themselves to achieve successful strategies
     that lead to the greatest long-term rewards. This paradigm of learning by trial-and-error,
     solely from rewards or punishments, is known as reinforcement learning.^([1](ch09.xhtml#idm45625285042408))
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 像人类一样，我们的代理通过自己学习，以实现成功的策略，从而获得最大的长期回报。这种通过奖励或惩罚进行试错学习的范式称为强化学习。^([1](ch09.xhtml#idm45625285042408))
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: DeepMind (2016)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: DeepMind（2016）
 - en: 'The learning algorithms applied in Chapters [7](ch07.xhtml#dense_networks)
     and [8](ch08.xhtml#recurrent_networks) fall into the category of *supervised learning*.
     These methods require that there is a data set available with features and labels
@@ -28,8 +35,10 @@
     fundamental notions, as well as one of the most popular algorithms used in the
     field: *Q-learning* (QL). Neural networks are not replaced by RL algorithms; they
     generally play an important role in this context as well.'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用于第 [7](ch07.xhtml#dense_networks) 章和第 [8](ch08.xhtml#recurrent_networks) 章的学习算法属于*监督学习*范畴。这些方法要求提供一个数据集，其中包含特征和标签，使得算法能够学习特征与标签之间的关系，以便在估计或分类任务中成功。正如[第1章](ch01.xhtml#artificial_intelligence)的简单示例所说明的那样，*强化学习*（RL）的工作方式不同。首先，无需事先提供完整的特征和标签数据集。数据是通过学习代理与感兴趣的环境交互而生成的。本章详细介绍了RL，并引入了基本概念，以及领域中使用的最流行算法之一：*Q-learning*（QL）。神经网络并未被RL算法所取代；它们在这一背景下通常也起着重要作用。
 - en: '[“Fundamental Notions”](#rl_notions) explains fundamental notions in RL, such
     as environments, states, and agents. [“OpenAI Gym”](#rl_oai_gym) introduces the
     OpenAI Gym suite of RL environments of which the `CartPole` environment is used
@@ -51,53 +60,78 @@
     feature to describe the state of the environment. Based on this improved environment,
     [“FQL Agent”](#rl_fql_agent) introduces and applies an improved financial QL agent
     that performs better as a trading bot.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“基本概念”](#rl_notions) 解释了RL中的基本概念，如环境、状态和代理。[“OpenAI Gym”](#rl_oai_gym) 介绍了OpenAI
+    Gym的RL环境套件，其中`CartPole`环境作为示例。在这个环境中，[第2章](ch02.xhtml#superintelligence)简要介绍并讨论了代理必须学习如何通过移动车辆左右来平衡杆的问题。[“蒙特卡洛代理”](#rl_mc_agent)展示了如何通过降维和蒙特卡洛模拟来解决`CartPole`问题。通常，标准监督学习算法如深度神经网络（DNNs）一般不适用于解决`CartPole`这类问题，因为它们缺乏延迟奖励的概念。这个问题在[“神经网络代理”](#rl_nn_agent)中有所说明。[“DQL代理”](#rl_dql_agent)讨论了一个显式考虑延迟奖励并能够解决`CartPole`问题的QL代理。同样的代理也应用于[“简单金融Gym”](#rl_sf_gym)中的一个简单金融市场环境。尽管该代理在这种情况下表现不佳，但该示例显示QL代理也可以学习交易并成为所谓的*交易机器人*。为了改善QL代理的学习能力，[“更好的金融Gym”](#rl_bf_gym)提出了一个改进的金融市场环境，除其他好处外，还允许使用多种类型的特征来描述环境的状态。基于这种改进的环境，[“FQL代理”](#rl_fql_agent)介绍并应用了一个改进的金融QL代理，表现更佳，作为交易机器人。'
 - en: Fundamental Notions
+  id: totrans-6
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基本概念
 - en: 'This section gives a brief overview of the fundamental notions in RL. Among
     them are the following:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节简要概述了强化学习中的基本概念。其中包括以下内容：
 - en: Environment
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境
 - en: The *environment* defines the problem at hand. This can be a computer game to
     be played or a financial market to be traded in.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*环境*定义了面临的问题。这可以是要玩的电脑游戏，也可以是要进行交易的金融市场。'
 - en: State
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态
 - en: A *state* subsumes all relevant parameters that describe the current state of
     the environment. In a computer game, this might be the whole screen with all its
     pixels. In a financial market, this might include current and historical price
     levels or financial indicators such as moving averages, macroeconomic variables,
     and so on.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*状态*包含描述当前环境状态的所有相关参数。在电脑游戏中，这可能是整个屏幕及其所有像素。在金融市场中，这可能包括当前和历史价格水平或金融指标如移动平均线、宏观经济变量等。'
 - en: Agent
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理
 - en: The term *agent* subsumes all elements of the RL algorithm that interacts with
     the environment and that learns from these interactions. In a gaming context,
     the agent might represent a player playing the game. In a financial context, the
     agent could represent a trader placing bets on rising or falling markets.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '*代理*一词涵盖了RL算法中与环境交互并从中学习的所有元素。在游戏背景下，代理可能代表玩家进行游戏。在金融背景下，代理可以代表交易员在上涨或下跌的市场上下注。'
 - en: Action
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 动作
 - en: An agent can choose one *action* from a (limited) set of allowed actions. In
     a computer game, movements to the left or right might be allowed actions, whereas
     in a financial market, going long or short could be admissible actions.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 代理可以从允许的（有限的）一组操作中选择一个*动作*。在电脑游戏中，向左或向右移动可能是允许的动作，而在金融市场中，做多或做空可能是允许的操作。
 - en: Step
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 步骤
 - en: Given an action of an agent, the state of the environment is updated. One such
     update is generally called a *step*. The concept of a step is general enough to
     encompass both heterogeneous and homogeneous time intervals between two steps.
@@ -105,62 +139,87 @@
     by rather short, homogeneous time intervals (“game clock”), a trading bot interacting
     with a financial market environment could take actions at longer, heterogeneous
     time intervals, for instance.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 针对代理的一个行动，环境的状态会被更新。这样的更新通常被称为一个*步骤*。步骤的概念足够广泛，可以涵盖两个步骤之间的异质和同质时间间隔。在电脑游戏中，通过相当短、同质的时间间隔模拟与游戏环境的实时交互（“游戏时钟”），而交易机器人与金融市场环境交互可能需要更长、异质的时间间隔来执行操作。
 - en: Reward
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 奖励
 - en: Depending on the action an agent chooses, a *reward* (or penalty) is awarded.
     For a computer game, points are a typical reward. In a financial context, profit
     (or loss) is a standard reward (or penalty).
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据代理选择的行动，会给予一定的*奖励*（或惩罚）。在电脑游戏中，分数通常是一种典型的奖励。在金融背景下，利润（或亏损）是一种标准的奖励（或惩罚）。
 - en: Target
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '[目标](https://wiki.example.org/target)'
 - en: The *target* specifies what the agent tries to maximize. In a computer game,
     this in general is the score reached by the agent. For a financial trading bot,
     this might be the accumulated trading profit.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '*目标*指定了代理试图最大化的内容。在电脑游戏中，一般是代理达到的分数。对于金融交易机器人，这可能是累积的交易利润。'
 - en: Policy
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略
 - en: The *policy* defines which action an agent takes given a certain state of the
     environment. Given a certain state of a computer game, represented by all the
     pixels that make up the current scene, the policy might specify that the agent
     chooses “move right” as the action. A trading bot that observes three price increases
     in a row might decide, according to its policy, to short the market.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*策略*定义了在特定环境状态下代理应该采取的行动。在电脑游戏中，代表当前场景的所有像素构成的状态下，策略可能指定代理选择“向右移动”作为行动。一个交易机器人观察到连续三次价格上涨，可能根据其策略决定做空市场。'
 - en: Episode
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 回合
 - en: An *episode* is a set of steps from the initial state of the environment until
     success is achieved or failure is observed. In a game, this is from the start
     of the game until a win or loss. In the financial world, for example, this is
     from the beginning of the year to the end of the year or to bankruptcy.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个*回合*是从环境的初始状态到达成功或观察到失败的一系列步骤。在游戏中，这是从游戏开始到获胜或失败。在金融世界中，例如，这是从年初到年底或破产。
 - en: Sutton and Barto (2018) provide a detailed introduction to the RL field. The
     book discusses the preceding notions in detail and illustrates them on the basis
     of a multitude of concrete examples. The following sections again choose a practical,
     implementation-oriented approach to RL. The examples discussed illustrate all
     of the preceding notions on the basis of Python code.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: Sutton 和 Barto（2018）详细介绍了RL领域。该书详细讨论了前述概念，并且通过大量具体示例进行了说明。以下章节再次选择了一种实用的、实施导向的RL方法。讨论的示例通过Python代码说明了所有前述概念。
 - en: OpenAI Gym
+  id: totrans-27
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: OpenAI Gym
 - en: In most of the success stories as presented in [Chapter 2](ch02.xhtml#superintelligence),
     RL plays a dominant role. This has spurred widespread interest in RL as an algorithm.
     OpenAI is an organization that strives to facilitate research in AI in general
     and in RL in particular. OpenAI has developed and open sourced a suite of environments,
     called [`OpenAI Gym`](https://gym.openai.com), that allows the training of RL
     agents via a standardized API.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 在大多数成功案例中，RL在[第2章](ch02.xhtml#superintelligence)中扮演了主导角色。这激发了对RL作为一种算法的广泛兴趣。OpenAI是一个致力于推动AI研究的组织，特别是在RL领域。OpenAI开发并开源了一套称为[`OpenAI
+    Gym`](https://gym.openai.com)的环境套件，允许通过标准化API训练RL代理。
 - en: 'Among the many environments, there is the [`CartPole`](https://oreil.ly/f6tAK)
     environment (or game) that simulates a classical RL problem. A pole is standing
     upright on a cart, and the goal is to learn a policy to balance the pole on the
@@ -168,117 +227,183 @@
     is given by four parameters, describing the following physical measurements: cart
     position, cart velocity, pole angle, and pole velocity (at tip). [Figure 9-1](#figure_rl_cp)
     shows a visualization of the environment.'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在众多环境中，有一个称为[`CartPole`](https://oreil.ly/f6tAK)的环境（或游戏），模拟了一个经典的RL问题。一个杆竖立在一个小车上，目标是通过移动小车向左或向右来学习平衡杆子的策略。环境的状态由四个参数给出，描述以下物理测量：小车位置、小车速度、杆角度和杆末端的杆角速度。[Figure 9-1](#figure_rl_cp)展示了环境的可视化。
 - en: '![aiif 0901](Images/aiif_0901.png)'
+  id: totrans-30
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0901](Images/aiif_0901.png)'
 - en: Figure 9-1\. CartPole environment of OpenAI Gym
+  id: totrans-31
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-1\. OpenAI Gym 的 CartPole 环境
 - en: 'Consider the following Python code that instantiates an environment object
     for `CartPole` and inspects the *observation space*. The observation space is
     a model for the state of the environment:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑以下 Python 代码，实例化了一个 `CartPole` 环境对象，并检查*观察空间*。观察空间是环境状态的模型：
 - en: '[PRE0]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO1-1)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO1-1)'
 - en: The environment object, with fixed seed values
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境对象，带有固定的种子值
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO1-4)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO1-4)'
 - en: The observation space with minimal and maximal values
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 观察空间的最小值和最大值
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO1-7)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO1-7)'
 - en: Reset of the environment
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 重置环境
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO1-8)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_reinforcement_learning_CO1-8)'
 - en: 'Initial state: cart position, cart velocity, pole angle, pole angular velocity'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始状态：小车位置、小车速度、杆角度、杆角速度
 - en: 'In the following environment, the allowed actions are described by the *action
     space*. In this case there are two, and they are represented by `0` (push cart
     to the left) and `1` (push cart to the right):'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下环境中，允许的动作由*动作空间*描述。在这种情况下，有两种动作，分别用`0`（向左推车）和`1`（向右推车）表示：
 - en: '[PRE1]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO2-1)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO2-1)'
 - en: The action space
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 行动空间
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO2-3)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO2-3)'
 - en: Random actions sampled from the action space
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 从动作空间中随机采样随机动作
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO2-7)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO2-7)'
 - en: Step forward based on random action
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据随机行动向前迈进
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO2-8)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_reinforcement_learning_CO2-8)'
 - en: New state of the environment, reward, success/failure, additional information
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境的新状态、奖励、成功/失败、额外信息
 - en: As long as `done=False`, the agent is still in the game and can choose another
     action. Success is achieved when the agent reaches a total of 200 steps in a row
     or a total reward of 200 (reward of 1.0 per step). A failure is observed when
     the pole on the cart reaches a certain angle that would lead to the pole falling
     from the cart. In that case, `done=True` is returned.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 只要`done=False`，代理仍然在游戏中，并且可以选择另一个动作。当代理连续达到200步或总奖励达到200时（每步奖励为1.0）即为成功。如果架在小车上的杆达到可能导致杆从小车上掉下的一定角度，则观察到失败。在这种情况下，将返回`done=True`。
 - en: 'A simple agent is one that follows a completely random policy: no matter what
     state is observed, the agent chooses a random action. This is what the following
     code implements. The number of steps the agent can go only depends in such a case
     on how lucky it is. No learning in the form of updating the policy is taking place:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单代理是指遵循完全随机策略的代理：无论观察到什么状态，代理都会选择一个随机动作。以下代码实现了这一点。在这种情况下，代理能够走多少步完全取决于它的运气。不会发生更新策略的学习形式：
 - en: '[PRE2]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO3-1)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO3-1)'
 - en: Random action policy
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机动作策略
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO3-2)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO3-2)'
 - en: Stepping forward one step
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 向前迈出一步
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO3-3)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO3-3)'
 - en: Failure if less than 200 steps
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果少于200步，则失败
 - en: Data Through Interaction
+  id: totrans-61
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 通过交互获取数据
 - en: 'Whereas in supervised learning the training, validation, and test data sets
     are assumed to exist before the training begins, in RL the agent generates its
     data itself by interacting with the environment. In many contexts, such as in
@@ -286,12 +411,16 @@
     thousands of historical human-played chess games into a computer, an RL agent
     can generate thousands or millions of games itself by playing against another
     chess engine or another version of itself, for instance.'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 在监督学习中，训练、验证和测试数据集被假定在训练开始之前存在，而在RL中，代理通过与环境的交互自己生成其数据。在许多情况下，例如在游戏中，这是一个巨大的简化。考虑象棋游戏：与其将成千上万个历史人类下棋游戏加载到计算机中，不如使用RL代理自己生成数千甚至数百万个游戏，例如通过与另一个象棋引擎或其另一个版本对弈。
 - en: Monte Carlo Agent
+  id: totrans-63
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 蒙特卡罗代理
 - en: 'The `CartPole` problem does not necessarily require a full-fledged RL approach
     nor some neural network to be solved. This section presents a simple solution
     to the problem based on Monte Carlo simulation. To this end, a specific policy
@@ -299,98 +428,155 @@
     parameters defining a state of the environment are collapsed, via a linear combination,
     into a single real-valued parameter.^([2](ch09.xhtml#idm45625283606888)) The following
     Python code implements this idea:'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CartPole`问题不一定需要完整的强化学习方法或一些神经网络来解决。本节提供了一个基于蒙特卡罗模拟的简单解决方案，该解决方案基于*降维*。在这种情况下，定义了一个特定的策略，该策略利用线性组合将环境状态的四个参数折叠为一个实值参数。^([2](ch09.xhtml#idm45625283606888))
+    以下Python代码实现了这个想法：'
 - en: '[PRE3]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO4-1)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO4-1)'
 - en: Random weights for fixed seed value
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 固定种子值的随机权重
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO4-4)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO4-4)'
 - en: Initial state of the environment
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 环境的初始状态
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO4-6)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO4-6)'
 - en: Dot product of state and weights
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态和权重的点积
 - en: 'The policy is then defined based on the sign of the single state parameter
     `s`:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略然后基于单个状态参数`s`的符号进行定义：
 - en: '[PRE4]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'This policy can then be used to play an episode of the `CartPole` game. Given
     the random nature of the weights applied, the results are in general not better
     than those of the random action policy of the previous section:'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后可以使用此策略来玩一个`CartPole`游戏的回合。由于应用的权重具有随机性质，因此其结果通常不会比前一节中的随机行动策略更好：
 - en: '[PRE5]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Therefore, Monte Carlo simulation is applied to test a large number of different
     weights. The following code simulates a large number of weights, checks them for
     success or failure, and then chooses the weights that yield success:'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，蒙特卡罗模拟被用来测试大量不同的权重。以下代码模拟了大量的权重，检查它们是否成功或失败，然后选择产生成功的权重：
 - en: '[PRE6]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO5-1)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO5-1)'
 - en: Random weights.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机权重。
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO5-2)'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO5-2)'
 - en: Total reward for these weights.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些权重的总奖励。
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO5-3)'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO5-3)'
 - en: Improvement observed?
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 观察到改进了吗？
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO5-4)'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_reinforcement_learning_CO5-4)'
 - en: Replace best total reward.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 替换最佳总奖励。
 - en: '[![5](Images/5.png)](#co_reinforcement_learning_CO5-5)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_reinforcement_learning_CO5-5)'
 - en: Replace best weights.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 替换最佳权重。
 - en: 'The `CartPole` problem is considered solved by an agent if the average total
     reward over 100 consecutive episodes is 195 or higher. As the following code demonstrates,
     this is indeed the case for the Monte Carlo agent:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个代理在连续的100个回合中的平均总奖励达到195或更高，则认为解决了`CartPole`问题。如下面的代码所示，蒙特卡洛代理确实达到了这个目标：
 - en: '[PRE7]'
+  id: totrans-89
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: This is, of course, a strong benchmark that other, more sophisticated approaches
     are up against.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，这是一个强大的基准，其他更复杂的方法也在与之竞争。
 - en: Neural Network Agent
+  id: totrans-91
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 神经网络代理
 - en: The `CartPole` game can be cast into a classification setting as well. The state
     of an environment consists of four feature values. The correct action given the
     feature values is the label. By interacting with the environment, a neural network
@@ -399,14 +585,20 @@
     to learn the correct action given a state of the environment. The neural network
     represents the policy in this case. The agent updates the policy based on new
     experiences.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CartPole`游戏也可以视为分类设置。环境的状态由四个特征值组成。给定特征值，正确的动作是标签。通过与环境的交互，神经网络代理可以收集由特征值和标签组成的数据集。在这个逐渐增长的数据集的基础上，可以训练神经网络来学习给定环境状态时的正确动作。在这种情况下，神经网络代表了策略。代理根据新的经验更新策略。'
 - en: 'First, some imports:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，导入一些库：
 - en: '[PRE8]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'Second is the `NNAgent` class that combines the major elements of the agent:
     the neural network model for the policy, choosing an action given the policy,
     updating the policy (training the neural network), and the learning process itself
@@ -415,107 +607,164 @@
     current policy. Exploitation refers to an action as derived from the current policy.
     The idea is that some degree of exploration ensures a richer experience and thereby
     improved learning for the agent:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次是`NNAgent`类，它整合了代理的主要元素：策略的神经网络模型，根据策略选择动作，更新策略（训练神经网络），以及在多个回合中的学习过程。代理同时使用*探索*和*利用*来选择动作。探索是指独立于当前策略的随机动作。利用是指根据当前策略得出的动作。这样做的想法是一定程度的探索可以确保更丰富的经验，从而提高代理的学习效果：
 - en: '[PRE9]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO6-1)'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO6-1)'
 - en: The maximum total reward
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 最大的总奖励
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO6-2)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO6-2)'
 - en: The DNN classification model for the policy
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于策略的DNN分类模型
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO6-3)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO6-3)'
 - en: The method to choose an action (exploration and exploitation)
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择动作的方法（探索和利用）
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO6-4)'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_reinforcement_learning_CO6-4)'
 - en: The method to update the policy (train the neural network)
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 更新策略的方法（训练神经网络）
 - en: '[![5](Images/5.png)](#co_reinforcement_learning_CO6-5)'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_reinforcement_learning_CO6-5)'
 - en: The method to learn from interacting with the environment
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 从与环境交互中学习的方法
 - en: 'The neural network agent does not solve the problem for the configuration shown.
     The maximum total reward of 200 is not achieved even once:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于所示的配置，神经网络代理无法解决问题。最大的总奖励200甚至没有达到一次：
 - en: '[PRE10]'
+  id: totrans-108
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO7-1)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO7-1)'
 - en: Average total reward over all episodes
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有回合的平均总奖励
 - en: Something seems to be missing with this approach. One major missing element
     is the idea of looking beyond the current state and action to be chosen. The approach
     implemented does not, by any means, take into account that success is only achieved
     when the agent survives 200 consecutive steps. Simply speaking, the agent avoids
     taking the wrong action but does not learn to win the game.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法似乎存在一些问题。其中一个主要的缺失元素是超越当前状态和待选择动作的概念。当前实施的方法并没有考虑到只有当代理在200个连续步骤中生存下来时才算成功。简单来说，代理避免采取错误的动作，但并没有学会赢得游戏。
 - en: Analyzing the collected history of states (features) and actions (labels) reveals
     that the neural network reaches an accuracy of around 75%.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 分析收集到的状态（特征）和动作（标签）的历史表明，神经网络达到了大约75%的准确率。
 - en: 'However, this does not translate into a winning policy as seen before:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这并不意味着像以前那样转化为一个获胜的政策：
 - en: '[PRE11]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO8-1)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO8-1)'
 - en: Features (states) from all episodes
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有剧集的特征（状态）
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO8-3)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO8-3)'
 - en: Labels (actions) from all episodes
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有剧集的标签（动作）
 - en: DQL Agent
+  id: totrans-119
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: DQL代理
 - en: Q-learning (QL) is an algorithm that takes into account delayed rewards in addition
     to immediate rewards from an action. The algorithm is due to Watkins (1989) and
     Watkins and Dayan (1992) and is explained in detail in Sutton and Barto (2018,
     ch. 6). QL addresses the problem of looking beyond the immediate next reward as
     encountered with the neural network agent.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: Q学习（QL）是一种算法，除了行动的即时奖励外，还考虑了延迟奖励。该算法由Watkins（1989年）和Watkins和Dayan（1992年）提出，并在Sutton和Barto（2018年，第6章）中详细解释。QL解决了与神经网络代理遇到的超出即时下一个奖励的问题。
 - en: The algorithm works roughly as follows. There is an *action-value* policy <math
     alttext="upper Q"><mi>Q</mi></math> , which assigns a value to every combination
     of a state and an action. The higher the value is, the better the action from
     the point of view of the agent will be. If the agent uses the policy <math alttext="upper
     Q"><mi>Q</mi></math> to choose an action, it selects the action with the highest
     value.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 该算法大致如下工作。有一个*动作值*策略<math alttext="upper Q"><mi>Q</mi></math>，为每个状态和动作组合分配一个值。值越高，从代理的角度来看，动作越好。如果代理使用策略<math
+    alttext="upper Q"><mi>Q</mi></math>来选择动作，则选择价值最高的动作。
 - en: 'How is the value of an action derived? The value of an action is composed of
     its *direct reward* and the *discounted value* of the optimal action in the next
     state. The following is the formal expression:'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 如何推导出一个动作的价值？一个动作的价值由其*直接奖励*和下一个状态中最优动作的*折扣值*组成。以下是形式表达：
 - en: <math alttext="upper Q left-parenthesis upper S Subscript t Baseline comma upper
     A Subscript t Baseline right-parenthesis equals upper R Subscript t plus 1 Baseline
     plus gamma max Underscript a Endscripts upper Q left-parenthesis upper S Subscript
@@ -525,8 +774,18 @@
     <mo>+</mo> <mi>γ</mi> <munder><mo movablelimits="true" form="prefix">max</mo>
     <mi>a</mi></munder> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow></mrow></math>
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper Q left-parenthesis upper S Subscript t Baseline comma upper
+    A Subscript t Baseline right-parenthesis equals upper R Subscript t plus 1 Baseline
+    plus gamma max Underscript a Endscripts upper Q left-parenthesis upper S Subscript
+    t plus 1 Baseline comma a right-parenthesis" display="block"><mrow><mi>Q</mi>
+    <mrow><mo>(</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>,</mo> <msub><mi>A</mi>
+    <mi>t</mi></msub> <mo>)</mo></mrow> <mo>=</mo> <msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>+</mo> <mi>γ</mi> <munder><mo movablelimits="true" form="prefix">max</mo>
+    <mi>a</mi></munder> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow></mrow></math>
 - en: Here, <math alttext="upper S Subscript t"><msub><mi>S</mi> <mi>t</mi></msub></math>
     is the state at step (time) <math alttext="t"><mi>t</mi></math> , <math alttext="upper
     A Subscript t"><msub><mi>A</mi> <mi>t</mi></msub></math> is the action taken at
@@ -541,8 +800,22 @@
     <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow></mrow></math>
     is the maximum delayed reward given the optimal action from the current policy
     <math alttext="upper Q"><mi>Q</mi></math> .
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里，<math alttext="upper S Subscript t"><msub><mi>S</mi> <mi>t</mi></msub></math>
+    是步骤（时间）<math alttext="t"><mi>t</mi></math> 的状态，<math alttext="upper A Subscript
+    t"><msub><mi>A</mi> <mi>t</mi></msub></math> 是在状态<math alttext="upper S Subscript
+    t"><msub><mi>S</mi> <mi>t</mi></msub></math> 下采取的动作，<math alttext="upper R Subscript
+    t plus 1"><msub><mi>R</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></math>
+    是动作<math alttext="upper A Subscript t"><msub><mi>A</mi> <mi>t</mi></msub></math>
+    的直接奖励，<math alttext="0 less-than gamma less-than 1"><mrow><mn>0</mn> <mo><</mo>
+    <mi>γ</mi> <mo><</mo> <mn>1</mn></mrow></math> 是折扣因子，<math alttext="max Underscript
+    a Endscripts upper Q left-parenthesis upper S Subscript t plus 1 Baseline comma
+    a right-parenthesis"><mrow><msub><mo movablelimits="true" form="prefix">max</mo>
+    <mi>a</mi></msub> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow></mrow></math> 是给定当前策略<math alttext="upper
+    Q"><mi>Q</mi></math> 的最佳行动后延迟奖励的最大值。
 - en: In a simple environment, with only a limited number of possible states, <math
     alttext="upper Q"><mi>Q</mi></math> can, for example, be represented by a *table*,
     listing for every state-action combination the corresponding value. However, in
@@ -550,16 +823,22 @@
     number of states is too large for <math alttext="upper Q"><mi>Q</mi></math> to
     be written out comprehensively. Therefore, <math alttext="upper Q"><mi>Q</mi></math>
     is in general understood to be a *function*.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 在简单环境中，只有有限数量的可能状态，<math alttext="upper Q"><mi>Q</mi></math> 例如可以被表示为*表格*，列出每个状态-动作组合对应的值。然而，在更有趣或复杂的环境中，比如`CartPole`环境，状态的数量对于<math
+    alttext="upper Q"><mi>Q</mi></math>来说过于庞大，无法全面地写出来。因此，<math alttext="upper Q"><mi>Q</mi></math>通常被理解为一个*函数*。
 - en: This is where neural networks come into play. In realistic settings and environments,
     a closed-form solution for the function <math alttext="upper Q"><mi>Q</mi></math>
     might not exist or might be too hard to derive, say, based on dynamic programming.
     Therefore, QL algorithms generally target *approximations* only. Neural networks,
     with their universal approximation capabilities, are a natural choice to accomplish
     the approximation of <math alttext="upper Q"><mi>Q</mi></math> .
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是神经网络发挥作用的地方。在现实设置和环境中，对于函数<math alttext="upper Q"><mi>Q</mi></math>可能不存在闭合形式的解，或者基于动态规划可能太难推导。因此，QL算法通常只针对*近似*。神经网络以其通用逼近能力，是实现<math
+    alttext="upper Q"><mi>Q</mi></math>的自然选择。
 - en: Another critical element of QL is *replay*. The QL agent replays a number of
     experiences (state-action combinations) to update the policy function <math alttext="upper
     Q"><mi>Q</mi></math> regularly. This can improve the learning considerably. Furthermore,
@@ -568,83 +847,136 @@
     way in that the agent starts with exploration only—in the beginning it could not
     have learned anything—and slowly but steadily decreases the exploration rate <math
     alttext="epsilon"><mi>ϵ</mi></math> until it reaches a minimum level:^([3](ch09.xhtml#idm45625283311016))
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: QL的另一个关键元素是*回放*。QL代理会定期重放若干经验（状态-动作组合）以更新策略函数<math alttext="upper Q"><mi>Q</mi></math>。这可以显著改善学习效果。此外，在以下提供的QL代理——`DQLAgent`中，代理在学习过程中也会在探索和利用之间交替。这种交替是系统化的，代理从仅探索开始——开始时它可能还没有学到任何东西——然后缓慢但稳步地减少探索率<math
+    alttext="epsilon"><mi>ϵ</mi></math>直到达到最低水平：^([3](ch09.xhtml#idm45625283311016))
 - en: '[PRE12]'
+  id: totrans-128
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO9-1)'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO9-1)'
 - en: Initial exploration rate
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始探索率
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO9-2)'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO9-2)'
 - en: Minimum exploration rate
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 最小探索率
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO9-3)'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO9-3)'
 - en: Decay rate for exploration rate
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 探索率衰减率
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO9-4)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_reinforcement_learning_CO9-4)'
 - en: Discount factor for delayed reward
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 延迟奖励的折现因子
 - en: '[![5](Images/5.png)](#co_reinforcement_learning_CO9-5)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_reinforcement_learning_CO9-5)'
 - en: Batch size for replay
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 回放的批次大小
 - en: '[![6](Images/6.png)](#co_reinforcement_learning_CO9-6)'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_reinforcement_learning_CO9-6)'
 - en: '`deque` collection for limited history'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '`deque`集合用于有限历史记录'
 - en: '[![7](Images/7.png)](#co_reinforcement_learning_CO9-7)'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_reinforcement_learning_CO9-7)'
 - en: Random selection of history batch for replay
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机选择历史批次用于回放
 - en: '[![8](Images/8.png)](#co_reinforcement_learning_CO9-8)'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_reinforcement_learning_CO9-8)'
 - en: <math alttext="upper Q"><mi>Q</mi></math> value for state-action pair
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态-动作对的<math alttext="upper Q"><mi>Q</mi></math>值
 - en: '[![9](Images/9.png)](#co_reinforcement_learning_CO9-9)'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_reinforcement_learning_CO9-9)'
 - en: Update of the neural network for the new action-value pairs
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 更新神经网络以适应新的动作-值对
 - en: '[![10](Images/10.png)](#co_reinforcement_learning_CO9-10)'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](Images/10.png)](#co_reinforcement_learning_CO9-10)'
 - en: Update of the exploration rate
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 更新探索率
 - en: '[![11](Images/11.png)](#co_reinforcement_learning_CO9-11)'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![11](Images/11.png)](#co_reinforcement_learning_CO9-11)'
 - en: Storing the new data
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储新数据
 - en: '[![12](Images/12.png)](#co_reinforcement_learning_CO9-12)'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![12](Images/12.png)](#co_reinforcement_learning_CO9-12)'
 - en: Replay to update the policy based on past experiences
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 回放以基于过去经验更新策略
 - en: 'How does the QL agent perform? As the code that follows shows, it reaches a
     winning state for `CartPole` of a total reward of 200\. [Figure 9-2](#figure_rl_01)
     shows the moving average of scores and how it increases over time, although not
@@ -653,26 +985,35 @@
     exploration that is taking place throughout leads to random actions that might
     not necessarily lead to good results in terms of total rewards but may lead to
     beneficial experiences for updating the policy network:'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE13]'
+  id: totrans-154
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '![aiif 0902](Images/aiif_0902.png)'
+  id: totrans-155
   prefs: []
   type: TYPE_IMG
 - en: Figure 9-2\. Average total rewards of `DQLAgent` for `CartPole`
+  id: totrans-156
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: 'Does the QL agent solve the `CartPole` problem? In this particular case, it
     does, given the definition of success by OpenAI Gym:'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE14]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Simple Finance Gym
+  id: totrans-159
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -683,15 +1024,19 @@
     decide, when presented with the state, whether to go long or to go short. In that
     case, the two environments are comparable since a state is given by four parameters
     and an agent can take two different actions.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: 'To mimic the OpenAI Gym API, two helper classes are needed—one for the observation
     space, and one for the action space:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE15]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'The following Python code defines the `Finance` class. It retrieves end-of-day
     historical prices for a number of symbols. The major methods of the class are
     `.reset()` and `.step()`. The `.step()` method checks whether the right action
@@ -702,119 +1047,176 @@
     accuracy ratio of less than 50% (total rewards divided by total number of steps).
     However, this is only checked for after a certain number of steps to avoid the
     high initial variance of this metric:'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO10-1)'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: Defines the minimum accuracy required.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO10-2)'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: Selects the data defining the state of the financial market.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO10-3)'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: Resets the environment to its initial values.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO10-4)'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: Checks whether the agent has chosen the right action (successful trade).
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_reinforcement_learning_CO10-5)'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: Defines the reward the agent receives.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_reinforcement_learning_CO10-6)'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: Adds the reward to the total reward.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](Images/7.png)](#co_reinforcement_learning_CO10-7)'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: Moves the environment one step forward.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 将环境向前推进一步。
 - en: '[![8](Images/8.png)](#co_reinforcement_learning_CO10-8)'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_reinforcement_learning_CO10-8)'
 - en: Calculates the accuracy of successful actions (trades) given all steps (trades).
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算成功行动（交易）的准确性，考虑所有步骤（交易）。
 - en: '[![9](Images/9.png)](#co_reinforcement_learning_CO10-9)'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_reinforcement_learning_CO10-9)'
 - en: If the agent reaches the end of the data set, success is achieved.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果智能体达到数据集的末尾，则视为成功。
 - en: '[![10](Images/10.png)](#co_reinforcement_learning_CO10-10)'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](Images/10.png)](#co_reinforcement_learning_CO10-10)'
 - en: If the agent takes the right action, it can move on.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果智能体采取正确的行动，它可以继续前进。
 - en: '[![11](Images/11.png)](#co_reinforcement_learning_CO10-11)'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![11](Images/11.png)](#co_reinforcement_learning_CO10-11)'
 - en: If, after some initial steps, the accuracy drops under the minimum level, the
     episode ends (failure).
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 在一些初始步骤之后，如果准确性降到最低水平以下，则该情节结束（失败）。
 - en: '[![12](Images/12.png)](#co_reinforcement_learning_CO10-12)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![12](Images/12.png)](#co_reinforcement_learning_CO10-12)'
 - en: For the remaining cases, the agent can move on.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于其余情况，智能体可以继续前进。
 - en: 'Instances of the `Finance` class behave like an environment of the OpenAI Gym.
     In particular, in this base case, the instance behaves exactly like the `CartPole`
     environment:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Finance` 类的实例表现得像是 OpenAI Gym 的环境。特别是在这个基础案例中，该实例的行为与 `CartPole` 环境完全一致：'
 - en: '[PRE17]'
+  id: totrans-190
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO11-1)'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO11-1)'
 - en: Specifies which symbol and which type of feature (symbol or log return) to be
     used to define the data representing the state
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定用于定义表示状态数据的符号和特征类型（符号或对数收益）。
 - en: 'Can the `DQLAgent`, as developed for the `CartPole` game, learn to trade in
     a financial market? Yes, it can, as the following code illustrates. However, although
     the agent improves its trading skill (on average) over the training episodes,
     the results are not too impressive (see [Figure 9-3](#figure_rl_02)):'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DQLAgent` 是否能像为 `CartPole` 游戏开发的那样，在金融市场中进行交易学习？是的，可以，正如下面的代码所示。然而，尽管智能体在训练情节中平均改善了其交易技能，但结果并不十分令人印象深刻（参见
+    [图 9-3](#figure_rl_02)）：'
 - en: '[PRE18]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '![aiif 0903](Images/aiif_0903.png)'
+  id: totrans-195
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0903](Images/aiif_0903.png)'
 - en: Figure 9-3\. Average total rewards of `DQLAgent` for `Finance`
+  id: totrans-196
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-3\. `Finance` 中 `DQLAgent` 的平均总奖励
 - en: General RL Agents
+  id: totrans-197
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 通用 RL 智能体
 - en: This section provides a class for a financial market environment that mimics
     the API of an OpenAI Gym environment. It also applies, without any changes to
     the agent itself, the QL agent to the new financial market environment. Although
@@ -823,12 +1225,18 @@
     general. RL agents can in general learn from different environments they interact
     with. This explains to some extent why AlphaZero from DeepMind is able to master
     not only the game of Go but also chess and shogi, as discussed in [Chapter 2](ch02.xhtml#superintelligence).
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节为模仿 OpenAI Gym 环境 API 的金融市场环境提供了一个类。它还将 QL 智能体应用于新的金融市场环境，而无需对智能体本身进行任何更改。尽管智能体在这种新环境中的表现可能并不令人印象深刻，但它说明了本章介绍的
+    RL 方法相当通用。RL 智能体通常可以从其交互的不同环境中学习。这在某种程度上解释了为什么 DeepMind 的 AlphaZero 能够掌握围棋、国际象棋和将棋，如
+    [第二章](ch02.xhtml#superintelligence) 中所讨论的那样。
 - en: Better Finance Gym
+  id: totrans-199
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 更好的金融 Gym
 - en: 'The idea in the previous section is to develop a simple class that allows RL
     within a financial market setting. The major goal in that section is to replicate
     the API of an OpenAI Gym environment. However, there is no need to restrict such
@@ -840,71 +1248,115 @@
     or testing. The Python code presented in the following also allows the use of
     leverage. This might be helpful when intraday data is considered with relatively
     small absolute returns:'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 前一节的想法是开发一个简单的类，允许在金融市场环境中进行强化学习。该节的主要目标是复制 OpenAI Gym 环境的 API。然而，并不需要将这样的环境限制在单一类型的特征来描述金融市场状态，也不需要仅使用四个滞后期。本节介绍了一个改进的
+    `Finance` 类，允许多个特征、灵活的滞后期数量以及用于基础数据集的特定起始点和结束点。这样做，除其他事项外，还允许将数据集的一部分用于学习，另一部分用于验证或测试。以下
+    Python 代码还允许使用杠杆。在考虑相对较小的绝对回报的分钟级数据时，这可能是有帮助的：
 - en: '[PRE19]'
+  id: totrans-201
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](Images/1.png)](#co_reinforcement_learning_CO12-1)'
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_reinforcement_learning_CO12-1)'
 - en: The features to define the state
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于定义状态的特征
 - en: '[![2](Images/2.png)](#co_reinforcement_learning_CO12-3)'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_reinforcement_learning_CO12-3)'
 - en: The number of lags to be used
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用的滞后数
 - en: '[![3](Images/3.png)](#co_reinforcement_learning_CO12-4)'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_reinforcement_learning_CO12-4)'
 - en: The minimum gross performance required
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 所需的最低总体性能
 - en: '[![4](Images/4.png)](#co_reinforcement_learning_CO12-5)'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_reinforcement_learning_CO12-5)'
 - en: Additional financial features (simple moving average, momentum, rolling volatility)
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 附加的金融特征（简单移动平均线、动量、滚动波动性）
 - en: '[![5](Images/5.png)](#co_reinforcement_learning_CO12-8)'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_reinforcement_learning_CO12-8)'
 - en: Gaussian normalization of the data
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据的高斯归一化
 - en: '[![6](Images/6.png)](#co_reinforcement_learning_CO12-11)'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_reinforcement_learning_CO12-11)'
 - en: The leveraged return for the step
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 步骤的杠杆收益率
 - en: '[![7](Images/7.png)](#co_reinforcement_learning_CO12-12)'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_reinforcement_learning_CO12-12)'
 - en: The return-based reward for the step
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 步骤的基于回报的奖励
 - en: '[![8](Images/8.png)](#co_reinforcement_learning_CO12-13)'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_reinforcement_learning_CO12-13)'
 - en: The gross performance after the step
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 步骤后的总体性能
 - en: 'The new `Finance` class gives more flexibility for the modeling of the financial
     market environment. The following code shows an example for two features and five
     lags:'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 新的`Finance`类为金融市场环境的建模提供了更大的灵活性。以下代码展示了两个特征和五个滞后的示例：
 - en: '[PRE20]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: FQL Agent
+  id: totrans-220
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: FQL代理
 - en: 'Relying on the new `Finance` environment, this section improves on the simple
     DQL agent to improve the performance in the financial market context. The `FQLAgent`
     class is able to handle multiple features and a flexible number of lags. It also
@@ -913,49 +1365,71 @@
     performance of the agent during training. The basic structure of the class and
     the RL/QL learning approach is the same for both the `DQLAgent` class and the
     `FQLAgent` class:'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于新的`Finance`环境，本节改进了简单的DQL代理以提高在金融市场环境中的性能。`FQLAgent`类能够处理多个特征和灵活的滞后数。它还将学习环境(`learn_env`)与验证环境(`valid_env`)区分开来。这允许在训练期间获得代理的样本外性能的更真实的图片。该类的基本结构和RL/QL学习方法对于`DQLAgent`类和`FQLAgent`类都是相同的：
 - en: '[PRE21]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'The following Python code shows that the performance of the `FQLAgent` is substantially
     better than that of the simple `DQLAgent` that solves the `CartPole` problem.
     This trading bot seems to learn about trading rather consistently through interacting
     with the financial market environment (see [Figure 9-4](#figure_rl_03)):'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码显示了`FQLAgent`的性能明显优于解决`CartPole`问题的简单`DQLAgent`的性能。这个交易机器人似乎通过与金融市场环境的互动而相当一致地了解交易（见[图9-4](#figure_rl_03)）：
 - en: '[PRE22]'
+  id: totrans-224
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '![aiif 0904](Images/aiif_0904.png)'
+  id: totrans-225
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0904](Images/aiif_0904.png)'
 - en: Figure 9-4\. Average total rewards of `FQLAgent` for `Finance`
+  id: totrans-226
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-4。`Finance`中`FQLAgent`的平均总奖励
 - en: 'An interesting picture also arises for the training and validation performances,
     as shown in [Figure 9-5](#figure_rl_04). The training performance shows a high
     variance, which is due, for example, to the exploration that is going on in addition
     to the exploitation of the currently optimal policy. In comparison, the validation
     performance has a much lower variance because it only relies on the exploitation
     of the currently optimal policy:'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于训练和验证性能还出现了一个有趣的图像，如[图9-5](#figure_rl_04)所示。训练性能显示出较高的方差，这是由于探索活动，除了目前最优政策的开发之外。相比之下，验证性能的方差要低得多，因为它仅依赖于目前最优政策的开发：
 - en: '[PRE23]'
+  id: totrans-228
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '![aiif 0905](Images/aiif_0905.png)'
+  id: totrans-229
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0905](Images/aiif_0905.png)'
 - en: Figure 9-5\. Training and validation performance of the `FQLAgent` per episode
+  id: totrans-230
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-5。`FQLAgent`每一集的训练和验证性能
 - en: Conclusions
+  id: totrans-231
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter discusses reinforcement learning as one of the most successful
     algorithm classes that AI has to offer. Most of the advances and success stories
     discussed in [Chapter 2](ch02.xhtml#superintelligence) have their origin in improvements
@@ -965,8 +1439,11 @@
     that, given a certain state, assigns each action a value. The higher the value
     is, the better the action will be, taking into account both immediate and delayed
     rewards.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章讨论了强化学习作为人工智能提供的最成功算法类之一。在[第二章](ch02.xhtml#superintelligence)讨论的大部分进展和成功案例都源于强化学习领域的改进。在这种情况下，神经网络并没有变得无用。相反，它们在逼近最优动作策略方面起着重要作用，通常以策略
+    <math alttext="upper Q"><mi>Q</mi></math> 的形式表现，给定某个状态，为每个动作分配一个值。值越高，动作越好，同时考虑即时和延迟奖励。
 - en: The inclusion of delayed rewards, of course, is relevant in many important contexts.
     In a gaming context, with multiple actions available in general, it is optimal
     to choose the one that promises the highest total reward—and probably not just
@@ -974,45 +1451,65 @@
     The same holds true in a financial context. The long-term performance is in general
     the appropriate goal for trading and investing, not a quick short-term profit
     that might come at an increased risk of going bankrupt.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，延迟奖励的包含在许多重要的背景中是相关的。在游戏背景中，通常有多种动作可供选择，选择承诺最高总奖励的动作是最优的，而不仅仅是最高的即时奖励。最终的总分是要被最大化的。在金融背景中也是如此。一般来说，长期的表现是交易和投资的适当目标，而不是可能带来增加破产风险的快速短期利润。
 - en: The examples in this chapter also demonstrate that the RL approach is rather
     flexible and general in that it can be applied to different settings equally well.
     The DQL agent that solves the `CartPole` problem can also learn how to trade in
     a financial market, although not too well. Based on improvements of the `Finance`
     environment and the FQL agent, the FQL trading bot shows a respectable performance
     both in-sample (on the training data) and out-of-sample (on the validation data).
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的例子还表明，强化学习方法在灵活性和普适性上非常强，可以同样适用于不同的设置。解决`CartPole`问题的DQL代理也可以学会如何在金融市场中交易，尽管效果不是很好。基于`Finance`环境和FQL代理的改进，FQL交易机器人在样本内（训练数据）和样本外（验证数据）都展现出了可观的性能。
 - en: References
+  id: totrans-235
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍和论文：
 - en: 'Sutton, Richard S. and Andrew G. Barto. 2018\. *Reinforcement Learning: An
     Introduction*. Cambridge and London: MIT Press.'
+  id: totrans-237
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Sutton, Richard S. 和 Andrew G. Barto. 2018\. *强化学习：一种介绍*. 剑桥和伦敦：麻省理工学院出版社。
 - en: Watkins, Christopher. 1989\. *Learning from Delayed Rewards*. Ph.D. thesis,
     University of Cambridge.
+  id: totrans-238
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Watkins, Christopher. 1989\. *从延迟奖励中学习*. 剑桥大学博士论文。
 - en: 'Watkins, Christopher and Peter Dayan. 1992\. “Q-Learning.” *Machine Learning*
     8 (May): 279-282.'
+  id: totrans-239
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Watkins, Christopher 和 Peter Dayan. 1992\. “Q学习。” *机器学习* 8 (五月): 279-282.'
 - en: ^([1](ch09.xhtml#idm45625285042408-marker)) See [Deep Reinforcement Learning](https://oreil.ly/h-EFL).
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch09.xhtml#idm45625285042408-marker)) 参见[深度强化学习](https://oreil.ly/h-EFL)。
 - en: ^([2](ch09.xhtml#idm45625283606888-marker)) See, for example, this [blog post](https://oreil.ly/84RwE).
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch09.xhtml#idm45625283606888-marker)) 参见，例如，这篇[博客文章](https://oreil.ly/84RwE)。
 - en: ^([3](ch09.xhtml#idm45625283311016-marker)) The implementation is similar to
     the one found in this [blog post](https://oreil.ly/8mI4m).
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch09.xhtml#idm45625283311016-marker)) 实现与这篇[博客文章](https://oreil.ly/8mI4m)中的类似。

@@ -1,20 +1,27 @@
 - en: Chapter 9\. FX Trading with FXCM
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第9章。 使用FXCM进行外汇交易
 - en: Financial institutions like to call what they do trading. Let’s be honest. It’s
     not trading; it’s betting.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 金融机构喜欢称他们所做的事情为交易。让我们诚实一点。这不是交易；这是打赌。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Graydon Carter
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Graydon Carter
 - en: This chapter introduces the trading platform from FXCM Group, LLC (“FXCM” afterwards),
     with its RESTful and streaming application programming interface (API) as well
     as the Python wrapper package `fcxmpy`. Similar to Oanda, it is a platform well
@@ -25,49 +32,73 @@
     lies on currency pairs as well as contracts for difference (CFDs) on, among other
     things, major stock indices and commodities. In this context, also refer to [“Contracts
     for Difference (CFDs)”](ch08.html#cfds) and [“Disclaimer”](#disclaimer).
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了FXCM集团的交易平台，其具有RESTful和流式应用程序编程接口（API）以及Python包`fcxmpy`。与Oanda类似，它非常适合部署自动化的算法交易策略，即使是资金较小的零售交易者。FXCM为零售和机构交易者提供了许多金融产品，这些产品既可以通过传统交易应用程序进行交易，也可以通过他们的API以编程方式进行交易。产品的重点在于货币对以及差价合约（CFD），包括主要股票指数和商品。在这种情况下，还请参阅[“差价合约（CFD）”](ch08.html#cfds)和[“免责声明”](#disclaimer)。
 - en: 'With regard to the platform criteria as discussed in [Chapter 8](ch08.html#trading_oanda),
     FXCM offers the following:'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于如[第8章](ch08.html#trading_oanda)中讨论的平台标准，FXCM提供以下内容：
 - en: Instruments
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 工具
 - en: FX products (for example, the trading of currency pairs), contracts for difference
     (CFDs) on stock indices, commodities, or rates products.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 外汇产品（例如，货币对的交易），股票指数的差价合约（CFDs），商品或利率产品。
 - en: Strategies
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略
 - en: FXCM allows for, among other things, (leveraged) long and short positions, market
     entry orders, and stop loss orders and take profit targets.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: FXCM允许（以及其他事项）开设（有杠杆）多头和空头头寸，市场进入订单，止损订单和获利目标。
 - en: Costs
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 成本
 - en: In addition to the bid-ask spread, a fixed fee is generally due for every trade
     with FXCM. Different pricing models are available.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了买卖价差之外，通常还需支付固定费用来进行FXCM的每笔交易。有不同的定价模型可供选择。
 - en: Technology
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 技术
 - en: FXCM provides the algorithmic trader with a modern RESTful API that can be accessed
     by, for example, the use of the Python wrapper package `fxcmpy`. Standard trading
     applications for desktop computers, tablets, and smartphones are also available.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: FXCM为算法交易者提供了现代的RESTful API，可以通过例如使用Python包`fxcmpy`来访问。也提供了桌面计算机，平板电脑和智能手机的标准交易应用程序。
 - en: Jurisdiction
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 司法管辖权
 - en: FXCM is active in a number of countries globally (for instance, in the United
     Kingdom or Germany). Depending on the country itself, certain products might not
     be available/offered due to regulations and restrictions.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: FXCM在全球多个国家活跃（例如，英国或德国）。根据国家本身的情况，由于监管和限制，某些产品可能无法提供/提供。
 - en: This chapter covers the basic functionalities of the FXCM trading API and the
     `fxcmpy` Python package required to implement an automated, algorithmic trading
     strategy programmatically. It is structured as follows. [“Getting Started”](#tp_start)
@@ -77,295 +108,461 @@
     in that it illustrates typical tasks implemented using the RESTful API, such as
     retrieving historical and streaming data, placing orders, or looking up account
     information.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了FXCM交易API和实施自动化算法交易策略所需的`fxcmpy` Python包的基本功能。它结构如下。[“入门”](#tp_start)展示了如何设置一切以使用FXCM
+    REST API进行算法交易。[“检索数据”](#tp_data)展示了如何检索和处理金融数据（直至tick级别）。[“使用API”](#tp_api)是核心，因为它说明了使用RESTful
+    API实现的典型任务，例如检索历史和流数据，下订单或查找帐户信息。
 - en: Getting Started
+  id: totrans-17
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 入门
 - en: 'A detailed documentation of the FXCM API is found under [*https://oreil.ly/Df_7e*](https://oreil.ly/Df_7e).
     To install the Python wrapper package `fxcmpy`, execute the following on the shell:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: FXCM API的详细文档可在[*https://oreil.ly/Df_7e*](https://oreil.ly/Df_7e)下找到。要安装Python包`fxcmpy`，请在Shell上执行以下操作：
 - en: '[PRE0]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: The documentation of the `fxcmpy` package is found under [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io).
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '`fxcmpy`包的文档可在[*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)下找到。'
 - en: 'To get started with the the FXCM trading API and the `fxcmpy` package, a free
     demo account with FXCM is sufficient. One can open such an account under [FXCM
     Demo Account](https://oreil.ly/v9H6z).^([1](ch09.html#idm45785351530440)) The
     next step is to create a unique API token (for example, `YOUR_FXCM_API_TOKEN`)
     from within the demo account. A connection to the API is then opened, for example,
     via the following:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 要开始使用 FXCM 交易 API 和 `fxcmpy` 包，FXCM 的免费演示账户就足够了。可以在 [FXCM 演示账户](https://oreil.ly/v9H6z)
+    下开设此类账户。^([1](ch09.html#idm45785351530440)) 接下来的步骤是在演示账户内创建一个唯一的 API 令牌（例如 `YOUR_FXCM_API_TOKEN`）。然后可以通过以下方式打开
+    API 连接：
 - en: '[PRE1]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'Alternatively, you can use the configuration file as created in [Chapter 8](ch08.html#trading_oanda)
     to connect to the API. This file’s content should be amended as follows:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，可以使用在 [第 8 章](ch08.html#trading_oanda) 中创建的配置文件连接 API。此文件的内容应修改如下：
 - en: '[PRE2]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'One can then connect to the API via the following:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后可以通过以下方式连接到 API：
 - en: '[PRE3]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'By default, the server connects to the demo server. However, by the use of
     the `server` parameter, the connection can be made to the live trading server
     (if such an account exists):'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，服务器连接到演示服务器。但是，通过使用 `server` 参数，可以将连接切换到实时交易服务器（如果有此类账户）：
 - en: '[PRE4]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO1-1)'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO1-1)'
 - en: Connects to the demo server.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 连接到演示服务器。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO1-2)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO1-2)'
 - en: Connects to the live trading server.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 连接到实时交易服务器。
 - en: Retrieving Data
+  id: totrans-33
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 检索数据
 - en: FXCM provides access to historical market price data sets, such as tick data,
     in a pre-packaged variant. This means that one can retrieve, for instance, compressed
     files from FXCM servers that contain tick data for the EUR/USD exchange rate for
     week 10 of 2020\. The retrieval of historical candles data from the API is explained
     in the subsequent section.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: FXCM 提供访问历史市场价格数据集的方式，例如 ticks 数据，以预打包的方式提供。这意味着可以从 FXCM 服务器检索到压缩文件，其中包含 2020
+    年第 10 周的 EUR/USD 汇率的 ticks 数据。接下来的部分将解释如何从 API 检索历史蜡烛数据。
 - en: Retrieving Tick Data
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 检索 Tick 数据
 - en: 'For a number of currency pairs, FXCM provides historical tick data. The `fxcmpy`
     package makes retrieval of such tick data and working with it convenient. First,
     some imports:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于多个货币对，FXCM 提供历史 ticks 数据。`fxcmpy` 包使得检索和处理这类 ticks 数据变得方便。首先，导入一些库：
 - en: '[PRE5]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Second is a look at the available `symbols` (currency pairs) for which tick
     data is available:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，查看可用的 `symbols`（货币对），这些货币对具有 ticks 数据可用性：
 - en: '[PRE6]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'The following code retrieves one week’s worth of tick data for a single symbol.
     The resulting pandas `DataFrame` object has more than 4.5 million data rows:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码检索单个符号一周的 ticks 数据。生成的 pandas `DataFrame` 对象包含超过 4.5 百万行数据：
 - en: '[PRE7]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO2-1)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO2-1)'
 - en: This retrieves the data file, unpacks it, and stores the raw data in a `DataFrame`
     object (as an attribute to the resulting object).
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会检索数据文件，解压缩并将原始数据存储在 `DataFrame` 对象中（作为结果对象的属性）。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO2-4)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO2-4)'
 - en: The `.get_raw_data()` method returns the `DataFrame` object with the raw data
     for which the index values are still `str` objects.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.get_raw_data()` 方法返回带有原始数据的 `DataFrame` 对象，其中索引值仍然是 `str` 对象。'
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO2-5)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO2-5)'
 - en: The `.get_data()` method returns a `DataFrame` object for which the index has
     been transformed to a `DatetimeIndex`.^([2](ch09.html#idm45785350353608))
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.get_data()` 方法返回一个 `DataFrame` 对象，其中的索引已转换为 `DatetimeIndex`。^([2](ch09.html#idm45785350353608))'
 - en: 'Since the tick data is stored in a `DataFrame` object, it is straightforward
     to pick a sub-set of the data and to implement typical financial analytics tasks
     on it. [Figure 9-1](#fxcm_01) shows a plot of the mid prices derived for the sub-set
     and a simple moving average (SMA):'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于 ticks 数据存储在 `DataFrame` 对象中，因此很容易选择数据的子集并在其上执行典型的金融分析任务。[Figure 9-1](#fxcm_01)
+    展示了从子集中派生的中间价格及其简单移动平均线（SMA）的绘图：
 - en: '[PRE8]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO3-1)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO3-1)'
 - en: Picks a sub-set of the complete data set.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择完整数据集的子集。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO3-2)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO3-2)'
 - en: Calculates the mid prices from the bid and ask prices.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算从买入价和卖出价中得出的中间价格。
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO3-3)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO3-3)'
 - en: Derives SMA values over intervals of 1,000 ticks.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 按照 1,000 个 ticks 的间隔计算 SMA 值。
 - en: '![pfat 0901](assets/pfat_0901.png)'
+  id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0901](assets/pfat_0901.png)'
 - en: Figure 9-1\. Historical mid tick prices for EUR/USD and SMA
+  id: totrans-57
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-1\. EUR/USD历史中间tick价格和SMA
 - en: Retrieving Candles Data
+  id: totrans-58
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 检索蜡烛数据
 - en: In addition, FXCM provides access to historical candles data (beyond the API).
     Candles data is data for certain homogeneous time intervals (“bars”) with open,
     high, low, and close values for both bid and ask prices.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，FXCM还提供对历史蜡烛数据（超出API范围）的访问。蜡烛数据是一定时间间隔内的数据（“柱状图”），包含买入和卖出价格的开盘价、最高价、最低价和收盘价。
 - en: 'First is a look at the available symbols for which candles data is provided:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先查看提供蜡烛数据的可用符号：
 - en: '[PRE9]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'Second, the data retrieval itself. It is similar to the the tick data retrieval.
     The only difference is that a `period` value, or the bar length, needs to be specified
     (for example, `m1` for one minute, `H1` for one hour, or `D1` for one day):'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，数据检索本身。与前面的tick数据检索类似。唯一的区别是需要指定`period`值或柱状图长度（例如，`m1`表示一分钟，`H1`表示一小时，`D1`表示一天）：
 - en: '[PRE10]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO4-1)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO4-1)'
 - en: Specifies the `period` value.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定`period`数值。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO4-2)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO4-2)'
 - en: Open, high, low, and close values for the *bid* prices.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 开盘价、最高价、最低价和收盘价对应的*买入*价格。
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO4-3)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO4-3)'
 - en: Open, high, low, and close values for the *ask* prices.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 开盘价、最高价、最低价和收盘价对应的*卖出*价格。
 - en: 'To conclude this section, the Python code that follows and calculates mid close
     prices, calculates two SMAs, and plots the results (see [Figure 9-2](#fxcm_02)):'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 结束本节，以下是接下来计算中间收盘价、计算两个SMA并绘制结果的Python代码（参见[图 9-2](#fxcm_02)）：
 - en: '[PRE11]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO5-1)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO5-1)'
 - en: Calculates the mid close prices from the bid and ask close prices.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算中间收盘价，从买入和卖出的收盘价中计算。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO5-2)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO5-2)'
 - en: 'Calculates two SMAs: one for a shorter time interval, and one for a longer
     one.'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算两个SMA：一个较短时间间隔的和一个较长时间间隔的。
 - en: '![pfat 0902](assets/pfat_0902.png)'
+  id: totrans-76
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0902](assets/pfat_0902.png)'
 - en: Figure 9-2\. Historical hourly mid close prices for EUR/USD and two SMAs
+  id: totrans-77
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 9-2\. EUR/USD历史小时中间收盘价和两个SMA
 - en: Working with the API
+  id: totrans-78
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用 API 进行工作
 - en: 'While the previous sections retrieve historical tick data and candles data
     pre-packaged from FXCM servers, this section shows how to retrieve historical
     data via the API. However, a connection object to the FXCM API is needed. Therefore,
     first, here is the import of the `fxcmpy` package, the connection to the API (based
     on the unique API token), and a look at the available instruments. There might
     be more instruments available as compared to the pre-packaged data sets:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然前几节从FXCM服务器检索了历史tick数据和蜡烛数据的预打包数据，但本节展示了如何通过API检索历史数据。但是，需要连接到FXCM API的连接对象。因此，首先是导入`fxcmpy`包，连接到API（基于唯一的API令牌），并查看可用的工具。可能有更多的工具可用，与预打包数据集相比：
 - en: '[PRE12]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO6-1)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO6-1)'
 - en: This connects to the API; adjust the path/filename.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将连接到API；调整路径/文件名。
 - en: Retrieving Historical Data
+  id: totrans-83
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 检索历史数据
 - en: 'Once connected, data retrieval for specific time intervals is accomplished
     via a single method call. When using the `.get_candles()` method, the parameter
     `period` can be one of `m1`, `m5`, `m15`, `m30`, `H1`, `H2`, `H3`, `H4`, `H6`,
     `H8`, `D1`, `W1`, or `M1`. [Figure 9-3](#fxcm_03) shows one-minute bar ask close
     prices for the `EUR/USD` instrument (currency pair):'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 连接后，通过单个方法调用实现特定时间间隔的数据检索。使用`.get_candles()`方法时，参数`period`可以是`m1`、`m5`、`m15`、`m30`、`H1`、`H2`、`H3`、`H4`、`H6`、`H8`、`D1`、`W1`或`M1`之一。[图 9-3](#fxcm_03)显示了`EUR/USD`工具（货币对）的一分钟柱状图卖出收盘价：
 - en: '[PRE13]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO7-1)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO7-1)'
 - en: Retrieves the 10 most recent end-of-day prices.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索最近的10个收盘价。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO7-4)'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO7-4)'
 - en: Retrieves end-of-day prices for a whole year.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索整年的收盘价。
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO7-8)'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO7-8)'
 - en: Retrieves the most recent one-minute bar prices available.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索可用的最近一分钟柱状图价格。
 - en: Historical data retrieved from the FXCM RESTful API can change with the pricing
     model of the account. In particular, the average bid-ask spreads can be higher
     or lower for different pricing models offered by FXCM to different groups of traders.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 从FXCM RESTful API检索的历史数据可以根据账户的定价模型而变化。特别是，不同定价模型对不同交易者群体提供的平均买卖价差可能更高或更低。
 - en: '![pfat 0903](assets/pfat_0903.png)'
+  id: totrans-93
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0903](assets/pfat_0903.png)'
 - en: Figure 9-3\. Historical ask close prices for EUR/USD (minute bars)
+  id: totrans-94
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图9-3\. EUR/USD的历史要价收盘价格（分钟柱）
 - en: Retrieving Streaming Data
+  id: totrans-95
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 检索流数据
 - en: While *historical* data is important to, for example, backtest algorithmic trading
     strategies, continuous access to *real-time or streaming* data (during trading
     hours) is required to deploy and automate algorithmic trading strategies. Similar
@@ -373,240 +570,372 @@
     data streams for all instruments. The `fxcmpy` wrapper package supports this functionality
     in that it allows one to provide user-defined functions (so called *callback functions*)
     to process the subscribed real-time data stream.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管*历史*数据对于例如回测算法交易策略很重要，但在交易时间内，部署和自动化算法交易策略需要持续访问*实时或流式*数据。与Oanda API类似，FXCM
+    API也允许订阅所有工具的实时数据流。因此，`fxcmpy`包支持此功能，允许用户定义的函数（称为*回调函数*）处理订阅的实时数据流。
 - en: 'The following Python code presents such a simple callback function—it only
     prints out selected elements of the data set retrieved—and uses it to process
     data retrieved in real time, after a subscription for the desired instrument (here
     `EUR/USD`):'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码展示了这样一个简单的回调函数——它仅打印出检索到的数据集的选定元素，并用它来处理实时检索的数据，订阅所需工具（这里是`EUR/USD`）：
 - en: '[PRE14]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO8-1)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO8-1)'
 - en: This is the callback function that prints out certain elements of the retrieved
     data set.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是打印检索到的数据集中某些元素的回调函数。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO8-2)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO8-2)'
 - en: Here is the subscription to a specific real-time data stream. Data is processed
     asynchronously as long as there is no “unsubscribe” event.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是对特定实时数据流的订阅。只要没有“取消订阅”事件，数据将异步处理。
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO8-3)'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO8-3)'
 - en: During the subscription, the `.get_last_price()` method returns the last available
     data set.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 在订阅期间，`.get_last_price()`方法返回最后一个可用的数据集。
 - en: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO8-4)'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO8-4)'
 - en: This unsubscribes from the real-time data stream.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将取消实时数据流的订阅。
 - en: Callback Functions
+  id: totrans-107
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 回调函数
 - en: Callback functions are a flexible way to process real-time streaming data based
     on a Python function or even multiple such functions. They can be used for simple
     tasks, such as the printing of incoming data, or complex tasks, such as generating
     trading signals based on online trading algorithms.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 回调函数是根据Python函数或甚至多个这样的函数处理实时流数据的灵活方式。它们可用于简单的任务，如打印传入的数据，或复杂的任务，如基于在线交易算法生成交易信号。
 - en: Placing Orders
+  id: totrans-109
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 下单
 - en: The FXCM API allows for the placement and management of all types of orders
     that are also available via the trading application of FXCM (such as entry orders
     or trailing stop loss orders).^([3](ch09.html#idm45785344248888)) However, the
     following code illustrates basic market buy and sell orders only since they are
     generally sufficient to at least get started with algorithmic trading.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: FXCM API允许下达和管理所有类型的订单，这些订单也可以通过FXCM的交易应用程序使用（例如入场订单或追踪止损订单）。^([3](ch09.html#idm45785344248888))
+    然而，以下代码仅说明基本的市场买卖订单，因为它们通常足以开始算法交易。
 - en: 'The following code first verifies that there are no open positions and then
     opens different positions via the `.create_market_buy_order()` method:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码首先验证是否有空仓位，然后通过`.create_market_buy_order()`方法开设不同的仓位：
 - en: '[PRE15]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO9-1)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO9-1)'
 - en: Shows the open positions for the connected (default) account.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示连接的（默认）账户的开放仓位。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO9-2)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO9-2)'
 - en: Opens a position of 100,000 in the `EUR/USD` currency pair.^([4](ch09.html#idm45785343218824))
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 开设`EUR/USD`货币对的100,000的仓位。^([4](ch09.html#idm45785343218824))
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO9-3)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO9-3)'
 - en: Shows the open positions for selected elements only.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅显示选定元素的开放仓位。
 - en: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO9-5)'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO9-5)'
 - en: Opens another position of 50,000 in the `EUR/GBP` currency pair.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 `EUR/GBP` 货币对中再次开仓 50,000。
 - en: 'While the `.create_market_buy_order()` opens or increases positions, the `.create_market_sell_order()`
     allows one to close or decrease positions. There are also more general methods
     that allow the closing out of positions, as the following code illustrates:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.create_market_buy_order()` 方法用于开仓或增加持仓，而 `.create_market_sell_order()` 允许关闭或减少持仓。还有更一般的方法允许平仓持仓，如下面的代码所示：'
 - en: '[PRE16]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO10-1)'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO10-1)'
 - en: Reduces the position in the `EUR/USD` currency pair.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 减少 `EUR/USD` 货币对的持仓。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO10-2)'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO10-2)'
 - en: Increases the position in the `EUR/GBP` currency pair.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 增加 `EUR/GBP` 货币对的持仓。
 - en: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO10-3)'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_fx_trading_with_fxcm_CO10-3)'
 - en: For `EUR/GBP` there are now two open long positions; contrary to the `EUR/USD`
     position, it is not netted.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于 `EUR/GBP`，现在有两个开仓多头持仓；与 `EUR/USD` 持仓相反，它不进行净额处理。
 - en: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO10-4)'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_fx_trading_with_fxcm_CO10-4)'
 - en: The `.close_all_for_symbol()` method closes all positions for the specified
     symbol.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.close_all_for_symbol()` 方法关闭指定符号的所有持仓。'
 - en: '[![5](assets/5.png)](#co_fx_trading_with_fxcm_CO10-5)'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_fx_trading_with_fxcm_CO10-5)'
 - en: The `.close_all()` method closes all open positions at once.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.close_all()` 方法一次性关闭所有持仓。'
 - en: By default, FXCM sets up demo accounts as *hedge accounts*. This means that
     going long, say EUR/USD, with 10,000 and going short the same instrument with
     10,000 leads to two different open positions. The default with Oanda are *net
     accounts* that net orders and positions for the same instrument.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，FXCM 将演示账户设置为*对冲账户*。这意味着用 10,000 进行 EUR/USD 的多头操作，并使用相同工具进行空头操作会导致两个不同的持仓。而
+    Oanda 的默认设置是*净额账户*，即对同一工具的订单和持仓进行净额处理。
 - en: Account Information
+  id: totrans-134
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 账户信息
 - en: 'Beyond, for example, open positions, the FXCM API allows one to retrieve more
     general account informationm, as well. For example, one can look up the default
     account (if there are multiple accounts) or an overview equity and margin situation:'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，例如，开仓持仓，FXCM API 还允许检索更一般的账户信息。例如，可以查找默认账户（如果有多个账户）或概览权益和保证金情况：
 - en: '[PRE17]'
+  id: totrans-136
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO11-1)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_fx_trading_with_fxcm_CO11-1)'
 - en: Shows the default `accountId` value.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示默认 `accountId` 值。
 - en: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO11-2)'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_fx_trading_with_fxcm_CO11-2)'
 - en: Shows for all accounts the financial situation and some parameters.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示所有账户的财务状况和一些参数。
 - en: Conclusions
+  id: totrans-141
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: 'This chapter is about the RESTful API of FXCM for algorithmic trading and covers
     the following topics:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了 FXCM 的 RESTful API 用于算法交易，涵盖了以下主题：
 - en: Setting everything up for API usage
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为 API 使用设置一切
 - en: Retrieving historical tick data
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 检索历史时刻数据
 - en: Retrieving historical candles data
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 检索历史蜡烛数据
 - en: Retrieving streaming data in real-time
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 检索实时流数据
 - en: Placing market buy and sell orders
+  id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 下单市场买入和卖出
 - en: Looking up account information
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 查找账户信息
 - en: Beyond these aspects, the FXCM API and the `fxcmpy` wrapper package provide,
     of course, more functionality. However, the topics of this chapter are the basic
     building blocks needed to get started with algorithmic trading.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了这些方面，FXCM API 和 `fxcmpy` 封装包当然提供了更多功能。然而，本章的主题是开始进行算法交易所需的基本构建模块。
 - en: With Oanda and FXCM, algorithmic traders have two trading platforms (brokers)
     available that provide a wide-ranging spectrum of financial instruments and appropriate
     APIs to implement automated, algorithmic trading strategies. Some important aspects
     are added to the mix in [Chapter 10](ch10.html#automated_trading).
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 Oanda 和 FXCM，算法交易者有两个可用的交易平台（经纪商），提供广泛的金融工具和适当的 API 来实施自动化、算法交易策略。在[第十章](ch10.html#automated_trading)中添加了一些重要的方面。
 - en: References and Further Resources
+  id: totrans-151
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考资料和进一步资源
 - en: 'The following resources cover the FXCM trading API and the Python wrapper package:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下资源涵盖了 FXCM 交易 API 和 Python 封装包：
 - en: 'Trading API: [*https://fxcm.github.io/rest-api-docs*](https://fxcm.github.io/rest-api-docs)'
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 交易 API：[*https://fxcm.github.io/rest-api-docs*](https://fxcm.github.io/rest-api-docs)
 - en: '`fxcmpy` package: [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)'
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`fxcmpy` 包：[*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)'
 - en: ^([1](ch09.html#idm45785351530440-marker)) Note that FXCM demo accounts are
     only offered for certain countries.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch09.html#idm45785351530440-marker)) 注意，FXCM 的演示账户仅限于特定国家。
 - en: ^([2](ch09.html#idm45785350353608-marker)) The `DatetimeIndex` conversion is
     time consuming, which is why there are two different methods related to tick data
     retrieval.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch09.html#idm45785350353608-marker)) `DatetimeIndex` 转换非常耗时，这就是为什么有两种与
+    Tick 数据检索相关的不同方法。
 - en: ^([3](ch09.html#idm45785344248888-marker)) See the documentation under [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io).
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch09.html#idm45785344248888-marker)) 参见 [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)
+    下的文档。
 - en: ^([4](ch09.html#idm45785343218824-marker)) Quantities are in 1,000s of the instrument
     for currency pairs. Also, note that different accounts might have different leverage
     ratios. This implies that the same position might require more or less equity
     (margin) depending on the relevant leverage ratio. Adjust the example quantities
     to lower values if necessary. See [*https://oreil.ly/xUHMP*](https://oreil.ly/xUHMP).
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch09.html#idm45785343218824-marker)) 货币对的数量单位为千分之一，此外，请注意不同账户可能具有不同的杠杆比率。这意味着相同的头寸可能需要更多或更少的资产（保证金），具体取决于相关的杠杆比率。如有必要，请将示例数量调整为较低的值。参见
+    [*https://oreil.ly/xUHMP*](https://oreil.ly/xUHMP)。

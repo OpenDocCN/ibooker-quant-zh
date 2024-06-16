@@ -1,35 +1,46 @@
 - en: Chapter 4\. Machine Learning-Based Volatility Prediction
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第四章：基于机器学习的波动率预测
 - en: The most critical feature of the conditional return distribution is arguably
     its second moment structure, which is empirically the dominant time-varying characteristic
     of the distribution. This fact has spurred an enormous literature on the modeling
     and forecasting of return volatility.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 条件回报分布最关键的特征可能是其二阶矩结构，这在经验上是分布的主导时变特征。这一事实催生了关于回报波动建模和预测的大量文献。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Andersen et al. (2003)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Andersen等人（2003）
 - en: “Some concepts are easy to understand but hard to define. This also holds true
     for volatility.” This could be a quote from someone living before Markowitz because
     the way he models volatility is very clear and intuitive. Markowitz proposed his
     celebrated portfolio theory in which he defined *volatility* as standard deviation
     so that from then onward, finance became more intertwined with mathematics.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: “有些概念易于理解但难以定义。这也适用于波动性。” 这可能是马科维茨之前某位生前的话，因为他对波动性的建模非常清晰和直观。马科维茨提出了他著名的投资组合理论，在其中他将*波动性*定义为标准差，从那时起，金融领域与数学更加紧密地联系在一起。
 - en: Volatility is the backbone of finance in the sense that it not only provides
     an information signal to investors, but it also is an input to various financial
     models. What makes volatility so important? The answer stresses the importance
     of uncertainty, which is the main characteristic of the financial model.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 波动性在金融中是支柱，因为它不仅为投资者提供信息信号，还是各种金融模型的输入。波动性如此重要的原因是什么？答案强调了不确定性的重要性，这是金融模型的主要特征。
 - en: Increased integration of financial markets has led to prolonged uncertainty
     in those markets, which in turn stresses the importance of volatility, the degree
     at which values of financial assets changes. Volatility used as a proxy of risk
@@ -38,8 +49,11 @@
     model. Volatility as a risk measure has taken on a key role in risk management
     following the Basel Accord that came into effect in 1996 (Karasan and Gaygisiz
     2020).
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融市场的增加整合导致了这些市场长期不确定性的延续，进而强调了波动性的重要性，即金融资产价值变动的程度。作为风险的代理，波动性是许多领域（包括资产定价和风险管理）中最重要的变量之一。它的强烈存在和延迟使得必须进行建模。作为风险度量，波动性在1996年生效的巴塞尔协议后在风险管理中扮演了关键角色（Karasan和Gaygisiz
+    2020）。
 - en: A large and growing body of literature regarding the estimation of volatility
     has emerged after the ground-breaking studies of Black (1976), including Andersen
     and Bollerslev (1997), Raju and Ghosh (2004), Dokuchaev (2014), and De Stefani
@@ -49,14 +63,19 @@
     Even though these issues are addressed by different models, recent fluctuations
     in financial markets coupled with developments in ML have made researchers rethink
     volatility estimation.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Black（1976）开创性研究之后，关于波动率估计的大量文献逐渐涌现，包括Andersen和Bollerslev（1997）、Raju和Ghosh（2004）、Dokuchaev（2014）以及De
+    Stefani等人（2017）。我们谈论的是使用ARCH和GARCH类型模型进行波动率预测的长期传统，这些模型存在一些可能导致失败的缺陷，如波动率聚类、信息不对称等。尽管这些问题被不同模型解决，但是最近金融市场的波动加上机器学习的发展使得研究人员重新思考了波动率估计。
 - en: In this chapter, our aim is to show how we can enhance the predictive performance
     using an ML-based model. We will visit various ML algorithms, namely support vector
     regression, neural network, and deep learning, so that we are able to compare
     the predictive performance.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章旨在展示如何利用基于机器学习的模型提升预测性能。我们将介绍各种机器学习算法，包括支持向量回归、神经网络和深度学习，以便进行预测性能比较。
 - en: 'Modeling volatility amounts to modeling uncertainty so that we better understand
     and approach uncertainty, enabling us to have good enough approximations of the
     real world. To gauge the extent to which proposed models account for the real-world
@@ -65,8 +84,10 @@
     which is the sum of squared return. Realized volatility is used to calculate the
     performance of the volatility prediction method. Here is the formula for return
     volatility:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 对波动率进行建模相当于对不确定性进行建模，以便更好地理解和处理不确定性，从而使我们能够对真实世界有足够好的近似。为了评估建议模型在多大程度上符合实际情况，我们需要计算回报波动率，也称为*实现波动率*。实现波动率是实现方差的平方根，即回报的平方和。实现波动率用于计算波动率预测方法的性能。以下是回报波动率的公式：
 - en: <math alttext="ModifyingAbove sigma With caret equals StartRoot StartFraction
     1 Over n minus 1 EndFraction sigma-summation Underscript n equals 1 Overscript
     upper N Endscripts left-parenthesis r Subscript n Baseline minus mu right-parenthesis
@@ -75,73 +96,114 @@
     <msubsup><mo>∑</mo> <mrow><mi>n</mi><mo>=</mo><mn>1</mn></mrow> <mi>N</mi></msubsup>
     <msup><mrow><mo>(</mo><msub><mi>r</mi> <mi>n</mi></msub> <mo>-</mo><mi>μ</mi><mo>)</mo></mrow>
     <mn>2</mn></msup></mrow></msqrt></mrow></math>
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="ModifyingAbove sigma With caret equals StartRoot StartFraction
+    1 Over n minus 1 EndFraction sigma-summation Underscript n equals 1 Overscript
+    upper N Endscripts left-parenthesis r Subscript n Baseline minus mu right-parenthesis
+    squared EndRoot" display="block"><mrow><mover accent="true"><mi>σ</mi> <mo>^</mo></mover>
+    <mo>=</mo> <msqrt><mrow><mfrac><mn>1</mn> <mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></mfrac>
+    <msubsup><mo>∑</mo> <mrow><mi>n</mi><mo>=</mo><mn>1</mn></mrow> <mi>N</mi></msubsup>
+    <msup><mrow><mo>(</mo><msub><mi>r</mi> <mi>n</mi></msub> <mo>-</mo><mi>μ</mi><mo>)</mo></mrow>
+    <mn>2</mn></msup></mrow></msqrt></mrow></math>
 - en: where *r* and <math alttext="mu"><mi>μ</mi></math> are return and mean of return,
     and *n* is number of observations.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*r*和<math alttext="mu"><mi>μ</mi></math>分别是回报和回报均值，*n*是观察次数。
 - en: 'Let’s see how return volatility is computed in Python:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何在Python中计算回报波动率：
 - en: '[PRE0]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO1-1)'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO1-1)'
 - en: Calculating the returns of the S&P 500 based on adjusted closing prices.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据调整后的收盘价格计算标准普尔500指数的回报。
 - en: '[Figure 4-1](#rel_vol) shows the realized volatility of S&P 500 over the period
     of 2010–2021\. The most striking observation is the spikes around the COVID-19
     pandemic.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图表 4-1](#rel_vol)展示了2010年至2021年间标准普尔500指数的实现波动率。最引人注目的观察结果是在COVID-19大流行期间出现的波动率尖峰。'
 - en: '![rel_vol](assets/mlfr_0401.png)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![rel_vol](assets/mlfr_0401.png)'
 - en: Figure 4-1\. Realized volatility—S&P 500
+  id: totrans-18
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图4-1. 实现波动率—标准普尔500指数
 - en: 'The way volatility is estimated has an undeniable impact on the reliability
     and accuracy of the related analysis. So this chapter deals with both classical
     and ML-based volatility prediction techniques with a view to showing the superior
     prediction performance of the ML-based models. To compare the brand-new ML-based
     models, we start with modeling the classical volatility models. Some very well
     known classical volatility models include, but are not limited to, the following:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 波动率估计方式对相关分析的可靠性和准确性有着不可否认的影响。因此，本章既涉及经典波动率预测技术，也涉及基于机器学习的波动率预测技术，旨在展示后者更为优越的预测性能。为了比较全新的基于机器学习的模型，我们从建模经典波动率模型开始。一些非常著名的经典波动率模型包括但不限于以下几种：
 - en: ARCH
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ARCH
 - en: GARCH
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: GARCH
 - en: GJR-GARCH
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: GJR-GARCH
 - en: EGARCH
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: EGARCH
 - en: It’s time to dig into the classical volatility models. Let’s start off with
     the ARCH model.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在是深入经典波动率模型的时候了。让我们从ARCH模型开始。
 - en: ARCH Model
+  id: totrans-25
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: ARCH模型
 - en: 'One of the early attempts to model volatility was proposed by Eagle (1982)
     and is known as the ARCH model. The ARCH model is a univariate model and based
     on historical asset returns. The ARCH(p) model has the following form:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 早期对波动率建模的一种尝试由Eagle (1982)提出，称为ARCH模型。ARCH模型是一个基于历史资产回报的单变量模型。ARCH(p)模型具有以下形式：
 - en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus sigma-summation
     Underscript k equals 1 Overscript p Endscripts alpha Subscript k Baseline left-parenthesis
     r Subscript t minus k Baseline right-parenthesis squared" display="block"><mrow><msubsup><mi>σ</mi>
@@ -149,31 +211,52 @@
     <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>α</mi>
     <mi>k</mi></msub> <msup><mrow><mo>(</mo><msub><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub>
     <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus sigma-summation
+    Underscript k equals 1 Overscript p Endscripts alpha Subscript k Baseline left-parenthesis
+    r Subscript t minus k Baseline right-parenthesis squared" display="block"><mrow><msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo> <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>α</mi>
+    <mi>k</mi></msub> <msup><mrow><mo>(</mo><msub><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub>
+    <mo>)</mo></mrow> <mn>2</mn></msup></mrow></math>
 - en: 'where the mean model is:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中均值模型为：
 - en: <math alttext="r Subscript t Baseline equals sigma Subscript t Baseline epsilon
     Subscript t" display="block"><mrow><msub><mi>r</mi> <mi>t</mi></msub> <mo>=</mo>
     <msub><mi>σ</mi> <mi>t</mi></msub> <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math>
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="r Subscript t Baseline equals sigma Subscript t Baseline epsilon
+    Subscript t" display="block"><mrow><msub><mi>r</mi> <mi>t</mi></msub> <mo>=</mo>
+    <msub><mi>σ</mi> <mi>t</mi></msub> <msub><mi>ϵ</mi> <mi>t</mi></msub></mrow></math>
 - en: 'where <math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>
     is assumed to be normally distributed. In this parametric model, we need to satisfy
     some assumptions to have strictly positive variance. In this respect, the following
     conditions should hold:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中<math alttext="epsilon Subscript t"><msub><mi>ϵ</mi> <mi>t</mi></msub></math>被假设为正态分布。在这个参数模型中，我们需要满足一些假设条件以确保严格的正方差。在这方面，以下条件应当成立：
 - en: <math alttext="omega greater-than 0"><mrow><mi>ω</mi> <mo>></mo> <mn>0</mn></mrow></math>
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="omega greater-than 0"><mrow><mi>ω</mi> <mo>></mo> <mn>0</mn></mrow></math>
 - en: <math alttext="alpha Subscript k Baseline greater-than-or-equal-to 0"><mrow><msub><mi>α</mi>
     <mi>k</mi></msub> <mo>≥</mo> <mn>0</mn></mrow></math>
+  id: totrans-32
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="alpha Subscript k Baseline greater-than-or-equal-to 0"><mrow><msub><mi>α</mi>
+    <mi>k</mi></msub> <mo>≥</mo> <mn>0</mn></mrow></math>
 - en: All of these equations tell us that ARCH is a univariate and nonlinear model
     in which volatility is estimated with the square of past returns. One of the most
     distinctive features of ARCH is that it has the property of time-varying conditional
@@ -182,217 +265,341 @@
     followed by large changes of either sign, and small changes tend to be followed
     by small changes, as described by Mandelbrot (1963). Hence, once an important
     announcement is made to the market, it might result in huge volatility.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些方程告诉我们，ARCH是一个单变量且非线性的模型，其中波动率是通过过去回报的平方来估计的。ARCH最显著的特征之一是具有时变条件方差的性质^([1](ch04.html#idm45737244123312))，因此ARCH能够模拟被称为*波动率聚集*的现象——即大变化往往会后续出现大的变化，不论其方向如何，而小变化则往往会后续出现小的变化，正如Mandelbrot
+    (1963)所描述的。因此，一旦市场发布重要公告，可能会导致巨大的波动。
 - en: 'The following code block shows how to plot clustering and what it looks like:'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码块显示了如何绘制聚类图以及其效果：
 - en: '[PRE1]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO2-1)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO2-1)'
 - en: Return dataframe into a `numpy` representation
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 将返回的数据框转换为`numpy`表示形式
 - en: Similar to spikes in realized volatility, [Figure 4-2](#vol_clustering) suggests
     some large movements, and, unsurprisingly, these ups and downs happen around important
     events such as the COVID-19 pandemic in mid-2020.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 与实现波动性峰值类似，[图 4-2](#vol_clustering) 表明存在一些大幅波动，毫不奇怪，这些起伏通常发生在重要事件，比如2020年中期的COVID-19大流行期间。
 - en: '![clustering](assets/mlfr_0402.png)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![clustering](assets/mlfr_0402.png)'
 - en: Figure 4-2\. Volatility clustering—S&P 500
+  id: totrans-40
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-2\. 波动性聚类—标准普尔500指数
 - en: 'Despite its appealing features, such as simplicity, nonlinearity, easiness,
     and adjustment for forecast, the ARCH model has certain drawbacks:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管ARCH模型具有诸如简单性、非线性、易用性和用于预测的调整等吸引人的特征，但它也存在一些缺点：
 - en: Equal response to positive and negative shocks
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对正面和负面冲击的反应相等
 - en: Strong assumptions such as restrictions on parameters
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 诸如对参数的限制等强假设
 - en: Possible misprediction due to slow adjustments to large movements
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于对大幅波动的缓慢调整可能导致误预测
 - en: These drawbacks motivated researchers to work on extensions of the ARCH model,
     notably the GARCH model proposed by Bollerslev (1986) and Taylor (1986), which
     we will discuss shortly.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些缺点促使研究人员进行ARCH模型的扩展工作，尤其是Bollerslev（1986）和Taylor（1986）提出的GARCH模型，我们稍后将讨论。
 - en: 'Now let’s employ the ARCH model to predict volatility. First, let’s generate
     our own Python code, and then compare it with a built-in function from the `arch`
     library to see the differences:'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们使用ARCH模型来预测波动性。首先，让我们生成我们自己的Python代码，然后与`arch`库中的内置函数进行比较，看看它们之间的差异：
 - en: '[PRE2]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-1)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-1)'
 - en: Defining the split location and assigning the split data to `split` variable
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义拆分位置并将拆分数据分配给`split`变量
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-2)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-2)'
 - en: Calculating variance of the S&P 500
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算标准普尔500指数的方差
 - en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-3)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-3)'
 - en: Calculating kurtosis of the S&P 500
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算标准普尔500指数的峰度
 - en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-4)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-4)'
 - en: Identifying the initial value for slope coefficient <math alttext="alpha"><mi>α</mi></math>
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定斜率系数<math alttext="alpha"><mi>α</mi></math>的初始值
 - en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-5)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-5)'
 - en: Identifying the initial value for constant term <math alttext="omega"><mi>ω</mi></math>
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定常数项<math alttext="omega"><mi>ω</mi></math>的初始值
 - en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-6)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-6)'
 - en: Using parallel processing to decrease the processing time
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用并行处理以减少处理时间
 - en: '[![7](assets/7.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-7)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-7)'
 - en: Taking absolute values and assigning the initial values into related variables
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 取绝对值并将初始值分配给相关变量
 - en: '[![8](assets/8.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-9)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-9)'
 - en: Identifying the initial values of volatility
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定波动性的初始值
 - en: '[![9](assets/9.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-10)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-10)'
 - en: Iterating the variance of S&P 500
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 迭代标准普尔500指数的方差
 - en: '[![10](assets/10.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-11)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-11)'
 - en: Calculating the log-likelihood
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算对数似然
 - en: '[![11](assets/11.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-12)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![11](assets/11.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-12)'
 - en: Minimizing the log-likelihood function
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 最小化对数似然函数
 - en: '[![12](assets/12.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-13)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![12](assets/12.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO3-13)'
 - en: Creating a variable `params` for optimized parameters
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 为优化参数创建变量`params`
 - en: 'Well, we modeled volatility via ARCH using our own optimization method and
     ARCH equation. But how about comparing it with the built-in Python code? This
     built-in code can be imported from `arch` library and is extremely easy to apply.
     The result of the built-in function follows; it turns out that these two results
     are very similar to each other:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过自己的优化方法和ARCH方程建模波动率。但是如何与内置的Python代码进行比较呢？这些内置代码可以从`arch`库导入，非常容易应用。内置函数的结果如下；事实证明这两个结果非常相似：
 - en: '[PRE3]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Although developing our own code is always helpful and improves our understanding,
     it does not necessarily mean that there’s no need to use built-in functions or
     libraries. Rather, these functions makes our lives easier in terms of efficiency
     and ease of use.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管开发我们自己的代码总是有帮助并提高我们的理解，但这并不意味着不需要使用内置函数或库。相反，这些函数在效率和易用性方面使我们的生活更加轻松。
 - en: 'All we need is to create a for loop and define a proper information criteria.
     Here, we’ll choose Bayesian Information Criteria (BIC) as the model selection
     method and to select lag. The reason BIC is used is that as long as we have large
     enough samples, BIC is a reliable tool for model selection as per Burnham and
     Anderson (2002 and 2004). Now, we iterate ARCH model from 1 to 5 lags:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们只需创建一个for循环并定义适当的信息标准。在这里，我们将选择贝叶斯信息准则（BIC）作为模型选择方法和选择滞后项。之所以使用BIC是因为只要我们有足够大的样本，BIC就是一个可靠的模型选择工具，如Burnham和Anderson（2002和2004）所述。现在，我们从1到5个滞后项迭代ARCH模型：
 - en: '[PRE4]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-1)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-1)'
 - en: Iterating ARCH parameter *p* over specified interval
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 在指定的间隔内迭代ARCH参数*p*
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-2)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-2)'
 - en: Running ARCH model with different *p* values
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用不同的*p*值运行ARCH模型
 - en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-3)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-3)'
 - en: Finding the minimum BIC score to select the best model
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 寻找最小的BIC分数来选择最佳模型
 - en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-4)'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-4)'
 - en: Running ARCH model with the best *p* value
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用最佳*p*值运行ARCH模型
 - en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-5)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-5)'
 - en: Forecasting the volatility based on the optimized ARCH model
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于优化的ARCH模型预测波动率
 - en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-6)'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO4-6)'
 - en: Calculating the root mean square error (RMSE) score
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算均方根误差（RMSE）分数
 - en: The result of volatility prediction based on our first model is shown in [Figure 4-3](#arch_vol).
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于我们的第一个模型的波动率预测结果显示在[图 4-3](#arch_vol)中。
 - en: '![arch](assets/mlfr_0403.png)'
+  id: totrans-90
   prefs: []
   type: TYPE_IMG
+  zh: '![arch](assets/mlfr_0403.png)'
 - en: Figure 4-3\. Volatility prediction with ARCH
+  id: totrans-91
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-3\. 使用ARCH进行波动率预测
 - en: GARCH Model
+  id: totrans-92
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: GARCH模型
 - en: 'The GARCH model is an extension of the ARCH model incorporating lagged conditional
     variance. So ARCH is improved by adding *p* number of delated conditional variance,
     which makes the GARCH model multivariate in the sense that it is an autoregressive
     moving average model for conditional variance with *p* number of lagged squared
     returns and *q* number of lagged conditional variance. GARCH(*p*, *q*) can be
     formulated as:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: GARCH模型是将滞后条件方差合并到ARCH模型中的扩展。因此，通过添加*p*个滞后条件方差，改进了ARCH模型，使得GARCH模型在多元意义上是一个条件方差的自回归移动平均模型，具有*p*个滞后平方收益和*q*个滞后条件方差。GARCH(*p*,
+    *q*)可以表达为：
 - en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus sigma-summation
     Underscript k equals 1 Overscript q Endscripts alpha Subscript k Baseline r Subscript
     t minus k Superscript 2 Baseline plus sigma-summation Underscript k equals 1 Overscript
@@ -404,47 +611,82 @@
     <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>β</mi>
     <mi>k</mi></msub> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
     <mn>2</mn></msubsup></mrow></math>
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus sigma-summation
+    Underscript k equals 1 Overscript q Endscripts alpha Subscript k Baseline r Subscript
+    t minus k Superscript 2 Baseline plus sigma-summation Underscript k equals 1 Overscript
+    p Endscripts beta Subscript k Baseline sigma Subscript t minus k Superscript 2"
+    display="block"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo>
+    <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <msub><mi>α</mi> <mi>k</mi></msub> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>β</mi>
+    <mi>k</mi></msub> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
+    <mn>2</mn></msubsup></mrow></math>
 - en: 'where <math alttext="omega"><mi>ω</mi></math> , <math alttext="beta"><mi>β</mi></math>
     , and <math alttext="alpha"><mi>α</mi></math> are parameters to be estimated and
     *p* and *q* are maximum lag in the model. To have consistent GARCH, the following
     conditions should hold:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中<math alttext="omega"><mi>ω</mi></math>，<math alttext="beta"><mi>β</mi></math>和<math
+    alttext="alpha"><mi>α</mi></math>是待估计的参数，*p*和*q*是模型中的最大滞后。为了保持一致的GARCH，应满足以下条件：
 - en: <math alttext="omega"><mi>ω</mi></math> > 0
+  id: totrans-96
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="omega"><mi>ω</mi></math> > 0
 - en: <math alttext="beta greater-than-or-equal-to 0"><mrow><mi>β</mi> <mo>≥</mo>
     <mn>0</mn></mrow></math>
+  id: totrans-97
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="beta greater-than-or-equal-to 0"><mrow><mi>β</mi> <mo>≥</mo>
+    <mn>0</mn></mrow></math>
 - en: <math alttext="alpha greater-than-or-equal-to 0"><mrow><mi>α</mi> <mo>≥</mo>
     <mn>0</mn></mrow></math>
+  id: totrans-98
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="alpha greater-than-or-equal-to 0"><mrow><mi>α</mi> <mo>≥</mo>
+    <mn>0</mn></mrow></math>
 - en: <math alttext="beta plus alpha"><mrow><mi>β</mi> <mo>+</mo> <mi>α</mi></mrow></math>
     < 1
+  id: totrans-99
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="beta plus alpha"><mrow><mi>β</mi> <mo>+</mo> <mi>α</mi></mrow></math>
+    < 1
 - en: 'The ARCH model is unable to capture the influence of historical innovations.
     However, as a more parsimonious model, the GARCH model can account for the change
     in historical innovations because GARCH models can be expressed as an infinite-order
     ARCH. Let’s see how GARCH can be shown as an infinite order of ARCH:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: ARCH模型无法捕捉历史创新的影响。然而，作为更简约的模型，GARCH模型可以解释历史创新的变化，因为GARCH模型可以被表达为无限阶的ARCH。让我们看看GARCH如何可以显示为无限阶的ARCH：
 - en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus alpha
     r Subscript t minus 1 Superscript 2 Baseline plus beta sigma Subscript t minus
     1 Superscript 2" display="block"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup>
     <mo>=</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
     <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
     <mn>2</mn></msubsup></mrow></math>
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus alpha
+    r Subscript t minus 1 Superscript 2 Baseline plus beta sigma Subscript t minus
+    1 Superscript 2" display="block"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup>
+    <mo>=</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
+    <mn>2</mn></msubsup></mrow></math>
 - en: 'Then replace <math alttext="sigma Subscript t minus 1 Superscript 2"><msubsup><mi>σ</mi>
     <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mn>2</mn></msubsup></math> by <math
     alttext="omega plus alpha r Subscript t minus 2 Superscript 2 plus beta sigma
@@ -452,8 +694,15 @@
     <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi>
     <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup></mrow></math>
     :'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后用<math alttext="sigma Subscript t minus 1 Superscript 2"><msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mn>2</mn></msubsup></math>替换<math
+    alttext="omega plus alpha r Subscript t minus 2 Superscript 2 plus beta sigma
+    Subscript t minus 2 Superscript 2"><mrow><mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi>
+    <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup></mrow></math>：
 - en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus alpha
     r Subscript t minus 1 Superscript 2 Baseline plus beta left-parenthesis omega
     plus alpha r Subscript t minus 2 Superscript 2 Baseline sigma Subscript t minus
@@ -471,8 +720,26 @@
     <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
     <mn>2</mn></msubsup> <mo>+</mo> <msup><mi>β</mi> <mn>2</mn></msup> <msubsup><mi>σ</mi>
     <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup> <mrow><mo>)</mo></mrow></mrow></math>
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega plus alpha
+    r Subscript t minus 1 Superscript 2 Baseline plus beta left-parenthesis omega
+    plus alpha r Subscript t minus 2 Superscript 2 Baseline sigma Subscript t minus
+    2 Superscript 2 Baseline right-parenthesis" display="block"><mrow><msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi>
+    <mrow><mo>(</mo> <mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
+    <mn>2</mn></msubsup> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
+    <mn>2</mn></msubsup> <mo>)</mo></mrow></mrow></math><math alttext="equals omega
+    left-parenthesis 1 plus beta right-parenthesis plus alpha r Subscript t minus
+    1 Superscript 2 Baseline plus beta alpha r Subscript t minus 2 Superscript 2 Baseline
+    plus beta squared sigma Subscript t minus 2 Superscript 2 Baseline right-parenthesis"
+    display="block"><mrow><mo>=</mo> <mi>ω</mi> <mrow><mo>(</mo> <mn>1</mn> <mo>+</mo>
+    <mi>β</mi> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi> <mi>α</mi> <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <msup><mi>β</mi> <mn>2</mn></msup> <msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup> <mrow><mo>)</mo></mrow></mrow></math>
 - en: 'Now, let’s substitute <math alttext="sigma Subscript t minus 2 Superscript
     2"><msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup></math>
     with <math alttext="omega plus alpha r Subscript t minus 3 Superscript 2 plus
@@ -481,8 +748,16 @@
     <mo>+</mo> <mi>β</mi> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow>
     <mn>2</mn></msubsup></mrow></math> and do the necessary math so that we end up
     with:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们用 <math alttext="sigma Subscript t minus 2 Superscript 2"><msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow> <mn>2</mn></msubsup></math> 替换为 <math
+    alttext="omega plus alpha r Subscript t minus 3 Superscript 2 plus beta sigma
+    Subscript t minus 3 Superscript 2"><mrow><mi>ω</mi> <mo>+</mo> <mi>α</mi> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>β</mi>
+    <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mn>3</mn></mrow> <mn>2</mn></msubsup></mrow></math>
+    并进行必要的数学运算，以便我们得到：
 - en: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega left-parenthesis
     1 plus beta plus beta squared plus period period period right-parenthesis plus
     alpha sigma-summation Underscript k equals 1 Overscript normal infinity Endscripts
@@ -492,57 +767,94 @@
     <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <munderover><mo>∑</mo>
     <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>∞</mi></munderover> <msup><mi>β</mi>
     <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msup> <msub><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub></mrow></math>
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="sigma Subscript t Superscript 2 Baseline equals omega left-parenthesis
+    1 plus beta plus beta squared plus period period period right-parenthesis plus
+    alpha sigma-summation Underscript k equals 1 Overscript normal infinity Endscripts
+    beta Superscript k minus 1 Baseline r Subscript t minus k" display="block"><mrow><msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>=</mo> <mi>ω</mi> <mrow><mo>(</mo> <mn>1</mn>
+    <mo>+</mo> <mi>β</mi> <mo>+</mo> <msup><mi>β</mi> <mn>2</mn></msup> <mo>+</mo>
+    <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>)</mo></mrow> <mo>+</mo> <mi>α</mi> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>∞</mi></munderover> <msup><mi>β</mi>
+    <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msup> <msub><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub></mrow></math>
 - en: 'Similar to the ARCH model, there is more than one way to model volatility using
     GARCH in Python. Let us try to develop our own Python-based code using the optimization
     technique first. In what follows, the `arch` library will be used to predict volatility:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 ARCH 模型类似，Python 中使用 GARCH 建模波动率的方法不止一种。让我们尝试用优化技术开发自己的基于 Python 的代码。接下来，将使用
+    `arch` 库来预测波动率：
 - en: '[PRE5]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'The parameters we get from our own GARCH code are approximately:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们从自己的 GARCH 代码中获得的参数大约是：
 - en: <math alttext="omega"><mi>ω</mi></math> = 0.0392
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="omega"><mi>ω</mi></math> = 0.0392
 - en: <math alttext="alpha"><mi>α</mi></math> = 0.1737
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="alpha"><mi>α</mi></math> = 0.1737
 - en: <math alttext="beta"><mi>β</mi></math> = 0.7899
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="beta"><mi>β</mi></math> = 0.7899
 - en: 'Now, let’s try it with the built-in Python function:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们尝试使用内置的 Python 函数：
 - en: '[PRE6]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: The built-in function confirms that we did a great job, as the parameters obtained
     via the built-in code are almost the same as ours, so we have learned how to code
     GARCH and ARCH models to predict volatility.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 内置函数确认我们的工作很棒，因为通过内置代码获取的参数几乎与我们的参数相同，所以我们已经学会如何编写 GARCH 和 ARCH 模型来预测波动率。
 - en: 'It’s apparent that it is easy to work with GARCH(1, 1), but how do we know
     that the parameters are the optimum ones? Let’s decide the optimum parameter set
     given the lowest BIC value (and in doing so, generate [Figure 4-4](#garch_vol)):'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 GARCH(1, 1) 很容易，但我们如何知道参数是否是最优的呢？让我们根据最低的 BIC 值确定最优参数集（同时生成 [图 4-4](#garch_vol)）：
 - en: '[PRE7]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '![garch](assets/mlfr_0404.png)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![garch](assets/mlfr_0404.png)'
 - en: Figure 4-4\. Volatility prediction with GARCH
+  id: totrans-118
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-4\. 使用 GARCH 预测波动性
 - en: The volatility of returns is well-fitted by the GARCH model partly because of
     its volatility clustering and partly because GARCH does not assume that the returns
     are independent, which allows it to account for the leptokurtic property of returns.
@@ -550,19 +862,28 @@
     to model the asymmetric response of the shocks (Karasan and Gaygisiz 2020). To
     remedy this issue, GJR-GARCH was proposed by Glosten, Jagannathan, and Runkle
     (1993).
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: GARCH 模型很好地适应了收益的波动性，部分原因在于其波动性聚类特性，部分原因在于 GARCH 不假定收益独立，这使得它能够解释收益的厚尾特性。然而，尽管具有这些有用的特性和直观性，GARCH
+    不能对冲击的非对称响应进行建模（Karasan 和 Gaygisiz 2020）。为了解决这个问题，Glosten、Jagannathan 和 Runkle（1993）提出了
+    GJR-GARCH 模型。
 - en: GJR-GARCH
+  id: totrans-120
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: GJR-GARCH
 - en: 'The GJR-GARCH model performs well in modeling the asymmetric effects of announcements
     in the way that bad news has a larger impact than good news. In other words, in
     the presence of asymmetry, the distribution of losses has a fatter tail than the
     distribution of gains. The equation of the model includes one more parameter,
     <math alttext="gamma"><mi>γ</mi></math> , and it takes the following form:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: GJR-GARCH 模型在模拟公告的非对称效应方面表现良好，即坏消息的影响大于好消息。换句话说，在存在不对称性的情况下，损失的分布比收益的分布有更厚的尾部。该模型的方程包含一个额外的参数，<math
+    alttext="gamma"><mi>γ</mi></math>，其形式如下：
 - en: <math mode="display"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup>
     <mo>=</mo> <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
     <mi>q</mi></munderover> <mrow><mo>(</mo> <msub><mi>α</mi> <mi>k</mi></msub> <msubsup><mi>r</mi>
@@ -573,54 +894,91 @@
     <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>β</mi>
     <mi>k</mi></msub> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
     <mn>2</mn></msubsup></mrow></math>
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: <math mode="display"><mrow><msubsup><mi>σ</mi> <mi>t</mi> <mn>2</mn></msubsup>
+    <mo>=</mo> <mi>ω</mi> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <mrow><mo>(</mo> <msub><mi>α</mi> <mi>k</mi></msub> <msubsup><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup> <mo>+</mo> <mi>γ</mi>
+    <msubsup><mi>r</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup>
+    <mi>I</mi> <mrow><mo>(</mo> <msub><mi>ϵ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo><</mo> <mn>0</mn> <mo>)</mo></mrow> <mo>)</mo></mrow> <mo>+</mo> <munderover><mo>∑</mo>
+    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover> <msub><mi>β</mi>
+    <mi>k</mi></msub> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
+    <mn>2</mn></msubsup></mrow></math>
 - en: 'where <math alttext="gamma"><mi>γ</mi></math> controls for the asymmetry of
     the announcements and if:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="gamma"><mi>γ</mi></math> 控制公告的非对称性，如果
 - en: <math alttext="gamma"><mi>γ</mi></math> = 0
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="gamma"><mi>γ</mi></math> = 0
 - en: The response to the past shock is the same.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 对过去的冲击反应是相同的。
 - en: <math alttext="gamma"><mi>γ</mi></math> > 0
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="gamma"><mi>γ</mi></math> > 0
 - en: The response to the past negative shock is stronger than a positive one.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 对过去的负向冲击反应比正向冲击更强。
 - en: <math alttext="gamma"><mi>γ</mi></math> < 0
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="gamma"><mi>γ</mi></math> < 0
 - en: The response to the past positive shock is stronger than a negative one.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 对过去的正向冲击反应比负向冲击更强。
 - en: 'Let’s now run the GJR-GARCH model by finding the optimum parameter values using
     BIC, and producing [Figure 4-5](#gjr_garch_vol) as a result:'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们通过使用BIC找到最佳参数值并产生结果图[图 4-5](#gjr_garch_vol)来运行GJR-GARCH模型：
 - en: '[PRE8]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '![gjr_garch](assets/mlfr_0405.png)'
+  id: totrans-132
   prefs: []
   type: TYPE_IMG
+  zh: '![gjr_garch](assets/mlfr_0405.png)'
 - en: Figure 4-5\. Volatility prediction with GJR-GARCH
+  id: totrans-133
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-5\. 使用GJR-GARCH进行波动率预测
 - en: EGARCH
+  id: totrans-134
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: EGARCH
 - en: 'Together with the GJR-GARCH model, the EGARCH model, proposed by Nelson (1991),
     is another tool for controlling for the effect of asymmetric announcements. Additionally,
     it is specified in logarithmic form, so there is no need to add restrictions to
     avoid negative volatility:'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 与GJR-GARCH模型一同，由Nelson（1991）提出的EGARCH模型是另一种控制不对称公告效应的工具。此外，它以对数形式规定，因此无需添加限制以避免负波动：
 - en: <math alttext="log left-parenthesis sigma Subscript t Superscript 2 Baseline
     right-parenthesis equals omega plus sigma-summation Underscript k equals 1 Overscript
     p Endscripts beta Subscript k Baseline log sigma Subscript t minus k Superscript
@@ -642,150 +1000,247 @@
     <mi>q</mi></munderover> <msub><mi>γ</mi> <mi>k</mi></msub> <mfrac><msub><mi>r</mi>
     <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub> <msqrt><msubsup><mi>σ</mi>
     <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup></msqrt></mfrac></mrow></math>
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="log left-parenthesis sigma Subscript t Superscript 2 Baseline
+    right-parenthesis equals omega plus sigma-summation Underscript k equals 1 Overscript
+    p Endscripts beta Subscript k Baseline log sigma Subscript t minus k Superscript
+    2 Baseline plus sigma-summation Underscript k equals 1 Overscript q Endscripts
+    alpha Subscript i Baseline StartFraction StartAbsoluteValue r Subscript k minus
+    1 Baseline EndAbsoluteValue Over StartRoot sigma Subscript t minus k Superscript
+    2 Baseline EndRoot EndFraction plus sigma-summation Underscript k equals 1 Overscript
+    q Endscripts gamma Subscript k Baseline StartFraction r Subscript t minus k Baseline
+    Over StartRoot sigma Subscript t minus k Superscript 2 Baseline EndRoot EndFraction"
+    display="block"><mrow><mtext>log</mtext> <mrow><mo>(</mo> <msubsup><mi>σ</mi>
+    <mi>t</mi> <mn>2</mn></msubsup> <mo>)</mo></mrow> <mo>=</mo> <mi>ω</mi> <mo>+</mo>
+    <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow> <mi>p</mi></munderover>
+    <msub><mi>β</mi> <mi>k</mi></msub> <mtext>log</mtext> <msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow>
+    <mn>2</mn></msubsup> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <msub><mi>α</mi> <mi>i</mi></msub> <mfrac><mrow><mrow><mo>|</mo></mrow><msub><mi>r</mi>
+    <mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub> <mrow><mo>|</mo></mrow></mrow>
+    <msqrt><msubsup><mi>σ</mi> <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup></msqrt></mfrac>
+    <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>q</mi></munderover> <msub><mi>γ</mi> <mi>k</mi></msub> <mfrac><msub><mi>r</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow></msub> <msqrt><msubsup><mi>σ</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>k</mi></mrow> <mn>2</mn></msubsup></msqrt></mfrac></mrow></math>
 - en: The main difference in the EGARCH equation is that logarithm is taken of the
     variance on the left-hand side of the equation. This indicates the leverage effect,
     meaning that there exists a negative correlation between past asset returns and
     volatility. If <math alttext="gamma less-than 0"><mrow><mi>γ</mi> <mo><</mo> <mn>0</mn></mrow></math>
     , it implies leverage effect, and if <math alttext="gamma not-equals 0"><mrow><mi>γ</mi>
     <mo>≠</mo> <mn>0</mn></mrow></math> , that shows asymmetry in volatility.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: EGARCH方程的主要区别在于方程左侧的方差取对数。这表明了杠杆效应，意味着过去资产回报与波动率之间存在负相关。如果 <math alttext="gamma
+    less-than 0"><mrow><mi>γ</mi> <mo><</mo> <mn>0</mn></mrow></math> ，则表明存在杠杆效应；如果
+    <math alttext="gamma not-equals 0"><mrow><mi>γ</mi> <mo>≠</mo> <mn>0</mn></mrow></math>
+    ，则显示了波动率的不对称性。
 - en: 'Following the same procedure we used previously, let’s model the volatility
     using the EGARCH model (resulting in [Figure 4-6](#egarch_vol)):'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 按照之前使用的相同步骤，让我们使用EGARCH模型来建模波动率（导致[图 4-6](#egarch_vol)）：
 - en: '[PRE9]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '![egarch](assets/mlfr_0406.png)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![egarch](assets/mlfr_0406.png)'
 - en: Figure 4-6\. Volatility prediction with EGARCH
+  id: totrans-141
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-6\. 使用EGARCH进行波动率预测
 - en: Given the RMSE results shown in [Table 4-1](#vol_results_all), the best and
     worst performing models are GARCH and EGARCH, respectively. But there are no big
     differences in the performance of the models we have used here. In particular,
     during bad news/good news announcements, the performances of EGARCH and GJR-GARCH
     might be different due to the asymmetry in the market.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于表 4-1所示的RMSE结果，这里使用的模型中表现最佳和最差的分别是GARCH和EGARCH。但在我们使用的模型性能中并没有太大差异。特别是在坏消息/好消息公告期间，由于市场的不对称性，EGARCH和GJR-GARCH的表现可能会有所不同。
 - en: Table 4-1\. RMSE results for all four models
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 4-1\. 所有四种模型的RMSE结果
 - en: '| Model | RMSE |'
+  id: totrans-144
   prefs: []
   type: TYPE_TB
+  zh: '| 模型 | RMSE |'
 - en: '| --- | --- |'
+  id: totrans-145
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| ARCH | 0.0896 |'
+  id: totrans-146
   prefs: []
   type: TYPE_TB
+  zh: '| ARCH | 0.0896 |'
 - en: '| GARCH | 0.0878 |'
+  id: totrans-147
   prefs: []
   type: TYPE_TB
+  zh: '| GARCH | 0.0878 |'
 - en: '| GJR-GARCH | 0.0882 |'
+  id: totrans-148
   prefs: []
   type: TYPE_TB
+  zh: '| GJR-GARCH | 0.0882 |'
 - en: '| EGARCH | 0.0904 |'
+  id: totrans-149
   prefs: []
   type: TYPE_TB
+  zh: '| EGARCH | 0.0904 |'
 - en: Up to now, we have discussed the classical volatility models, but from this
     point on, we will see how ML and the Bayesian approach can be used to model volatility.
     In the context of ML, support vector machines and neural networks will be the
     first models to explore. Let’s get started.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们已经讨论了经典波动率模型，但从现在开始，我们将看到如何利用机器学习和贝叶斯方法来建模波动率。在机器学习的背景下，支持向量机和神经网络将是首要探索的模型。让我们开始吧。
 - en: 'Support Vector Regression: GARCH'
+  id: totrans-151
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 支持向量回归：GARCH
 - en: 'Support vector machine (SVM) is a supervised learning algorithm that can be
     applicable to both classification and regression. The aim of SVM is to find a
     line that separates two classes. It sounds easy but here is the challenging part:
     there are almost an infinite number of lines that can be used to distinguish the
     classes. But we are looking for the optimal line by which the classes can be perfectly
     discriminated.'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 支持向量机（SVM）是一种监督学习算法，可用于分类和回归。SVM的目标是找到一个分隔两个类别的线。听起来容易，但挑战在于：几乎有无数条线可以用来区分类别。但我们正在寻找的是能够完美区分类别的最优线。
 - en: In linear algebra, the optimal line is called *hyperplane*, which maximizes
     the distance between the points that are closest to the hyperplane but belong
     to different classes. The distance between the two points (support vectors) is
     known as *margin*. So, in SVM, what we are trying to do is to maximize the margin
     between support vectors.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 在线性代数中，最优线称为*超平面*，它最大化了属于不同类别但最接近超平面的点之间的距离。两个点（支持向量）之间的距离称为*间隔*。因此，在支持向量机中，我们试图最大化支持向量之间的间隔。
 - en: SVM for classification is known as support vector classification (SVC). Keeping
     all characteristics of SVM, it can be applicable to regression. Again, in regression,
     the aim is to find the hyperplane that minimizes the error and maximizes the margin.
     This method is called support vector regression (SVR) and, in this part, we will
     apply this method to the GARCH model. Combining these two models gets us *SVR-GARCH*.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: SVM用于分类被称为支持向量分类（SVC）。保留SVM的所有特性，它也可应用于回归。同样，在回归中，目标是找到最小化误差并最大化间隔的超平面。这种方法称为支持向量回归（SVR），在本部分中，我们将应用此方法于GARCH模型。结合这两个模型得到*SVR-GARCH*。
 - en: 'The following code shows us the preparations before running the SVR-GARCH in
     Python. The most crucial step here is to obtain independent variables, which are
     realized volatility and square of historical returns:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码展示了我们在Python中运行SVR-GARCH之前的准备工作。这里最关键的步骤是获取独立变量，即实现波动率和历史回报的平方：
 - en: '[PRE10]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO5-1)'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO5-1)'
 - en: Computing realized volatility and assigning a new variable to it named `realized_vol`
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算实现波动率，并将其命名为`realized_vol`
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO5-2)'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO5-2)'
 - en: Creating new variables for each SVR kernel
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 为每个SVR核函数创建新变量
 - en: 'Let’s run and see our first SVR-GARCH application with linear kernel (and produce
     [Figure 4-7](#SVR_GARCH_linear_vol)); we’ll use the RMSE metric to compare the
     applications:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们运行并查看我们第一个使用线性核的SVR-GARCH应用程序（并生成[图 4-7](#SVR_GARCH_linear_vol)）；我们将使用RMSE指标比较这些应用程序：
 - en: '[PRE11]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-1)'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-1)'
 - en: Identifying the hyperparameter space for tuning
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 识别调整超参数空间
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-2)'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-2)'
 - en: Applying hyperparameter tuning with `RandomizedSearchCV`
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`RandomizedSearchCV`进行超参数调整
 - en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-3)'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-3)'
 - en: Fitting SVR-GARCH with linear kernel to data
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 用线性核将SVR-GARCH拟合到数据
 - en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-4)'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO6-4)'
 - en: Predicting the volatilities based on the last 252 observations and storing them
     in the `predict_svr_lin`
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于最后252个观察值预测波动率，并将其存储在`predict_svr_lin`中
 - en: '![svr_garch_linear](assets/mlfr_0407.png)'
+  id: totrans-171
   prefs: []
   type: TYPE_IMG
+  zh: '![svr_garch_linear](assets/mlfr_0407.png)'
 - en: Figure 4-7\. Volatility prediction with SVR-GARCH linear kernel
+  id: totrans-172
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-7\. SVR-GARCH线性核波动率预测
 - en: '[Figure 4-7](#SVR_GARCH_linear_vol) exhibits the predicted values and actual
     observation. By eyeballing it, we can tell that SVR-GARCH performs well. As you
     can guess, the linear kernel works fine if the dataset is linearly separable;
@@ -794,101 +1249,151 @@
     function (RBF) and polynomial kernels. The former uses elliptical curves around
     the observations, and the latter, unlike the first two, focuses on the combinations
     of samples. Let’s now see how they work.'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-7](#SVR_GARCH_linear_vol)展示了预测值和实际观察结果。通过直观分析，我们可以看出SVR-GARCH表现良好。你可以猜到，如果数据集是线性可分的，线性核函数效果良好；这也被*奥卡姆剃刀*所推荐。^([3](ch04.html#idm45737238525200))
+    但如果数据集不是线性可分的呢？接下来我们继续使用径向基函数（RBF）和多项式核函数。前者使用椭圆形曲线围绕观察结果，而后者不同于前两者，专注于样本的组合。现在让我们看看它们是如何工作的。'
 - en: 'Let’s start with an SVR-GARCH application using the RBF kernel, a function
     that projects data into a new vector space. From a practical standpoint, SVR-GARCH
     application with different kernels is not a labor-intensive process; all we need
     to do is switch the kernel name, as shown in the following (and resulting in [Figure 4-8](#SVR_GARCH_rbf_vol)):'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从使用RBF核的SVR-GARCH应用程序开始，这是一个将数据投影到新向量空间的函数。从实际角度来看，使用不同核的SVR-GARCH应用程序并不是一个费时的过程；我们所需做的只是切换核名称，如下所示（并产生[图 4-8](#SVR_GARCH_rbf_vol)）：
 - en: '[PRE12]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '![svr_garch_rbf](assets/mlfr_0408.png)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![svr_garch_rbf](assets/mlfr_0408.png)'
 - en: Figure 4-8\. Volatility prediction with the SVR-GARCH RBF kernel
+  id: totrans-177
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-8\. 带有SVR-GARCH RBF核的波动率预测
 - en: Both the RMSE score and the visualization suggest that SVR-GARCH with linear
     kernel outperforms SVR-GARCH with RBF kernel. The RMSEs of SVR-GARCH with linear
     and RBF kernels are 0.000462 and 0.000970, respectively. So SVR with linear kernel
     performs well.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: RMSE分数和可视化均表明，带有线性核的SVR-GARCH优于带有RBF核的SVR-GARCH。带有线性和RBF核的SVR的RMSE分别为0.000462和0.000970。因此，带有线性核的SVR表现良好。
 - en: 'Lastly, let’s try SVR-GARCH with the polynomial kernel. It will turn out that
     it has the highest RMSE (0.002386), implying that it is the worst-performing kernel
     among these three different applications. The predictive performance of SVR-GARCH
     with polynomial kernel can be found in [Figure 4-9](#SVR_GARCH_poly_vol):'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，让我们尝试带有多项式核的SVR-GARCH。结果表明，它具有最高的RMSE（0.002386），这意味着它是这三种不同应用中表现最差的核。可以在[图 4-9](#SVR_GARCH_poly_vol)中找到带有多项式核的SVR-GARCH的预测性能：
 - en: '[PRE13]'
+  id: totrans-180
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '![svr_garch_poly](assets/mlfr_0409.png)'
+  id: totrans-181
   prefs: []
   type: TYPE_IMG
+  zh: '![svr_garch_poly](assets/mlfr_0409.png)'
 - en: Figure 4-9\. Volatility prediction with SVR-GARCH polynomial kernel
+  id: totrans-182
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-9\. 带有SVR-GARCH多项式核的波动率预测
 - en: Neural Networks
+  id: totrans-183
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 神经网络
 - en: 'Neural networks are the building block for deep learning. In an NN, data is
     processed in multiple stages to make a decision. Each neuron takes a result of
     a dot product as input and uses it in an activation function to make a decision:'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 神经网络是深度学习的构建模块。在神经网络中，数据经过多个阶段处理以做出决策。每个神经元将点积的结果作为输入，并在激活函数中使用它来做出决策：
 - en: <math alttext="z equals w 1 x 1 plus w 2 x 2 plus b" display="block"><mrow><mi>z</mi>
     <mo>=</mo> <msub><mi>w</mi> <mn>1</mn></msub> <msub><mi>x</mi> <mn>1</mn></msub>
     <mo>+</mo> <msub><mi>w</mi> <mn>2</mn></msub> <msub><mi>x</mi> <mn>2</mn></msub>
     <mo>+</mo> <mi>b</mi></mrow></math>
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="z equals w 1 x 1 plus w 2 x 2 plus b" display="block"><mrow><mi>z</mi>
+    <mo>=</mo> <msub><mi>w</mi> <mn>1</mn></msub> <msub><mi>x</mi> <mn>1</mn></msub>
+    <mo>+</mo> <msub><mi>w</mi> <mn>2</mn></msub> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <mi>b</mi></mrow></math>
 - en: where *b* is bias, *w* is weight, and *x* is input data.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*b*是偏差，*w*是权重，*x*是输入数据。
 - en: 'During this process, input data is mathematically manipulated in various ways
     in hidden and output layers. Generally speaking, an NN has three types of layers:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此过程中，输入数据在隐藏层和输出层中以各种方式进行数学处理。一般而言，神经网络有三种类型的层：
 - en: Input layers
+  id: totrans-188
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输入层
 - en: Hidden layers
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 隐藏层
 - en: Output layers
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输出层
 - en: '[Figure 4-10](#nn_str) can help to illustrate the relationships among layers.'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-10](#nn_str)可以帮助说明各层之间的关系。'
 - en: The input layer includes raw data. In going from the input layer to the hidden
     layer, we learn coefficients. There may be one or more than one hidden layers
     depending on the network structure. The more hidden layers the network has, the
     more complicated it is. Hidden layers, located between input and output layers,
     perform nonlinear transformations via activation functions.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入层包括原始数据。从输入层到隐藏层，我们学习系数。根据网络结构，可能有一个或多个隐藏层。网络的隐藏层越多，它就越复杂。隐藏层位于输入层和输出层之间，通过激活函数执行非线性变换。
 - en: '![nn_str](assets/mlfr_0410.png)'
+  id: totrans-193
   prefs: []
   type: TYPE_IMG
+  zh: '![nn_str](assets/mlfr_0410.png)'
 - en: Figure 4-10\. NN structure
+  id: totrans-194
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-10\. 神经网络结构
 - en: Finally, the output layer is the layer in which output is produced and decisions
     are made.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，输出层是生成输出并做出决策的层。
 - en: 'In ML, *gradient descent* is applied to find the optimum parameters that minimize
     the cost function, but employing only gradient descent in NN is not feasible due
     to the chain-like structure within the NN. Thus, a new concept known as backpropagation
@@ -896,152 +1401,232 @@
     on calculating the error between observed and actual output, and then passing
     this error to the hidden layer. So we move backward, and the main equation takes
     the form of:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 在机器学习中，*梯度下降*被应用于寻找最小化成本函数的最优参数，但在神经网络中仅使用梯度下降不可行，因为神经网络内部具有链式结构。因此，提出了一种称为反向传播的新概念来最小化成本函数。*反向传播*的理念基于计算观察到的输出与实际输出之间的误差，然后将此误差传递到隐藏层。因此，我们向后移动，主要方程式采取以下形式：
 - en: <math alttext="delta Superscript l Baseline equals StartFraction delta upper
     J Over delta z Subscript j Superscript l Baseline EndFraction" display="block"><mrow><msup><mi>δ</mi>
     <mi>l</mi></msup> <mo>=</mo> <mfrac><mrow><mi>δ</mi><mi>J</mi></mrow> <mrow><mi>δ</mi><msubsup><mi>z</mi>
     <mi>j</mi> <mi>l</mi></msubsup></mrow></mfrac></mrow></math>
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="delta Superscript l Baseline equals StartFraction delta upper
+    J Over delta z Subscript j Superscript l Baseline EndFraction" display="block"><mrow><msup><mi>δ</mi>
+    <mi>l</mi></msup> <mo>=</mo> <mfrac><mrow><mi>δ</mi><mi>J</mi></mrow> <mrow><mi>δ</mi><msubsup><mi>z</mi>
+    <mi>j</mi> <mi>l</mi></msubsup></mrow></mfrac></mrow></math>
 - en: where *z* is linear transformation and <math alttext="delta"><mi>δ</mi></math>
     represents error. There is much more to say here, but to keep us on track we’ll
     stop here. For those who want to dig more into the math behind NNs, please refer
     to Wilmott (2013) and Alpaydin (2020).
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*z*是线性变换，<math alttext="delta"><mi>δ</mi></math>表示误差。这里还有很多要说的，但为了使我们保持在正确的轨道上，我们将在这里停止。对于那些想深入了解神经网络背后数学的人，请参阅Wilmott（2013）和Alpaydin（2020）。
 - en: 'Now, we apply NN-based volatility prediction using the `MLPRegressor` module
     from scikit-learn, even though we have various options to run NNs in Python.^([4](ch04.html#idm45737237868960))
     Given the NN structure we’ve introduced, the result follows:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们使用`MLPRegressor`模块从scikit-learn应用基于神经网络的波动率预测，即使在Python中运行神经网络有各种选项。^([4](ch04.html#idm45737237868960))
+    鉴于我们介绍的神经网络结构，结果如下：
 - en: '[PRE14]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-1)'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-1)'
 - en: Importing the `MLPRegressor` module
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`MLPRegressor`模块
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-2)'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-2)'
 - en: Configuring the NN model with three hidden layers and varying neuron numbers
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过设置三个隐藏层和不同的神经元数量来配置NN模型
 - en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-3)'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-3)'
 - en: Fitting the NN model to the training data^([5](ch04.html#idm45737237767616))
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 将NN模型拟合到训练数据中^([5](ch04.html#idm45737237767616))
 - en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-4)'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-4)'
 - en: Predicting the volatilities based on the last 252 observations and storing them
     in the `NN_predictions` variable
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于最后252个观察值预测波动性，并将其存储在`NN_predictions`变量中
 - en: '[Figure 4-11](#NN_vol) shows the volatility prediction result based on the
     NN model. Despite its reasonable performance, we can play with the number of hidden
     neurons to generate a deep learning model. To do that, we can apply the Keras
     library, Python’s interface for artificial neural networks.'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4-11展示了基于NN模型的波动性预测结果。尽管其表现合理，我们可以通过改变隐藏神经元的数量来生成一个深度学习模型。为此，我们可以应用Keras库，这是Python对人工神经网络的接口。
 - en: '![NN](assets/mlfr_0411.png)'
+  id: totrans-210
   prefs: []
   type: TYPE_IMG
+  zh: '![NN](assets/mlfr_0411.png)'
 - en: Figure 4-11\. Volatility prediction with an NN
+  id: totrans-211
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-11\. 带有NN的波动性预测
 - en: 'Now it’s time to predict volatility using deep learning. Based on Keras, it
     is easy to configure the network structure. All we need is to determine the number
     of neurons of the specific layer. Here, the number of neurons for the first and
     second hidden layers are 256 and 128, respectively. As volatility has a continuous
     type, we have only one output neuron:'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在是使用深度学习来预测波动性的时候了。基于Keras，配置网络结构非常容易。我们只需要确定特定层的神经元数量。这里，第一和第二个隐藏层的神经元数量分别为256和128。由于波动性属于连续型，我们只有一个输出神经元：
 - en: '[PRE15]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-1)'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-1)'
 - en: Configuring the network structure by deciding number of layers and neurons
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过决定层数和神经元的数量来配置网络结构
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-2)'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-2)'
 - en: Compiling the model with loss and optimizer
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译模型并设置损失和优化器
 - en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-3)'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-3)'
 - en: Deciding the epoch and batch size using `np.arange`
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`np.arange`决定周期和批处理大小
 - en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-5)'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-5)'
 - en: Fitting the deep learning model
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 拟合深度学习模型
 - en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-6)'
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-6)'
 - en: Predicting the volatility based on the weights obtained from the training phase
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测波动性基于从训练阶段获得的权重
 - en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-7)'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO8-7)'
 - en: Calculating the RMSE score by flattening the predictions
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过展平预测计算RMSE得分
 - en: It turns out that we get a minimum RMSE score when we have epoch number and
     batch size of 100\. This shows that increasing the complexity of the model does
     not necessarily imply high predictive performance. The key is to find a sweet
     spot between complexity and predictive performance. Otherwise, the model can easily
     tend to overfit.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果表明，当我们将周期数和批处理大小设为100时，我们得到最小的RMSE得分。这表明增加模型复杂性并不一定意味着高预测性能。关键是要找到复杂性和预测性能之间的平衡点。否则，模型很容易过拟合。
 - en: '[Figure 4-12](#DL_vol) shows the volatility prediction result derived from
     the preceding code, and it implies that deep learning provides a strong tool for
     modeling volatility, too.'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-12](#DL_vol) 展示了由前述代码推导出的波动率预测结果，这表明深度学习也为建模波动率提供了一个强大的工具。'
 - en: '![DL](assets/mlfr_0412.png)'
+  id: totrans-228
   prefs: []
   type: TYPE_IMG
+  zh: '![DL](assets/mlfr_0412.png)'
 - en: Figure 4-12\. Volatility prediction with deep learning
+  id: totrans-229
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-12\. 使用深度学习进行波动率预测
 - en: The Bayesian Approach
+  id: totrans-230
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '**贝叶斯方法**'
 - en: The way we approach probability is of central importance in the sense that it
     distinguishes the classical (or Frequentist) and Bayesian approaches. According
     to the former, the relative frequency will converge to the true probability. However,
     a Bayesian application is based on the subjective interpretation. Unlike the Frequentists,
     Bayesian statisticians consider the probability distribution as uncertain, and
     it is revised as new information comes in.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们处理概率的方式在于区分经典（或频率主义）和贝叶斯方法上占据了中心位置。根据前者，相对频率将收敛于真实概率。然而，贝叶斯应用基于主观解释。不像频率主义者，贝叶斯统计学家将概率分布视为不确定的，并且在新信息出现时进行修正。
 - en: Due to the different interpretation in the probability of these two approaches,
     *likelihood*—defined as the probability of an observed event given a set of parameters—is
     computed differently.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这两种方法对概率的不同解释，*似然度*—定义为在给定一组参数的情况下观察到的事件的概率—计算方式也有所不同。
 - en: 'Starting from the joint density function, we can give the mathematical representation
     of the likelihood function:'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 从联合密度函数开始，我们可以给出似然函数的数学表示：
 - en: <math alttext="script upper L left-parenthesis theta vertical-bar x 1 comma
     x 2 comma period period period comma x Subscript p Baseline right-parenthesis
     equals probability left-parenthesis x 1 comma x 2 comma period period period comma
@@ -1052,44 +1637,69 @@
     form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo>
     <msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
     <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></mrow></math>
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="script upper L left-parenthesis theta vertical-bar x 1 comma
+    x 2 comma period period period comma x Subscript p Baseline right-parenthesis
+    equals probability left-parenthesis x 1 comma x 2 comma period period period comma
+    x Subscript p Baseline vertical-bar theta right-parenthesis" display="block"><mrow><mi>ℒ</mi>
+    <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub> <mo>)</mo></mrow> <mo>=</mo> <mo
+    form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo>
+    <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></mrow></math>
 - en: Among possible <math alttext="theta"><mi>θ</mi></math> values, what we are trying
     to do is decide which one is more likely. Under the statistical model proposed
     by the likelihood function, the observed data <math alttext="x 1 comma period
     period period comma x Subscript p Baseline"><mrow><msub><mi>x</mi> <mn>1</mn></msub>
     <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>x</mi> <mi>p</mi></msub></mrow></math>
     is the most probable.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 在可能的<math alttext="theta"><mi>θ</mi></math>值中，我们正在尝试决定哪一个更有可能。在由似然函数提出的统计模型下，观察到的数据<math
+    alttext="x 1 comma period period period comma x Subscript p Baseline"><mrow><msub><mi>x</mi>
+    <mn>1</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>x</mi>
+    <mi>p</mi></msub></mrow></math> 是最有可能的。
 - en: In fact, you are familiar with the method based on this approach, which is maximum
     likelihood estimation. Having defined the main difference between Bayesian and
     Frequentist approaches, it is time to delve more into Bayes’ theorem.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，你对基于这种方法的方法很熟悉，即最大似然估计。在定义了贝叶斯和频率主义方法的主要区别之后，是时候更深入地探讨贝叶斯定理了。
 - en: 'The Bayesian approach is based on conditional distribution, which states that
     probability gauges the extent to which one has about a uncertain event. So the
     Bayesian application suggests a rule that can be used to update the beliefs that
     one holds in light of new information:'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 贝叶斯方法基于条件分布，该分布表明概率评估一个不确定事件的程度。因此，贝叶斯应用建议了一个规则，可用于根据新信息更新持有的信念：
 - en: Bayesian estimation is used when we have some prior information regarding a
     parameter. For example, before looking at a sample to estimate the mean of a distribution,
     we may have some prior belief that it is close to 2, between 1 and 3\. Such prior
     beliefs are especially important when we have a small sample. In such a case,
     we are interested in combining what the data tells us, namely, the value calculated
     from the sample, and our prior information.
+  id: totrans-238
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 当我们对参数有一些先验信息时，使用贝叶斯估计。例如，在查看样本以估计分布的均值之前，我们可能有一些先验信念认为它接近于2，在1到3之间。在我们有小样本的情况下，这种先验信念尤为重要。在这种情况下，我们有兴趣结合数据告诉我们的东西，即从样本计算出的值，以及我们的先验信息。
 - en: ''
+  id: totrans-239
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Rachev et al., 2008
+  id: totrans-240
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Rachev 等人，2008
 - en: Similar to the Frequentist application, Bayesian estimation is based on probability
     density <math alttext="probability left-parenthesis x vertical-bar theta right-parenthesis"><mrow><mo
     form="prefix">Pr</mo> <mo>(</mo> <mi>x</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math>
@@ -1101,8 +1711,16 @@
     theta right-parenthesis"><mrow><mo form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi>
     <mo>)</mo></mrow></math> . Well, we have another unknown term, but no worries—it
     is easy to understand.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 与频率学应用类似，贝叶斯估计基于概率密度 <math alttext="probability left-parenthesis x vertical-bar
+    theta right-parenthesis"><mrow><mo form="prefix">Pr</mo> <mo>(</mo> <mi>x</mi>
+    <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math> 。然而，正如我们之前讨论的那样，贝叶斯和频率学方法对待参数集
+    <math alttext="theta"><mi>θ</mi></math> 有所不同。频率学家假设 <math alttext="theta"><mi>θ</mi></math>
+    是固定的，而在贝叶斯设置中，<math alttext="theta"><mi>θ</mi></math> 被视为一个随机变量，其概率称为先验密度 <math
+    alttext="probability left-parenthesis theta right-parenthesis"><mrow><mo form="prefix">Pr</mo>
+    <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> 。好吧，我们还有另一个未知术语，但别担心——这很容易理解。
 - en: 'In light of this information, we can estimate <math alttext="script upper L
     left-parenthesis x vertical-bar theta right-parenthesis"><mrow><mi>ℒ</mi> <mo>(</mo>
     <mi>x</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math> using prior density
@@ -1110,8 +1728,13 @@
     form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> and come
     up with the following formula. Prior is employed when we need to estimate the
     conditional distribution of the parameters given observations:'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据这些信息，我们可以使用先验密度 <math alttext="probability left-parenthesis theta right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> 来估计 <math
+    alttext="script upper L left-parenthesis x vertical-bar theta right-parenthesis"><mrow><mi>ℒ</mi>
+    <mo>(</mo> <mi>x</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math> ，并得出以下公式。在需要估计给定观察数据的参数条件分布时，使用先验。
 - en: <math alttext="probability left-parenthesis theta vertical-bar x 1 comma x 2
     comma period period period comma x Subscript p Baseline right-parenthesis equals
     StartFraction script upper L left-parenthesis x 1 comma x 2 comma period period
@@ -1127,11 +1750,29 @@
     <mrow><mo form="prefix">Pr</mo><mo>(</mo><msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo><msub><mi>x</mi>
     <mn>2</mn></msub> <mo>,</mo><mo>.</mo><mo>.</mo><mo>.</mo><mo>,</mo><msub><mi>x</mi>
     <mi>p</mi></msub> <mo>)</mo></mrow></mfrac></mrow></math>
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="probability left-parenthesis theta vertical-bar x 1 comma x 2
+    comma period period period comma x Subscript p Baseline right-parenthesis equals
+    StartFraction script upper L left-parenthesis x 1 comma x 2 comma period period
+    period comma x Subscript p Baseline vertical-bar theta right-parenthesis probability
+    left-parenthesis theta right-parenthesis Over probability left-parenthesis x 1
+    comma x 2 comma period period period comma x Subscript p Baseline right-parenthesis
+    EndFraction" display="block"><mrow><mo form="prefix">Pr</mo> <mrow><mo>(</mo>
+    <mi>θ</mi> <mo>|</mo> <msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>x</mi>
+    <mn>2</mn></msub> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>x</mi>
+    <mi>p</mi></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>ℒ</mi><mrow><mo>(</mo><msub><mi>x</mi>
+    <mn>1</mn></msub> <mo>,</mo><msub><mi>x</mi> <mn>2</mn></msub> <mo>,</mo><mo>.</mo><mo>.</mo><mo>.</mo><mo>,</mo><msub><mi>x</mi>
+    <mi>p</mi></msub> <mo>|</mo><mi>θ</mi><mo>)</mo></mrow><mo form="prefix">Pr</mo><mrow><mo>(</mo><mi>θ</mi><mo>)</mo></mrow></mrow>
+    <mrow><mo form="prefix">Pr</mo><mo>(</mo><msub><mi>x</mi> <mn>1</mn></msub> <mo>,</mo><msub><mi>x</mi>
+    <mn>2</mn></msub> <mo>,</mo><mo>.</mo><mo>.</mo><mo>.</mo><mo>,</mo><msub><mi>x</mi>
+    <mi>p</mi></msub> <mo>)</mo></mrow></mfrac></mrow></math>
 - en: or
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者
 - en: <math alttext="probability left-parenthesis theta vertical-bar d a t a right-parenthesis
     equals StartFraction script upper L left-parenthesis d a t a vertical-bar theta
     right-parenthesis probability left-parenthesis theta right-parenthesis Over probability
@@ -1139,107 +1780,162 @@
     form="prefix">Pr</mo> <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>d</mi> <mi>a</mi>
     <mi>t</mi> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>ℒ</mi><mo>(</mo><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>|</mo><mi>θ</mi><mo>)</mo><mo
     form="prefix">Pr</mo><mo>(</mo><mi>θ</mi><mo>)</mo></mrow> <mrow><mo form="prefix">Pr</mo><mo>(</mo><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>)</mo></mrow></mfrac></mrow></math>
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="probability left-parenthesis theta vertical-bar d a t a right-parenthesis
+    equals StartFraction script upper L left-parenthesis d a t a vertical-bar theta
+    right-parenthesis probability left-parenthesis theta right-parenthesis Over probability
+    left-parenthesis d a t a right-parenthesis EndFraction" display="block"><mrow><mo
+    form="prefix">Pr</mo> <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>d</mi> <mi>a</mi>
+    <mi>t</mi> <mi>a</mi> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>ℒ</mi><mo>(</mo><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>|</mo><mi>θ</mi><mo>)</mo><mo
+    form="prefix">Pr</mo><mo>(</mo><mi>θ</mi><mo>)</mo></mrow> <mrow><mo form="prefix">Pr</mo><mo>(</mo><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>)</mo></mrow></mfrac></mrow></math>
 - en: where
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中
 - en: <math alttext="probability left-parenthesis theta vertical-bar d a t a right-parenthesis"><mrow><mo
     form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>d</mi> <mi>a</mi> <mi>t</mi>
     <mi>a</mi> <mo>)</mo></mrow></math> is the posterior density, which gives us information
     about the parameters given observed data.
+  id: totrans-247
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="probability left-parenthesis theta vertical-bar d a t a right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>d</mi> <mi>a</mi> <mi>t</mi>
+    <mi>a</mi> <mo>)</mo></mrow></math> 是后验密度，给出了观察到的数据后关于参数的信息。
 - en: <math alttext="script upper L left-parenthesis d a t a vertical-bar theta right-parenthesis"><mrow><mi>ℒ</mi>
     <mo>(</mo> <mi>d</mi> <mi>a</mi> <mi>t</mi> <mi>a</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math>
     is the likelihood function, which estimates the probability of the data given
     parameters.
+  id: totrans-248
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="script upper L left-parenthesis d a t a vertical-bar theta right-parenthesis"><mrow><mi>ℒ</mi>
+    <mo>(</mo> <mi>d</mi> <mi>a</mi> <mi>t</mi> <mi>a</mi> <mo>|</mo> <mi>θ</mi> <mo>)</mo></mrow></math>
+    是似然函数，估计了给定参数时数据的概率。
 - en: <math alttext="probability left-parenthesis theta right-parenthesis"><mrow><mo
     form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> is prior
     probability. It is the probability of the parameters. Prior is basically the initial
     beliefs about estimates.
+  id: totrans-249
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: <math alttext="probability left-parenthesis theta right-parenthesis"><mrow><mo
+    form="prefix">Pr</mo> <mo>(</mo> <mi>θ</mi> <mo>)</mo></mrow></math> 是先验概率。这是参数的概率。先验基本上是关于估计的初始信念。
 - en: Finally, <math alttext="probability"><mo form="prefix">Pr</mo></math> is the
     evidence, which is used to update the prior.
+  id: totrans-250
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最后，<math alttext="probability"><mo form="prefix">Pr</mo></math> 是证据，用于更新先验。
 - en: 'Consequently, Bayes’ theorem suggests that the posterior density is directly
     proportional to the prior and likelihood terms but inverserly related to the evidence
     term. As the evidence is there for scaling, we can describe this process as:'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，贝叶斯定理表明后验密度与先验和似然项成正比，但与证据项成反比。由于证据用于缩放，我们可以描述这个过程如下：
 - en: <math alttext="Posterior proportional-to Likelihood times prior" display="block"><mrow><mtext>Posterior</mtext>
     <mo>∝</mo> <mtext>Likelihood</mtext> <mo>×</mo> <mtext>prior</mtext></mrow></math>
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="Posterior proportional-to Likelihood times prior" display="block"><mrow><mtext>Posterior</mtext>
+    <mo>∝</mo> <mtext>Likelihood</mtext> <mo>×</mo> <mtext>prior</mtext></mrow></math>
 - en: where <math alttext="proportional-to"><mo>∝</mo></math> means “is proportional
     to.”
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 <math alttext="proportional-to"><mo>∝</mo></math> 意味着“与...成比例”。
 - en: Within this context, Bayes’ theorem sounds attractive, doesn’t it? Well, it
     does, but it comes with a cost, which is analytical intractability. Even if Bayes’
     theorem is theoretically intuitive, it is, by and large, hard to solve analytically.
     This is the major drawback in wide applicability of Bayes’ theorem. However, the
     good news is that numerical methods provide solid methods to solve this probabilistic
     model.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个背景下，贝叶斯定理听起来很吸引人，不是吗？确实如此，但它也带来了一个代价，即分析难度。即使贝叶斯定理在理论上直观，但从广泛应用的角度来看，分析解往往难以获得。然而，好消息是数值方法提供了解决这一概率模型的可靠手段。
 - en: 'Some methods proposed to deal with the computational issues in Bayes’ theorem
     provide solutions with approximation, including:'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了应对贝叶斯定理中的计算问题，提出了一些解决方案，包括近似解决方案：
 - en: Quadrature approximation
+  id: totrans-256
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 积分逼近（Quadrature approximation）
 - en: Maximum a posteriori estimation (MAP) (discussed in [Chapter 6](ch06.html#chapter_6))
+  id: totrans-257
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最大后验估计（MAP）（见[第6章](ch06.html#chapter_6)讨论）
 - en: Grid approach
+  id: totrans-258
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 格点法（Grid approach）
 - en: Sampling-based approach
+  id: totrans-259
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于抽样的方法（Sampling-based approach）
 - en: Metropolis–Hastings
+  id: totrans-260
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Metropolis–Hastings方法
 - en: Gibbs sampler
+  id: totrans-261
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 吉布斯采样器（Gibbs sampler）
 - en: No U-Turn sampler
+  id: totrans-262
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 无返回采样器（No U-Turn sampler）
 - en: Of these approaches, let us restrict our attention to the Metropolis–Hastings
     algorithm (M-H), which will be our method for modeling Bayes’ theorem. The M-H
     method rests on the Markov chain Monte Carlo (MCMC) method. So before moving forward,
     let’s talk about the MCMC method.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这些方法中，让我们把注意力集中在Metropolis–Hastings算法（M-H），这将是我们建模贝叶斯定理的方法。M-H方法依赖于马尔可夫链蒙特卡罗（MCMC）方法。因此，在继续之前，让我们谈谈MCMC方法。
 - en: Markov Chain Monte Carlo
+  id: totrans-264
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 马尔可夫链蒙特卡罗（Markov Chain Monte Carlo）
 - en: 'The Markov chain is a model used to describe the transition probabilities among
     states. A chain is called *Markovian* if the probability of the current state
     <math alttext="s Subscript t"><msub><mi>s</mi> <mi>t</mi></msub></math> depends
     only on the most recent state <math alttext="s Subscript t minus 1"><msub><mi>s</mi>
     <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></math> :'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 马尔可夫链是用来描述状态间转移概率的模型。如果当前状态<math alttext="s Subscript t"><msub><mi>s</mi> <mi>t</mi></msub></math>
+    的概率只依赖于最近的前一状态<math alttext="s Subscript t minus 1"><msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></math>，则该链被称为*马尔可夫链*：
 - en: <math alttext="probability left-parenthesis s Subscript t Baseline vertical-bar
     s Subscript t minus 1 Baseline comma s Subscript t minus 2 Baseline comma period
     period period comma s Subscript t minus p Baseline right-parenthesis equals probability
@@ -1251,79 +1947,128 @@
     <mo>)</mo></mrow> <mo>=</mo> <mo form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>s</mi>
     <mi>t</mi></msub> <mo>|</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
     <mo>)</mo></mrow></mrow></math>
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="probability left-parenthesis s Subscript t Baseline vertical-bar
+    s Subscript t minus 1 Baseline comma s Subscript t minus 2 Baseline comma period
+    period period comma s Subscript t minus p Baseline right-parenthesis equals probability
+    left-parenthesis s Subscript t Baseline vertical-bar s Subscript t minus 1 Baseline
+    right-parenthesis" display="block"><mrow><mo form="prefix">Pr</mo> <mrow><mo>(</mo>
+    <msub><mi>s</mi> <mi>t</mi></msub> <mo>|</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>,</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>2</mn></mrow></msub>
+    <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mi>p</mi></mrow></msub>
+    <mo>)</mo></mrow> <mo>=</mo> <mo form="prefix">Pr</mo> <mrow><mo>(</mo> <msub><mi>s</mi>
+    <mi>t</mi></msub> <mo>|</mo> <msub><mi>s</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <mo>)</mo></mrow></mrow></math>
 - en: 'Thus, MCMC relies on the Markov chain to find the parameter space <math alttext="theta"><mi>θ</mi></math>
     with the highest posterior probability. As the sample size grows, parameter values
     approximate to the posterior density:'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，MCMC依赖于马尔可夫链来找到具有最高后验概率的参数空间<math alttext="theta"><mi>θ</mi></math>。随着样本量的增加，参数值逐渐逼近后验密度：
 - en: <math alttext="limit Underscript j right-arrow plus normal infinity Endscripts
     theta Superscript j Baseline right-arrow Overscript upper D Endscripts probability
     left-parenthesis theta vertical-bar x right-parenthesis" display="block"><mrow><munder><mo
     form="prefix" movablelimits="true">lim</mo> <mrow><mi>j</mi><mo>→</mo><mo>+</mo><mi>∞</mi></mrow></munder>
     <msup><mi>θ</mi> <mi>j</mi></msup> <mover><mo>→</mo> <mi>D</mi></mover> <mo form="prefix">Pr</mo>
     <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>x</mi> <mo>)</mo></mrow></mrow></math>
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="limit Underscript j right-arrow plus normal infinity Endscripts
+    theta Superscript j Baseline right-arrow Overscript upper D Endscripts probability
+    left-parenthesis theta vertical-bar x right-parenthesis" display="block"><mrow><munder><mo
+    form="prefix" movablelimits="true">lim</mo> <mrow><mi>j</mi><mo>→</mo><mo>+</mo><mi>∞</mi></mrow></munder>
+    <msup><mi>θ</mi> <mi>j</mi></msup> <mover><mo>→</mo> <mi>D</mi></mover> <mo form="prefix">Pr</mo>
+    <mrow><mo>(</mo> <mi>θ</mi> <mo>|</mo> <mi>x</mi> <mo>)</mo></mrow></mrow></math>
 - en: where *D* refers to distributional approximation. Realized values of parameter
     space can be used to make inferences about the posterior. In a nutshell, the MCMC
     method helps us gather IID samples from posterior density so that we can calculate
     the posterior probability.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*D*表示分布近似。实现的参数空间的值可以用来推断后验。简而言之，MCMC方法帮助我们从后验密度中收集IID样本，以便计算后验概率。
 - en: 'To illustrate this, we can refer to [Figure 4-13](#mc_states). This figure
     shows the probability of moving from one state to another. For the sake of simplicity,
     we’ll set the probability to be 0.2, indicating that the transition from “studying”
     to “sleeping” has a probability of 0.2:'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明这一点，我们可以参考[图 4-13](#mc_states)。该图显示了从一个状态转移到另一个状态的概率。为了简单起见，我们将概率设置为0.2，表明从“学习”到“睡觉”的转移概率为0.2：
 - en: '[PRE16]'
+  id: totrans-271
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '![mc_states](assets/mlfr_0413.png)'
+  id: totrans-272
   prefs: []
   type: TYPE_IMG
+  zh: '![mc_states](assets/mlfr_0413.png)'
 - en: Figure 4-13\. Interactions of different states
+  id: totrans-273
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-13\. 不同状态的相互作用
 - en: 'There are two common MCMC methods: M–H and Gibbs sampler. Here, we delve into
     the former.'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种常见的MCMC方法：M-H方法和吉布斯采样器。在这里，我们深入探讨前者。
 - en: Metropolis–Hastings
+  id: totrans-275
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Metropolis–Hastings方法
 - en: M-H allows us to have an efficient sampling procedure with two steps. First,
     we draw a sample from proposal density, then we decide either to accept or reject
     it.
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: M-H方法允许我们使用两步高效的抽样过程。首先，我们从提议密度中抽取样本，然后决定是否接受或拒绝它。
 - en: 'Let <math alttext="q left-parenthesis theta vertical-bar theta Superscript
     t minus 1 Baseline right-parenthesis"><mrow><mi>q</mi> <mo>(</mo> <mi>θ</mi> <mo>|</mo>
     <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup> <mo>)</mo></mrow></math>
     be a proposal density and <math alttext="theta"><mi>θ</mi></math> be a parameter
     space. The entire algorithm of M-H can be summarized as:'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: 让<math alttext="q left-parenthesis theta vertical-bar theta Superscript t minus
+    1 Baseline right-parenthesis"><mrow><mi>q</mi> <mo>(</mo> <mi>θ</mi> <mo>|</mo>
+    <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup> <mo>)</mo></mrow></math>是一个提议密度，<math
+    alttext="theta"><mi>θ</mi></math>是一个参数空间。整个M-H算法可以总结如下：
 - en: Select initial value for <math alttext="theta Superscript 1"><msup><mi>θ</mi>
     <mn>1</mn></msup></math> from parameter space <math alttext="theta"><mi>θ</mi></math>
     .
+  id: totrans-278
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 从参数空间 <math alttext="theta"><mi>θ</mi></math> 中选择 <math alttext="theta Superscript
+    1"><msup><mi>θ</mi> <mn>1</mn></msup></math> 的初始值。
 - en: Select a new parameter value <math alttext="theta squared"><msup><mi>θ</mi>
     <mn>2</mn></msup></math> from proposal density, which can be, for the sake of
     easiness, Gaussian or uniform distribution.
+  id: totrans-279
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 从提议密度中选择新的参数值 <math alttext="theta squared"><msup><mi>θ</mi> <mn>2</mn></msup></math>，为了方便起见，可以是高斯分布或均匀分布。
 - en: 'Compute the following acceptance probability:'
+  id: totrans-280
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 计算以下接受概率：
 - en: <math alttext="probability Underscript a Endscripts left-parenthesis theta Superscript
     asterisk Baseline comma theta Superscript t minus 1 Baseline right-parenthesis
     equals m i n left-parenthesis 1 comma StartFraction p left-parenthesis theta Superscript
@@ -1342,153 +2087,256 @@
     <mo>)</mo></mrow><mo>/</mo><mi>q</mi><mrow><mo>(</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
     <mo>|</mo><msup><mi>θ</mi> <mo>*</mo></msup> <mo>)</mo></mrow></mrow></mfrac>
     <mo>)</mo></mrow></mrow></math>
+  id: totrans-281
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: <math alttext="probability Underscript a Endscripts left-parenthesis theta Superscript
+    asterisk Baseline comma theta Superscript t minus 1 Baseline right-parenthesis
+    equals m i n left-parenthesis 1 comma StartFraction p left-parenthesis theta Superscript
+    asterisk Baseline right-parenthesis slash q left-parenthesis theta Superscript
+    asterisk Baseline vertical-bar theta Superscript t minus 1 Baseline right-parenthesis
+    Over p left-parenthesis theta Superscript t minus 1 Baseline right-parenthesis
+    slash q left-parenthesis theta Superscript t minus 1 Baseline vertical-bar theta
+    Superscript asterisk Baseline right-parenthesis EndFraction right-parenthesis"
+    display="block"><mrow><msub><mo form="prefix">Pr</mo> <mi>a</mi></msub> <mrow><mo>(</mo>
+    <msup><mi>θ</mi> <mo>*</mo></msup> <mo>,</mo> <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow> <mo>=</mo> <mi>m</mi> <mi>i</mi> <mi>n</mi> <mrow><mo>(</mo>
+    <mn>1</mn> <mo>,</mo> <mfrac><mrow><mi>p</mi><mrow><mo>(</mo><msup><mi>θ</mi>
+    <mo>*</mo></msup> <mo>)</mo></mrow><mo>/</mo><mi>q</mi><mrow><mo>(</mo><msup><mi>θ</mi>
+    <mo>*</mo></msup> <mo>|</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow></mrow> <mrow><mi>p</mi><mrow><mo>(</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow><mo>/</mo><mi>q</mi><mrow><mo>(</mo><msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>|</mo><msup><mi>θ</mi> <mo>*</mo></msup> <mo>)</mo></mrow></mrow></mfrac>
+    <mo>)</mo></mrow></mrow></math>
 - en: If <math alttext="probability Underscript a Endscripts left-parenthesis theta
     Superscript asterisk Baseline comma theta Superscript t minus 1 Baseline right-parenthesis"><mrow><msub><mo
     form="prefix">Pr</mo> <mi>a</mi></msub> <mrow><mo>(</mo> <msup><mi>θ</mi> <mo>*</mo></msup>
     <mo>,</mo> <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
     <mo>)</mo></mrow></mrow></math> is greater than a sample value drawn from uniform
     distribution U(0,1), repeat this process from step 2.
+  id: totrans-282
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果 <math alttext="probability Underscript a Endscripts left-parenthesis theta
+    Superscript asterisk Baseline comma theta Superscript t minus 1 Baseline right-parenthesis"><mrow><msub><mo
+    form="prefix">Pr</mo> <mi>a</mi></msub> <mrow><mo>(</mo> <msup><mi>θ</mi> <mo>*</mo></msup>
+    <mo>,</mo> <msup><mi>θ</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msup>
+    <mo>)</mo></mrow></mrow></math> 大于从均匀分布 U(0,1) 中抽取的样本值，则从第 2 步开始重复此过程。
 - en: 'Well, it appears intimidating, but don’t worry; we have built-in code in Python
     that makes the applicability of the M-H algorithm much easier. We use the PyFlux
     library to make use of Bayes’ theorem. Let’s apply the M-H algorithm to predict
     volatility:'
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 嗯，这看起来有点吓人，但别担心；我们在 Python 中内置了代码，使得 M-H 算法的应用变得更加容易。我们使用 PyFlux 库利用贝叶斯定理。让我们应用
+    M-H 算法来预测波动率：
 - en: '[PRE17]'
+  id: totrans-284
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-1)'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-1)'
 - en: Configuring GARCH model using the PyFlux library
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 PyFlux 库配置 GARCH 模型
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-2)'
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-2)'
 - en: Printing the estimation of latent variables (parameters)
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印潜变量（参数）的估计结果
 - en: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-3)'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-3)'
 - en: Adjusting the priors for the model latent variables
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整模型潜变量的先验设定
 - en: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-5)'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-5)'
 - en: Fitting the model using M-H process
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 M-H 过程拟合模型
 - en: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-6)'
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-6)'
 - en: Plotting the latent variables
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制潜变量
 - en: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-7)'
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-7)'
 - en: Plotting the fitted model
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制拟合模型
 - en: '[![7](assets/7.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-8)'
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO9-8)'
 - en: Plotting the histogram for posterior check
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制后验检查的直方图
 - en: It is worthwhile to visualize the results of what we have done so far for volatility
     prediction with a Bayesian-based GARCH Model.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于基于贝叶斯的 GARCH 模型的波动率预测，将我们迄今为止所做的结果可视化是值得的。
 - en: '[Figure 4-14](#latent_variable_vol) exhibits the distribution of latent variables.
     Latent variable *q* gathers around 0.2, and the other latent variable, *p*, mostly
     takes values between 0.7 and 0.8.'
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-14](#latent_variable_vol) 展示了潜变量的分布情况。潜变量 *q* 集中在 0.2 左右，而另一个潜变量 *p* 大部分取值介于
+    0.7 和 0.8 之间。'
 - en: '![latent_variable](assets/mlfr_0414.png)'
+  id: totrans-301
   prefs: []
   type: TYPE_IMG
+  zh: '![latent_variable](assets/mlfr_0414.png)'
 - en: Figure 4-14\. Latent variables
+  id: totrans-302
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-14\. 潜变量
 - en: '[Figure 4-15](#model_fit_vol) indicates the demeaned volatility series and
     the GARCH prediction result based on the Bayesian approach.'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-15](#model_fit_vol) 表明了去均值波动率系列和基于贝叶斯方法的 GARCH 预测结果。'
 - en: '![model_fit](assets/mlfr_0415.png)'
+  id: totrans-304
   prefs: []
   type: TYPE_IMG
+  zh: '![model_fit](assets/mlfr_0415.png)'
 - en: Figure 4-15\. Model fit
+  id: totrans-305
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-15\. 模型拟合
 - en: '[Figure 4-16](#posterior_predict_vol) visualizes the posterior predictions
     of the Bayesian model with the data so that we are able to detect systematic discrepancies,
     if any. The vertical line represents the test statistic, and it turns out the
     observed value is larger than that of our model.'
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-16](#posterior_predict_vol) 可视化了贝叶斯模型的后验预测结果与数据，以便我们能够检测系统性差异（如果有的话）。垂直线代表了测试统计量，结果表明观察值大于我们模型的值。'
 - en: '![posterior_predict](assets/mlfr_0416.png)'
+  id: totrans-307
   prefs: []
   type: TYPE_IMG
+  zh: '![后验预测](assets/mlfr_0416.png)'
 - en: Figure 4-16\. Posterior prediction
+  id: totrans-308
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-16\. 后验预测
 - en: 'After we are done with the training part, we are all set to move on to the
     next phase, which is prediction. Prediction analysis is done for the 252 steps
     ahead, and the RMSE is calculated given the realized volatility:'
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: 在完成培训部分后，我们准备好进入下一阶段，即预测。预测分析是为了 252 步之后，根据实现的波动率计算 RMSE：
 - en: '[PRE18]'
+  id: totrans-310
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO10-1)'
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO10-1)'
 - en: In-sample volatility prediction
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内波动率预测
 - en: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO10-2)'
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO10-2)'
 - en: Calculating the RMSE score
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算 RMSE 分数
 - en: 'Eventually, we are ready to observe the prediction result of the Bayesian approach,
     and the following code does it for us, generating [Figure 4-17](#bayesian_predict_vol):'
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终，我们准备观察贝叶斯方法的预测结果，下面的代码为我们生成了 [图 4-17](#bayesian_predict_vol)：
 - en: '[PRE19]'
+  id: totrans-316
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '![bayesian](assets/mlfr_0417.png)'
+  id: totrans-317
   prefs: []
   type: TYPE_IMG
+  zh: '![贝叶斯](assets/mlfr_0417.png)'
 - en: Figure 4-17\. Bayesian volatility prediction
+  id: totrans-318
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-17\. 贝叶斯波动率预测
 - en: '[Figure 4-17](#bayesian_predict_vol) visualizes the volatility prediction based
     on an M-H–based Bayesian approach, and it seems to overshoot toward the end of
     2020\. The overall performance of this method shows that it is not among the best
     methods.'
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-17](#bayesian_predict_vol) 根据基于 M-H 方法的贝叶斯方法进行波动率预测，似乎在 2020 年底出现了过度预测。该方法的整体表现显示，并不是最佳方法之一。'
 - en: Conclusion
+  id: totrans-320
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: Volatility prediction is a key to understanding the dynamics of the financial
     market in the sense that it helps us to gauge uncertainty. With that being said,
     it is used as input in many financial models, including risk models. These facts
@@ -1498,137 +2346,208 @@
     models are promising, and this chapter attempted to make use of these models,
     namely, SVMs, NNs, and deep learning-based models. It turns out that the data-driven
     models outperform the parametric models.
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 波动率预测是理解金融市场动态的关键，因为它帮助我们衡量不确定性。话虽如此，它被用作许多金融模型的输入，包括风险模型。这些事实强调了准确波动率预测的重要性。传统上，诸如
+    ARCH、GARCH 及其扩展的参数方法已被广泛使用，但这些模型存在僵化的问题。为了解决这个问题，数据驱动的模型显得很有前景，本章试图利用这些模型，即 SVM、NN
+    和基于深度学习的模型。结果表明，数据驱动模型优于参数模型。
 - en: In the next chapter, market risk, a core financial risk topic, will be discussed
     both from theoretical and empirical standpoints, and the ML models will be incorporated
     to further improve the estimation of this risk.
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一章中，市场风险作为核心金融风险主题将从理论和实证角度进行讨论，并将 ML 模型纳入以进一步改善对该风险的估计。
 - en: References
+  id: totrans-323
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Articles cited in this chapter:'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的文章：
 - en: 'Andersen, Torben G., Tim Bollerslev, Francis X. Diebold, and Paul Labys. 2003\.
     “Modeling and Forecasting Realized Volatility.” *Econometrica* 71 (2): 579-625.'
+  id: totrans-325
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Andersen, Torben G., Tim Bollerslev, Francis X. Diebold, and Paul Labys. 2003\.
+    “Modeling and Forecasting Realized Volatility.” *Econometrica* 71 (2): 579-625.'
 - en: 'Andersen, Torben G., and Tim Bollerslev. 1997\. “Intraday Periodicity And Volatility
     Persistence in Financial Markets.” *Journal of Empirical Finance* 4 (2-3): 115-158.'
+  id: totrans-326
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Andersen, Torben G., and Tim Bollerslev. 1997\. “Intraday Periodicity And Volatility
+    Persistence in Financial Markets.” *Journal of Empirical Finance* 4 (2-3): 115-158.'
 - en: Black, Fischer. 1976\. “Studies of Stock Market Volatility Changes.” *1976 Proceedings
     of the American Statistical Association Business and Economic Statistics Section*.
+  id: totrans-327
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Black, Fischer. 1976\. “Studies of Stock Market Volatility Changes.” *1976 Proceedings
+    of the American Statistical Association Business and Economic Statistics Section*.
 - en: 'Bollerslev, T. 1986\. “Generalized Autoregressive Conditional Heteroskedasticity.”
     *Journal of Econometrics* 31 (3): 307-327. 3): 542-547.'
+  id: totrans-328
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Bollerslev, T. 1986\. “Generalized Autoregressive Conditional Heteroskedasticity.”
+    *Journal of Econometrics* 31 (3): 307-327. 3): 542-547.'
 - en: 'Burnham, Kenneth P., and David R. Anderson. 2004\. “Multimodel Inference: Understanding
     AIC and BIC in Model Selection.” *Sociological Methods and Research* 33 (2): 261-304.'
+  id: totrans-329
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Burnham, Kenneth P., 和 David R. Anderson. 2004\. “多模型推断：理解模型选择中的AIC和BIC。” *社会方法与研究*
+    33 (2): 261-304.'
 - en: 'Eagle, Robert F. 1982\. “Autoregressive Conditional Heteroskedasticity with
     Estimates of the Variance of UK Inflation.” *Econometrica* 50 (4): 987-1008.'
+  id: totrans-330
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Eagle, Robert F. 1982\. “带有英国通货膨胀方差估计的自回归条件异方差性。” *计量经济学* 50 (4): 987-1008.'
 - en: De Stefani, Jacopo, Olivier Caelen, Dalila Hattab, and Gianluca Bontempi. 2017\.
     “Machine Learning for Multi-step Ahead Forecasting of Volatility Proxies.” MIDAS@
     PKDD/ECML, 17-28.
+  id: totrans-331
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: De Stefani, Jacopo, Olivier Caelen, Dalila Hattab, 和 Gianluca Bontempi. 2017\.
+    “机器学习用于多步预测波动率代理。” MIDAS@ PKDD/ECML, 17-28.
 - en: 'Dokuchaev, Nikolai. 2014\. “Volatility Estimation from Short Time Series of
     Stock Prices.” Journal of Nonparametric Statistics 26 (2): 373-384.'
+  id: totrans-332
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Dokuchaev, Nikolai. 2014\. “从股票价格短期时间序列估计波动性。” *非参数统计学杂志* 26 (2): 373-384.'
 - en: 'Glosten, L. R., R. Jagannathan, and D. E. Runkle 1993\. “On the Relation between
     the Expected Value and the Volatility of the Nominal Excess Return on Stocks.”
     *The Journal of Finance* 48 (5): 1779-1801.'
+  id: totrans-333
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Glosten, L. R., R. Jagannathan, 和 D. E. Runkle 1993\. “关于股票名义超额收益的期望值和波动率之间关系。”
+    *金融学杂志* 48 (5): 1779-1801.'
 - en: 'Karasan, Abdullah, and Esma Gaygisiz. 2020\. “Volatility Prediction and Risk
     Management: An SVR-GARCH Approach.” *The Journal of Financial Data Science* 2
     (4): 85-104.'
+  id: totrans-334
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Karasan, Abdullah, 和 Esma Gaygisiz. 2020\. “波动率预测与风险管理：一种SVR-GARCH方法。” *金融数据科学杂志*
+    2 (4): 85-104.'
 - en: 'Mandelbrot, Benoit. 1963\. “New Methods in Statistical Economics.” Journal
     of Political Economy 71 (5): 421-440.'
+  id: totrans-335
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Mandelbrot, Benoit. 1963\. “统计经济学的新方法。” *政治经济学杂志* 71 (5): 421-440.'
 - en: 'Nelson, Daniel B. 1991\. Conditional Heteroskedasticity in Asset Returns: A
     New Approach. *Econometrica* 59 (2): 347-370.'
+  id: totrans-336
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Nelson, Daniel B. 1991\. 资产收益的条件异方差性：一种新方法。 *计量经济学* 59 (2): 347-370.'
 - en: 'Raju, M. T., and Anirban Ghosh. 2004\. “Stock Market Volatility: An International
     Comparison.” Securities and Exchange Board of India.'
+  id: totrans-337
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Raju, M. T., 和 Anirban Ghosh. 2004\. “股市波动性：国际比较。” 印度证券交易委员会。
 - en: 'Books cited in this chapter:'
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍：
 - en: 'Alpaydin, E. 2020\. *Introduction to Machine Learning*. Cambridge: MIT press.'
+  id: totrans-339
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Alpaydin, E. 2020\. *机器学习导论*. 剑桥：MIT出版社。
 - en: 'Burnham, Kenneth P., and David R. Anderson. 2002\. *Model Selection and Multimodel
     Inference: A Practical Information-Theoretic Approach*. New York: Springer-Verlag.'
+  id: totrans-340
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Burnham, Kenneth P., 和 David R. Anderson. 2002\. *模型选择与多模型推断：实用信息论方法*. 纽约：Springer-Verlag.
 - en: 'Focardi, Sergio M. 1997\. *Modeling the Market: New Theories and Techniques*.
     The Frank J. Fabozzi Series, Vol. 14\. New York: John Wiley and Sons.'
+  id: totrans-341
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Focardi, Sergio M. 1997\. *市场建模：新理论与技术*. The Frank J. Fabozzi Series, Vol. 14\.
+    纽约：John Wiley and Sons.
 - en: 'Rachev, Svetlozar T., John SJ Hsu, Biliana S. Bagasheva, and Frank J. Fabozzi.
     2012\. *Bayesian Methods in Finance*. New York: John Wiley and Sons.'
+  id: totrans-342
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Rachev, Svetlozar T., John SJ Hsu, Biliana S. Bagasheva, 和 Frank J. Fabozzi.
+    2012\. *金融中的贝叶斯方法*. 纽约：John Wiley and Sons.
 - en: 'Taylor, S. 1986\. *Modeling Financial Time Series*. Chichester: Wiley.'
+  id: totrans-343
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Taylor, S. 1986\. *金融时间序列建模*. Chichester: Wiley.'
 - en: 'Wilmott, Paul. 2019\. *Machine Learning: An Applied Mathematics Introduction*.
     Panda Ohana Publishing.'
+  id: totrans-344
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Wilmott, Paul. 2019\. *机器学习：应用数学导论*. Panda Ohana Publishing.
 - en: ^([1](ch04.html#idm45737244123312-marker)) Conditional variance means that volatility
     estimation is a function of the past values of asset returns.
+  id: totrans-345
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch04.html#idm45737244123312-marker)) 条件方差意味着波动率估计是资产收益的过去值的函数。
 - en: ^([2](ch04.html#idm45737239187584-marker)) For more information on these functions,
     see Andrew Ng’s [lecture notes](https://oreil.ly/sTWGj).
+  id: totrans-346
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch04.html#idm45737239187584-marker)) 关于这些函数的更多信息，请参阅Andrew Ng的[讲义](https://oreil.ly/sTWGj)。
 - en: ^([3](ch04.html#idm45737238525200-marker)) Occam’s razor, also known as law
     of parsimony, states that given a set of explanations, simpler explanation is
     the most plausible and likely one.
+  id: totrans-347
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch04.html#idm45737238525200-marker)) 奥卡姆剃刀，也称为简约法则，指出在一组解释中，简单的解释最为可能和可信。
 - en: ^([4](ch04.html#idm45737237868960-marker)) Of these alternatives, TensorFlow,
     PyTorch, and NeuroLab are the most prominent libraries.
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch04.html#idm45737237868960-marker)) 在这些备选方案中，TensorFlow、PyTorch 和 NeuroLab
+    是最突出的库。
 - en: ^([5](ch04.html#idm45737237767616-marker)) For more detailed information, please
     see the [`MLPClassifier` documentation](https://oreil.ly/HnrTk).
+  id: totrans-349
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([5](ch04.html#idm45737237767616-marker)) 更详细信息，请参阅[`MLPClassifier`文档](https://oreil.ly/HnrTk)。

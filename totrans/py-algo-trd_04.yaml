@@ -1,51 +1,72 @@
 - en: Chapter 4\. Mastering Vectorized Backtesting
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第四章。掌握向量化回测
 - en: '[T]hey were silly enough to think you can look at the past to predict the future.^([1](ch04.html#idm45785385873496))'
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '[T]他们愚蠢到以为可以通过过去来预测未来。^([1](ch04.html#idm45785385873496))'
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: '*The Economist*'
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '*经济学家*'
 - en: 'Developing ideas and hypotheses for an algorithmic trading program is generally
     the more creative and sometimes even fun part in the preparation stage. Thoroughly
     testing them is generally the more technical and time consuming part. This chapter
     is about the vectorized backtesting of different algorithmic trading strategies.
     It covers the following types of strategies (refer also to [“Trading Strategies”](ch01.html#trading_strategies)):'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 开发算法交易程序的想法和假设通常是准备阶段中更具创造性甚至有时更有趣的部分。彻底测试它们通常是更技术性和耗时的部分。本章讨论不同算法交易策略的向量化回测。它涵盖以下类型的策略（还参考[“交易策略”](ch01.html#trading_strategies)）：
 - en: Simple moving averages (SMA) based strategies
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单移动平均线（SMA）基于策略
 - en: The basic idea of SMA usage for buy and sell signal generation is already decades
     old. SMAs are a major tool in the so-called technical analysis of stock prices.
     A signal is derived, for example, when an SMA defined on a shorter time window—say
     42 days—crosses an SMA defined on a longer time window—say 252 days.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: SMA用于买卖信号生成的基本理念已有几十年历史。SMA是所谓的股票价格技术分析中的重要工具。例如，当在较短时间窗口（如42天）上定义的SMA穿越在较长时间窗口（如252天）上定义的SMA时，就会产生信号。
 - en: Momentum strategies
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 动量策略
 - en: These are strategies that are based on the hypothesis that recent performance
     will persist for some additional time. For example, a stock that is downward trending
     is assumed to do so for longer, which is why such a stock is to be shorted.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些策略基于这样的假设：最近的表现将持续一段时间。例如，一个下跌趋势的股票被认为将继续下跌，这就是为什么应该做空这样的股票。
 - en: Mean-reversion strategies
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 均值回归策略
 - en: The reasoning behind mean-reversion strategies is that stock prices or prices
     of other financial instruments tend to revert to some mean level or to some trend
     level when they have deviated too much from such levels.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 均值回归策略背后的推理是，股票价格或其他金融工具的价格在偏离这些水平太多时，倾向于回归到某种均值水平或趋势水平。
 - en: The chapter proceeds as follows. [“Making Use of Vectorization”](#using_vectorization)
     introduces vectorization as a useful technical approach to formulate and backtest
     trading strategies. [“Strategies Based on Simple Moving Averages”](#simple_moving_averages)
@@ -56,53 +77,77 @@
     finishes the chapter with coverage of mean-reversion strategies. Finally, [“Data
     Snooping and Overfitting”](#data_snooping) discusses the pitfalls of data snooping
     and overfitting in the context of the backtesting of algorithmic trading strategies.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容如下。[“利用向量化”](#using_vectorization)介绍了向量化作为一个有用的技术方法来制定和回测交易策略。[“基于简单移动平均线的策略”](#simple_moving_averages)是本章的核心内容，深入讨论了基于SMA的向量化回测策略。[“基于动量的策略”](#momentum_trading)介绍并回测了基于所谓的时间序列动量（“近期表现”）的股票交易策略。[“基于均值回归的策略”](#mean_reversion)结束了本章的内容，涵盖了均值回归策略。最后，[“数据窥探和过度拟合”](#data_snooping)讨论了在算法交易策略回测中数据窥探和过度拟合的陷阱。
 - en: The major goal of this chapter is to master the vectorized implementation approach,
     which packages like `NumPy` and `pandas` allow for, as an efficient and fast backtesting
     tool. To this end, the approaches presented make a number of simplifying assumptions
     to better focus the discussion on the major topic of vectorization.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的主要目标是掌握向量化实现方法，这些方法如`NumPy`和`pandas`包所允许的，作为高效快速的回测工具。为此，所提出的方法在简化假设的基础上更好地集中讨论向量化的主题。
 - en: 'Vectorized backtesting should be considered in the following cases:'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下情况下应考虑向量化回测：
 - en: Simple trading strategies
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单交易策略
 - en: The vectorized backtesting approach clearly has limits when it comes to the
     modeling of algorithmic trading strategies. However, many popular, simple strategies
     can be backtested in vectorized fashion.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 当涉及建模算法交易策略时，向量化回测方法显然存在局限性。然而，许多流行的简单策略可以以向量化方式进行回测。
 - en: Interactive strategy exploration
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 互动式策略探索
 - en: Vectorized backtesting allows for an agile, interactive exploration of trading
     strategies and their characteristics. A few lines of code generally suffice to
     come up with first results, and different parameter combinations are easily tested.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化的回测允许灵活、互动式地探索交易策略及其特征。通常只需几行代码即可得出初步结果，并且可以轻松测试不同的参数组合。
 - en: Visualization as major goal
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 以可视化为主要目标
 - en: The approach lends itself pretty well for visualizations of the used data, statistics,
     signals, and performance results. A few lines of Python code are generally enough
     to generate appealing and insightful plots.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法非常适合可视化使用的数据、统计数据、信号和性能结果。一些简短的Python代码通常足以生成引人入胜且富有洞察力的图表。
 - en: Comprehensive backtesting programs
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 全面的回测程序
 - en: Vectorized backtesting is pretty fast in general, allowing one to test a great
     variety of parameter combinations in a short amount of time. When speed is key,
     the approach should be considered.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 总体而言，向量化的回测速度相当快，能够在短时间内测试大量的参数组合。当速度至关重要时，应考虑这种方法。
 - en: Making Use of Vectorization
+  id: totrans-22
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 利用向量化
 - en: '*Vectorization*, or *array programming*, refers to a programming style where
     operations on scalars (that is, integer or floating point numbers) are generalized
     to vectors, matrices, or even multidimensional arrays. Consider a vector of integers
@@ -112,579 +157,907 @@
     [1, 2, 3, 4, 5]`. Calculating the scalar product of such a vector and, say, the
     number `2` requires in pure Python a `for` loop or something similar, such as
     a list comprehension, which is just different syntax for a `for` loop:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*向量化*或*数组编程*是指一种编程风格，其中对标量（即整数或浮点数）的操作被推广到向量、矩阵甚至多维数组。考虑一个整数向量 <math alttext="v
+    equals left-parenthesis 1 comma 2 comma 3 comma 4 comma 5 right-parenthesis Superscript
+    upper T"><mrow><mi>v</mi> <mo>=</mo> <msup><mrow><mo>(</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>4</mn><mo>,</mo><mn>5</mn><mo>)</mo></mrow>
+    <mi>T</mi></msup></mrow></math> 在Python中表示为`list`对象`v = [1, 2, 3, 4, 5]`。计算这样一个向量与数`2`的标量积在纯Python中需要使用`for`循环或类似的表达式，比如列表推导式，它实际上是`for`循环的另一种语法：'
 - en: '[PRE0]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'In principle, Python allows one to multiply a `list` object by an integer,
     but Python’s data model gives back another `list` object in the example case containing
     two times the elements of the original object:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 原则上，Python允许将`list`对象乘以一个整数，但在示例中，Python的数据模型返回另一个`list`对象，其中包含原始对象元素的两倍：
 - en: '[PRE1]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Vectorization with NumPy
+  id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: NumPy 中的向量化
 - en: 'The `NumPy` package for numerical computing (cf. [`NumPy` home page](http://numpy.org))
     introduces vectorization to Python. The major class provided by `NumPy` is the
     `ndarray` class, which stands for *n-dimensional array*. An instance of such an
     object can be created, for example, on the basis of the `list` object `v`. Scalar
     multiplication, linear transformations, and similar operations from linear algebra
     then work as desired:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 数值计算的`NumPy`包（详见[`NumPy`主页](http://numpy.org)）将向量化引入Python。`NumPy`提供的主要类是`ndarray`类，代表*n维数组*。例如，可以基于`list`对象`v`创建这样一个对象的实例。标量乘法、线性变换以及类似的线性代数操作将按预期进行：
 - en: '[PRE2]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO1-1)'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO1-1)'
 - en: Imports the `NumPy` package.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`NumPy`包。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO1-2)'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO1-2)'
 - en: Instantiates an `ndarray` object based on the `list` object.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于`list`对象实例化一个`ndarray`对象。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO1-3)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO1-3)'
 - en: Prints out the data stored as `ndarray` object.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 以`ndarray`对象的形式打印存储的数据。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO1-4)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO1-4)'
 - en: Looks up the type of the object.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 查找对象的类型。
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO1-5)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO1-5)'
 - en: Achieves a scalar multiplication in vectorized fashion.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现矢量化的标量乘法。
 - en: '[![6](assets/6.png)](#co_mastering_vectorized_backtesting_CO1-6)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_mastering_vectorized_backtesting_CO1-6)'
 - en: Achieves a linear transformation in vectorized fashion.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现矢量化的线性变换。
 - en: 'The transition from a one-dimensional array (a vector) to a two-dimensional
     array (a matrix) is natural. The same holds true for higher dimensions:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 从一维数组（向量）到二维数组（矩阵）的转换是自然的。对于更高维度也同样适用：
 - en: '[PRE3]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO2-1)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO2-1)'
 - en: Creates a one-dimensional `ndarray` object and reshapes it to two dimensions.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个一维`ndarray`对象，并将其重新整形为二维。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO2-2)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO2-2)'
 - en: Calculates the square of every element of the object in vectorized fashion.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 以向量化方式计算对象的每个元素的平方。
 - en: 'In addition, the `ndarray` class provides certain methods that allow vectorized
     operations. They often also have counterparts in the form of so-called universal
     functions that `NumPy` provides:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，`ndarray`类提供了一些方法，允许进行向量化操作。它们通常也有对应的称为通用函数的形式，由`NumPy`提供：
 - en: '[PRE4]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO3-1)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO3-1)'
 - en: Calculates the mean of all elements by a method call.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过方法调用计算所有元素的平均值。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO3-2)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO3-2)'
 - en: Calculates the mean of all elements by a universal function.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过通用函数计算所有元素的平均值。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO3-3)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO3-3)'
 - en: Calculates the mean along the first axis.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 沿第一轴计算平均值。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO3-4)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO3-4)'
 - en: Calculates the mean along the second axis.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 沿第二轴计算平均值。
 - en: As a financial example, consider the function `generate_sample_data()` in [“Python
     Scripts”](ch03.html#sample_data) that uses an Euler discretization to generate
     sample paths for a geometric Brownian motion. The implementation makes use of
     multiple vectorized operations that are combined to a single line of code.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为金融示例，考虑在[“Python Scripts”](ch03.html#sample_data)中使用欧拉离散化生成几何布朗运动样本路径的函数`generate_sample_data()`。该实现利用了多个向量化操作，将它们组合成一行代码。
 - en: See the [Appendix A](app01.html#python_numpy_pandas) for more details of vectorization
     with `NumPy`. Refer to Hilpisch (2018) for a multitude of applications of vectorization
     in a financial context.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 更多关于`NumPy`中向量化的细节，请参见[附录 A](app01.html#python_numpy_pandas)。有关在金融背景下向量化应用的多种示例，请参考Hilpisch（2018）。
 - en: The standard instruction set and data model of Python does not generally allow
     for vectorized numerical operations. `NumPy` introduces powerful vectorization
     techniques based on the regular array class `ndarray` that lead to concise code
     that is close to mathematical notation in, for example, linear algebra regarding
     vectors and matrices.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: Python的标准指令集和数据模型通常不允许进行向量化数值操作。`NumPy`引入了基于常规数组类`ndarray`的强大向量化技术，使得例如在线性代数中关于向量和矩阵的数学符号的紧凑代码成为可能。
 - en: Vectorization with pandas
+  id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用`pandas`进行向量化
 - en: 'The `pandas` package and the central `DataFrame` class make heavy use of `NumPy`
     and the `ndarray` class. Therefore, most of the vectorization principles seen
     in the `NumPy` context carry over to `pandas`. The mechanics are best explained
     again on the basis of a concrete example. To begin with, define a two-dimensional
     `ndarray` object first:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`包和中心`DataFrame`类大量使用`NumPy`和`ndarray`类。因此，`NumPy`上下文中看到的大多数向量化原则也适用于`pandas`。这些机制最好通过具体示例再次解释。首先，定义一个二维`ndarray`对象：'
 - en: '[PRE5]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'For the creation of a `DataFrame` object, generate a `list` object with column
     names and a `DatetimeIndex` object next, both of appropriate size given the `ndarray`
     object:'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 要创建`DataFrame`对象，首先生成一个具有适当大小的列名`list`对象和一个`DatetimeIndex`对象，两者均适合给定的`ndarray`对象：
 - en: '[PRE6]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO4-1)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO4-1)'
 - en: Imports the `pandas` package.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`pandas`包。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO4-2)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO4-2)'
 - en: Creates a `list` object out of the `str` object.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`str`对象创建一个`list`对象。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO4-3)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO4-3)'
 - en: A `pandas` `DatetimeIndex` object is created that has a “business day” frequency
     and goes over five periods.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个具有“工作日”频率并覆盖五个周期的`pandas` `DatetimeIndex`对象。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO4-4)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO4-4)'
 - en: A `DataFrame` object is instantiated based on the `ndarray` object `a` with
     column labels and index values specified.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于 `ndarray` 对象 `a` 实例化一个 `DataFrame` 对象，指定列标签和索引值。
 - en: 'In principle, vectorization now works similarly to `ndarray` objects. One difference
     is that aggregation operations default to column-wise results:'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 原则上，向量化现在与 `ndarray` 对象类似工作。一个不同之处是聚合操作默认为按列结果：
 - en: '[PRE7]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO5-1)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO5-1)'
 - en: Calculates the scalar product for the `DataFrame` object (treated as a matrix).
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算 `DataFrame` 对象（视为矩阵）的数量积。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO5-2)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO5-2)'
 - en: Calculates the sum *per column*.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算*每列*的求和。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO5-3)'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO5-3)'
 - en: Calculates the mean *per column*.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算*每列*的均值。
 - en: 'Column-wise operations can be implemented by referencing the respective column
     names, either by the bracket notation or the dot notation:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过方括号或点符号引用相应列名，可以实现按列的操作：
 - en: '[PRE8]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO6-1)'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO6-1)'
 - en: Calculates the element-wise sum over columns `a` and `c`.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算列 `a` 和 `c` 的逐元素求和。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO6-2)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO6-2)'
 - en: Calculates a linear transform involving all three columns.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算涉及所有三列的线性变换。
 - en: 'Similarly, conditions yielding Boolean results vectors and SQL-like selections
     based on such conditions are straightforward to implement:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样地，根据布尔结果向量生成条件和类似 SQL 的选择条件也很容易实现：
 - en: '[PRE9]'
+  id: totrans-89
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO7-1)'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO7-1)'
 - en: Which element in column `a` is greater than five?
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 列 `a` 中哪个元素大于五？
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO7-2)'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO7-2)'
 - en: Select all those rows where the element in column `a` is greater than five.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择所有列 `a` 中元素大于五的行。
 - en: 'For a vectorized backtesting of trading strategies, comparisons between two
     columns or more are typical:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于向量化回测交易策略，比较两列或更多列是典型的操作：
 - en: '[PRE10]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO8-1)'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO8-1)'
 - en: For which date is the element in column `c` greater than in column `b`?
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于哪个日期，列 `c` 中的元素大于列 `b` 中的元素？
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO8-2)'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO8-2)'
 - en: Condition comparing a linear combination of columns `a` and `b` with column
     `c`.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 将列 `a` 和 `b` 的线性组合与列 `c` 进行比较的条件。
 - en: Vectorization with `pandas` is a powerful concept, in particular for the implementation
     of financial algorithms and the vectorized backtesting, as illustrated in the
     remainder of this chapter. For more on the basics of vectorization with `pandas`
     and financial examples, refer to Hilpisch (2018, ch. 5).
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `pandas` 进行向量化是一个强大的概念，特别适用于金融算法的实现和向量化回测，如本章节其余部分所示。有关使用 `pandas` 进行向量化的基础知识和金融示例，请参阅Hilpisch（2018年，第5章）。
 - en: While `NumPy` brings general vectorization approaches to the numerical computing
     world of Python, `pandas` allows vectorization over time series data. This is
     really helpful for the implementation of financial algorithms and the backtesting
     of algorithmic trading strategies. By using this approach, you can expect concise
     code, as well as a faster code execution, in comparison to standard Python code,
     making use of `for` loops and similar idioms to accomplish the same goal.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然 `NumPy` 将一般向量化方法引入了Python的数值计算世界，但 `pandas` 允许在时间序列数据上进行向量化。这对于实施金融算法和算法交易策略的回测非常有帮助。通过这种方法，您可以期待更简洁的代码，并且与使用标准Python代码（使用
+    `for` 循环等惯用语法）相比，代码执行速度更快。
 - en: Strategies Based on Simple Moving Averages
+  id: totrans-102
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于简单移动平均线的策略
 - en: 'Trading based on simple moving averages (SMAs) is a decades old strategy that
     has its origins in the technical stock analysis world. Brock et al. (1992), for
     example, empirically investigate such strategies in systematic fashion. They write:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于简单移动平均线（SMAs）的交易策略是一个源于技术股票分析领域几十年历史的策略。例如，Brock等人（1992年）系统地对这些策略进行了实证研究。他们写道：
 - en: 'The term “technical analysis” is a general heading for a myriad of trading
     techniques….In this paper, we explore two of the simplest and most popular technical
     rules: moving average-oscillator and trading-range break (resistance and support
     levels). In the first method, buy and sell signals are generated by two moving
     averages, a long period, and a short period….Our study reveals that technical
     analysis helps to predict stock changes.'
+  id: totrans-104
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: “技术分析”这个术语是指多种交易技术的总称。在本文中，我们探讨了两种最简单和最流行的技术规则：移动平均振荡器和交易区间突破（阻力和支撑水平）。在第一种方法中，通过两个移动平均线（长期和短期）生成买入和卖出信号。我们的研究表明，技术分析有助于预测股票的变化。
 - en: Getting into the Basics
+  id: totrans-105
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 入门基础
 - en: 'This sub-section focuses on the basics of backtesting trading strategies that
     make use of two SMAs. The example to follow works with end-of-day (EOD) closing
     data for the EUR/USD exchange rate, as provided in the *csv* file under the [EOD
     data file](https://oreil.ly/AzE-p). The data in the data set is from the Refinitiv
     Eikon Data API and represents EOD values for the respective instruments (`RICs`):'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 本小节重点介绍了使用两个 SMA 的回测交易策略的基础知识。后续示例使用了 EUR/USD 汇率的每日收盘数据，这些数据可以在 [EOD 数据文件](https://oreil.ly/AzE-p)
+    中的 *csv* 文件中找到。数据来自 Refinitiv Eikon 数据 API，代表了各自工具的 EOD 值 (`RICs`)：
 - en: '[PRE11]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO9-1)'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO9-1)'
 - en: Reads the data from the remotely stored `CSV` file.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 从远程存储的 `CSV` 文件中读取数据。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO9-2)'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO9-2)'
 - en: Shows the meta information for the `DataFrame` object.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示 `DataFrame` 对象的元信息。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO9-3)'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO9-3)'
 - en: Transforms the `Series` object to a `DataFrame` object.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 `Series` 对象转换为 `DataFrame` 对象。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO9-4)'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO9-4)'
 - en: Renames the only column to `price`.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 将唯一的列重命名为 `price`。
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO9-5)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO9-5)'
 - en: Shows the meta information for the new `DataFrame` object.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示新 `DataFrame` 对象的元信息。
 - en: 'The calculation of SMAs is made simple by the `rolling()` method, in combination
     with a deferred calculation operation:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `rolling()` 方法和延迟计算操作，简化了 SMA 的计算：
 - en: '[PRE12]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO10-1)'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO10-1)'
 - en: Creates a column with 42 days of SMA values. The first 41 values will be `NaN`.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个包含 42 天 SMA 值的列。前 41 个值将为 `NaN`。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO10-2)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO10-2)'
 - en: Creates a column with 252 days of SMA values. The first 251 values will be `NaN`.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个包含 252 天 SMA 值的列。前 251 个值将为 `NaN`。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO10-3)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO10-3)'
 - en: Prints the final five rows of the data set.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印数据集的最后五行。
 - en: 'A visualization of the original time series data in combination with the SMAs
     best illustrates the results (see [Figure 4-1](#sma_plot_1)):'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过原始时间序列数据与 SMA 的组合可视化，最佳地展示了结果（见 [图 4-1](#sma_plot_1)）：
 - en: '[PRE13]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: The next step is to generate signals, or rather market positionings, based on
     the relationship between the two SMAs. The rule is to *go long whenever the shorter
     SMA is above the longer one and vice versa*. For our purposes, we indicate a long
     position by 1 and a short position by –1.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是根据两个 SMA 之间的关系生成信号或市场定位。规则是*当较短的 SMA 高于较长的 SMA 时做多，反之则做空*。对于我们的目的，我们用 1
+    表示做多仓位，用 -1 表示做空仓位。
 - en: '![pfat 0401](assets/pfat_0401.png)'
+  id: totrans-129
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0401](assets/pfat_0401.png)'
 - en: Figure 4-1\. The EUR/USD exchange rate with two SMAs
+  id: totrans-130
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-1\. EUR/USD 汇率与两个 SMA
 - en: 'Being able to directly compare two columns of the `DataFrame` object makes
     the implementation of the rule an affair of a single line of code only. The positioning
     over time is illustrated in [Figure 4-2](#sma_plot_2):'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 能够直接比较 `DataFrame` 对象的两列使得这一规则的实现仅需一行代码。随时间变化的定位在 [图 4-2](#sma_plot_2) 中有所体现：
 - en: '[PRE14]'
+  id: totrans-132
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO11-1)'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO11-1)'
 - en: Implements the trading rule in vectorized fashion. `np.where()` produces `+1`
     for rows where the expression is `True` and `-1` for rows where the expression
     is `False`.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 以向量化方式实现交易规则。`np.where()` 在表达式为 `True` 的行上生成 `+1`，在表达式为 `False` 的行上生成 `-1`。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO11-2)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO11-2)'
 - en: Deletes all rows of the data set that contain at least one `NaN` value.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 删除数据集中至少包含一个`NaN`值的所有行。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO11-3)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO11-3)'
 - en: Plots the positioning over time.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制随时间变化的定位。
 - en: '![pfat 0402](assets/pfat_0402.png)'
+  id: totrans-139
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0402](assets/pfat_0402.png)'
 - en: Figure 4-2\. Market positioning based on the strategy with two SMAs
+  id: totrans-140
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-2\. 基于两个SMA的策略市场定位
 - en: 'To calculate the performance of the strategy, calculate the log returns based
     on the original financial time series next. The code to do this is again rather
     concise due to vectorization. [Figure 4-3](#sma_plot_3) shows the histogram of
     the log returns:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算策略表现时，接下来基于原始金融时间序列计算对数收益率。由于矢量化，代码相当简洁。[图 4-3](#sma_plot_3)显示了对数收益率的直方图：
 - en: '[PRE15]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO12-1)'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO12-1)'
 - en: Calculates the log returns in vectorized fashion over the `price` column.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`price`列上以矢量化方式计算对数收益率。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO12-2)'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO12-2)'
 - en: Plots the log returns as a histogram (frequency distribution).
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 将对数收益率绘制成直方图（频率分布）。
 - en: To derive the strategy returns, multiply the `position` column—shifted by one
     trading day—with the `returns` column. Since log returns are additive, calculating
     the sum over the columns `returns` and `strategy` provides a first comparison
     of the performance of the strategy relative to the base investment itself.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 要得出策略收益，将`position`列（向后移一交易日）与`returns`列相乘。由于对数收益率是可加的，计算`returns`和`strategy`列的总和提供了策略相对于基础投资本身表现的首次比较。
 - en: '![pfat 0403](assets/pfat_0403.png)'
+  id: totrans-148
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0403](assets/pfat_0403.png)'
 - en: Figure 4-3\. Frequency distribution of EUR/USD log returns
+  id: totrans-149
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-3\. EUR/USD对数收益率的频率分布
 - en: 'Comparing the returns shows that the strategy books a win over the passive
     benchmark investment:'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 比较收益率表明，该策略在超过被动基准投资方面获得了胜利：
 - en: '[PRE16]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO13-1)'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO13-1)'
 - en: Derives the log returns of the strategy given the positionings and market returns.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据仓位和市场回报计算策略的对数收益率。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO13-2)'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO13-2)'
 - en: Sums up the single log return values for both the stock and the strategy (for
     illustration only).
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 对股票和策略的单个对数收益值求和（仅作说明）。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO13-3)'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO13-3)'
 - en: Applies the exponential function to the sum of the log returns to calculate
     the *gross performance*.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 对对数收益率之和应用指数函数以计算*总体表现*。
 - en: 'Calculating the cumulative sum over time with `cumsum` and, based on this,
     the cumulative returns by applying the exponential function `np.exp()` gives a
     more comprehensive picture of how the strategy compares to the performance of
     the base financial instrument over time. [Figure 4-4](#sma_plot_4) shows the data
     graphically and illustrates the outperformance in this particular case:'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`cumsum`计算随时间的累积和，基于此应用指数函数`np.exp()`计算累积收益，这提供了策略如何随时间与基础金融工具表现相比的更全面的图像。[图 4-4](#sma_plot_4)图形化显示了数据，并展示了在这种特定情况下的超额表现：
 - en: '[PRE17]'
+  id: totrans-159
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '![pfat 0404](assets/pfat_0404.png)'
+  id: totrans-160
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0404](assets/pfat_0404.png)'
 - en: Figure 4-4\. Gross performance of EUR/USD compared to the SMA-based strategy
+  id: totrans-161
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-4\. EUR/USD与基于SMA的策略的总体表现对比
 - en: 'Average, annualized risk-return statistics for both the stock and the strategy
     are easy to calculate:'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 股票和策略的平均年化风险收益统计很容易计算：
 - en: '[PRE18]'
+  id: totrans-163
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO14-1)'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO14-1)'
 - en: Calculates the annualized mean return in both log and regular space.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算对数空间和常规空间中的年化均值收益。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO14-3)'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO14-3)'
 - en: Calculates the annualized standard deviation in both log and regular space.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算对数空间和常规空间中的年化标准偏差。
 - en: 'Other risk statistics often of interest in the context of trading strategy
     performances are the *maximum drawdown* and the *longest drawdown period*. A helper
     statistic to use in this context is the cumulative maximum gross performance as
     calculated by the `cummax()` method applied to the gross performance of the strategy.
     [Figure 4-5](#sma_plot_5) shows the two time series for the SMA-based strategy:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 在交易策略表现的背景下，其他经常感兴趣的风险统计数据包括*最大回撤*和*最长回撤期*。在此背景下使用的一个辅助统计数据是策略的总体最大累积毛利润，由应用于策略毛利润的`cummax()`方法计算。[图4-5](#sma_plot_5)展示了基于SMA策略的两个时间序列：
 - en: '[PRE19]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO15-1)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO15-1)'
 - en: Defines a new column, `cumret`, with the gross performance over time.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义一个新列`cumret`，其中包含随时间变化的策略毛利润。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO15-2)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO15-2)'
 - en: Defines yet another column with the running maximum value of the gross performance.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义另一个列，其中包含策略毛利润的运行最大值。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO15-3)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO15-3)'
 - en: Plots the two new columns of the `DataFrame` object.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制`DataFrame`对象的两个新列。
 - en: '![pfat 0405](assets/pfat_0405.png)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0405](assets/pfat_0405.png)'
 - en: Figure 4-5\. Gross performance and cumulative maximum performance of the SMA-based
     strategy
+  id: totrans-177
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图4-5\. 基于SMA策略的毛利润和累积最大表现
 - en: 'The maximum drawdown is then simply calculated as the maximum of the difference
     between the two relevant columns. The maximum drawdown in the example is about
     18 percentage points:'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，最大回撤简单地计算为两个相关列之间的差异的最大值。在例子中，最大回撤约为18个百分点：
 - en: '[PRE20]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO16-1)'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO16-1)'
 - en: Calculates the element-wise difference between the two columns.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算两列之间的逐元素差异。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO16-2)'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO16-2)'
 - en: Picks out the maximum value from all differences.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 从所有差异中挑选出最大值。
 - en: The determination of the longest drawdown period is a bit more involved. It
     requires those dates at which the gross performance equals its cumulative maximum
     (that is, where a new maximum is set). This information is stored in a temporary
@@ -692,136 +1065,204 @@
     the longest period is picked out. Such periods can be only one day long or more
     than 100 days. Here, the longest drawdown period lasts for 596 days—a pretty long
     period:^([2](ch04.html#idm45785380499832))
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定最长回撤期需要更多的工作。它需要找到那些总体表现等于其累积最大值的日期（即设置新最大值的日期）。这些信息存储在一个临时对象中。然后计算所有这些日期之间的天数差异，并选择最长的期间。这样的期间可能只有一天，也可能超过100天。在这里，最长的回撤期为596天——一个相当长的时间段：^([2](ch04.html#idm45785380499832))
 - en: '[PRE21]'
+  id: totrans-185
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO17-1)'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO17-1)'
 - en: Where are the differences equal to zero?
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 哪些差异等于零？
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO17-2)'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO17-2)'
 - en: Calculates the `timedelta` values between all index values.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算所有索引值之间的`timedelta`值。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO17-3)'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO17-3)'
 - en: Picks out the maximum `timedelta` value.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 挑选出最大的`timedelta`值。
 - en: Vectorized backtesting with `pandas` is generally a rather efficient endeavor
     due to the capabilities of the package and the main `DataFrame` class. However,
     the interactive approach illustrated so far does not work well when one wishes
     to implement a larger backtesting program that, for example, optimizes the parameters
     of an SMA-based strategy. To this end, a more general approach is advisable.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`pandas`进行向量化回测通常是一项相当高效的工作，这归功于该库的能力以及主要的`DataFrame`类。然而，迄今为止展示的交互式方法在希望实施更大的回测程序时效果不佳，例如优化基于SMA策略的参数。因此，建议采用更一般化的方法。
 - en: '`pandas` proves to be a powerful tool for the vectorized analysis of trading
     strategies. Many statistics of interest, such as log returns, cumulative returns,
     annualized returns and volatility, maximum drawdown, and maximum drawdown period,
     can in general be calculated by a single line or just a few lines of code. Being
     able to visualize results by a simple method call is an additional benefit.'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 显然是进行交易策略向量化分析的强大工具。可以通过一行或几行代码计算许多感兴趣的统计数据，如对数收益、累积收益、年化收益和波动率、最大回撤及最大回撤期。通过简单的方法调用能够可视化结果是一个额外的好处。'
 - en: Generalizing the Approach
+  id: totrans-194
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 泛化方法
 - en: '[“SMA Backtesting Class”](#sma_vector_backtester) presents a Python code that
     contains a class for the vectorized backtesting of SMA-based trading strategies.
     In a sense, it is a generalization of the approach introduced in the previous
     sub-section. It allows one to define an instance of the `SMAVectorBacktester`
     class by providing the following parameters:'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“SMA 回测类”](#sma_vector_backtester) 提供了一个包含用于基于 SMA 的交易策略向量化回测的类的 Python 代码。在某种意义上，它是前一小节介绍的方法的一种泛化。它允许通过提供以下参数来定义
+    `SMAVectorBacktester` 类的实例：'
 - en: '`symbol`: `RIC` (instrument data) to be used'
+  id: totrans-196
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`symbol`: 用于的 `RIC`（仪器数据）'
 - en: '`SMA1`: for the time window in days for the *shorter* SMA'
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`SMA1`: 较短 SMA 的时间窗口（天数）'
 - en: '`SMA2`: for the time window in days for the *longer* SMA'
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`SMA2`: 较长 SMA 的时间窗口（天数）'
 - en: '`start`: for the start date of the data selection'
+  id: totrans-199
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`start`: 数据选择的开始日期'
 - en: '`end`: for the end date of the data selection'
+  id: totrans-200
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`end`: 数据选择的结束日期'
 - en: 'The application itself is best illustrated by an interactive session that makes
     use of the class. The example first replicates the backtest implemented previously
     based on EUR/USD exchange rate data. It then optimizes the SMA parameters for
     maximum gross performance. Based on the optimal parameters, it plots the resulting
     gross performance of the strategy compared to the base instrument over the relevant
     period of time:'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用程序本身最好通过使用该类的交互会话来说明。例如，首先复制之前基于 EUR/USD 汇率数据实施的回测。然后优化 SMA 参数以获取最大总体表现。基于最佳参数，它绘制了策略与基准工具在相关时间段内的总体表现：
 - en: '[PRE22]'
+  id: totrans-202
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO18-1)'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO18-1)'
 - en: This imports the module as `SMA`.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将模块导入为 `SMA`。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO18-2)'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO18-2)'
 - en: An instance of the main class is instantiated.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化主类的一个实例。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO18-3)'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO18-3)'
 - en: Backtests the SMA-based strategy, given the parameters during instantiation.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 对给定实例化参数的 SMA 策略进行回测。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO18-4)'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO18-4)'
 - en: The `optimize_parameters()` method takes as input parameter ranges with step
     sizes and determines the optimal combination by a brute force approach.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '`optimize_parameters()` 方法接受参数范围和步长作为输入，并通过蛮力方法确定最佳组合。'
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO18-5)'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO18-5)'
 - en: The `plot_results()` method plots the strategy performance compared to the benchmark
     instrument, given the currently stored parameter values (here from the optimization
     procedure).
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: '`plot_results()` 方法根据当前存储的参数值（这里是优化过程的参数）绘制策略表现与基准工具的对比图。'
 - en: The gross performance of the strategy with the original parametrization is 1.24
     or 124%. The optimized strategy yields an absolute return of 1.44 or 144% for
     the parameter combination `SMA1 = 48` and `SMA2 = 238`. [Figure 4-6](#sma_plot_6)
     shows the gross performance over time graphically, again compared to the performance
     of the base instrument, which represents the benchmark.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 原始参数化策略的总体表现为 1.24 或 124%。优化策略对于参数组合 `SMA1 = 48` 和 `SMA2 = 238` 的绝对回报率为 1.44
+    或 144%。[图 4-6](#sma_plot_6) 以图形方式显示了随时间变化的总体表现，再次与代表基准的基础工具的表现进行比较。
 - en: '![pfat 0406](assets/pfat_0406.png)'
+  id: totrans-214
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0406](assets/pfat_0406.png)'
 - en: Figure 4-6\. Gross performance of EUR/USD and the optimized SMA strategy
+  id: totrans-215
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-6\. EUR/USD 的总体表现及优化的 SMA 策略
 - en: Strategies Based on Momentum
+  id: totrans-216
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于动量的策略
 - en: There are two basic types of momentum strategies. The first type is *cross-sectional*
     momentum strategies. Selecting from a larger pool of instruments, these strategies
     buy those instruments that have recently outperformed relative to their peers
@@ -830,118 +1271,175 @@
     least for a certain period of time. Jegadeesh and Titman (1993, 2001) and Chan
     et al. (1996) study these types of trading strategies and their potential sources
     of profit.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种基本类型的动量策略。第一种类型是*交叉部门*动量策略。从更大的仪器池中选择，这些策略购买那些相对于同行（或基准）最近表现优越的仪器，并卖出那些表现不佳的仪器。基本思想是，这些仪器在一定时间内继续表现优越或不足。Jegadeesh
+    和 Titman（1993, 2001）以及Chan等人（1996）研究了这些类型的交易策略及其潜在的盈利来源。
 - en: 'Cross-sectional momentum strategies have traditionally performed quite well.
     Jegadeesh and Titman (1993) write:'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 交叉部门动量策略传统上表现相当不错。Jegadeesh 和 Titman（1993）写道：
 - en: This paper documents that strategies which buy stocks that have performed well
     in the past and sell stocks that have performed poorly in the past generate significant
     positive returns over 3- to 12-month holding periods.
+  id: totrans-219
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 本文记录了那些在过去表现良好的股票购买和在过去表现不佳的股票卖出的策略，在3至12个月的持有期内产生显著的正回报。
 - en: 'The second type is *time series* momentum strategies. These strategies buy
     those instruments that have recently performed well and sell those instruments
     that have recently performed poorly. In this case, the benchmark is the past returns
     of the instrument itself. Moskowitz et al. (2012) analyze this type of momentum
     strategy in detail across a wide range of markets. They write:'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种类型是*时间序列*动量策略。这些策略购买那些最近表现良好的仪器，并卖出那些最近表现不佳的仪器。在这种情况下，基准是仪器本身的过去回报。Moskowitz等人（2012）详细分析了各种市场中这种类型的动量策略。他们写道：
 - en: Rather than focus on the relative returns of securities in the cross-section,
     time series momentum focuses purely on a security’s own past return….Our finding
     of time series momentum in virtually every instrument we examine seems to challenge
     the “random walk” hypothesis, which in its most basic form implies that knowing
     whether a price went up or down in the past should not be informative about whether
     it will go up or down in the future.
+  id: totrans-221
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 与关注证券在横截面上的相对回报不同，时间序列动量完全集中于安全本身的过去回报……我们发现，在我们研究的几乎每种仪器中，时间序列动量似乎挑战了“随机行走”假设，该假设的基本形式暗示了过去价格的上涨或下跌不应该对其未来的上涨或下跌具有信息性。
 - en: Getting into the Basics
+  id: totrans-222
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 入门基础
 - en: 'Consider end-of-day closing prices for the gold price in USD (`XAU=`):'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑美元下的黄金收盘价（`XAU=`）：
 - en: '[PRE23]'
+  id: totrans-224
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: 'The most simple time series momentum strategy is to buy the stock if the last
     return was positive and to sell it if it was negative. With `NumPy` and `pandas`
     this is easy to formalize; just take the sign of the last available return as
     the market position. [Figure 4-7](#mom_plot_1) illustrates the performance of
     this strategy. The strategy does significantly underperform the base instrument:'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的时间序列动量策略是，如果最后的回报是正的，就买入股票；如果是负的，就卖出。利用`NumPy`和`pandas`可以很容易地进行形式化；只需将最后可用回报的符号作为市场头寸。[图 4-7](#mom_plot_1)
+    展示了该策略的表现。该策略明显表现不佳基准工具：
 - en: '[PRE24]'
+  id: totrans-226
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO19-1)'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO19-1)'
 - en: Defines a new column with the sign (that is, 1 or –1) of the relevant log return;
     the resulting values represent the market positionings (long or short).
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义一个新列，包含相关对数回报的符号（即1或-1）；结果值表示市场头寸（多头或空头）。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO19-2)'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO19-2)'
 - en: Calculates the strategy log returns given the market positionings.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据市场头寸计算策略的对数回报。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO19-3)'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO19-3)'
 - en: Plots and compares the strategy performance with the benchmark instrument.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制并比较策略的表现与基准工具。
 - en: '![pfat 0407](assets/pfat_0407.png)'
+  id: totrans-233
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0407](assets/pfat_0407.png)'
 - en: Figure 4-7\. Gross performance of gold price (USD) and momentum strategy (last
     return only)
+  id: totrans-234
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-7\. 黄金价格（美元）和动量策略（仅最后回报）的总体表现
 - en: 'Using a rolling time window, the time series momentum strategy can be generalized
     to more than just the last return. For example, the average of the *last three
     returns* can be used to generate the signal for the positioning. [Figure 4-8](#mom_plot_2)
     shows that the strategy in this case does much better, both in absolute terms
     and relative to the base instrument:'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用滚动时间窗口，时间序列动量策略可以泛化到不仅仅是最后一个回报。例如，可以使用*最后三次回报*的平均值生成定位信号。[图 4-8](#mom_plot_2)
+    表明，在这种情况下，该策略的表现要好得多，无论是绝对还是相对于基准工具：
 - en: '[PRE25]'
+  id: totrans-236
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO20-1)'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO20-1)'
 - en: This time, the mean return over a rolling window of three days is taken.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次采用了连续三天滚动窗口的平均回报。
 - en: However, the performance is quite sensitive to the time window parameter. Choosing,
     for example, the last two returns instead of three leads to a much worse performance,
     as shown in [Figure 4-9](#mom_plot_3).
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这种表现对于时间窗口参数非常敏感。例如，选择最后两次回报而不是三次会导致表现大幅下降，正如[图 4-9](#mom_plot_3)所示。
 - en: '![pfat 0408](assets/pfat_0408.png)'
+  id: totrans-240
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0408](assets/pfat_0408.png)'
 - en: Figure 4-8\. Gross performance of gold price (USD) and momentum strategy (last
     three returns)
+  id: totrans-241
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-8\. 黄金价格（USD）和动量策略（最后三次回报）的总体表现
 - en: '![pfat 0409](assets/pfat_0409.png)'
+  id: totrans-242
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0409](assets/pfat_0409.png)'
 - en: Figure 4-9\. Gross performance of gold price (USD) and momentum strategy (last
     two returns)
+  id: totrans-243
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-9\. 黄金价格（USD）和动量策略（最近两次回报）的总体表现
 - en: 'Time series momentum might be expected intraday, as well. Actually, one would
     expect it to be more pronounced intraday than interday. [Figure 4-10](#mom_plot_4)
     shows the gross performance of five time series momentum strategies for one, three,
@@ -949,112 +1447,171 @@
     stock price data for Apple Inc., as retrieved from the Eikon Data API. The figure
     is based on the code that follows. Basically all strategies outperform the stock
     over the course of this intraday time window, although some only slightly:'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间序列动量可能在一天中预期出现，实际上，人们预计它在一天内比在多天内更为显著。[图 4-10](#mom_plot_4) 展示了五种时间序列动量策略的总体表现，分别为一、三、五、七和九次回报观察。所使用的数据是从
+    Eikon 数据 API 检索的苹果公司的一天内股价数据。该图基于以下代码。基本上所有策略在这一天内的时间窗口内都表现优于股票，尽管有些只是稍微好一些：
 - en: '[PRE26]'
+  id: totrans-245
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO21-1)'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO21-1)'
 - en: Reads the intraday data from a `CSV` file.
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`CSV`文件中读取日内数据。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO21-5)'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO21-5)'
 - en: Calculates the intraday log returns.
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算日内对数回报。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO21-6)'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO21-6)'
 - en: Defines a `list` object to select the columns to be plotted later.
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义一个`list`对象以选择后续要绘制的列。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO21-7)'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO21-7)'
 - en: Derives positionings according to the momentum strategy parameter.
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据动量策略参数推导出定位。
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO21-8)'
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO21-8)'
 - en: Calculates the resulting strategy log returns.
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算所得的策略对数回报。
 - en: '[![6](assets/6.png)](#co_mastering_vectorized_backtesting_CO21-9)'
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_mastering_vectorized_backtesting_CO21-9)'
 - en: Appends the column name to the `list` object.
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 向`list`对象附加列名。
 - en: '[![7](assets/7.png)](#co_mastering_vectorized_backtesting_CO21-10)'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_mastering_vectorized_backtesting_CO21-10)'
 - en: Plots all relevant columns to compare the strategies’ performances to the benchmark
     instrument’s performance.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 将所有相关列绘制出来，以比较策略的表现与基准工具的表现。
 - en: '![pfat 0410](assets/pfat_0410.png)'
+  id: totrans-260
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0410](assets/pfat_0410.png)'
 - en: Figure 4-10\. Gross intraday performance of the Apple stock and five momentum
     strategies (last one, three, five, seven, and nine returns)
+  id: totrans-261
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-10\. 苹果股票和五种动量策略（最后一次、三次、五次、七次和九次回报）的总体日内表现
 - en: '[Figure 4-11](#mom_plot_5) shows the performance of the same five strategies
     for the S&P 500 index. Again, all five strategy configurations outperform the
     index and all show a positive return (before transaction costs).'
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 4-11](#mom_plot_5) 展示了相同五种策略在标准普尔 500 指数上的表现。同样，所有五种策略配置都优于指数，且显示正回报（扣除交易成本前）。'
 - en: '![pfat 0411](assets/pfat_0411.png)'
+  id: totrans-263
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0411](assets/pfat_0411.png)'
 - en: Figure 4-11\. Gross intraday performance of the S&P 500 index and five momentum
     strategies (last one, three, five, seven, and nine returns)
+  id: totrans-264
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-11\. 标准普尔 500 指数和五种动量策略（最后一次、三次、五次、七次和九次回报）的总体日内表现
 - en: Generalizing the Approach
+  id: totrans-265
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 泛化方法
 - en: '[“Momentum Backtesting Class”](#mom_vector_backtester) presents a Python module
     containing the `MomVectorBacktester` class, which allows for a bit more standardized
     backtesting of momentum-based strategies. The class has the following attributes:'
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“动量回测类”](#mom_vector_backtester)介绍了一个包含`MomVectorBacktester`类的Python模块，允许更加标准化地对基于动量的策略进行回测。该类具有以下属性：'
 - en: '`symbol`: `RIC` (instrument data) to be used'
+  id: totrans-267
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`symbol`: 用于的`RIC`（工具数据）'
 - en: '`start`: for the start date of the data selection'
+  id: totrans-268
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`start`: 数据选择的开始日期'
 - en: '`end`: for the end date of the data selection'
+  id: totrans-269
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`end`: 数据选择的结束日期'
 - en: '`amount`: for the initial amount to be invested'
+  id: totrans-270
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`amount`: 初始投资金额'
 - en: '`tc`: for the proportional transaction costs per trade'
+  id: totrans-271
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`tc`: 每笔交易的比例交易成本'
 - en: 'Compared to the `SMAVectorBacktester` class, this one introduces two important
     generalizations: the fixed amount to be invested at the beginning of the backtesting
     period and proportional transaction costs to get closer to market realities cost-wise.
     In particular, the addition of transaction costs is important in the context of
     time series momentum strategies that often lead to a large number of transactions
     over time.'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 与`SMAVectorBacktester`类相比，该类引入了两个重要的泛化特性：在回测期间初始投资的固定金额和比例交易成本，以更接近市场实际成本。特别是在时间序列动量策略的背景下，交易成本的增加尤为重要，这些策略往往随时间产生大量交易。
 - en: 'The application is as straightforward and convenient as before. The example
     first replicates the results from the interactive session before, but this time
     with an initial investment of 10,000 USD. [Figure 4-12](#mom_plot_6) visualizes
@@ -1064,277 +1621,424 @@
     even small transaction costs deteriorate the performance significantly in this
     case. The driving factor in this regard is the relatively high frequency of trades
     that the strategy requires:'
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用程序与以往一样简单方便。示例首先复制了以前交互会话的结果，但这次的初始投资为10,000美元。[图 4-12](#mom_plot_6)展示了该策略的表现，使用最后三次收益均值生成定位信号。第二种情况是每笔交易的比例交易成本为0.1%。如[图 4-13](#mom_plot_7)所示，在这种情况下，即使是较小的交易成本也会显著降低绩效。影响的驱动因素是策略需要的交易频率相对较高：
 - en: '[PRE27]'
+  id: totrans-274
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO22-1)'
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO22-1)'
 - en: Imports the module as `Mom`
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 将模块导入为`Mom`
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO22-2)'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO22-2)'
 - en: Instantiates an object of the backtesting class defining the starting capital
     to be 10,000 USD and the proportional transaction costs to be zero.
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化一个回测类的对象，定义起始资本为10,000美元，比例交易成本为零。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO22-3)'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO22-3)'
 - en: 'Backtests the momentum strategy based on a time window of *three days*: the
     strategy outperforms the benchmark passive investment.'
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 对基于三天时间窗口的动量策略进行回测：该策略优于基准被动投资。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO22-4)'
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO22-4)'
 - en: This time, proportional transaction costs of 0.1% are assumed per trade.
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次假设每笔交易的比例交易成本为0.1%。
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO22-5)'
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO22-5)'
 - en: In that case, the strategy basically loses all the outperformance.
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，该策略基本上失去了所有超额绩效。
 - en: '![pfat 0412](assets/pfat_0412.png)'
+  id: totrans-285
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0412](assets/pfat_0412.png)'
 - en: Figure 4-12\. Gross performance of the gold price (USD) and the momentum strategy
     (last three returns, no transaction costs)
+  id: totrans-286
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-12\. 黄金价格（美元）和动量策略的总体表现（最后三次收益，无交易成本）
 - en: '![pfat 0413](assets/pfat_0413.png)'
+  id: totrans-287
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0413](assets/pfat_0413.png)'
 - en: Figure 4-13\. Gross performance of the gold price (USD) and the momentum strategy
     (last three returns, transaction costs of 0.1%)
+  id: totrans-288
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-13\. 黄金价格（美元）和动量策略的总体表现（最后三次收益，交易成本为0.1%）
 - en: Strategies Based on Mean Reversion
+  id: totrans-289
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于均值回归的策略
 - en: 'Roughly speaking, mean-reversion strategies rely on a reasoning that is the
     opposite of momentum strategies. If a financial instrument has performed “too
     well” relative to its trend, it is shorted, and vice versa. To put it differently,
     while (time series) momentum strategies assume a *positive correlation* between
     returns, mean-reversion strategies assume a *negative correlation*. Balvers et
     al. (2000) write:'
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 粗略来说，均值回归策略依赖于与动量策略相反的推理。如果某个金融工具相对于其趋势表现“过好”，则会做空，反之亦然。换句话说，动量策略（时间序列）假设*收益之间有正相关性*，而均值回归策略则假设*收益之间有负相关性*。Balvers
+    等人（2000）写道：
 - en: Mean reversion refers to a tendency of asset prices to return to a trend path.
+  id: totrans-291
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 均值回归是指资产价格返回到趋势路径的倾向。
 - en: Working with a simple moving average (SMA) as a proxy for a “trend path,” a
     mean-reversion strategy in, say, the EUR/USD exchange rate can be backtested in
     a similar fashion as the backtests of the SMA- and momentum-based strategies.
     The idea is to define a threshold for the distance between the current stock price
     and the SMA, which signals a long or short position.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用简单移动平均线（SMA）作为“趋势路径”的代理，例如 EUR/USD 汇率的均值回归策略可以以类似 SMA 和动量策略的回测方式进行。其思想是定义当前股票价格与
+    SMA 之间的距离阈值，以指示开仓或平仓位置。
 - en: Getting into the Basics
+  id: totrans-293
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 入门基础
 - en: 'The examples that follow are for two different financial instruments for which
     one would expect significant mean reversion since they are both based on the gold
     price:'
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 后续示例针对两种不同的金融工具，由于它们都基于金价，可以预期有显著的均值回归：
 - en: '`GLD` is the symbol for SPDR Gold Shares, which is the largest physically backed
     exchange traded fund (ETF) for gold (cf. [SPDR Gold Shares home page](http://spdrgoldshares.com)).'
+  id: totrans-295
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`GLD` 是 SPDR 黄金股票的符号，这是最大的实物支持交易所交易基金（ETF）黄金（参见 [SPDR Gold Shares 主页](http://spdrgoldshares.com)）。'
 - en: '`GDX` is the symbol for the VanEck Vectors Gold Miners ETF, which invests in
     equity products to track the NYSE Arca Gold Miners Index (cf. [VanEck Vectors
     Gold Miners overview page](https://oreil.ly/CmPBA)).'
+  id: totrans-296
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`GDX` 是 VanEck Vectors 黄金矿业 ETF 的符号，该基金投资于股票产品以跟踪 NYSE Arca 黄金矿业指数（参见 [VanEck
+    Vectors Gold Miners 概述页面](https://oreil.ly/CmPBA)）。'
 - en: 'The example starts with `GDX` and implements a mean-reversion strategy on the
     basis of an SMA of 25 days and a threshold value of 3.5 for the absolute deviation
     of the current price to deviate from the SMA to signal a positioning. [Figure 4-14](#mr_plot_1)
     shows the differences between the current price of `GDX` and the SMA, as well
     as the positive and negative threshold value to generate sell and buy signals,
     respectively:'
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: 示例从 `GDX` 开始，并基于 25 天 SMA 和绝对偏差阈值为 3.5 实施均值回归策略，以信号化定位。[图 4-14](#mr_plot_1)
+    显示了 `GDX` 的当前价格与 SMA 之间的差异，以及生成卖出和买入信号的正负阈值：
 - en: '[PRE28]'
+  id: totrans-298
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO23-1)'
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO23-1)'
 - en: The SMA parameter is defined…
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: SMA 参数被定义为…
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO23-2)'
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO23-2)'
 - en: …and SMA (“trend path”) is calculated.
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: …并且 SMA（“趋势路径”）被计算。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO23-3)'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO23-3)'
 - en: The threshold for the signal generation is defined.
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: 信号生成的阈值被定义。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO23-4)'
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO23-4)'
 - en: The distance is calculated for every point in time.
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于每个时间点计算距离。
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO23-5)'
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO23-5)'
 - en: The distance values are plotted.
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制距离数值。
 - en: '![pfat 0414](assets/pfat_0414.png)'
+  id: totrans-309
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0414](assets/pfat_0414.png)'
 - en: Figure 4-14\. Difference between current price of `GDX` and SMA, as well as
     threshold values for generating mean-reversion signals
+  id: totrans-310
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-14\. `GDX` 当前价格与 SMA 之间的差异，以及生成均值回归信号的阈值数值
 - en: 'Based on the differences and the fixed threshold values, positionings can again
     be derived in vectorized fashion. [Figure 4-15](#mr_plot_2) shows the resulting
     positionings:'
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于差异和固定阈值，可以再次以向量化方式推导出定位。[图 4-15](#mr_plot_2) 显示了生成的定位：
 - en: '[PRE29]'
+  id: totrans-312
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO24-1)'
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO24-1)'
 - en: If the distance value is greater than the threshold value, go short (set –1
     in the new column `position`), otherwise set `NaN`.
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果距离值大于阈值，则进行做空操作（在新列 `position` 中设置为 -1），否则设置为 `NaN`。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO24-2)'
+  id: totrans-315
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO24-2)'
 - en: If the distance value is lower than the negative threshold value, go long (set
     1), otherwise keep the column `position` unchanged.
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果距离值低于负阈值，则做多（设置为 1），否则保持`position`列不变。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO24-3)'
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO24-3)'
 - en: If there is a change in the sign of the distance value, go market neutral (set
     0), otherwise keep the column `position` unchanged.
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果距离值的符号发生变化，则市场中性（设置为 0），否则保持`position`列不变。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO24-4)'
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO24-4)'
 - en: Forward fill all `NaN` positions with the previous values; replace all remaining
     `NaN` values by 0.
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
+  zh: 前向填充所有`NaN`位置的值为前一个值；将所有剩余的`NaN`值替换为 0。
 - en: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO24-5)'
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_mastering_vectorized_backtesting_CO24-5)'
 - en: Plot the resulting positionings from the index position `SMA` on.
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: 从索引位置`SMA`开始绘制结果定位。
 - en: '![pfat 0415](assets/pfat_0415.png)'
+  id: totrans-323
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0415](assets/pfat_0415.png)'
 - en: Figure 4-15\. Positionings generated for `GDX` based on the mean-reversion strategy
+  id: totrans-324
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-15\. 基于均值回归策略生成的`GDX`的定位
 - en: 'The final step is to derive the strategy returns that are shown in [Figure 4-16](#mr_plot_3).
     The strategy outperforms the `GDX` ETF by quite a margin, although the particular
     parametrization leads to long periods with a neutral position (neither long or
     short). These neutral positions are reflected in the flat parts of the strategy
     curve in [Figure 4-16](#mr_plot_3):'
+  id: totrans-325
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一步是推导策略收益，显示在图 4-16 中。尽管特定的参数设置导致中性位置的长期存在（既非多也非空仓），但这些中性位置反映在图 4-16 策略曲线的平坦部分：
 - en: '[PRE30]'
+  id: totrans-326
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '![pfat 0416](assets/pfat_0416.png)'
+  id: totrans-327
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0416](assets/pfat_0416.png)'
 - en: Figure 4-16\. Gross performance of the `GDX` ETF and the mean-reversion strategy
     (SMA = 25, threshold = 3.5)
+  id: totrans-328
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-16\. `GDX` ETF 和均值回归策略的总体表现（SMA = 25，阈值 = 3.5）
 - en: Generalizing the Approach
+  id: totrans-329
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 泛化方法
 - en: As before, the vectorized backtesting is more efficient to implement based on
     a respective Python class. The class `MRVectorBacktester` presented in [“Mean
     Reversion Backtesting Class”](#mr_vector_backtester) inherits from the `MomVectorBacktester`
     class and just replaces the `run_strategy()` method to accommodate for the specifics
     of the mean-reversion strategy.
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 与以往一样，基于相应Python类实现的向量化回测更高效。介绍的`MRVectorBacktester`类继承自`MomVectorBacktester`类，只需替换`run_strategy()`方法以适应均值回归策略的特定要求。
 - en: 'The example now uses `GLD` and sets the proportional transaction costs to 0.1%.
     The initial amount to invest is again set to 10,000 USD. The SMA is 43 this time,
     and the threshold value is set to 7.5\. [Figure 4-17](#mr_plot_4) shows the performance
     of the mean-reversion strategy compared to the `GLD` ETF:'
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 本例现在使用`GLD`，并将比例交易成本设置为 0.1%。再次将初始投资金额设定为 10,000 美元。这次的SMA为 43，阈值为 7.5。图 4-17
+    显示了均值回归策略与`GLD` ETF的表现对比：
 - en: '[PRE31]'
+  id: totrans-332
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO25-1)'
+  id: totrans-333
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_mastering_vectorized_backtesting_CO25-1)'
 - en: Imports the module as `MR`.
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
+  zh: 将模块导入为`MR`。
 - en: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO25-2)'
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_mastering_vectorized_backtesting_CO25-2)'
 - en: Instantiates an object of the `MRVectorBacktester` class with 10,000 USD initial
     capital and 0.1% proportional transaction costs per trade; the strategy significantly
     outperforms the benchmark instrument in this case.
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: 用 10,000 美元的初始资本和每笔交易 0.1% 的比例交易成本实例化`MRVectorBacktester`类的对象；在这种情况下，策略明显优于基准工具。
 - en: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO25-3)'
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_mastering_vectorized_backtesting_CO25-3)'
 - en: Backtests the mean-reversion strategy with an `SMA` value of 43 and a `threshold`
     value of 7.5.
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`SMA`值为 43 和`threshold`值为 7.5 进行均值回归策略的回测。
 - en: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO25-4)'
+  id: totrans-339
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_mastering_vectorized_backtesting_CO25-4)'
 - en: Plots the cumulative performance of the strategy against the base instrument.
+  id: totrans-340
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制策略累积表现与基础工具的图表。
 - en: '![pfat 0417](assets/pfat_0417.png)'
+  id: totrans-341
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0417](assets/pfat_0417.png)'
 - en: Figure 4-17\. Gross performance of the `GLD` ETF and the mean-reversion strategy
     (SMA = 43, threshold = 7.5, transaction costs of 0.1%)
+  id: totrans-342
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 4-17\. `GLD` ETF 和均值回归策略的总体表现（SMA = 43，阈值 = 7.5，交易成本为 0.1%）
 - en: Data Snooping and Overfitting
+  id: totrans-343
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 数据窥探和过拟合
 - en: The emphasis in this chapter, as well as in the rest of this book, is on the
     technological implementation of important concepts in algorithmic trading by using
     Python. The strategies, parameters, data sets, and algorithms used are sometimes
@@ -1342,17 +2046,23 @@
     Without a doubt, when discussing technical methods applied to finance, it is more
     exciting and motivating to see examples that show “good results,” even if they
     might not generalize on other financial instruments or time periods, for example.
+  id: totrans-344
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一章节，以及本书的其余部分，侧重于使用Python在算法交易中重要概念的技术实现。有时选择的策略、参数、数据集和算法是任意的，有时则是有目的地选择以突出某一点。毫无疑问，在讨论应用于金融的技术方法时，看到展示“良好结果”的示例更令人兴奋和有动力，即使这些结果可能不适用于其他金融工具或时间段。
 - en: 'The ability to show examples with good results often comes at the cost of *data
     snooping*. According to White (2000), data snooping can be defined as follows:'
+  id: totrans-345
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示具有良好结果的示例的能力通常伴随着*数据窥探*的代价。根据White（2000）的说法，数据窥探可以定义如下：
 - en: Data snooping occurs when a given set of data is used more than once for purposes
     of inference or model selection.
+  id: totrans-346
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 数据窥探发生在给定数据集被用于推断或模型选择的目的超过一次时。
 - en: In other words, a certain approach might be applied multiple or even many times
     on the same data set to arrive at satisfactory numbers and plots. This, of course,
     is intellectually dishonest in trading strategy research because it pretends that
@@ -1363,28 +2073,36 @@
     solves an equation that has a unique solution that can be easily identified. In
     mathematics, such straightforward examples are rather the exception than the rule,
     but they are nevertheless frequently used for didactical purposes.
+  id: totrans-347
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，某种方法可能会多次或甚至多次应用于同一数据集，以获得令人满意的数字和图表。当然，在交易策略研究中，这种做法在智力上是不诚实的，因为它假装一种交易策略在现实世界中具有某种经济潜力，这可能并不现实。由于本书的重点是将Python作为算法交易的编程语言使用，数据窥探的方法可能是合理的。这类似于数学书籍通过例子解决一个具有唯一解且易于识别的方程。在数学中，这样的简单例子通常是例外而非规则，但它们经常用于教学目的。
 - en: 'Another problem that arises in this context is *overfitting*. Overfitting in
     a trading context can be described as follows (see the [Man Institute on Overfitting](https://oreil.ly/uYIGs)):'
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下出现的另一个问题是*过度拟合*。在交易背景下，过度拟合可以描述如下（参见[曼斯特理论关于过度拟合](https://oreil.ly/uYIGs)）：
 - en: Overfitting is when a model describes noise rather than signal. The model may
     have good performance on the data on which it was tested, but little or no predictive
     power on new data in the future. Overfitting can be described as finding patterns
     that aren’t actually there. There is a cost associated with overfitting—an overfitted
     strategy will underperform in the future.
+  id: totrans-349
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 过度拟合是指模型描述噪声而非信号的情况。该模型可能在测试数据上表现良好，但在未来的新数据上几乎没有预测能力。过度拟合可以描述为找到实际上并不存在的模式。过度拟合会带来成本——一个过度拟合的策略未来表现将不佳。
 - en: 'Even a simple strategy, such as the one based on two SMA values, allows for
     the backtesting of thousands of different parameter combinations. Some of those
     combinations are almost certain to show good performance results. As Bailey et
     al. (2015) discuss in detail, this easily leads to backtest overfitting with the
     people responsible for the backtesting often not even being aware of the problem.
     They point out:'
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使是基于两个SMA值的简单策略也允许进行数千种不同参数组合的回测。其中一些组合几乎肯定会显示良好的性能结果。正如Bailey等人（2015）详细讨论的那样，这很容易导致回测过度拟合，而负责回测的人员甚至可能都没有意识到这个问题。他们指出：
 - en: Recent advances in algorithmic research and high-performance computing have
     made it nearly trivial to test millions and billions of alternative investment
     strategies on a finite dataset of financial time series….[I]t is common practice
@@ -1392,45 +2110,59 @@
     in order to maximize its performance. But because the signal-to-noise ratio is
     so weak, often the result of such calibration is that parameters are chosen to
     profit from past noise rather than future signal. The outcome is an overfit backtest.
+  id: totrans-351
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 算法研究和高性能计算的最新进展使得在有限的金融时间序列数据集上测试数百万甚至数十亿个替代投资策略几乎变得微不足道……[I]常见做法是利用这种计算能力来校准投资策略的参数，以最大化其绩效。但由于信号与噪声比例如此之低，往往这种校准的结果是选择参数以从过去的噪声中获利，而不是未来的信号。结果是一个过拟合的回测。
 - en: The problem of the validity of empirical results, in a statistical sense, is
     of course not constrained to strategy backtesting in a financial context.
+  id: totrans-352
   prefs: []
   type: TYPE_NORMAL
+  zh: 在统计意义上，经验证的实证结果的有效性问题当然不仅限于金融背景下的策略回测。
 - en: 'Ioannidis (2005), referring to medical publications, emphasizes probabilistic
     and statistical considerations when judging the reproducibility and validity of
     research results:'
+  id: totrans-353
   prefs: []
   type: TYPE_NORMAL
+  zh: Ioannidis（2005年）在谈及医学出版物时，强调在评估研究结果的再现性和有效性时的概率和统计考量：
 - en: There is increasing concern that in modern research, false findings may be the
     majority or even the vast majority of published research claims. However, this
     should not be surprising. It can be proven that most claimed research findings
     are false….As has been shown previously, the probability that a research finding
     is indeed true depends on the prior probability of it being true (before doing
     the study), the statistical power of the study, and the level of statistical significance.
+  id: totrans-354
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 越来越多的人担心，在现代研究中，虚假发现可能占到或甚至是绝大多数已发表的研究声明。然而，这并不奇怪。可以证明，大多数声称的研究发现是错误的……正如先前所示，研究发现的真实概率取决于研究之前它的真实先验概率，研究的统计功效，以及统计显著性水平。
 - en: Against this background, if a trading strategy in this book is shown to perform
     well given a certain data set, combination of parameters, and maybe a specific
     machine learning algorithm, this neither constitutes any kind of recommendation
     for the particular configuration nor allows it to draw more general conclusions
     about the quality and performance potential of the strategy configuration at hand.
+  id: totrans-355
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种背景下，如果本书中的某个交易策略在给定某个数据集、参数组合，以及可能的特定机器学习算法下表现良好，这既不构成对特定配置的任何推荐，也不允许对策略配置的质量和绩效潜力做出更一般性的结论。
 - en: You are, of course, encouraged to use the code and examples presented in this
     book to explore your own algorithmic trading strategy ideas and to implement them
     in practice based on your own backtesting results, validations, and conclusions.
     After all, proper and diligent strategy research is what financial markets will
     compensate for, not brute-force driven data snooping and overfitting.
+  id: totrans-356
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，鼓励您使用本书中提供的代码和示例，探索您自己的算法交易策略思路，并根据您自己的回测结果、验证和结论来实际实施它们。毕竟，正确而勤奋的策略研究是金融市场会给予回报的，而不是仅仅依赖数据挖掘和过拟合。
 - en: Conclusions
+  id: totrans-357
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: 'Vectorization is a powerful concept in scientific computing, as well as for
     financial analytics, in the context of the backtesting of algorithmic trading
     strategies. This chapter introduces vectorization both with `NumPy` and `pandas`
@@ -1444,181 +2176,279 @@
     from a technological and implementation point of view. With regard to all concrete
     examples and results presented, the problems of data snooping, overfitting, and
     statistical significance need to be considered.'
+  id: totrans-358
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化是科学计算和金融分析中的一个强大概念，在算法交易策略回测的背景下尤为重要。本章介绍了使用`NumPy`和`pandas`进行向量化，并将其应用于回测三种类型的交易策略：基于简单移动平均线、动量和均值回归的策略。本章承认做了一些简化的假设，严格的交易策略回测需要考虑更多因素，如数据问题、选择问题、避免过度拟合或市场微观结构元素。然而，本章的主要目标是集中讨论向量化的概念及其在算法交易中的技术和实施视角下的应用。在所有具体例子和结果中，需要考虑数据窥探、过度拟合和统计显著性的问题。
 - en: References and Further Resources
+  id: totrans-359
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献和进一步资源
 - en: 'For the basics of vectorization with `NumPy` and `pandas`, refer to these books:'
+  id: totrans-360
   prefs: []
   type: TYPE_NORMAL
+  zh: 有关使用`NumPy`和`pandas`进行向量化的基础知识，请参阅以下书籍：
 - en: 'McKinney, Wes. 2017\. *Python for Data Analysis*. 2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-361
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'McKinney, Wes. 2017\. *Python 数据分析*. 第二版. Sebastopol: O’Reilly.'
 - en: 'VanderPlas, Jake. 2016\. *Python Data Science Handbook*. Sebastopol: O’Reilly.'
+  id: totrans-362
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'VanderPlas, Jake. 2016\. *Python 数据科学手册*. Sebastopol: O’Reilly.'
 - en: 'For the use of `NumPy` and `pandas` in a financial context, refer to these
     books:'
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: 有关在金融背景下使用`NumPy`和`pandas`，请参阅以下书籍：
 - en: 'Hilpisch, Yves. 2015\. *Derivatives Analytics with Python: Data Analysis, Models,
     Simulation, Calibration, and Hedging*. Wiley Finance.'
+  id: totrans-364
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Hilpisch, Yves. 2015\. *Python 金融衍生品分析：数据分析、模型、仿真、校准及对冲*. Wiley Finance.
 - en: '⸻. 2017\. *Listed Volatility and Variance Derivatives: A Python-Based Guide*.
     Wiley Finance.'
+  id: totrans-365
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ⸻. 2017\. *列出的波动率和方差衍生品：基于Python的指南*. Wiley Finance.
 - en: '⸻. 2018\. *Python for Finance: Mastering Data-Driven Finance*. 2nd ed. Sebastopol:
     O’Reilly.'
+  id: totrans-366
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '⸻. 2018\. *Python 金融：掌握数据驱动的金融*. 第二版. Sebastopol: O’Reilly.'
 - en: 'For the topics of data snooping and overfitting, refer to these papers:'
+  id: totrans-367
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于数据窥探和过度拟合的主题，请参阅以下论文：
 - en: 'Bailey, David, Jonathan Borwein, Marcos López de Prado, and Qiji Jim Zhu. 2015\.
     “The Probability of Backtest Overfitting.” *Journal of Computational Finance*
     20, (4): 39-69\. [*https://oreil.ly/sOHlf*](https://oreil.ly/sOHlf).'
+  id: totrans-368
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Bailey, David, Jonathan Borwein, Marcos López de Prado 和 Qiji Jim Zhu. 2015\.
+    “回测过拟合的概率.” *计算金融学杂志* 20, (4): 39-69\. [*https://oreil.ly/sOHlf*](https://oreil.ly/sOHlf).'
 - en: 'Ioannidis, John. 2005\. “Why Most Published Research Findings Are False.” *PLoS
     Medicine* 2, (8): 696-701.'
+  id: totrans-369
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Ioannidis, John. 2005\. “为什么大多数发表的研究结果是错误的.” *PLoS Medicine* 2, (8): 696-701.'
 - en: 'White, Halbert. 2000\. “A Reality Check for Data Snooping.” *Econometrica*
     68, (5): 1097-1126.'
+  id: totrans-370
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'White, Halbert. 2000\. “数据窥探的现实检验.” *计量经济学* 68, (5): 1097-1126.'
 - en: 'For more background information and empirical results about trading strategies
     based on simple moving averages, refer to these sources:'
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于基于简单移动平均线的交易策略的背景信息和实证结果，请参阅以下来源：
 - en: 'Brock, William, Josef Lakonishok, and Blake LeBaron. 1992\. “Simple Technical
     Trading Rules and the Stochastic Properties of Stock Returns.” *Journal of Finance*
     47, (5): 1731-1764.'
+  id: totrans-372
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Brock, William, Josef Lakonishok 和 Blake LeBaron. 1992\. “简单技术交易规则和股票回报的随机特性.”
+    *金融学杂志* 47, (5): 1731-1764.'
 - en: 'Droke, Clif. 2001\. *Moving Averages Simplified.* Columbia: Marketplace Books.'
+  id: totrans-373
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Droke, Clif. 2001\. *简化移动平均线.* Columbia: Marketplace Books.'
 - en: 'The book by Ernest Chan covers in detail trading strategies based on momentum,
     as well as on mean reversion. The book is also a good source for the pitfalls
     of backtesting trading strategies:'
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: Ernest Chan 的书详细介绍了基于动量和均值回归的交易策略。该书也是回测交易策略陷阱的良好资源：
 - en: 'Chan, Ernest. 2013\. *Algorithmic Trading: Winning Strategies and Their Rationale*.
     Hoboken et al: John Wiley & Sons.'
+  id: totrans-375
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Chan, Ernest. 2013\. *算法交易：胜利策略及其原理*. Hoboken et al: John Wiley & Sons.'
 - en: 'These research papers analyze characteristics and sources of profit for *cross-sectional
     momentum* strategies, the traditional approach to momentum-based trading:'
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些研究论文分析了*横截面动量*策略的特征和利润来源，这是动量交易的传统方法：
 - en: 'Chan, Louis, Narasimhan Jegadeesh, and Josef Lakonishok. 1996\. “Momentum Strategies.”
     *Journal of Finance* 51, (5): 1681-1713.'
+  id: totrans-377
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Chan, Louis, Narasimhan Jegadeesh, and Josef Lakonishok. 1996\. “Momentum Strategies.”
+    *Journal of Finance* 51, (5): 1681-1713.'
 - en: 'Jegadeesh, Narasimhan, and Sheridan Titman. 1993\. “Returns to Buying Winners
     and Selling Losers: Implications for Stock Market Efficiency.” *Journal of Finance*
     48, (1): 65-91.'
+  id: totrans-378
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Jegadeesh, Narasimhan, and Sheridan Titman. 1993\. “Returns to Buying Winners
+    and Selling Losers: Implications for Stock Market Efficiency.” *Journal of Finance*
+    48, (1): 65-91.'
 - en: 'Jegadeesh, Narasimhan, and Sheridan Titman. 2001\. “Profitability of Momentum
     Strategies: An Evaluation of Alternative Explanations.” *Journal of Finance* 56,
     (2): 599-720.'
+  id: totrans-379
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Jegadeesh, Narasimhan, and Sheridan Titman. 2001\. “Profitability of Momentum
+    Strategies: An Evaluation of Alternative Explanations.” *Journal of Finance* 56,
+    (2): 599-720.'
 - en: 'The paper by Moskowitz et al. provides an analysis of so-called *time series
     momentum* strategies:'
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: Moskowitz 等人的论文提供了所谓的*时间序列动量*策略的分析：
 - en: 'Moskowitz, Tobias, Yao Hua Ooi, and Lasse Heje Pedersen. 2012\. “Time Series
     Momentum.” *Journal of Financial Economics* 104: 228-250.'
+  id: totrans-381
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Moskowitz, Tobias, Yao Hua Ooi, and Lasse Heje Pedersen. 2012\. “Time Series
+    Momentum.” *Journal of Financial Economics* 104: 228-250.'
 - en: 'These papers empirically analyze mean reversion in asset prices:'
+  id: totrans-382
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些论文从经验上分析了资产价格的均值回归：
 - en: 'Balvers, Ronald, Yangru Wu, and Erik Gilliland. 2000\. “Mean Reversion across
     National Stock Markets and Parametric Contrarian Investment Strategies.” *Journal
     of Finance* 55, (2): 745-772.'
+  id: totrans-383
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Balvers, Ronald, Yangru Wu, and Erik Gilliland. 2000\. “Mean Reversion across
+    National Stock Markets and Parametric Contrarian Investment Strategies.” *Journal
+    of Finance* 55, (2): 745-772.'
 - en: 'Kim, Myung Jig, Charles Nelson, and Richard Startz. 1991\. “Mean Reversion
     in Stock Prices? A Reappraisal of the Empirical Evidence.” *Review of Economic
     Studies* 58: 515-528.'
+  id: totrans-384
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Kim, Myung Jig, Charles Nelson, and Richard Startz. 1991\. “Mean Reversion
+    in Stock Prices? A Reappraisal of the Empirical Evidence.” *Review of Economic
+    Studies* 58: 515-528.'
 - en: 'Spierdijk, Laura, Jacob Bikker, and Peter van den Hoek. 2012\. “Mean Reversion
     in International Stock Markets: An Empirical Analysis of the 20th Century.” *Journal
     of International Money and Finance* 31: 228-249.'
+  id: totrans-385
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Spierdijk, Laura, Jacob Bikker, and Peter van den Hoek. 2012\. “Mean Reversion
+    in International Stock Markets: An Empirical Analysis of the 20th Century.” *Journal
+    of International Money and Finance* 31: 228-249.'
 - en: Python Scripts
+  id: totrans-386
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Python 脚本
 - en: This section presents Python scripts referenced and used in this chapter.
+  id: totrans-387
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了本章引用并使用的 Python 脚本。
 - en: SMA Backtesting Class
+  id: totrans-388
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: SMA 回测类
 - en: 'The following presents Python code with a class for the vectorized backtesting
     of strategies based on *simple moving averages*:'
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是具有基于*简单移动平均*的策略的向量化回测的类的 Python 代码：
 - en: '[PRE32]'
+  id: totrans-390
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: Momentum Backtesting Class
+  id: totrans-391
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 动量回测类
 - en: 'The following presents Python code with a class for the vectorized backtesting
     of strategies based on *time series momentum*:'
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是具有基于*时间序列动量*的策略的向量化回测的类的 Python 代码：
 - en: '[PRE33]'
+  id: totrans-393
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: Mean Reversion Backtesting Class
+  id: totrans-394
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 均值回归回测类
 - en: The following presents Python code with a class for the vectorized backtesting
     of strategies based on *mean reversion*:.
+  id: totrans-395
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是具有基于*均值回归*策略的向量化回测的类的 Python 代码：
 - en: '[PRE34]'
+  id: totrans-396
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: '^([1](ch04.html#idm45785385873496-marker)) Source: “Does the Past Predict the
     Future?” *The Economist*, September 23, 2009.'
+  id: totrans-397
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch04.html#idm45785385873496-marker)) 来源：“过去是否预示着未来？”《经济学人》, 2009 年 9 月
+    23 日。
 - en: ^([2](ch04.html#idm45785380499832-marker)) For more on the `datetime` and `timedelta`
     objects, refer to Appendix C of Hilpisch (2018).
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch04.html#idm45785380499832-marker)) 有关 `datetime` 和 `timedelta` 对象的更多信息，请参阅
+    Hilpisch (2018) 的附录 C。

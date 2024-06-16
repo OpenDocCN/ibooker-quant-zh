@@ -3,12 +3,14 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第三章。处理金融数据
 - en: Clearly, data beats algorithms. Without comprehensive data, you tend to get
     non-comprehensive predictions.
   id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 显而易见，数据胜过算法。没有全面的数据，你很可能得到不全面的预测。
 - en: ''
   id: totrans-2
   prefs:
@@ -19,6 +21,7 @@
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 罗布·托马斯（2016）
 - en: In algorithmic trading, one generally has to deal with four types of data, as
     illustrated in [Table 3-1](#types_of_data). Although it simplifies the financial
     data world, distinguishing data along the pairs *historical versus real-time*
@@ -26,26 +29,32 @@
   id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 在算法交易中，通常需要处理四种类型的数据，如 [表格 3-1](#types_of_data) 所示。尽管这简化了金融数据的世界，但在技术设置中，区分*历史数据与实时数据*以及*结构化数据与非结构化数据*往往是有用的。
 - en: Table 3-1\. Types of financial data (examples)
   id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 3-1。金融数据类型（示例）
 - en: '|   | Structured | Unstructured |'
   id: totrans-6
   prefs: []
   type: TYPE_TB
+  zh: '|   | 结构化 | 非结构化 |'
 - en: '| --- | --- | --- |'
   id: totrans-7
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| Historical | End-of-day closing prices | Financial news articles |'
   id: totrans-8
   prefs: []
   type: TYPE_TB
+  zh: '| 历史 | 收盘价 | 金融新闻文章 |'
 - en: '| Real-time | Bid/ask prices for FX | Posts on Twitter |'
   id: totrans-9
   prefs: []
   type: TYPE_TB
+  zh: '| 实时 | 外汇买卖价格 | 推特帖子 |'
 - en: This book is mainly concerned with *structured data* (numerical, tabular data)
     of both historical and real-time types. This chapter in particular focuses on
     historical, structured data, like end-of-day closing values for the SAP SE stock
@@ -55,6 +64,8 @@
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书主要关注于*结构化数据*（数值、表格数据），包括历史和实时类型。特别是本章专注于历史的结构化数据，例如法兰克福证券交易所上的 SAP SE 股票的收盘价。然而，此类别也包括日内数据，如在纳斯达克证券交易所上交易的苹果公司股票的1分钟K线数据。关于实时结构化数据的处理，请参阅
+    [第 7 章](ch07.html#realtime_sockets)。
 - en: An algorithmic trading project typically starts with a trading idea or hypothesis
     that needs to be (back)tested based on historical financial data. This is the
     context for this chapter, the plan for which is as follows. [“Reading Financial
@@ -68,6 +79,11 @@
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个算法交易项目通常从需要根据历史金融数据（回）测的交易思想或假设开始。这是本章的背景，计划如下。 [“从不同来源读取金融数据”](#reading_from_sources)
+    使用 `pandas` 从不同的文件和基于网络的来源读取数据。 [“使用开放数据来源”](#open_data_sources) 介绍了 [Quandl](http://quandl.com)
+    作为流行的开放数据源平台。 [“Eikon 数据 API”](#eikon_data_api) 介绍了 Refinitiv Eikon 数据 API 的 Python
+    封装。最后， [“有效存储金融数据”](#storing_data) 简要介绍了如何使用 `pandas` 根据 [HDF5](http://hdfgroup.org)
+    二进制存储格式有效存储历史的结构化数据。
 - en: The goal for this chapter is to have available financial data in a format with
     which the backtesting of trading ideas and hypotheses can be implemented effectively.
     The three major themes are the importing of data, the handling of the data, and
@@ -79,11 +95,15 @@
   id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的目标是以一种能有效实现交易思想和假设回测的数据格式来提供金融数据。三个主要主题是数据导入、数据处理和数据存储。本章及后续章节假设已安装了 Python
+    3.8 并已按详细说明安装了 Python 软件包，详细信息请参阅 [第 2 章](ch02.html#python_environment)。暂时还不确定此
+    Python 环境的基础设施是什么。有关如何使用 Python 进行高效的输入输出操作的详细信息，请参阅 Hilpisch（2018年，第 9 章）。
 - en: Reading Financial Data From Different Sources
   id: totrans-13
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 从不同来源读取金融数据
 - en: 'This section makes heavy use of the capabilities of `pandas`, the popular data
     analysis package for Python (see [`pandas` home page](http://pandas.pydata.org)).
     `pandas` comprehensively supports the three main tasks this chapter is concerned

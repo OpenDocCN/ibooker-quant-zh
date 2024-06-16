@@ -1,21 +1,28 @@
 - en: Chapter 6\. AI-First Finance
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第6章 AI优先金融
 - en: A computation takes information and transforms it, implementing what mathematicians
     call a *function*….If you’re in possession of a function that inputs all the world’s
     financial data and outputs the best stocks to buy, you’ll soon be extremely rich.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 计算接收信息并对其进行转换，实现数学家所称的*函数*……如果你拥有一个函数，输入全球所有的金融数据并输出最佳股票购买建议，你很快就会变得非常富有。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Max Tegmark (2017)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Max Tegmark (2017)
 - en: This chapter sets out to combine data-driven finance with the machine learning
     approach from the previous chapter. It only represents the beginning of this endeavor
     in that, for the first time, neural networks are used to discover statistical
@@ -32,12 +39,16 @@
     discusses the effectiveness of big data in combination with AI in certain domains
     and argues that AI-first, theory-free finance might represent a way out of the
     theory fallacies in traditional finance.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章旨在将数据驱动的金融与前一章的机器学习方法结合起来。这仅代表了这一努力的开端，因为首次使用神经网络来发现统计上的非效率性。[“有效市场”](#aiff_efficiency)讨论了有效市场假说，并使用OLS回归根据金融时间序列数据加以说明。[“基于收益数据的市场预测”](#aiff_returns)首次应用神经网络和OLS回归来预测金融工具价格的未来走向（“市场走向”）。分析仅依赖于收益数据。[“添加更多特征的市场预测”](#aiff_features)混合了更多特征，如典型的财务指标。在这一背景下，初步结果表明统计上的非效率性可能确实存在。这在[“市场预测—日内交易”](#aiff_intraday)中得到了证实，与每日结束数据相比，这里使用的是日内数据。最后，[“结论”](#aiff_effectiveness)讨论了大数据与人工智能在某些领域的有效性，并认为AI优先、无理论的金融可能是摆脱传统金融理论谬误的一种途径。
 - en: Efficient Markets
+  id: totrans-5
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 有效市场
 - en: One of the hypotheses with the strongest empirical support is the *efficient
     market hypothesis* (EMH). It is also called the *random walk hypothesis* (RWH).^([1](ch06.xhtml#idm45625304814120))
     Simply speaking, the hypothesis says that the prices of financial instruments
@@ -45,54 +56,78 @@
     time. If the EMH holds true, a discussion about whether the price of a stock is
     too high or too low would be pointless. The price of a stock, given the EMH, is
     at all times exactly on its appropriate level given the available information.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中一种得到最强实证支持的假设是*有效市场假说*（EMH）。它也被称为*随机行走假说*（RWH）。^([1](ch06.xhtml#idm45625304814120))
+    简单地说，该假说认为某一时间点上的金融工具价格反映了此时所有可用信息。如果EMH成立，讨论股票价格是否过高或过低将是毫无意义的。根据EMH，股票价格始终恰好处于其合适水平，考虑了当前可用信息。
 - en: 'Lots of effort has been put into refining and formalizing the idea of efficient
     markets since the formulation and first discussions of the EMH in the 1960s. The
     definitions as presented in Jensen (1978) are still used today. Jensen defines
     an efficient market as follows:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 自从上世纪60年代提出和首次讨论有效市场理论（EMH）以来，已经付出了大量努力来完善和形式化这一理念。Jensen（1978）中提出的定义至今仍在使用。Jensen将有效市场定义如下：
 - en: A market is efficient with respect to an information set <math alttext="theta
     Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math> if it is impossible to
     make economic profits by trading on the basis of information set <math alttext="theta
     Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math> . By economic profits,
     we mean the risk adjusted returns net of all costs.
+  id: totrans-8
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 一个市场在信息集合<math alttext="theta Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math>的条件下是有效的，如果根据信息集合<math
+    alttext="theta Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math>进行交易是无法获得经济利润的。这里的经济利润指的是扣除所有成本后的风险调整收益。
 - en: 'In this context, Jensen distinguishes three forms of market efficiency:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个背景下，Jensen区分了三种市场效率形式：
 - en: Weak form of EMH
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 弱式EMH
 - en: In this case, the information set <math alttext="theta Subscript t"><msub><mi>θ</mi>
     <mi>t</mi></msub></math> only encompasses the past price and return history of
     the market.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，信息集<math alttext="theta Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math>仅包括市场过去的价格和回报历史。
 - en: Semi-strong form of EMH
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: EMH的半强形式
 - en: In this case, the information set <math alttext="theta Subscript t"><msub><mi>θ</mi>
     <mi>t</mi></msub></math> is taken to be all publicly available information, including
     not only the past price and return history but also financial reports, news articles,
     weather data, and so on.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，信息集<math alttext="theta Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math>被认为是所有公开可获得的信息，包括过去的价格和回报历史，以及财务报告、新闻文章、天气数据等等。
 - en: Strong form of EMH
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: EMH的强形式
 - en: This case is given when the information set <math alttext="theta Subscript t"><msub><mi>θ</mi>
     <mi>t</mi></msub></math> includes all information available to anyone (that is,
     even private information).
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 当信息集<math alttext="theta Subscript t"><msub><mi>θ</mi> <mi>t</mi></msub></math>包括任何人可获得的所有信息时（即，甚至包括私人信息）。
 - en: 'No matter which form is assumed, the implications of the EMH are far reaching.
     In his pioneering article on the EMH, Fama (1965) concludes the following:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论假设了哪种形式，EMH的影响都是深远的。在他关于EMH的开创性文章中，Fama（1965）得出了以下结论：
 - en: For many years, economists, statisticians, and teachers of finance have been
     interested in developing and testing models of stock price behavior. One important
     model that has evolved from this research is the theory of random walks. This
@@ -101,9 +136,11 @@
     world. For example, we shall see later that, if the random-walk theory is an accurate
     description of reality, then the various “technical” or “chartist” procedures
     for predicting stock prices are completely without value.
+  id: totrans-17
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 多年来，经济学家、统计学家和金融教师一直对股价行为的模型进行开发和测试。从这项研究中发展而来的一个重要模型是随机漫步理论。这个理论严重质疑了许多其他描述和预测股价行为的方法——这些方法在学术界之外颇受欢迎。例如，我们将在后面看到，如果随机漫步理论准确描述了现实，那么各种用于预测股价的“技术”或“图表”程序完全没有价值。
 - en: In other words, if the EMH holds true, then any kind of research or data analysis
     for the purposes of achieving above-market returns should be useless in practice.
     On the other hand, a multitrillion-dollar asset management industry has evolved
@@ -115,8 +152,10 @@
     The study reports a drop in the Preqin All-Strategies Hedge Fund index of –3.42%
     for the year 2018\. Close to 40% of all hedge funds covered by the study experienced
     losses of 5% or greater for that year.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，如果EMH成立，那么任何为了实现超额市场回报而进行的研究或数据分析在实践中都应该是无用的。另一方面，一个价值数万亿美元的资产管理行业已经发展起来，承诺通过严格的研究和资本的积极管理实现这种超额市场回报。特别是，对冲基金行业是基于承诺提供*alpha*——即超额市场回报甚至独立于市场回报，至少在很大程度上是如此。近期[Preqin](https://oreil.ly/C38Tl)的一项研究数据显示了实现这种承诺有多么困难。该研究报告称，2018年Preqin全策略对冲基金指数下跌了-3.42%。研究覆盖的所有对冲基金中，近40%在那一年经历了5%或更大的损失。
 - en: If a stock price (or the price of any other financial instrument) follows a
     standard random walk, then the returns are normally distributed with zero mean.
     The stock price goes up with 50% probability and down with 50% probability. In
@@ -126,98 +165,154 @@
     history of the price process; it only depends on the current price level. Therefore,
     in the context of a random walk, the analysis of the historical prices (or returns)
     is useless for predicting future prices.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果股票价格（或任何其他金融工具的价格）遵循标准随机漫步，则其回报通常服从均值为零的正态分布。股票价格上涨的概率和下跌的概率均为50%。在这种情况下，从最小二乘意义上讲，预测明天股票价格的最佳预测变量是今天的股票价格。这是由于随机漫步的马尔可夫性质，即未来股票价格的分布与价格过程的历史无关；它只依赖于当前价格水平。因此，在随机漫步的背景下，分析历史价格（或回报）对于预测未来价格是无用的。
 - en: Against this background, a semiformal test for efficient markets can be implemented
     as follows.^([2](ch06.xhtml#idm45625303735832)) Take a financial time series,
     lag the price data multiple times, and use the lagged price data as features data
     for an OLS regression that uses the current price level as the labels data. This
     is similar in spirit to charting techniques that rely on historical price formations
     to predict future prices.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此背景下，可以实施一个半正式的有效市场检验。^([2](ch06.xhtml#idm45625303735832)) 获取一个金融时间序列，将价格数据滞后多次，使用滞后价格数据作为OLS回归的特征数据，使用当前价格水平作为标签数据。这与依赖历史价格形态来预测未来价格的图表技术精神相似。
 - en: 'The following Python code implements such an analysis based on lagged price
     data for a number of financial instruments—both tradable ones and nontradable
     ones. First, import the data and its visualization (see [Figure 6-1](#figure_aiff_01)):'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码基于多个金融工具（可交易和不可交易的）的滞后价格数据实施了这样的分析。首先，导入数据及其可视化（见[图 6-1](#figure_aiff_01)）：
 - en: '[PRE0]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO1-1)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO1-1)'
 - en: Reads the data into a `DataFrame` object
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据读入`DataFrame`对象中
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO1-3)'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO1-3)'
 - en: Plots the normalized time series data
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制标准化的时间序列数据
 - en: '![aiif 0601](Images/aiif_0601.png)'
+  id: totrans-27
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0601](Images/aiif_0601.png)'
 - en: Figure 6-1\. Normalized time series data (end-of-day)
+  id: totrans-28
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 6-1\. 标准化的时间序列数据（每日末）
 - en: 'Second, the price data for all financial time series is lagged and stored in
     `DataFrame` objects:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，对所有金融时间序列的价格数据进行滞后，并存储在`DataFrame`对象中：
 - en: '[PRE1]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO2-1)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO2-1)'
 - en: The number of lags (in trading days)
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 滞后数（以交易日计）
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO2-2)'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO2-2)'
 - en: Creates a column name
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建列名
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO2-3)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO2-3)'
 - en: Lags the price data
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 滞后价格数据
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO2-4)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO2-4)'
 - en: Adds the column name to a `list` object
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 将列名添加到`list`对象中
 - en: '[![5](Images/5.png)](#co_ai_first_finance_CO2-5)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_ai_first_finance_CO2-5)'
 - en: Deletes all incomplete data rows
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 删除所有不完整的数据行
 - en: '[![6](Images/6.png)](#co_ai_first_finance_CO2-6)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_ai_first_finance_CO2-6)'
 - en: Creates the lagged data for every financial time series
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 为每个财务时间序列创建滞后数据
 - en: '[![7](Images/7.png)](#co_ai_first_finance_CO2-7)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_ai_first_finance_CO2-7)'
 - en: Stores the results in a `dict` object
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 将结果存储在`dict`对象中
 - en: '[![8](Images/8.png)](#co_ai_first_finance_CO2-8)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_ai_first_finance_CO2-8)'
 - en: Shows a sample of the lagged price data
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示滞后价格数据的示例
 - en: 'Third, with the data prepared, the OLS regression analysis is straightforward
     to conduct. [Figure 6-2](#figure_aiff_02) shows the average optimal regression
     results. Without a doubt, the price data that is lagged by only one day has the
@@ -225,54 +320,86 @@
     the best predictor for tomorrow’s price of a financial instrument is its price
     today. This also holds true for the single regression results obtained per financial
     time series:'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三，准备好数据后，OLS 回归分析变得直观易行。[图 6-2](#figure_aiff_02) 展示了平均最优回归结果。毫无疑问，仅滞后一天的价格数据具有最高的解释力。其权重接近于1，支持这样一个观点：金融工具明天价格的最佳预测者是今天的价格。对每个财务时间序列单独进行的回归结果也是如此：
 - en: '[PRE2]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO3-1)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO3-1)'
 - en: Gets the data for the current time series
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 获取当前时间序列的数据
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO3-2)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO3-2)'
 - en: Implements the regression analysis
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 实施回归分析。
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO3-3)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO3-3)'
 - en: Stores the optimal regression parameters in a `dict` object
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 将最优回归参数存储在`dict`对象中。
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO3-4)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO3-4)'
 - en: Combines the optimal results into a single `ndarray` object
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 将最优结果合并为单个`ndarray`对象。
 - en: '[![5](Images/5.png)](#co_ai_first_finance_CO3-5)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_ai_first_finance_CO3-5)'
 - en: Puts the results into a `DataFrame` object and shows them
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 将结果放入`DataFrame`对象并展示。
 - en: '[![6](Images/6.png)](#co_ai_first_finance_CO3-7)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_ai_first_finance_CO3-7)'
 - en: Visualizes the average optimal regression parameters (weights) for every lag
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 可视化每个滞后期的平均最优回归参数（权重）。
 - en: '![aiif 0602](Images/aiif_0602.png)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0602](Images/aiif_0602.png)'
 - en: Figure 6-2\. Average optimal regression parameters for the lagged prices
+  id: totrans-62
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图6-2。滞后价格的平均最优回归参数。
 - en: Given this semiformal analysis, there seems to be strong supporting evidence
     for the EMH in its weak form, at least. It is noteworthy that the OLS regression
     analysis as implemented here violates several assumptions. Among those is that
@@ -284,24 +411,37 @@
     based on the OLS regression approach. Adding more, highly correlated features
     does not yield any improvements. Another fundamental assumption violated is the
     *stationarity* of the time series data, which the following code also tests for:^([3](ch06.xhtml#idm45625303250520))
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于这种半正式分析，至少在其弱形式上，EMH似乎有强有力的支持证据。值得注意的是，在此实施的OLS回归分析违反了几个假设。其中之一是假设特征在彼此间不相关，而实际上它们应该与标签数据高度相关。然而，滞后价格数据导致特征高度相关。以下Python代码展示了相关数据，显示所有特征之间几乎完美的相关性。这解释了为什么只需一个特征（“滞后
+    1”）就足以完成基于OLS回归方法的近似和预测。添加更多高度相关的特征并不会带来任何改进。另一个违反的基本假设是时间序列数据的*平稳性*，以下代码也对此进行了测试：^([3](ch06.xhtml#idm45625303250520))
 - en: '[PRE3]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO4-1)'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO4-1)'
 - en: Shows the correlations between the lagged time series
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示了滞后时间序列之间的相关性。
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO4-2)'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO4-2)'
 - en: Tests for stationarity using the [Augmented Dickey-Fuller](https://oreil.ly/rfdaC)
     test
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用[增广迪基-富勒](https://oreil.ly/rfdaC)检验稳定性。
 - en: 'In summary, if the EMH holds true, active or algorithmic portfolio management
     or trading would not make economic sense. Simply investing in a stock or an efficient
     portfolio in the MVP sense, say, and passively holding the investment over a long
@@ -311,12 +451,16 @@
     (2005, ch. 10) point out, the CAPM and the EMH form a joint hypothesis about financial
     markets: if the EMH is rejected, then the CAPM must be rejected as well, since
     its derivation assumes the EMH to hold true.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 综上所述，如果EMH成立，积极或算法投资组合管理或交易将毫无经济意义。简单地投资于股票或MVP意义上的高效投资组合，并长期 passively 持有投资，将会得到至少与不作任何努力相当的，如果不是更高的回报。根据CAPM和MVP，投资者愿意承受的风险越高，预期回报也应该越高。事实上，正如Copeland等人（2005年，第10章）指出的那样，CAPM和EMH对金融市场形成了一个联合假设：如果EMH被拒绝，则CAPM也必须被拒绝，因为其推导假设EMH成立。
 - en: Market Prediction Based on Returns Data
+  id: totrans-70
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于收益数据的市场预测。
 - en: As [Chapter 2](ch02.xhtml#superintelligence) shows, ML and, in particular, DL
     algorithms have generated breakthroughs in recent years in fields that have proven
     resistant over pretty long periods of time to standard statistical or mathematical
@@ -324,8 +468,10 @@
     of discovering inefficiencies where traditional financial econometrics methods,
     such as OLS regression, fail? Of course, there are no simple and concise answers
     to these questions yet.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如[第2章](ch02.xhtml#superintelligence)所示，机器学习（ML），特别是深度学习（DL）算法，在近年来在一些长期以来对标准统计或数学方法有抵抗力的领域中取得了突破。那么在金融市场呢？ML和DL算法能否发现传统金融计量方法（如OLS回归）失效的地方？当然，对于这些问题目前还没有简单明了的答案。
 - en: However, some concrete examples might shed light on possible answers. To this
     end, the same data as in the previous section is used to derive log returns from
     the price data. The idea is to compare the performance of OLS regression to the
@@ -337,314 +483,488 @@
     Economic inefficiencies would only be given if the statistical inefficiencies
     can be exploited profitably through a trading strategy that takes into account,
     for example, transaction costs.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，一些具体的例子可能会为可能的答案提供启示。为此，使用与前一节相同的数据，从价格数据中派生对数收益。其目的是比较OLS回归和神经网络在预测不同时间序列的下一日价格走势方面的表现。当前阶段的目标是发现*统计无效*与*经济无效*的差异。当模型能够以一定优势（例如，预测准确率达到55%或60%的情况下）预测未来价格走势时，称为统计无效。只有当这种统计无效能够通过考虑交易成本等因素实现盈利的交易策略时，才称为经济无效。
 - en: 'The first step in the analysis is to create data sets with lagged log returns
     data. The normalized lagged log returns data is also tested for stationarity (given),
     and the features are tested for correlation (not correlated). Since the following
     analyses rely on time-series-related data only, they are dealing with *weak form
     market efficiency*:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 分析的第一步是创建带有滞后对数收益数据的数据集。还对归一化的滞后对数收益数据进行了平稳性测试（已给出），并测试了特征之间的相关性（无相关性）。由于以下分析仅依赖于与时间序列相关的数据，因此它们处理的是*弱式市场效率*：
 - en: '[PRE4]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO5-1)'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO5-1)'
 - en: Derives the log returns from the price data
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 从价格数据中派生对数收益
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO5-2)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO5-2)'
 - en: Lags the log returns data
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 滞后对数收益数据
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO5-3)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO5-3)'
 - en: Applies *Gaussian normalization* to the features data^([4](ch06.xhtml#idm45625301826344))
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 对特征数据应用*高斯归一化*处理^([4](ch06.xhtml#idm45625301826344))
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO5-5)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO5-5)'
 - en: Shows a sample of the lagged returns data
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示滞后收益数据的样本
 - en: '[![5](Images/5.png)](#co_ai_first_finance_CO5-6)'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_ai_first_finance_CO5-6)'
 - en: Tests for stationarity of the time series data
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试时间序列数据的平稳性
 - en: '[![6](Images/6.png)](#co_ai_first_finance_CO5-7)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_ai_first_finance_CO5-7)'
 - en: Shows the correlation data for the features
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示特征数据的相关性
 - en: 'First, the OLS regression is implemented and the predictions resulting from
     the regression are generated. The analysis is implemented on the complete data
     set. It shall show how well the algorithms perform in-sample. The accuracy with
     which OLS regression predicts the next day’s direction of movement is slightly,
     or even a few percentage points, above 50% with one exception:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，实施OLS回归并生成回归结果的预测。分析是在完整数据集上实施的。它将展示OLS回归在样本内的表现如何。OLS回归预测下一日价格走势的准确率略高于50%，除了一个例外：
 - en: '[PRE5]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO6-1)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO6-1)'
 - en: The regression step
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 回归步骤
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO6-2)'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO6-2)'
 - en: The prediction step
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测步骤
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO6-3)'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO6-3)'
 - en: The accuracy of the prediction
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测的准确性
 - en: 'Second, the same analysis is done again but this time with a neural network
     from `scikit-learn` as the model for learning and predicting. The prediction accuracy
     in-sample is significantly above 50% throughout and above 60% in a few cases:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，再次进行相同的分析，但这次使用`scikit-learn`中的神经网络作为学习和预测的模型。内样本预测准确率始终高于50%，在某些情况下甚至高于60%：
 - en: '[PRE6]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO7-1)'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO7-1)'
 - en: Model instantiation
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型实例化
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO7-2)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO7-2)'
 - en: Model fitting
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型拟合
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO7-3)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO7-3)'
 - en: Prediction step
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测步骤
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO7-4)'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO7-4)'
 - en: Accuracy calculation
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 准确度计算
 - en: 'Third, the same analysis again but with a neural network from the `Keras` package.
     The accuracy results are similar to those from the `MLPRegressor`, but with a
     higher average accuracy:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三，再次进行相同的分析，但使用`Keras`包中的神经网络。准确性结果与`MLPRegressor`相似，但平均准确率更高：
 - en: '[PRE7]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO8-1)'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO8-1)'
 - en: Model creation function
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型创建函数
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO8-2)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO8-2)'
 - en: Model instantiation
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型实例化
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO8-3)'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO8-3)'
 - en: Model fitting
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型拟合
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO8-4)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO8-4)'
 - en: Prediction step
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测步骤
 - en: '[![5](Images/5.png)](#co_ai_first_finance_CO8-5)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_ai_first_finance_CO8-5)'
 - en: Accuracy calculation
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 准确度计算
 - en: This simple example shows that neural networks can outperform OLS regression
     significantly *in-sample* in predicting the next day’s direction of price movements.
     However, how does the picture change when testing for the *out-of-sample* performance
     of the two model types?
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个简单的例子表明，神经网络可以在预测下一天的价格走势方向上显著优于OLS回归。然而，当测试两种模型类型的*外样本*性能时，情况会如何变化？
 - en: 'To this end, the analyses are repeated, but the training (fitting) step is
     implemented on the first 80% of the data while the performance is tested on the
     remaining 20%. OLS regression is implemented first. Out-of-sample OLS regression
     shows similar accuracy levels as in-sample—around 50%:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 为此，分析重复进行，但在前80%的数据上实施训练（拟合）步骤，而在剩余的20%上进行性能测试。首先实施OLS回归。外样本OLS回归显示与内样本类似的准确性水平—约为50%：
 - en: '[PRE8]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO9-1)'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO9-1)'
 - en: Creates the *training* data sub-set
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建*训练*数据子集
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO9-2)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO9-2)'
 - en: Creates the *test* data sub-set
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建*测试*数据子集
 - en: 'The performance of the `MLPRegressor` model is out-of-sample much worse when
     compared to the in-sample numbers and similar to the OLS regression results:'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '`MLPRegressor`模型在外样本中的表现要比内样本差得多，并且与OLS回归结果相似：'
 - en: '[PRE9]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'The same holds true for the `Sequential` model from `Keras` for which the out-of-sample
     numbers also show accuracy values between a few percentage points above and below
     the 50% threshold:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于来自`Keras`的`Sequential`模型，同样适用，其外样本数据显示的准确度值在50%阈值上下浮动几个百分点：
 - en: '[PRE10]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: Weak Form Market Efficiency
+  id: totrans-128
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 弱有效市场效率
 - en: Although the labeling as *weak form* market efficiency might suggest otherwise,
     it is the hardest form in the sense that only time-series-related data can be
     used to identify statistical inefficiencies. With the semi-strong form, any other
     source of publicly available data could be added to improve prediction accuracy.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管将其标记为*弱有效*市场效率可能暗示着其他情况，但从只有时间序列相关数据可以用于识别统计非效率的角度来看，它是最难的形式。对于半强有效形式，可以添加任何其他公开可用数据源以提高预测准确性。
 - en: Based on the approaches chosen in this section, markets seem to be at least
     efficient in the weak form. Just analyzing historical return patterns based on
     OLS regression or neural networks might not be enough to discover statistical
     inefficiencies.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于本节选择的方法，市场至少在弱有效形式上似乎是有效的。仅仅基于OLS回归或神经网络分析历史回报模式可能不足以发现统计上的非效率。
 - en: 'There are two major elements of the approach chosen in this section that can
     be adjusted in the hope of improving prediction results:'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节选择的方法中，有两个主要元素可以调整，以期改善预测结果：
 - en: Features
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征
 - en: In addition to vanilla price-and-returns data, other features can be added to
     the data, such as technical indicators (for example, simple moving averages, or
     SMAs for short). The hope is, in the technical chartist’s tradition, that such
     indicators improve the prediction accuracy.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了普通价格和收益数据外，还可以向数据添加其他特征，例如技术指标（例如简单移动平均线，或简称为SMA）。希望在技术图表主义者的传统中，这些指标能够提高预测准确性。
 - en: Bar length
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 条形长度
 - en: Instead of working with end-of-day data, intraday data might allow for higher
     prediction accuracies. Here, the hope is that one is more likely to discover statistical
     inefficiencies during the day as compared to at end of day, when all market participants
     in general pay the highest attention to making their final trades—by taking into
     account all available information.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 与使用每日结束数据不同，日内数据可能允许更高的预测准确性。在这里，希望更有可能在一天内发现统计效率低下，而不是在每天结束时，当所有市场参与者通常会最关注做出最后交易时，考虑到所有可用信息。
 - en: The following two sections address these elements.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下两个部分讨论了这些要素。
 - en: Market Prediction with More Features
+  id: totrans-137
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 更多特征的市场预测
 - en: In trading, there is a long tradition of using technical indicators to generate,
     based on observed patterns, buy or sell signals. Such technical indicators, basically
     of any kind, can also be used as features for the training of neural networks.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 在交易中，长期以来一直有使用技术指标来生成基于观察到的模式的买入或卖出信号的传统。这些技术指标，基本上任何一种，也可以用作训练神经网络的特征。
 - en: 'The following Python code uses an SMA, rolling minimum and maximum values,
     momentum, and rolling volatility as features:'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码使用简单移动平均线、滚动最小和最大值、动量和滚动波动率作为特征：
 - en: '[PRE11]'
+  id: totrans-140
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO10-1)'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO10-1)'
 - en: Simple moving average (SMA)
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单移动平均线（SMA）
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO10-2)'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO10-2)'
 - en: Rolling minimum
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最小值
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO10-3)'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO10-3)'
 - en: Rolling maximum
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最大值
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO10-4)'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO10-4)'
 - en: Momentum as average of log returns
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 动量作为对数收益率的平均值
 - en: '[![5](Images/5.png)](#co_ai_first_finance_CO10-5)'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_ai_first_finance_CO10-5)'
 - en: Rolling volatility
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动波动率
 - en: '[![6](Images/6.png)](#co_ai_first_finance_CO10-6)'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_ai_first_finance_CO10-6)'
 - en: Direction as binary feature
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 方向作为二进制特征
 - en: Technical Indicators as Features
+  id: totrans-153
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 技术指标作为特征
 - en: As the preceding examples show, basically any traditional technical indicator
     used for investing or intraday trading can be used as a feature to train ML algorithms.
     In that sense, AI and ML do not necessarily render such indicators obsolete, rather
     they can indeed enrich the ML-driven derivation of trading strategies.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如前面的例子所示，基本上任何用于投资或日内交易的传统技术指标都可以作为训练ML算法的特征。在这种意义上，人工智能和机器学习并不一定会使这些指标变得过时，相反，它们确实可以丰富基于ML的交易策略的推导。
 - en: 'In-sample, the performance of the `MLPClassifier` model is now much better
     when taking into account the new features and normalizing them for training. The
     `Sequential` model of `Keras` reaches accuracies of around 70% for the number
     of epochs trained. From experience, these can be easily increased by increasing
     the number of epochs and/or the capacity of the neural network:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内，当考虑到新特征并对其进行训练标准化时，`MLPClassifier`模型的表现要好得多。`Keras`的`Sequential`模型在训练的周期数中达到了约70%的准确率。根据经验，通过增加训练周期数和/或神经网络的容量，这些准确率可以轻松提高：
 - en: '[PRE12]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO11-1)'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO11-1)'
 - en: Normalizes the features data
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 规范化特征数据
 - en: 'Are these improvements to be transferred to the out-of-sample prediction accuracies?
     The following Python code repeats the analysis, this time with the training and
     test split as used before. Unfortunately, the picture is mixed at best. The numbers
@@ -653,17 +973,25 @@
     an edge of a few percentage points in the prediction accuracy compared to the
     50% benchmark. For others, however, the accuracy is still below 50%—as illustrated
     for the `MLPClassifier` model:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些改进能够转化为样本外预测准确性吗？以下Python代码重复了分析，这次使用了之前使用的训练和测试拆分。不幸的是，情况最好是复杂的。与仅依赖滞后收益数据作为特征的方法相比，并没有真正的改进。对于选定的工具，与50%基准相比，预测准确率似乎有几个百分点的优势。然而，对于其他工具，准确率仍然低于50%——正如对于`MLPClassifier`模型所示：
 - en: '[PRE13]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO12-1)'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO12-1)'
 - en: Training data set statistics are used for normalization.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练数据集统计数据用于归一化。
 - en: The good in-sample performance and the not-so-good out-of-sample performance
     suggest that overfitting of the neural network might play a crucial role. One
     approach to avoid overfitting is to use ensemble methods that combine multiple
@@ -673,76 +1001,116 @@
     class](https://oreil.ly/gQLFZ). Using multiple estimators allows for training
     every one of them without exposing them to the complete training data set or all
     features. This should help in avoiding overfitting.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 优良的样本内表现和不太理想的样本外表现表明神经网络的过拟合可能起到关键作用。避免过拟合的一种方法是使用集成方法，将同一类型的多个训练模型组合起来，以产生更强大的元模型和更好的样本外预测。其中一种方法称为*装袋*。`scikit-learn`中有这种方法的实现，即[`BaggingClassifier`类](https://oreil.ly/gQLFZ)。使用多个估算器允许每个估算器训练，而不用将它们暴露于完整的训练数据集或所有特征。这应有助于避免过拟合。
 - en: 'The following Python code implements a bagging approach based on a number of
     base estimators of the same type (`MLPClassifier`). The prediction accuracies
     are now consistently above 50%. Some accuracy values are above 55%, which can
     be considered pretty high in this context. Overall, bagging seems to avoid, at
     least to some extent, overfitting and seems to improve the predictions noticeably:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码实现了基于同一类型的多个基础估算器（`MLPClassifier`）的装袋方法。现在的预测准确率始终高于50%。一些准确度值超过55%，在这种情况下可以认为相当高。总体而言，装袋似乎至少在某种程度上避免了过拟合，并显著改善了预测：
 - en: '[PRE14]'
+  id: totrans-165
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](Images/1.png)](#co_ai_first_finance_CO13-1)'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_ai_first_finance_CO13-1)'
 - en: The base estimator
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 基础估算器
 - en: '[![2](Images/2.png)](#co_ai_first_finance_CO13-3)'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_ai_first_finance_CO13-3)'
 - en: The number of estimators used
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的估算器数量
 - en: '[![3](Images/3.png)](#co_ai_first_finance_CO13-4)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_ai_first_finance_CO13-4)'
 - en: Maximum percentage of training data used per estimator
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个估算器使用的训练数据的最大百分比
 - en: '[![4](Images/4.png)](#co_ai_first_finance_CO13-5)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_ai_first_finance_CO13-5)'
 - en: Maximum number of features used per estimator
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个估算器使用的最大特征数量
 - en: '[![5](Images/5.png)](#co_ai_first_finance_CO13-6)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_ai_first_finance_CO13-6)'
 - en: Whether to bootstrap (reuse) data
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 是否引导（重用）数据
 - en: '[![6](Images/6.png)](#co_ai_first_finance_CO13-7)'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_ai_first_finance_CO13-7)'
 - en: Whether to bootstrap (reuse) features
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 是否引导（重用）特征
 - en: '[![7](Images/7.png)](#co_ai_first_finance_CO13-8)'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_ai_first_finance_CO13-8)'
 - en: Number of parallel jobs
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 并行作业数量
 - en: End-of-Day Market Efficiency
+  id: totrans-180
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 日终市场效率
 - en: The efficient market hypothesis dates back to the 1960s and 1970s, periods during
     which end-of-day data was basically the only available time series data. Back
     in those days (and still today), it could be assumed that market players paid
     particularly close attention to their positions and trades the closer the end
     of the trading session came. This might be more true for stocks, say, and a bit
     less so for currencies, which are traded in principle around the clock.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 效率市场假说可以追溯到20世纪60年代和70年代，那时日终数据基本上是唯一可用的时间序列数据。在那些日子里（至今如此），可以假设市场参与者在交易会话接近尾声时特别关注他们的头寸和交易。这对股票来说可能更为真实，但对货币来说可能稍微少一些，因为原则上它们是全天交易的。
 - en: Market Prediction Intraday
+  id: totrans-182
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 市场预测盘中
 - en: This chapter has not produced conclusive evidence, but the analyses implemented
     so far point more in the direction that markets are weakly efficient on an end-of-day
     basis. What about intraday markets? Are there more consistent statistical inefficiencies
@@ -752,41 +1120,57 @@
     Since trading hours might differ from instrument to instrument, the data set is
     incomplete. This is no problem, though, since the analyses are implemented time
     series by time series.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章尚未产生确凿的证据，但到目前为止实施的分析更倾向于认为市场在日终基础上是弱有效的。那么，关于盘中市场呢？是否有更一致的统计效率低下现象可以发现？为了回答这个问题，需要另一个数据集。以下Python代码使用一个数据集，其中包含与日终数据集相同的工具，但现在包含每小时的收盘价。由于交易时间可能因工具而异，数据集是不完整的。不过，这没有问题，因为分析是逐时间序列实施的。
 - en: 'The technical implementation for the hourly data is essentially the same as
     before, relying on the same code as the end-of-day analysis:'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 按小时数据的技术实现与每日结束时分析所用的代码基本相同：
 - en: '[PRE15]'
+  id: totrans-185
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'The prediction accuracies intraday are again distributed around 50% with a
     relatively wide spread for the single neural network. On the positive side, some
     accuracy values are above 55%. The bagging meta model shows a more consistent
     out-of-sample performance, though, with many of the observed accuracy values a
     few percentage points above the 50% benchmark:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 就一天内的市场预测准确度而言，单一神经网络的准确度再次分布在50%左右，具有相对较大的波动。积木模型的表现更加一致，许多观察到的准确度值都略高于50%的基准：
 - en: '[PRE16]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Intraday Market Efficiency
+  id: totrans-188
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 一天内市场的效率
 - en: Even if markets are *weakly efficient on an end-of-day basis*, they can nevertheless
     be *weakly inefficient intraday*. Such statistical inefficiencies might result
     from temporary imbalances, buy or sell pressures, market overreactions, technically
     driven buy or sell orders, and so on. The central question is whether such statistical
     inefficiencies, once discovered, can be exploited profitably via specific trading
     strategies.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使市场在每日结束时*弱有效*，它们在一天之内也可能*弱无效*。这种统计上的无效可能是由于临时失衡、买卖压力、市场过度反应、技术驱动的买卖订单等引起的。核心问题在于，一旦发现这些统计上的无效，是否可以通过特定的交易策略有利地加以利用。
 - en: Conclusions
+  id: totrans-190
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: In their widely cited article “The Unreasonable Effectiveness of Data,” Halevy
     et al. (2009) point out that economists suffer from what they call *physics envy*.
     By that, they mean the inability to explain human behavior in the same mathematically
@@ -795,8 +1179,12 @@
     E equals m c squared"><mrow><mi>E</mi> <mo>=</mo> <mi>m</mi> <msup><mi>c</mi>
     <mn>2</mn></msup></mrow></math> , which equates energy with the mass of an object
     times the speed of light squared.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 在他们广为引用的文章“数据的不合理有效性”中，Halevy等人（2009年）指出经济学家们患有所谓的*物理学嫉妒*。他们所指的是无法像物理学家那样用数学上优雅的方式解释人类行为，即使是描述复杂的现实世界现象。其中一个例子是阿尔伯特·爱因斯坦可能最为人熟知的公式
+    <math alttext="upper E equals m c squared"><mrow><mi>E</mi> <mo>=</mo> <mi>m</mi>
+    <msup><mi>c</mi> <mn>2</mn></msup></mrow></math>，它将能量与物体的质量乘以光速的平方联系起来。
 - en: In economics and finance, researchers for decades have tried to emulate the
     physical approach in deriving and proving simple, elegant equations to explain
     economic and financial phenomena. But as [Chapter 3](ch03.xhtml#normative_finance)
@@ -804,8 +1192,10 @@
     elegant financial theories have hardly any supporting evidence in the real financial
     world in which the simplifying assumptions, such as normal distributions and linear
     relationships, do not hold.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 在经济学和金融领域，研究人员几十年来一直试图模仿物理学的方法，推导和证明简单而优雅的方程来解释经济和金融现象。但正如[第三章](ch03.xhtml#normative_finance)和[第四章](ch04.xhtml#data_driven_finance)一起展示的那样，许多最优雅的金融理论在现实金融世界中几乎没有支持性证据，这些理论的简化假设（如正态分布和线性关系）在现实中并不成立。
 - en: As Halevy et al. (2009) explain in their article, there might be domains, such
     as natural languages and the rules they follow, that defy the derivation and formulation
     of concise, elegant theories. Researchers might simply need to rely on complex
@@ -813,16 +1203,21 @@
     Wide Web represents a treasure trove of *big data*. And big data seems to be required
     to train ML and DL algorithms on certain tasks, such as natural language processing
     or translation on a human level.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如Halevy等人（2009年）在他们的文章中解释的那样，可能存在某些领域（如自然语言及其遵循的规则），这些领域无法推导出简洁而优雅的理论。研究人员可能需要依赖由数据驱动的复杂理论和模型。尤其是对于语言而言，万维网代表着*大数据*的宝库。而在某些任务上，例如自然语言处理或人类水平的翻译，大数据似乎是训练机器学习和深度学习算法所必需的。
 - en: After all, finance might be a discipline that has more in common with natural
     language than with physics. Maybe there are, after all, no simple, elegant formulas
     that describe important financial phenomena, such as the daily change in a currency
     rate or the price of a stock.^([5](ch06.xhtml#idm45625297652504)) Maybe the truth
     might be found only in the big data that nowadays is available in programmatic
     fashion to financial researchers and academics alike.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 毕竟，金融可能与自然语言更相似，而非物理学。也许确实没有简单而优雅的公式来描述重要的金融现象，如货币汇率的日常变动或股票价格。^([5](ch06.xhtml#idm45625297652504))
+    也许真相只能在如今以程序方式提供给金融研究人员和学者的大数据中找到。
 - en: 'This chapter presents the beginning of the quest to uncover the truth, to discover
     the holy grail of finance: proving that markets are not that efficient after all.
     The relatively simple neural network approaches of this chapter only rely on time-series-related
@@ -831,8 +1226,10 @@
     *statistical inefficiencies* in predicting the future market direction. This in
     turn represents the first step in exploiting such inefficiencies economically
     through an implementable trading strategy.'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了揭示真相、发现金融圣杯的探索之始：证明市场实际上并不那么有效。本章相对简单的神经网络方法仅依赖于与时间序列相关的特征进行训练。标签简单明了：市场（金融工具的价格）是涨还是跌。目标是发现*统计上的低效*，以预测未来市场走向。这反过来代表了经济上利用这种低效的第一步，通过可实施的交易策略。
 - en: 'Agrawal et al. (2018) explain in detail, with many examples, that predictions
     themselves are only one side of the coin. Decision and implementation rules that
     specify in detail how a certain prediction is dealt with are equally important.
@@ -840,8 +1237,10 @@
     is only the beginning. The hard part is to optimally execute an appropriate trade,
     to monitor active trades, to implement appropriate risk measures—such as stop
     loss and take profit orders—and so on.'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: Agrawal等人（2018）详细解释了，通过许多例子，预测本身只是一个方面。决策和实施规则详细说明了如何处理某种预测同样重要。在算法交易背景下也是如此：信号（预测）只是开始。难的是优化执行适当的交易，监控活跃交易，实施适当的风险措施—例如止损和止盈订单等。
 - en: In its quest for statistical inefficiencies, this chapter relies on data and
     neural networks only. There is no theory involved, and there are no assumptions
     about how market participants might behave, or similar reasonings. The major modeling
@@ -850,79 +1249,118 @@
     taken is that statistical inefficiencies can be discovered based on time-series-related
     data only. This is to say that markets are not even weakly efficient—the most
     difficult form of the three to disprove.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 在追求统计低效性的过程中，本章仅依赖于数据和神经网络。没有涉及理论，也没有假设市场参与者可能如何行动，或类似的推理。主要的建模工作是针对准备特征进行的，这当然代表了建模者认为重要的内容。在所采取的方法中的一个隐含假设是，可以仅基于时间序列相关数据来发现统计低效性。这就是说，市场甚至不是弱有效的—这是三种形式中最难证明的一种。
 - en: Relying on financial data only and applying general ML and DL algorithms and
     models to it are what this book considers *AI-first finance*. No theories needed,
     no modeling of human behavior, no assumptions about distributions or the nature
     of relationships—just data and algorithms. In that sense, AI-first finance could
     also be labeled *theory-free* or *model-free finance*.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书只依赖于金融数据，并将通用的机器学习和深度学习算法和模型应用于其中，这就是本书所称的*AI首先的金融*。不需要理论，不需要建模人类行为，不假设分布或关系的本质—只有数据和算法。从这个意义上说，AI首先的金融也可以标记为*无理论*或*无模型的金融*。
 - en: References
+  id: totrans-199
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍和论文：
 - en: 'Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018\. *Prediction Machines:
     The Simple Economics of Artificial Intelligence.* Boston: Harvard Business Review
     Press.'
+  id: totrans-201
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018\. *预测机器：人工智能的简单经济学.* 波士顿：哈佛商业评论出版社。
 - en: 'Copeland, Thomas, Fred Weston, and Kuldeep Shastri. 2005\. *Financial Theory
     and Corporate Policy*. 4th ed. Boston: Pearson.'
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Copeland, Thomas, Fred Weston, and Kuldeep Shastri. 2005\. *金融理论与公司政策.* 第四版.
+    波士顿：皮尔逊出版社。
 - en: 'Fama, Eugene. 1965\. “Random Walks in Stock Market Prices.” *Financial Analysts
     Journal* (September/October): 55-59.'
+  id: totrans-203
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Fama, Eugene. 1965\. “股市价格的随机漫步.” *Financial Analysts Journal* (9/10): 55-59.'
 - en: Halevy, Alon, Peter Norvig, and Fernando Pereira. 2009\. “The Unreasonable Effectiveness
     of Data.” *IEEE Intelligent Systems*, Expert Opinion.
+  id: totrans-204
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Halevy, Alon, Peter Norvig, and Fernando Pereira. 2009\. “数据的不合理有效性.” *IEEE
+    Intelligent Systems*, 专家意见.
 - en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance.*
     2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance.*
+    第二版. Sebastopol: O’Reilly.'
 - en: 'Jensen, Michael. 1978\. “Some Anomalous Evidence Regarding Market Efficiency.”
     *Journal of Financial Economics* 6 (2/3): 95-101.'
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Jensen, Michael. 1978\. “关于市场效率的一些异常证据.” *Journal of Financial Economics* 6
+    (2/3): 95-101.'
 - en: 'Tegmark, Max. 2017\. *Life 3.0: Being Human in the Age of Artificial Intelligence*.
     United Kingdom: Penguin Random House.'
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Tegmark, Max. 2017\. *Life 3.0: Being Human in the Age of Artificial Intelligence*.
+    英国: Penguin Random House.'
 - en: 'Tsay, Ruey S. 2005\. *Analysis of Financial Time Series.* Hoboken: Wiley.'
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Tsay, Ruey S. 2005\. *Financial Time Series Analysis.* Hoboken: Wiley.'
 - en: ^([1](ch06.xhtml#idm45625304814120-marker)) For the purposes of this chapter
     and the book, the two hypotheses are treated as equal, although the RWH is somewhat
     stronger than the EMH. See, for instance, Copeland et al. (2005, ch. 10).
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch06.xhtml#idm45625304814120-marker)) 在本章和本书的目的中，这两个假设被视为相等，尽管随机漫步假说略强于有效市场假说。例如，参见
+    Copeland 等人 (2005, 第 10 章).
 - en: ^([2](ch06.xhtml#idm45625303735832-marker)) See also Hilpisch (2018, ch. 15).
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch06.xhtml#idm45625303735832-marker)) 另见 Hilpisch (2018, 第 15 章).
 - en: '^([3](ch06.xhtml#idm45625303250520-marker)) For details on *stationarity* in
     financial time series, see Tsay (2005, sec. 2.1). Tsay points out: “The foundation
     of time series analysis is stationarity.”'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch06.xhtml#idm45625303250520-marker)) 有关金融时间序列中*平稳性*的详细信息，请参阅 Tsay (2005,
+    第 2.1 节)。Tsay 指出：“时间序列分析的基础是平稳性。”
 - en: ^([4](ch06.xhtml#idm45625301826344-marker)) Another term for the approach is
     *z-score normalization*.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch06.xhtml#idm45625301826344-marker)) 该方法的另一个术语是*z-score 标准化*。
 - en: ^([5](ch06.xhtml#idm45625297652504-marker)) There are, of course, more simple
     financial aspects that allow the modeling by a simple formula. An example might
     be the derivation of a continuous discount factor <math alttext="upper D"><mi>D</mi></math>
@@ -936,5 +1374,15 @@
     <mo>(</mo></mrow></math> -0.01 <math alttext="dot 2 right-parenthesis equals"><mrow><mo>·</mo>
     <mn>2</mn> <mo>)</mo> <mo>=</mo></mrow></math> 0.9802\. AI or ML cannot offer
     any benefits here.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([5](ch06.xhtml#idm45625297652504-marker)) 当然，还有更简单的金融方面，可以通过简单公式建模。例如，如果相关的对数收益率是
+    <math alttext="r equals"><mrow><mi>r</mi> <mo>=</mo></mrow></math> 0.01，那么为两年期连续贴现因子
+    <math alttext="upper D"><mi>D</mi></math> 的推导如下 <math alttext="upper D left-parenthesis
+    r comma upper T right-parenthesis equals exp left-parenthesis minus r upper T
+    right-parenthesis equals exp left-parenthesis"><mrow><mi>D</mi> <mo>(</mo> <mi>r</mi>
+    <mo>,</mo> <mi>T</mi> <mo>)</mo> <mo>=</mo> <mo form="prefix">exp</mo> <mo>(</mo>
+    <mo>-</mo> <mi>r</mi> <mi>T</mi> <mo>)</mo> <mo>=</mo> <mo form="prefix">exp</mo>
+    <mo>(</mo></mrow></math> -0.01 <math alttext="dot 2 right-parenthesis equals"><mrow><mo>·</mo>
+    <mn>2</mn> <mo>)</mo> <mo>=</mo></mrow></math> 0.9802\. 人工智能或机器学习在这里无法提供任何好处。

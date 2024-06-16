@@ -1,29 +1,38 @@
 - en: Chapter 7\. Dense Neural Networks
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第7章 密集神经网络
 - en: '[I]f you’re trying to predict the movements of a stock on the stock market
     given its recent price history, you’re unlikely to succeed, because price history
     doesn’t contain much predictive information.'
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 如果你试图根据股票市场上的最近价格历史预测股票的走势，你可能不太可能成功，因为价格历史并没有包含太多的预测信息。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: François Chollet (2017)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: François Chollet（2017）
 - en: This chapter is about important aspects of *dense neural networks*. Previous
     chapters have already made use of this type of neural network. In particular,
     the `MLPClassifier` and `MLPRegressor` models from `scikit-learn` and the `Sequential`
     model from `Keras` for classification and estimation are dense neural networks
     (DNNs). This chapter exclusively focuses on `Keras` since it gives more freedom
     and flexibility in modeling DNNs.^([1](ch07.xhtml#idm45625297582184))
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章讨论*密集神经网络*的重要方面。之前的章节已经使用了这种类型的神经网络。特别地，来自`scikit-learn`的`MLPClassifier`和`MLPRegressor`模型，以及用于分类和估计的`Keras`的`Sequential`模型都是密集神经网络（DNNs）。本章专注于`Keras`，因为它在建模DNNs时提供更多的自由度和灵活性。^([1](ch07.xhtml#idm45625297582184))
 - en: '[“The Data”](#dnn_data) introduces the foreign exchange (FX) data set that
     the other sections in this chapter use. [“Baseline Prediction”](#dnn_baseline)
     generates a baseline, in-sample prediction on the new data set. Normalization
@@ -34,20 +43,27 @@
     is revisited in [“Bagging”](#dnn_bagging). Finally, [“Optimizers”](#dnn_optimizers)
     compares the performance of different optimizers that can be used with `Keras`
     DNN models.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“数据”](#dnn_data)介绍了其他本章节中使用的外汇（FX）数据集。[“基线预测”](#dnn_baseline)在新数据集上生成基线内样本预测。在[“归一化”](#dnn_normalization)中介绍了训练和测试数据的归一化。为了避免过度拟合，[“Dropout”](#dnn_dropouts)和[“正则化”](#dnn_regularization)讨论了作为流行方法的dropout和正则化。Bagging，作为另一种避免过度拟合的方法，在[“Bagging”](#dnn_bagging)中重新审视。最后，[“优化器”](#dnn_optimizers)比较了可以与`Keras`
+    DNN模型一起使用的不同优化器的性能。'
 - en: Although the introductory quote for the chapter might give little reason for
     hope, the main goal for this chapter—as well as for [Part III](part03.xhtml#part_statistical_inefficiencies)
     as a whole—is to discover statistical inefficiencies in financial markets (time
     series) by applying neural networks. The numerical results presented in this chapter,
     such as prediction accuracies of 60% and more in certain cases, indicate that
     at least some hope is justified.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管本章的开篇引用可能给人希望不大的理由，但本章及整个[第三部分](part03.xhtml#part_statistical_inefficiencies)的主要目标是通过应用神经网络在金融市场（时间序列）中发现统计效率低下的现象。本章提供的数值结果，例如在某些情况下达到60%甚至更高的预测准确率，表明至少有一些希望是合理的。
 - en: The Data
+  id: totrans-7
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 数据
 - en: '[Chapter 6](ch06.xhtml#ai_first_finance) discovers hints for statistical inefficiencies
     for, among other time series, the intraday price series of the EUR/USD currency
     pair. This chapter and the following ones focus on foreign exchange (FX) as an
@@ -58,47 +74,74 @@
     for FX. The following data set is from the Refinitiv Eikon Data API. The data
     set has been retrieved via the API. The data set contains open, high, low, and
     close values. [Figure 7-1](#figure_dnn_01) visualizes the closing prices:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第6章](ch06.xhtml#ai_first_finance)发现了统计效率低下的线索，其中包括EUR/USD货币对的日内价格序列。本章及其后续章节关注外汇（FX）作为一种资产类别，特别关注EUR/USD货币对。总体而言，与其他资产类别（如VIX波动率指数等波动性产品）相比，经济上利用FX的统计效率低下通常不那么复杂。对于FX，通常也可以自由和全面地获取数据。以下数据集来自Refinitiv
+    Eikon Data API。数据集通过API检索。数据集包含开盘价、最高价、最低价和收盘价值。[图7-1](#figure_dnn_01)展示了收盘价格的可视化：'
 - en: '[PRE0]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO1-1)'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO1-1)'
 - en: Reads the data into a `DataFrame` object
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据读入`DataFrame`对象中
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO1-3)'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO1-3)'
 - en: Selects, resamples, and plots the closing prices
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择、重新采样并绘制收盘价图表
 - en: '![aiif 0701](Images/aiif_0701.png)'
+  id: totrans-14
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0701](Images/aiif_0701.png)'
 - en: Figure 7-1\. Mid-closing prices for EUR/USD (intraday)
+  id: totrans-15
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-1\. EUR/USD 的中间收盘价格（盘中）
 - en: Baseline Prediction
+  id: totrans-16
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基线预测
 - en: 'Based on the new data set, the prediction approach from [Chapter 6](ch06.xhtml#ai_first_finance)
     is repeated. First is the creation of the lagged features:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于新数据集，从 [第 6 章](ch06.xhtml#ai_first_finance) 中的预测方法被重复使用。首先是创建滞后特征：
 - en: '[PRE1]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO2-1)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO2-1)'
 - en: Slightly adjusted function from [Chapter 6](ch06.xhtml#ai_first_finance)
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 从第 6 章略微调整的函数
 - en: Second, a look at the labels data. A major problem in classification that can
     arise depending on the data set available is *class imbalance*. This means, in
     the context of binary labels, that the frequency of one particular class compared
@@ -107,157 +150,254 @@
     already can lead to low loss and high accuracy values. Applying appropriate weights,
     one can make sure that both classes gain equal importance during the DNN training
     step:^([2](ch07.xhtml#idm45625295132152))
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次是查看标签数据。在分类中可能出现的一个主要问题是*类别不平衡*。这意味着，在二元标签的情况下，一个特定类别相对于另一个类别的频率可能较高。这可能导致神经网络简单地预测具有更高频率的类别，因为这已经可以导致低损失和高准确率值。通过应用适当的权重，可以确保在
+    DNN 训练步骤中两个类别获得相等的重要性:^([2](ch07.xhtml#idm45625295132152))
 - en: '[PRE2]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO3-1)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO3-1)'
 - en: Shows the frequency of the two classes
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示了两个类的频率
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO3-3)'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO3-3)'
 - en: Calculates appropriate weights to reach an equal weighting
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算适当的权重以达到均衡权重
 - en: '[![3](Images/3.png)](#co_dense_neural_networks_CO3-6)'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dense_neural_networks_CO3-6)'
 - en: With the calculated weights, both classes gain equal weight
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用计算得出的权重，两个类别获得相等的权重
 - en: 'Third is the creation of the DNN model with `Keras` and the training of the
     model on the complete data set. The baseline performance in-sample is around 60%:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三步是使用`Keras`创建 DNN 模型，并在完整数据集上训练模型。样本内基线表现约为 60%：
 - en: '[PRE3]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO4-1)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO4-1)'
 - en: Python random number seed
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 随机数种子
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO4-2)'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO4-2)'
 - en: '`NumPy` random number seed'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '`NumPy` 随机数种子'
 - en: '[![3](Images/3.png)](#co_dense_neural_networks_CO4-3)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dense_neural_networks_CO4-3)'
 - en: '`TensorFlow` random number seed'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TensorFlow` 随机数种子'
 - en: '[![4](Images/4.png)](#co_dense_neural_networks_CO4-4)'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dense_neural_networks_CO4-4)'
 - en: Default optimizer (see [*https://oreil.ly/atpu8*](https://oreil.ly/atpu8))
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认优化器（参见[*https://oreil.ly/atpu8*](https://oreil.ly/atpu8)）
 - en: '[![5](Images/5.png)](#co_dense_neural_networks_CO4-5)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dense_neural_networks_CO4-5)'
 - en: First layer
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一层
 - en: '[![6](Images/6.png)](#co_dense_neural_networks_CO4-6)'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_dense_neural_networks_CO4-6)'
 - en: Additional layers
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 附加层
 - en: '[![7](Images/7.png)](#co_dense_neural_networks_CO4-7)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_dense_neural_networks_CO4-7)'
 - en: Output layer
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出层
 - en: '[![8](Images/8.png)](#co_dense_neural_networks_CO4-8)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_dense_neural_networks_CO4-8)'
 - en: Loss function (see [*https://oreil.ly/cVGVf*](https://oreil.ly/cVGVf))
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 损失函数（参见[*https://oreil.ly/cVGVf*](https://oreil.ly/cVGVf)）
 - en: '[![9](Images/9.png)](#co_dense_neural_networks_CO4-9)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_dense_neural_networks_CO4-9)'
 - en: Optimizer to be used
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用的优化器
 - en: '[![10](Images/10.png)](#co_dense_neural_networks_CO4-10)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](Images/10.png)](#co_dense_neural_networks_CO4-10)'
 - en: Additional metrics to be collected
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 要收集的额外指标
 - en: 'The same holds true for the performance of the model out-of-sample. It is still
     well above 60%. This can be considered already quite good:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于模型的样本外表现也是如此。它仍然高于 60%。这可以被认为已经相当不错：
 - en: '[PRE4]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO5-1)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO5-1)'
 - en: Splits the whole data set…
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 将整个数据集分割…
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO5-2)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO5-2)'
 - en: …into the training data set…
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: …进入训练数据集…
 - en: '[![3](Images/3.png)](#co_dense_neural_networks_CO5-3)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dense_neural_networks_CO5-3)'
 - en: …and the test data set.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: …以及测试数据集。
 - en: '[![4](Images/4.png)](#co_dense_neural_networks_CO5-4)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dense_neural_networks_CO5-4)'
 - en: Evaluates the *in-sample* performance.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估*样本内*表现。
 - en: '[![5](Images/5.png)](#co_dense_neural_networks_CO5-5)'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dense_neural_networks_CO5-5)'
 - en: Evaluates the *out-of-sample* performance.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估*样本外*表现。
 - en: '[Figure 7-2](#figure_dnn_02) shows how the accuracy on the training and validation
     data sub-sets changes over the training epochs:'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-2](#figure_dnn_02) 显示了训练和验证数据子集的准确率随训练时期的变化情况：'
 - en: '[PRE5]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '![aiif 0702](Images/aiif_0702.png)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0702](Images/aiif_0702.png)'
 - en: Figure 7-2\. Training and validation accuracy values
+  id: totrans-66
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-2\. 训练和验证准确率数值
 - en: The analysis in this section sets the stage for the more elaborate use of DNNs
     with `Keras`. It presents a baseline market prediction approach. The following
     sections add different elements that are primarily supposed to improve the out-of-sample
     model performance and to avoid overfitting of the model to the training data.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节的分析为使用`Keras`更为复杂的DNNs打下了基础。它展示了一个基准市场预测方法。接下来的部分添加了不同元素，这些元素主要旨在提高样本外模型性能，并避免模型对训练数据的过拟合。
 - en: Normalization
+  id: totrans-68
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 标准化
 - en: 'The baseline prediction in [“Baseline Prediction”](#dnn_baseline) takes the
     lagged features as they are. In [Chapter 6](ch06.xhtml#ai_first_finance), the
     features data is normalized by subtracting the mean of the training data for every
@@ -268,73 +408,112 @@
     when working with normalized features data. The out-of-sample performance also
     slightly increases. However, there is no guarantee that the out-of-sample performance
     increases through features normalization:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[“基准预测”](#dnn_baseline)中，使用滞后特征。在[第 6 章](ch06.xhtml#ai_first_finance) 中，特征数据通过减去每个特征的训练数据均值并除以训练数据的标准偏差进行标准化。这种标准化技术称为*高斯标准化*，在训练神经网络时往往（几乎总是）证明是一个重要的方面。如下面的Python代码及其结果所示，使用标准化后的特征数据能显著提高样本内表现。样本外表现也略有提高。然而，并不能保证通过特征标准化会提高样本外表现：
 - en: '[PRE6]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO6-1)'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO6-1)'
 - en: Calculates the mean and standard deviation for all *training features*
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算所有*训练特征*的均值和标准偏差
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO6-2)'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO6-2)'
 - en: Normalizes the *training data* set based on Gaussian normalization
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据高斯标准化对*训练数据*集进行标准化
 - en: '[![3](Images/3.png)](#co_dense_neural_networks_CO6-3)'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dense_neural_networks_CO6-3)'
 - en: Evaluates the *in-sample* performance
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估*样本内*表现
 - en: '[![4](Images/4.png)](#co_dense_neural_networks_CO6-4)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dense_neural_networks_CO6-4)'
 - en: Normalizes the *test data* set based on Gaussian normalization
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据高斯标准化对*测试数据*集进行标准化
 - en: '[![5](Images/5.png)](#co_dense_neural_networks_CO6-5)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_dense_neural_networks_CO6-5)'
 - en: Evaluates the *out-of-sample* performance
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估*样本外*表现
 - en: 'A major problem that often arises is *overfitting*. It is impressively visualized
     in [Figure 7-3](#figure_dnn_03), which shows a steadily improving training accuracy
     while the validation accuracy decreases slowly:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 经常出现的一个主要问题是*过拟合*。在[图 7-3](#figure_dnn_03) 中有一个令人印象深刻的可视化，显示训练准确率稳步提高而验证准确率缓慢下降：
 - en: '[PRE7]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '![aiif 0703](Images/aiif_0703.png)'
+  id: totrans-83
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0703](Images/aiif_0703.png)'
 - en: Figure 7-3\. Training and validation accuracy values (normalized features data)
+  id: totrans-84
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-3\. 训练和验证准确率数值（标准化特征数据）
 - en: Three candidate methods to avoid overfitting are *dropout*, *regularization*,
     and *bagging*. The following sections discuss these methods. The impact of the
     chosen optimizer is also discussed later in this chapter.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免过拟合的三种候选方法是*dropout*、*正则化*和*装袋*。接下来的部分将讨论这些方法。还将在本章后面讨论所选择优化器的影响。
 - en: Dropout
+  id: totrans-86
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Dropout
 - en: 'The idea of *dropout* is that neural networks should not use all hidden units
     during the training stage. The analogy to the human brain is that a human being
     regularly forgets information that was previously learned. This, so to say, keeps
     the human brain “open minded.” Ideally, a neural network should behave similarly:
     the connections in the DNN should not become too strong in order to avoid overfitting
     to the training data.'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '*dropout* 的概念是神经网络在训练阶段不应使用所有隐藏单元。与人类大脑的类比是，人类经常忘记先前学到的信息。这种做法可以说是保持人类大脑“开放思维”的一种方式。理想情况下，神经网络应该类似：DNN
+    中的连接不应过于强大，以避免过度拟合训练数据。'
 - en: 'Technically, a `Keras` model has additional layers between the hidden layers
     that manage the dropout. The major parameter is the rate with which the hidden
     units of a layer get dropped. These drops in general happen in randomized fashion.
@@ -342,46 +521,68 @@
     decreases, the out-of-sample performance slightly decreases as well. However,
     the difference between the two performance measures is smaller, which is in general
     a desirable situation:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 从技术上讲，`Keras`模型在隐藏层之间有额外的层来管理dropout。主要参数是层中隐藏单元被丢弃的速率。这些丢弃通常以随机方式发生。这可以通过固定`seed`参数来避免。虽然样本内性能降低了，但样本外性能也略有下降。但是，两个性能指标之间的差异较小，这通常是一种理想情况：
 - en: '[PRE8]'
+  id: totrans-89
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO7-1)'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO7-1)'
 - en: Adds dropout after each layer
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 在每一层后添加dropout
 - en: 'As [Figure 7-4](#figure_dnn_04) illustrates, the training accuracy and validation
     accuracy now do not drift apart as fast as before:'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 如[图7-4](#figure_dnn_04)所示，现在训练精度和验证精度不再像以前那样迅速分开：
 - en: '[PRE9]'
+  id: totrans-93
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '![aiif 0704](Images/aiif_0704.png)'
+  id: totrans-94
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0704](Images/aiif_0704.png)'
 - en: Figure 7-4\. Training and validation accuracy values (with dropout)
+  id: totrans-95
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-4\. 训练和验证精度值（使用dropout）
 - en: Intentional Forgetting
+  id: totrans-96
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 有意忘记
 - en: 'Dropout in the `Sequential` model of `Keras` emulates what all human beings
     experience: forgetting previously memorized information. This is accomplished
     by deactivating certain hidden units of a hidden layer during training. In effect,
     this often avoids, to a larger extent, overfitting a neural network to the training
     data.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`Keras`的`Sequential`模型中，dropout模拟了所有人都会经历的情况：忘记以前记住的信息。这是通过在训练期间关闭隐藏层的某些隐藏单元来实现的。实际上，这往往可以更大程度地避免将神经网络过拟合到训练数据上。
 - en: Regularization
+  id: totrans-98
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 正则化
 - en: 'Another means to avoid overfitting is *regularization*. With regularization,
     large weights in the neural network get penalized in the calculation of the loss
     (function). This avoids the situation where certain connections in the DNN become
@@ -391,82 +592,125 @@
     are in general used, one based on the linear norm, `l1`, and one based on the
     Euclidean norm, `l2`. The following Python code adds regularization to the model
     creation function:'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免过拟合的另一种方法是*正则化*。通过正则化，神经网络中的大权重在损失（函数）的计算中会受到惩罚。这避免了深度神经网络中某些连接过于强大和占主导地位的情况。正则化可以通过`Dense`层中的参数来引入`Keras`
+    DNN。根据所选择的正则化参数，训练和测试精度可以保持非常接近。通常使用两种正则化器，一种基于线性范数`l1`，另一种基于欧几里得范数`l2`。以下Python代码将正则化添加到模型创建函数中：
 - en: '[PRE10]'
+  id: totrans-100
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO8-1)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO8-1)'
 - en: Regularization is added to each layer.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 在每一层中添加正则化。
 - en: '[Figure 7-5](#figure_dnn_05) shows the training and validation accuracy under
     regularization. The two performance measures are much closer together than previously
     seen:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-5](#figure_dnn_05)显示了在正则化下的训练和验证精度。两个性能指标比以前更接近：'
 - en: '[PRE11]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '![aiif 0705](Images/aiif_0705.png)'
+  id: totrans-105
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0705](Images/aiif_0705.png)'
 - en: Figure 7-5\. Training and validation accuracy values (with regularization)
+  id: totrans-106
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-5\. 训练和验证精度值（使用正则化）
 - en: 'Of course, dropout and regularization can be used together. The idea is that
     the two measures combined even better avoid overfitting and bring the in-sample
     and out-of-sample accuracy values closer together. And indeed the difference between
     the two measures is lowest in this case:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，dropout和正则化可以一起使用。其想法是，这两个措施结合起来可以更好地避免过拟合，并将样本内和样本外的精度值更接近。事实上，在这种情况下，两种措施之间的差异最小：
 - en: '[PRE12]'
+  id: totrans-108
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO9-1)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO9-1)'
 - en: Dropout is added to the model creation.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 在模型创建中添加了dropout。
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO9-2)'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO9-2)'
 - en: Regularization is added to the model creation.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 在模型创建中添加了正则化。
 - en: '[Figure 7-6](#figure_dnn_06) shows the training and validation accuracy when
     combining dropout with regularization. The difference between training and validation
     data accuracy over the training epochs is some four percentage points only on
     average:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图7-6](#figure_dnn_06)显示了在将dropout与正则化结合使用时的训练和验证精度。训练时期内训练数据和验证数据的精度之间的差异仅平均为四个百分点：'
 - en: '[PRE13]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '![aiif 0706](Images/aiif_0706.png)'
+  id: totrans-115
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0706](Images/aiif_0706.png)'
 - en: Figure 7-6\. Training and validation accuracy values (with dropout and regularization)
+  id: totrans-116
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-6\. 训练和验证准确率值（带有dropout和正则化）
 - en: Penalizing Large Weights
+  id: totrans-117
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 惩罚大权重
 - en: Regularization avoids overfitting by penalizing large weights in a neural network.
     Single weights cannot get that large enough to dominate a neural network. The
     penalties keep weights on a comparable level.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则化通过惩罚神经网络中的大权重来避免过拟合。单个权重不能变得足够大以主导神经网络。惩罚使权重保持在可比较的水平上。
 - en: Bagging
+  id: totrans-119
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Bagging
 - en: 'The bagging method to avoid overfitting is already used in [Chapter 6](ch06.xhtml#ai_first_finance),
     although only for the `scikit-learn` `MLPRegressor` model. There is also a wrapper
     for a `Keras` DNN classification model to expose it in `scikit-learn` fashion,
@@ -475,38 +719,57 @@
     The in-sample and out-of-sample performance measures are relatively high, around
     70%. However, the result is driven by the class imbalance, as addressed previously,
     and as reflected here in the high frequency of the `0` predictions:'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: Bagging方法以避免过度拟合已经在[第6章](ch06.xhtml#ai_first_finance)中使用，尽管仅用于`scikit-learn`的`MLPRegressor`模型。还有一个包装器用于将`Keras`
+    DNN分类模型以`scikit-learn`的方式公开，即`KerasClassifier`类。以下Python代码结合了基于包装器的`Keras` DNN建模与`scikit-learn`中的`BaggingClassifier`。样本内和样本外的性能指标相对较高，约为70%。然而，结果受类别不平衡的影响，如前所述，并在这里反映在`0`预测的高频率中：
 - en: '[PRE14]'
+  id: totrans-121
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO10-1)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO10-1)'
 - en: The base estimator, here a `Keras` `Sequential` model, is instantiated.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 基本估计器，在这里是`Keras`的`Sequential`模型，被实例化。
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO10-2)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO10-2)'
 - en: The `BaggingClassifier` model is instantiated for a number of equal base estimators.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '`BaggingClassifier`模型为一些相等的基本估计器实例化。'
 - en: Distributing Learning
+  id: totrans-126
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 分布式学习
 - en: Bagging, in a sense, distributes learning among a number of neural networks
     (or other models) in that each neural network, for example, only sees certain
     parts of the training data set and only a selection of the features. This avoids
     the risk that a single neural network overfits the complete training data set.
     The prediction is based on all selectively trained neural networks together.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: Bagging在某种意义上将学习分布在多个神经网络（或其他模型）之间，例如每个神经网络仅看到训练数据集的某些部分和特征的选择。这避免了单个神经网络过度拟合完整的训练数据集。预测基于所有选择性训练的神经网络的集合。
 - en: Optimizers
+  id: totrans-128
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 优化器
 - en: 'The `Keras` package offers a selection of optimizers that can be used in combination
     with the `Sequential` model (see [*https://oreil.ly/atpu8*](https://oreil.ly/atpu8)).
     Different optimizers might show different performances, with regard to both the
@@ -515,39 +778,61 @@
     default parametrization of `Keras` is used. The out-of-sample performance does
     not vary that much. However, the in-sample performance, given the different optimizers,
     varies by a wide margin:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Keras`包提供了一些可以与`Sequential`模型结合使用的优化器（参见[*https://oreil.ly/atpu8*](https://oreil.ly/atpu8)）。不同的优化器可能在训练所需时间和预测准确性方面表现不同。以下Python代码使用不同的优化器并评估其性能。在所有情况下，都使用了`Keras`的默认参数设置。样本外的性能变化不大。然而，由于不同的优化器，样本内的性能变化很大：'
 - en: '[PRE15]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](Images/1.png)](#co_dense_neural_networks_CO11-1)'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_dense_neural_networks_CO11-1)'
 - en: Instantiates the DNN model for the given optimizer
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 为给定的优化器实例化DNN模型
 - en: '[![2](Images/2.png)](#co_dense_neural_networks_CO11-2)'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_dense_neural_networks_CO11-2)'
 - en: Fits the model with the given optimizer
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用给定的优化器拟合模型
 - en: '[![3](Images/3.png)](#co_dense_neural_networks_CO11-3)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_dense_neural_networks_CO11-3)'
 - en: Evaluates the *in-sample* performance
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估*样本内*表现
 - en: '[![4](Images/4.png)](#co_dense_neural_networks_CO11-4)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_dense_neural_networks_CO11-4)'
 - en: Evaluates the *out-of-sample* performance
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估*样本外*表现
 - en: Conclusions
+  id: totrans-139
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter dives deeper into the world of DNNs and uses `Keras` as the primary
     package. `Keras` offers a high degree of flexibility in composing DNNs. The results
     in this chapter are promising in that both in-sample and out-of-sample performance—with
@@ -558,33 +843,49 @@
     in detail in [Part IV](part04.xhtml#part_economic_inefficiencies). The next two
     chapters first illustrate the use of different neural networks (recurrent and
     convolutional neural networks) and learning techniques (reinforcement learning).
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章深入探讨了深度神经网络（DNNs）的世界，并以`Keras`作为主要工具包。`Keras`在组合DNNs方面提供了高度灵活性。本章的结果表明，无论是样本内还是样本外的预测准确率都稳定在60%以上。然而，预测准确率只是一个方面。必须有合适的交易策略可以经济地从预测或“信号”中获利。在算法交易背景下，这个至关重要的话题在[第四部分](part04.xhtml#part_economic_inefficiencies)中有详细讨论。接下来的两章首先说明了不同神经网络（递归神经网络和卷积神经网络）以及学习技术（强化学习）的使用。
 - en: References
+  id: totrans-141
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: '`Keras` is a powerful and comprehensive package for deep learning with TensforFlow
     as its primary backend. The project is also evolving fast. Make sure to stay up
     to date via the [main project page](http://keras.io). The major resources about
     `Keras` in book form are the following:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Keras`是一个强大而全面的深度学习工具包，其主要后端是TensorFlow。该项目也在快速发展中。请通过[主项目页面](http://keras.io)保持最新。关于`Keras`的主要资源书籍如下：'
 - en: 'Chollet, Francois. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Chollet, Francois. 2017\. *Python深度学习*. Shelter Island: Manning。'
 - en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
     Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *深度学习*. Cambridge:
+    MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org)。'
 - en: ^([1](ch07.xhtml#idm45625297582184-marker)) See Chollet (2017) for more details
     and background information on the `Keras` package. See Goodfellow et al. (2016)
     for a comprehensive treatment of neural networks and related methods.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch07.xhtml#idm45625297582184-marker)) 更多关于`Keras`包的详细信息和背景，请参见Chollet
+    (2017)。关于神经网络及其相关方法的全面处理，请参见Goodfellow等人（2016）。
 - en: ^([2](ch07.xhtml#idm45625295132152-marker)) See this [blog post](https://oreil.ly/3X1Qk),
     which discusses solutions to class imbalance with `Keras`.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch07.xhtml#idm45625295132152-marker)) 查看这篇[博客文章](https://oreil.ly/3X1Qk)，讨论了使用`Keras`解决类别不平衡问题的解决方案。

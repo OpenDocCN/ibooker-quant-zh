@@ -1,0 +1,894 @@
+<html><head></head><body><div id="sbo-rt-content"><section data-type="appendix" epub:type="appendix" data-pdf-bookmark="Appendix A. Interactive Neural Networks"><div class="appendix" id="app_interactive_neural_networks">
+<h1><span class="label">Appendix A. </span>Interactive Neural Networks</h1>
+
+
+<p>This appendix explores fundamental notions of neural networks with basic Python code—on the basis of both simple and shallow neural networks. The goal is to provide a good grasp and intuition for important concepts that often disappear behind high-level, abstract APIs when working with standard machine and deep learning packages.</p>
+
+<p>The appendix has the following sections:</p>
+
+<ul>
+<li>
+<p><a data-type="xref" href="#app_inn_tensors">“Tensors and Tensor Operations”</a> covers the basics of <em>tensors</em> and the operations implemented on them.</p>
+</li>
+<li>
+<p><a data-type="xref" href="#app_inn_sinn">“Simple Neural Networks”</a> discusses <em>simple neural networks</em>, or neural networks that only have an input and an output layer.</p>
+</li>
+<li>
+<p><a data-type="xref" href="#app_inn_shnn">“Shallow Neural Networks”</a> focuses on <em>shallow neural networks</em>, or neural networks with one hidden layer.</p>
+</li>
+</ul>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Tensors and Tensor Operations"><div class="sect1" id="app_inn_tensors">
+<h1>Tensors and Tensor Operations</h1>
+
+<p><a data-type="indexterm" data-primary="tensors and tensor operations" id="ix_tensors"/><a data-type="indexterm" data-primary="neural networks" data-secondary="tensors and tensor operations" id="ix_nn_tensors"/>In addition to implementing several imports and configurations, the following Python code shows the four types of tensors relevant for the purposes of this appendix: scalar, vector, matrix, and cube tensors. <a data-type="indexterm" data-primary="ndarray objects, tensors represented as" id="idm45625238076984"/>Tensors are generally represented as potentially multidimensional <code>ndarray</code> objects in Python. For more details and examples, see Chollet (2017, ch. 2):</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">:</code><code> </code><code class="kn">import</code><code> </code><code class="nn">math</code><code>
+</code><code>        </code><code class="kn">import</code><code> </code><code class="nn">numpy</code><code> </code><code class="kn">as</code><code> </code><code class="nn">np</code><code>
+</code><code>        </code><code class="kn">import</code><code> </code><code class="nn">pandas</code><code> </code><code class="kn">as</code><code> </code><code class="nn">pd</code><code>
+</code><code>        </code><code class="kn">from</code><code> </code><code class="nn">pylab</code><code> </code><code class="kn">import</code><code> </code><code class="n">plt</code><code class="p">,</code><code> </code><code class="n">mpl</code><code>
+</code><code>        </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">seed</code><code class="p">(</code><code class="mi">1</code><code class="p">)</code><code>
+</code><code>        </code><code class="n">plt</code><code class="o">.</code><code class="n">style</code><code class="o">.</code><code class="n">use</code><code class="p">(</code><code class="s1">'</code><code class="s1">seaborn</code><code class="s1">'</code><code class="p">)</code><code>
+</code><code>        </code><code class="n">mpl</code><code class="o">.</code><code class="n">rcParams</code><code class="p">[</code><code class="s1">'</code><code class="s1">savefig.dpi</code><code class="s1">'</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">300</code><code>
+</code><code>        </code><code class="n">mpl</code><code class="o">.</code><code class="n">rcParams</code><code class="p">[</code><code class="s1">'</code><code class="s1">font.family</code><code class="s1">'</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="s1">'</code><code class="s1">serif</code><code class="s1">'</code><code>
+</code><code>        </code><code class="n">np</code><code class="o">.</code><code class="n">set_printoptions</code><code class="p">(</code><code class="n">suppress</code><code class="o">=</code><code class="bp">True</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">2</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">array</code><code class="p">(</code><code class="mi">10</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-1" href="#callout_interactive_neural_networks_CO1-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>        </code><code class="n">t0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-2" href="#callout_interactive_neural_networks_CO1-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">2</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="mi">10</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">3</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t1</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">array</code><code class="p">(</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-3" href="#callout_interactive_neural_networks_CO1-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>        </code><code class="n">t1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-4" href="#callout_interactive_neural_networks_CO1-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">3</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="mi">2</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">4</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t2</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">arange</code><code class="p">(</code><code class="mi">10</code><code class="p">)</code><code class="o">.</code><code class="n">reshape</code><code class="p">(</code><code class="mi">5</code><code class="p">,</code><code> </code><code class="mi">2</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-5" href="#callout_interactive_neural_networks_CO1-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>        </code><code class="n">t2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-6" href="#callout_interactive_neural_networks_CO1-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">4</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">2</code><code class="p">,</code><code> </code><code class="mi">3</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">4</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">6</code><code class="p">,</code><code> </code><code class="mi">7</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">8</code><code class="p">,</code><code> </code><code class="mi">9</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">5</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t3</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">arange</code><code class="p">(</code><code class="mi">16</code><code class="p">)</code><code class="o">.</code><code class="n">reshape</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="mi">2</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-7" href="#callout_interactive_neural_networks_CO1-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code>        </code><code class="n">t3</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO1-8" href="#callout_interactive_neural_networks_CO1-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">5</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="p">[</code><code> </code><code class="mi">0</code><code class="p">,</code><code>  </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mi">2</code><code class="p">,</code><code>  </code><code class="mi">3</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mi">4</code><code class="p">,</code><code>  </code><code class="mi">5</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mi">6</code><code class="p">,</code><code>  </code><code class="mi">7</code><code class="p">]</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>
+</code><code>               </code><code class="p">[</code><code class="p">[</code><code> </code><code class="mi">8</code><code class="p">,</code><code>  </code><code class="mi">9</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">10</code><code class="p">,</code><code> </code><code class="mi">11</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">12</code><code class="p">,</code><code> </code><code class="mi">13</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">14</code><code class="p">,</code><code> </code><code class="mi">15</code><code class="p">]</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO1-1" href="#co_interactive_neural_networks_CO1-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Scalar tensor</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO1-2" href="#co_interactive_neural_networks_CO1-3"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Vector tensor</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO1-3" href="#co_interactive_neural_networks_CO1-5"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Matrix tensor</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO1-4" href="#co_interactive_neural_networks_CO1-7"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>Cube tensor</p></dd>
+</dl>
+
+<p>In a neural network context, several mathematical operations on tensors are of importance, such as element-wise operations or the dot product:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">6</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t2</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO2-1" href="#callout_interactive_neural_networks_CO2-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">6</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code> </code><code class="mi">1</code><code class="p">,</code><code>  </code><code class="mi">2</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code> </code><code class="mi">3</code><code class="p">,</code><code>  </code><code class="mi">4</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code> </code><code class="mi">5</code><code class="p">,</code><code>  </code><code class="mi">6</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code> </code><code class="mi">7</code><code class="p">,</code><code>  </code><code class="mi">8</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code> </code><code class="mi">9</code><code class="p">,</code><code> </code><code class="mi">10</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">7</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t2</code><code> </code><code class="o">+</code><code> </code><code class="n">t2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO2-2" href="#callout_interactive_neural_networks_CO2-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">7</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code> </code><code class="mi">0</code><code class="p">,</code><code>  </code><code class="mi">2</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code> </code><code class="mi">4</code><code class="p">,</code><code>  </code><code class="mi">6</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code> </code><code class="mi">8</code><code class="p">,</code><code> </code><code class="mi">10</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">12</code><code class="p">,</code><code> </code><code class="mi">14</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">16</code><code class="p">,</code><code> </code><code class="mi">18</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">8</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t1</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">8</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="mi">2</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">9</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t2</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">9</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">2</code><code class="p">,</code><code> </code><code class="mi">3</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">4</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">6</code><code class="p">,</code><code> </code><code class="mi">7</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>               </code><code class="p">[</code><code class="mi">8</code><code class="p">,</code><code> </code><code class="mi">9</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">10</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">t2</code><code class="p">,</code><code> </code><code class="n">t1</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO2-3" href="#callout_interactive_neural_networks_CO2-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">10</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code> </code><code class="mi">1</code><code class="p">,</code><code>  </code><code class="mi">7</code><code class="p">,</code><code> </code><code class="mi">13</code><code class="p">,</code><code> </code><code class="mi">19</code><code class="p">,</code><code> </code><code class="mi">25</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">11</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">t2</code><code class="p">[</code><code class="p">:</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code> </code><code class="o">*</code><code> </code><code class="mi">2</code><code> </code><code class="o">+</code><code> </code><code class="n">t2</code><code class="p">[</code><code class="p">:</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code> </code><code class="o">*</code><code> </code><code class="mi">1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO2-4" href="#callout_interactive_neural_networks_CO2-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">11</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code> </code><code class="mi">1</code><code class="p">,</code><code>  </code><code class="mi">7</code><code class="p">,</code><code> </code><code class="mi">13</code><code class="p">,</code><code> </code><code class="mi">19</code><code class="p">,</code><code> </code><code class="mi">25</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">12</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">t1</code><code class="p">,</code><code> </code><code class="n">t2</code><code class="o">.</code><code class="n">T</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO2-5" href="#callout_interactive_neural_networks_CO2-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">12</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code> </code><code class="mi">1</code><code class="p">,</code><code>  </code><code class="mi">7</code><code class="p">,</code><code> </code><code class="mi">13</code><code class="p">,</code><code> </code><code class="mi">19</code><code class="p">,</code><code> </code><code class="mi">25</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO2-1" href="#co_interactive_neural_networks_CO2-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Broadcasting operation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO2-2" href="#co_interactive_neural_networks_CO2-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Element-wise operation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO2-3" href="#co_interactive_neural_networks_CO2-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Dot product with <code>NumPy</code> function</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO2-4" href="#co_interactive_neural_networks_CO2-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>Dot product in explicit notation<a data-type="indexterm" data-primary="" data-startref="ix_nn_tensors" id="idm45625245339096"/><a data-type="indexterm" data-primary="" data-startref="ix_tensors" id="idm45625245338120"/></p></dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Simple Neural Networks"><div class="sect1" id="app_inn_sinn">
+<h1>Simple Neural Networks</h1>
+
+<p><a data-type="indexterm" data-primary="simple neural networks" id="ix_simple_nn"/><a data-type="indexterm" data-primary="neural networks" data-secondary="simple" id="ix_nn_simple"/>Equipped with the basics of tensors, consider simple neural networks, which only have an input layer and an output layer.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Estimation"><div class="sect2" id="idm45625238590712">
+<h2>Estimation</h2>
+
+<p><a data-type="indexterm" data-primary="estimation task" data-secondary="neural networks applied to" id="ix_estim_task_simple-nn_app"/>The first problem is an <em>estimation problem</em> for which the labels are real-valued:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">13</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">features</code><code> </code><code class="o">=</code><code> </code><code class="mi">3</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-1" href="#callout_interactive_neural_networks_CO3-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">14</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">samples</code><code> </code><code class="o">=</code><code> </code><code class="mi">5</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-2" href="#callout_interactive_neural_networks_CO3-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">15</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">samples</code><code class="p">,</code><code> </code><code class="n">features</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-3" href="#callout_interactive_neural_networks_CO3-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-4" href="#callout_interactive_neural_networks_CO3-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">15</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.417022</code><code>  </code><code class="p">,</code><code> </code><code class="mf">0.72032449</code><code class="p">,</code><code> </code><code class="mf">0.00011437</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.30233257</code><code class="p">,</code><code> </code><code class="mf">0.14675589</code><code class="p">,</code><code> </code><code class="mf">0.09233859</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.18626021</code><code class="p">,</code><code> </code><code class="mf">0.34556073</code><code class="p">,</code><code> </code><code class="mf">0.39676747</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.53881673</code><code class="p">,</code><code> </code><code class="mf">0.41919451</code><code class="p">,</code><code> </code><code class="mf">0.6852195</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.20445225</code><code class="p">,</code><code> </code><code class="mf">0.87811744</code><code class="p">,</code><code> </code><code class="mf">0.02738759</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">16</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">features</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-5" href="#callout_interactive_neural_networks_CO3-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">w</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-6" href="#callout_interactive_neural_networks_CO3-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">16</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.67046751</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.4173048</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.55868983</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">17</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l2</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code><code> </code><code class="n">w</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-7" href="#callout_interactive_neural_networks_CO3-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-8" href="#callout_interactive_neural_networks_CO3-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">17</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.58025848</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.31553474</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.49075552</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.91901616</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.51882238</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">18</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">y</code><code> </code><code class="o">=</code><code> </code><code class="n">l0</code><code class="p">[</code><code class="p">:</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code> </code><code class="o">*</code><code> </code><code class="mf">0.5</code><code> </code><code class="o">+</code><code> </code><code class="n">l0</code><code class="p">[</code><code class="p">:</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code>   </code><a class="co" id="co_interactive_neural_networks_CO3-9" href="#callout_interactive_neural_networks_CO3-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">y</code><code> </code><code class="o">=</code><code> </code><code class="n">y</code><code class="o">.</code><code class="n">reshape</code><code class="p">(</code><code class="o">-</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-10" href="#callout_interactive_neural_networks_CO3-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO3-11" href="#callout_interactive_neural_networks_CO3-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">18</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.9288355</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.29792218</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.43869083</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.68860288</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.98034356</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO3-1" href="#co_interactive_neural_networks_CO3-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Number of features</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO3-2" href="#co_interactive_neural_networks_CO3-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Number of samples</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO3-3" href="#co_interactive_neural_networks_CO3-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Random input layer</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO3-4" href="#co_interactive_neural_networks_CO3-5"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>Random weights</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO3-5" href="#co_interactive_neural_networks_CO3-7"><img src="Images/5.png" alt="5" width="12" height="12"/></a></dt>
+<dd><p>Output layer via dot product</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO3-6" href="#co_interactive_neural_networks_CO3-9"><img src="Images/6.png" alt="6" width="12" height="12"/></a></dt>
+<dd><p>Labels to be learned</p></dd>
+</dl>
+
+<p>The following Python code goes step by step through a learning episode, from the calculation of the errors to the calculation of the mean-squared error (MSE) after the weights have been updated:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">19</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">e</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-1" href="#callout_interactive_neural_networks_CO4-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">e</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-2" href="#callout_interactive_neural_networks_CO4-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">19</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="o">-</code><code class="mf">0.34857702</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.01761256</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.05206469</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.23041328</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.46152118</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">20</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">mse</code><code> </code><code class="o">=</code><code> </code><code class="p">(</code><code class="n">e</code><code> </code><code class="o">*</code><code class="o">*</code><code> </code><code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">(</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-3" href="#callout_interactive_neural_networks_CO4-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">mse</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-4" href="#callout_interactive_neural_networks_CO4-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">20</code><code class="p">]</code><code class="p">:</code><code> </code><code class="mf">0.07812379019517127</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">21</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">d</code><code> </code><code class="o">=</code><code> </code><code class="n">e</code><code> </code><code class="o">*</code><code> </code><code class="mi">1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-5" href="#callout_interactive_neural_networks_CO4-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">d</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-6" href="#callout_interactive_neural_networks_CO4-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">21</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="o">-</code><code class="mf">0.34857702</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.01761256</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.05206469</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.23041328</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.46152118</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">22</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">a</code><code> </code><code class="o">=</code><code> </code><code class="mf">0.01</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-7" href="#callout_interactive_neural_networks_CO4-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">23</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">u</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">d</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-8" href="#callout_interactive_neural_networks_CO4-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">u</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-9" href="#callout_interactive_neural_networks_CO4-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">23</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="o">-</code><code class="mf">0.0010055</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.00539194</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.00167488</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">24</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-10" href="#callout_interactive_neural_networks_CO4-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">24</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.67046751</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.4173048</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.55868983</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">25</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-11" href="#callout_interactive_neural_networks_CO4-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">26</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-12" href="#callout_interactive_neural_networks_CO4-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">26</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.67147301</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.42269674</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.55701495</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">27</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l2</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code><code> </code><code class="n">w</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-13" href="#callout_interactive_neural_networks_CO4-7"><img src="Images/7.png" alt="7" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">28</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">e</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-14" href="#callout_interactive_neural_networks_CO4-8"><img src="Images/8.png" alt="8" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">29</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">mse</code><code> </code><code class="o">=</code><code> </code><code class="p">(</code><code class="n">e</code><code> </code><code class="o">*</code><code class="o">*</code><code> </code><code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">(</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-15" href="#callout_interactive_neural_networks_CO4-9"><img src="Images/9.png" alt="9" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">mse</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO4-16" href="#callout_interactive_neural_networks_CO4-9"><img src="Images/9.png" alt="9" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">29</code><code class="p">]</code><code class="p">:</code><code> </code><code class="mf">0.07681782193617318</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-1" href="#co_interactive_neural_networks_CO4-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Errors in estimation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-2" href="#co_interactive_neural_networks_CO4-3"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>MSE value given the estimation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-3" href="#co_interactive_neural_networks_CO4-5"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Backward propagation (here <code>d = e</code>)<sup><a data-type="noteref" id="idm45625236964232-marker" href="app01.xhtml#idm45625236964232">1</a></sup></p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-4" href="#co_interactive_neural_networks_CO4-7"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>The learning rate</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-5" href="#co_interactive_neural_networks_CO4-8"><img src="Images/5.png" alt="5" width="12" height="12"/></a></dt>
+<dd><p>The update values</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-6" href="#co_interactive_neural_networks_CO4-10"><img src="Images/6.png" alt="6" width="12" height="12"/></a></dt>
+<dd><p>Weights before and after update</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-7" href="#co_interactive_neural_networks_CO4-13"><img src="Images/7.png" alt="7" width="12" height="12"/></a></dt>
+<dd><p>New output layer (estimation) after update</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-8" href="#co_interactive_neural_networks_CO4-14"><img src="Images/8.png" alt="8" width="12" height="12"/></a></dt>
+<dd><p>New error values after update</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO4-9" href="#co_interactive_neural_networks_CO4-15"><img src="Images/9.png" alt="9" width="12" height="12"/></a></dt>
+<dd><p>New MSE values after update</p></dd>
+</dl>
+
+<p>To improve the estimation, the same procedure needs to be repeated in general a larger number of times. In the following code, the learning rate is increased and the procedure is executed a few hundred times. The final MSE value is quite low and the estimation quite good:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">30</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">a</code><code> </code><code class="o">=</code><code> </code><code class="mf">0.025</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO5-1" href="#callout_interactive_neural_networks_CO5-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">31</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">features</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO5-2" href="#callout_interactive_neural_networks_CO5-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">w</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO5-3" href="#callout_interactive_neural_networks_CO5-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">31</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.14038694</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.19810149</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.80074457</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">32</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">steps</code><code> </code><code class="o">=</code><code> </code><code class="mi">800</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO5-4" href="#callout_interactive_neural_networks_CO5-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">33</code><code class="p">]</code><code class="p">:</code><code> </code><code class="k">for</code><code> </code><code class="n">s</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">steps</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>             </code><code class="n">l2</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code><code> </code><code class="n">w</code><code class="p">)</code><code>
+</code><code>             </code><code class="n">e</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>
+</code><code>             </code><code class="n">u</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">e</code><code class="p">)</code><code>
+</code><code>             </code><code class="n">w</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u</code><code>
+</code><code>             </code><code class="n">mse</code><code> </code><code class="o">=</code><code> </code><code class="p">(</code><code class="n">e</code><code> </code><code class="o">*</code><code class="o">*</code><code> </code><code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">(</code><code class="p">)</code><code>
+</code><code>             </code><code class="k">if</code><code> </code><code class="n">s</code><code> </code><code class="o">%</code><code> </code><code class="mi">50</code><code> </code><code class="o">==</code><code> </code><code class="mi">0</code><code class="p">:</code><code>
+</code><code>                 </code><code class="k">print</code><code class="p">(</code><code class="n">f</code><code class="s1">'</code><code class="s1">step={s:3d} | mse={mse:.5f}</code><code class="s1">'</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code> </code><code class="mi">50</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.03064</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">100</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.01002</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">150</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00390</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">200</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00195</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">250</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00124</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">300</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00092</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">350</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00074</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">400</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00060</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">450</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00050</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">500</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00041</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">550</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00035</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">600</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00029</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">650</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00024</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">700</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00020</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">750</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00017</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">800</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00014</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">34</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO5-5" href="#callout_interactive_neural_networks_CO5-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">34</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="o">-</code><code class="mf">0.01240168</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.01606065</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.01274072</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.00087794</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.01072845</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">35</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO5-6" href="#callout_interactive_neural_networks_CO5-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">35</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.41907514</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.02965827</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.04421136</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO5-1" href="#co_interactive_neural_networks_CO5-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Adjusted learning rate</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO5-2" href="#co_interactive_neural_networks_CO5-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Initial random weights</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO5-3" href="#co_interactive_neural_networks_CO5-4"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Number of learning steps</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO5-4" href="#co_interactive_neural_networks_CO5-5"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>Residual errors of the estimation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO5-5" href="#co_interactive_neural_networks_CO5-6"><img src="Images/5.png" alt="5" width="12" height="12"/></a></dt>
+<dd><p>Final weights of the network<a data-type="indexterm" data-primary="" data-startref="ix_estim_task_simple-nn_app" id="idm45625236724280"/></p></dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Classification"><div class="sect2" id="idm45625236796248">
+<h2>Classification</h2>
+
+<p><a data-type="indexterm" data-primary="classification task" data-secondary="neural networks applied to" id="ix_classif_simple-nn_app"/>The second problem is a <em>classification problem</em> for which the labels are binary and integer-valued. <a data-type="indexterm" data-primary="sigmoid activation function" id="idm45625236720568"/>To improve the performance of the learning algorithm, a <em>sigmoid function</em> is used for activation (of the output layer). <a data-type="xref" href="#figure_inn_01">Figure A-1</a> shows the sigmoid function with its first derivative and compares it to a simple step function:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code> <code class="p">[</code><code class="mi">36</code><code class="p">]:</code> <code class="k">def</code> <code class="nf">sigmoid</code><code class="p">(</code><code class="n">x</code><code class="p">,</code> <code class="n">deriv</code><code class="o">=</code><code class="bp">False</code><code class="p">):</code>
+             <code class="k">if</code> <code class="n">deriv</code><code class="p">:</code>
+                 <code class="k">return</code> <code class="n">sigmoid</code><code class="p">(</code><code class="n">x</code><code class="p">)</code> <code class="o">*</code> <code class="p">(</code><code class="mi">1</code> <code class="o">-</code> <code class="n">sigmoid</code><code class="p">(</code><code class="n">x</code><code class="p">))</code>
+             <code class="k">return</code> <code class="mi">1</code> <code class="o">/</code> <code class="p">(</code><code class="mi">1</code> <code class="o">+</code> <code class="n">np</code><code class="o">.</code><code class="n">exp</code><code class="p">(</code><code class="o">-</code><code class="n">x</code><code class="p">))</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">37</code><code class="p">]:</code> <code class="n">x</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">linspace</code><code class="p">(</code><code class="o">-</code><code class="mi">10</code><code class="p">,</code> <code class="mi">10</code><code class="p">,</code> <code class="mi">100</code><code class="p">)</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">38</code><code class="p">]:</code> <code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">10</code><code class="p">,</code> <code class="mi">6</code><code class="p">))</code>
+         <code class="n">plt</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">x</code><code class="p">,</code> <code class="n">np</code><code class="o">.</code><code class="n">where</code><code class="p">(</code><code class="n">x</code> <code class="o">&gt;</code> <code class="mi">0</code><code class="p">,</code> <code class="mi">1</code><code class="p">,</code> <code class="mi">0</code><code class="p">),</code> <code class="s1">'y--'</code><code class="p">,</code> <code class="n">label</code><code class="o">=</code><code class="s1">'step function'</code><code class="p">)</code>
+         <code class="n">plt</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">x</code><code class="p">,</code> <code class="n">sigmoid</code><code class="p">(</code><code class="n">x</code><code class="p">),</code> <code class="s1">'r'</code><code class="p">,</code> <code class="n">label</code><code class="o">=</code><code class="s1">'sigmoid'</code><code class="p">)</code>
+         <code class="n">plt</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">x</code><code class="p">,</code> <code class="n">sigmoid</code><code class="p">(</code><code class="n">x</code><code class="p">,</code> <code class="bp">True</code><code class="p">),</code> <code class="s1">'--'</code><code class="p">,</code> <code class="n">label</code><code class="o">=</code><code class="s1">'derivative'</code><code class="p">)</code>
+         <code class="n">plt</code><code class="o">.</code><code class="n">legend</code><code class="p">();</code></pre>
+
+<figure class="thumb"><div id="figure_inn_01" class="figure">
+<img src="Images/aiif_1601.png" alt="aiif 1601" width="2472" height="1554"/>
+<h6><span class="label">Figure A-1. </span>Step function, sigmoid function, and its first derivative</h6>
+</div></figure>
+
+<p>To keep things simple, the classification problem is based on random binary features and binary labels data. Apart from the different features and labels data, only the activation for the output layer is different from the estimation problem. The learning algorithm for the updating of the neural networks’ weights is basically the same:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">39</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">features</code><code> </code><code class="o">=</code><code> </code><code class="mi">4</code><code>
+</code><code>         </code><code class="n">samples</code><code> </code><code class="o">=</code><code> </code><code class="mi">5</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">40</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">randint</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="p">(</code><code class="n">samples</code><code class="p">,</code><code> </code><code class="n">features</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-1" href="#callout_interactive_neural_networks_CO6-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-2" href="#callout_interactive_neural_networks_CO6-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">40</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">41</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">features</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">w</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">41</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.42110763</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.95788953</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.53316528</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.69187711</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">42</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l2</code><code> </code><code class="o">=</code><code> </code><code class="n">sigmoid</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code><code> </code><code class="n">w</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-3" href="#callout_interactive_neural_networks_CO6-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l2</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">42</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.93112111</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.81623654</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.72269905</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.87126189</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.75268514</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">43</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l2</code><code class="o">.</code><code class="n">round</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">43</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">1.</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">44</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">y</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">randint</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">samples</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-4" href="#callout_interactive_neural_networks_CO6-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">y</code><code> </code><code class="o">=</code><code> </code><code class="n">y</code><code class="o">.</code><code class="n">reshape</code><code class="p">(</code><code class="o">-</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-5" href="#callout_interactive_neural_networks_CO6-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-6" href="#callout_interactive_neural_networks_CO6-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">44</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">45</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">e</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>
+</code><code>         </code><code class="n">e</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">45</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="o">-</code><code class="mf">0.06887889</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.18376346</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.72269905</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.87126189</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.75268514</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">46</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">mse</code><code> </code><code class="o">=</code><code> </code><code class="p">(</code><code class="n">e</code><code> </code><code class="o">*</code><code class="o">*</code><code> </code><code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">(</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">mse</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">46</code><code class="p">]</code><code class="p">:</code><code> </code><code class="mf">0.37728788783411127</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">47</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">a</code><code> </code><code class="o">=</code><code> </code><code class="mf">0.02</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">48</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">d</code><code> </code><code class="o">=</code><code> </code><code class="n">e</code><code> </code><code class="o">*</code><code> </code><code class="n">sigmoid</code><code class="p">(</code><code class="n">l2</code><code class="p">,</code><code> </code><code class="bp">True</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO6-7" href="#callout_interactive_neural_networks_CO6-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">d</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">48</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="o">-</code><code class="mf">0.01396723</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.03906484</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.15899479</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.18119776</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.16384833</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">49</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">u</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">d</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">u</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">49</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.00662158</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.00574321</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.00256331</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.00299762</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">50</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">50</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.42110763</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.95788953</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.53316528</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.69187711</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">51</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">52</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">52</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.41448605</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.95214632</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.53060197</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.68887949</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO6-1" href="#co_interactive_neural_networks_CO6-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Input layer with binary features</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO6-2" href="#co_interactive_neural_networks_CO6-3"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Sigmoid activated output layer</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO6-3" href="#co_interactive_neural_networks_CO6-4"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Binary labels data</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO6-4" href="#co_interactive_neural_networks_CO6-7"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>Backward propagation via the first derivative</p></dd>
+</dl>
+
+<p>As before, a loop with a larger number of iterations for the learning step is required to get to accurate classification results. Depending on the random numbers drawn, an accuracy of 100% is possible, as in the following example:<a data-type="indexterm" data-primary="" data-startref="ix_nn_simple" id="idm45625235852472"/><a data-type="indexterm" data-primary="" data-startref="ix_simple_nn" id="idm45625235851608"/><a data-type="indexterm" data-primary="" data-startref="ix_classif_simple-nn_app" id="idm45625235966936"/></p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code> <code class="p">[</code><code class="mi">53</code><code class="p">]:</code> <code class="n">steps</code> <code class="o">=</code> <code class="mi">3001</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">54</code><code class="p">]:</code> <code class="n">a</code> <code class="o">=</code> <code class="mf">0.025</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">55</code><code class="p">]:</code> <code class="n">w</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">((</code><code class="n">features</code><code class="p">,</code> <code class="mi">1</code><code class="p">))</code>
+         <code class="n">w</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">55</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code><code class="mf">0.41253884</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.03417131</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.62402999</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.66063573</code><code class="p">]])</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">56</code><code class="p">]:</code> <code class="k">for</code> <code class="n">s</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">1</code><code class="p">,</code> <code class="n">steps</code> <code class="o">+</code> <code class="mi">1</code><code class="p">):</code>
+             <code class="n">l2</code> <code class="o">=</code> <code class="n">sigmoid</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code> <code class="n">w</code><code class="p">))</code>
+             <code class="n">e</code> <code class="o">=</code> <code class="n">l2</code> <code class="o">-</code> <code class="n">y</code>
+             <code class="n">d</code> <code class="o">=</code> <code class="n">e</code> <code class="o">*</code> <code class="n">sigmoid</code><code class="p">(</code><code class="n">l2</code><code class="p">,</code> <code class="bp">True</code><code class="p">)</code>
+             <code class="n">u</code> <code class="o">=</code> <code class="n">a</code> <code class="o">*</code> <code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code> <code class="n">d</code><code class="p">)</code>
+             <code class="n">w</code> <code class="o">-=</code> <code class="n">u</code>
+             <code class="n">mse</code> <code class="o">=</code> <code class="p">(</code><code class="n">e</code> <code class="o">**</code> <code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code>
+             <code class="k">if</code> <code class="n">s</code> <code class="o">%</code> <code class="mi">200</code> <code class="o">==</code> <code class="mi">0</code><code class="p">:</code>
+                 <code class="k">print</code><code class="p">(</code><code class="n">f</code><code class="s1">'step={s:4d} | mse={mse:.4f}'</code><code class="p">)</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">200</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.1899</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">400</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.1572</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">600</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.1349</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">800</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.1173</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">1000</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.1029</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">1200</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0908</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">1400</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0806</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">1600</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0720</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">1800</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0646</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">2000</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0583</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">2200</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0529</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">2400</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0482</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">2600</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0441</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">2800</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0405</code>
+         <code class="n">step</code><code class="o">=</code><code class="mi">3000</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.0373</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">57</code><code class="p">]:</code> <code class="n">l2</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">57</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code><code class="mf">0.71220474</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.92308745</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.16614971</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.20193503</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.17094583</code><code class="p">]])</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">58</code><code class="p">]:</code> <code class="n">l2</code><code class="o">.</code><code class="n">round</code><code class="p">()</code> <code class="o">==</code> <code class="n">y</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">58</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code> <code class="bp">True</code><code class="p">],</code>
+                <code class="p">[</code> <code class="bp">True</code><code class="p">],</code>
+                <code class="p">[</code> <code class="bp">True</code><code class="p">],</code>
+                <code class="p">[</code> <code class="bp">True</code><code class="p">],</code>
+                <code class="p">[</code> <code class="bp">True</code><code class="p">]])</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">59</code><code class="p">]:</code> <code class="n">w</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">59</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code><code class="o">-</code><code class="mf">3.86002022</code><code class="p">],</code>
+                <code class="p">[</code><code class="o">-</code><code class="mf">1.61346536</code><code class="p">],</code>
+                <code class="p">[</code> <code class="mf">4.09895004</code><code class="p">],</code>
+                <code class="p">[</code> <code class="mf">2.28088807</code><code class="p">]])</code></pre>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Shallow Neural Networks"><div class="sect1" id="app_inn_shnn">
+<h1>Shallow Neural Networks</h1>
+
+<p><a data-type="indexterm" data-primary="shallow neural networks" id="ix_shallow_nn"/><a data-type="indexterm" data-primary="neural networks" data-secondary="shallow" id="ix_nn_shallow"/>The neural network of the previous section consists only of an input layer and an output layer. In other words, input and output layers are directly connected. A <em>shallow neural network</em> has one hidden layer that is between the input and output layer. Given this structure, two sets of weights are required to connect the total of three layers in the neural network. This section analyzes shallow neural networks for estimation and classification.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Estimation"><div class="sect2" id="idm45625235254248">
+<h2>Estimation</h2>
+
+<p><a data-type="indexterm" data-primary="estimation task" data-secondary="neural networks applied to" id="ix_estim_task_shallownn_app"/>As in the previous section, let’s take the estimation problem first. The following Python code builds the neural network with the three layers and the two sets of weights. <a data-type="indexterm" data-primary="forward propagation, shallow neural network estimation" id="idm45625235010520"/>This first sequence of steps is usually called <em>forward propagation</em>. The input layer matrix in this context is in general of full rank, indicating that a perfect estimation result is possible:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">60</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">features</code><code> </code><code class="o">=</code><code> </code><code class="mi">5</code><code>
+</code><code>         </code><code class="n">samples</code><code> </code><code class="o">=</code><code> </code><code class="mi">5</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">61</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">samples</code><code class="p">,</code><code> </code><code class="n">features</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-1" href="#callout_interactive_neural_networks_CO7-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-2" href="#callout_interactive_neural_networks_CO7-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">61</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.29849529</code><code class="p">,</code><code> </code><code class="mf">0.44613451</code><code class="p">,</code><code> </code><code class="mf">0.22212455</code><code class="p">,</code><code> </code><code class="mf">0.07336417</code><code class="p">,</code><code> </code><code class="mf">0.46923853</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.09617226</code><code class="p">,</code><code> </code><code class="mf">0.90337017</code><code class="p">,</code><code> </code><code class="mf">0.11949047</code><code class="p">,</code><code> </code><code class="mf">0.52479938</code><code class="p">,</code><code> </code><code class="mf">0.083623</code><code>  </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.91686133</code><code class="p">,</code><code> </code><code class="mf">0.91044838</code><code class="p">,</code><code> </code><code class="mf">0.29893011</code><code class="p">,</code><code> </code><code class="mf">0.58438912</code><code class="p">,</code><code> </code><code class="mf">0.56591203</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.61393832</code><code class="p">,</code><code> </code><code class="mf">0.95653566</code><code class="p">,</code><code> </code><code class="mf">0.26097898</code><code class="p">,</code><code> </code><code class="mf">0.23101542</code><code class="p">,</code><code> </code><code class="mf">0.53344849</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.94993814</code><code class="p">,</code><code> </code><code class="mf">0.49305959</code><code class="p">,</code><code> </code><code class="mf">0.54060051</code><code class="p">,</code><code> </code><code class="mf">0.7654851</code><code> </code><code class="p">,</code><code> </code><code class="mf">0.04534573</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">62</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">linalg</code><code class="o">.</code><code class="n">matrix_rank</code><code class="p">(</code><code class="n">l0</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-3" href="#callout_interactive_neural_networks_CO7-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">62</code><code class="p">]</code><code class="p">:</code><code> </code><code class="mi">5</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">63</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">units</code><code> </code><code class="o">=</code><code> </code><code class="mi">3</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-4" href="#callout_interactive_neural_networks_CO7-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">64</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">features</code><code class="p">,</code><code> </code><code class="n">units</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-5" href="#callout_interactive_neural_networks_CO7-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">w0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-6" href="#callout_interactive_neural_networks_CO7-4"><img src="Images/4.png" alt="4" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">64</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.13996612</code><code class="p">,</code><code> </code><code class="mf">0.79240359</code><code class="p">,</code><code> </code><code class="mf">0.02980136</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.88312548</code><code class="p">,</code><code> </code><code class="mf">0.54078819</code><code class="p">,</code><code> </code><code class="mf">0.44798018</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.89213587</code><code class="p">,</code><code> </code><code class="mf">0.37758434</code><code class="p">,</code><code> </code><code class="mf">0.53842469</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.65229888</code><code class="p">,</code><code> </code><code class="mf">0.36126102</code><code class="p">,</code><code> </code><code class="mf">0.57100856</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.63783648</code><code class="p">,</code><code> </code><code class="mf">0.12631489</code><code class="p">,</code><code> </code><code class="mf">0.69020459</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">65</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l1</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code><code> </code><code class="n">w0</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-7" href="#callout_interactive_neural_networks_CO7-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-8" href="#callout_interactive_neural_networks_CO7-5"><img src="Images/5.png" alt="5" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">65</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.98109007</code><code class="p">,</code><code> </code><code class="mf">0.64743919</code><code class="p">,</code><code> </code><code class="mf">0.69411448</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.31351565</code><code class="p">,</code><code> </code><code class="mf">0.81000928</code><code class="p">,</code><code> </code><code class="mf">0.82927653</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.94121167</code><code class="p">,</code><code> </code><code class="mf">1.61435539</code><code class="p">,</code><code> </code><code class="mf">1.32042417</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.65444429</code><code class="p">,</code><code> </code><code class="mf">1.25315104</code><code class="p">,</code><code> </code><code class="mf">1.08742312</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.57892999</code><code class="p">,</code><code> </code><code class="mf">1.50576525</code><code class="p">,</code><code> </code><code class="mf">1.00865941</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">66</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w1</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">units</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-9" href="#callout_interactive_neural_networks_CO7-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">w1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-10" href="#callout_interactive_neural_networks_CO7-6"><img src="Images/6.png" alt="6" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">66</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.6477494</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.35393909</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.76323305</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">67</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l2</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l1</code><code class="p">,</code><code> </code><code class="n">w1</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-11" href="#callout_interactive_neural_networks_CO7-7"><img src="Images/7.png" alt="7" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">l2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-12" href="#callout_interactive_neural_networks_CO7-7"><img src="Images/7.png" alt="7" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">67</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">1.39442565</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.77045418</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">2.83659354</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">2.3451617</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">2.32554234</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">68</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">y</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">samples</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-13" href="#callout_interactive_neural_networks_CO7-8"><img src="Images/8.png" alt="8" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO7-14" href="#callout_interactive_neural_networks_CO7-8"><img src="Images/8.png" alt="8" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">68</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.35653172</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.75278835</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.88134183</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.01166919</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.49810907</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-1" href="#co_interactive_neural_networks_CO7-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>The random input layer</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-2" href="#co_interactive_neural_networks_CO7-3"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>The rank of the input layer matrix</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-3" href="#co_interactive_neural_networks_CO7-4"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>The number of hidden units</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-4" href="#co_interactive_neural_networks_CO7-5"><img src="Images/4.png" alt="4" width="12" height="12"/></a></dt>
+<dd><p>The first set of random weights, given the <code>features</code> and <code>units</code> parameters</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-5" href="#co_interactive_neural_networks_CO7-7"><img src="Images/5.png" alt="5" width="12" height="12"/></a></dt>
+<dd><p>The hidden layer, given the input layer and the weights</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-6" href="#co_interactive_neural_networks_CO7-9"><img src="Images/6.png" alt="6" width="12" height="12"/></a></dt>
+<dd><p>The second set of random weights</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-7" href="#co_interactive_neural_networks_CO7-11"><img src="Images/7.png" alt="7" width="12" height="12"/></a></dt>
+<dd><p>The output layer, given the hidden layer and the weights</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO7-8" href="#co_interactive_neural_networks_CO7-13"><img src="Images/8.png" alt="8" width="12" height="12"/></a></dt>
+<dd><p>The random labels data</p></dd>
+</dl>
+
+<p><a data-type="indexterm" data-primary="backward propagation, shallow neural network estimation" id="ix_backward_propag"/>The second sequence of steps is usually called <em>backward propagation</em>—with respect to the estimation errors. The two sets of weights are updated, starting at the output layer and updating the set of weights <code>w1</code> between the hidden layer and the output layer. Afterwards, taking the updated weights <code>w1</code> into account, the set of weights <code>w0</code> between the input layer and the hidden layer is updated:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">69</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">e2</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-1" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">e2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-2" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">69</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">1.03789393</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.01766583</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.95525171</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">2.33349251</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.82743327</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">70</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">mse</code><code> </code><code class="o">=</code><code> </code><code class="p">(</code><code class="n">e2</code><code> </code><code class="o">*</code><code class="o">*</code><code> </code><code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">(</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">mse</code><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">70</code><code class="p">]</code><code class="p">:</code><code> </code><code class="mf">2.9441152813655007</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">71</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">d2</code><code> </code><code class="o">=</code><code> </code><code class="n">e2</code><code> </code><code class="o">*</code><code> </code><code class="mi">1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-3" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">d2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-4" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">71</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">1.03789393</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.01766583</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.95525171</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">2.33349251</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">1.82743327</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">72</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">a</code><code> </code><code class="o">=</code><code> </code><code class="mf">0.05</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">73</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">u2</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l1</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">d2</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-5" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">u2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-6" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">73</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.64482837</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.51643336</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.42634283</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">74</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-7" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">74</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mf">0.6477494</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.35393909</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mf">0.76323305</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">75</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w1</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-8" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">76</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-9" href="#callout_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">76</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code> </code><code class="mf">0.00292103</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="o">-</code><code class="mf">0.16249427</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.33689022</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">77</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">e1</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">d2</code><code class="p">,</code><code> </code><code class="n">w1</code><code class="o">.</code><code class="n">T</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-10" href="#callout_interactive_neural_networks_CO8-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">78</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">d1</code><code> </code><code class="o">=</code><code> </code><code class="n">e1</code><code> </code><code class="o">*</code><code> </code><code class="mi">1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-11" href="#callout_interactive_neural_networks_CO8-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">79</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">u1</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">d1</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-12" href="#callout_interactive_neural_networks_CO8-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">80</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w0</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-13" href="#callout_interactive_neural_networks_CO8-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">81</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">w0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO8-14" href="#callout_interactive_neural_networks_CO8-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">81</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code> </code><code class="mf">0.13918198</code><code class="p">,</code><code>  </code><code class="mf">0.8360247</code><code> </code><code class="p">,</code><code> </code><code class="o">-</code><code class="mf">0.06063583</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.88220599</code><code class="p">,</code><code>  </code><code class="mf">0.59193836</code><code class="p">,</code><code>  </code><code class="mf">0.34193342</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.89176585</code><code class="p">,</code><code>  </code><code class="mf">0.39816855</code><code class="p">,</code><code>  </code><code class="mf">0.49574861</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.65175984</code><code class="p">,</code><code>  </code><code class="mf">0.39124762</code><code class="p">,</code><code>  </code><code class="mf">0.50883904</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="mf">0.63739741</code><code class="p">,</code><code>  </code><code class="mf">0.15074009</code><code class="p">,</code><code>  </code><code class="mf">0.63956519</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO8-1" href="#co_interactive_neural_networks_CO8-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Update procedure for the set of weights <code>w1</code></p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO8-2" href="#co_interactive_neural_networks_CO8-10"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Update procedure for the set of weights <code>w0</code></p></dd>
+</dl>
+
+<p>The following Python code implements the learning (that is, the updating of the network weights) as a <code>for</code> loop with a larger number of iterations. By increasing the number of iterations, the estimation results can be made arbitrarily precise:<a data-type="indexterm" data-primary="" data-startref="ix_estim_task_shallownn_app" id="idm45625233881448"/><a data-type="indexterm" data-primary="" data-startref="ix_backward_propag" id="idm45625233880504"/></p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code> <code class="p">[</code><code class="mi">82</code><code class="p">]:</code> <code class="n">a</code> <code class="o">=</code> <code class="mf">0.015</code>
+         <code class="n">steps</code> <code class="o">=</code> <code class="mi">5000</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">83</code><code class="p">]:</code> <code class="k">for</code> <code class="n">s</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">1</code><code class="p">,</code> <code class="n">steps</code> <code class="o">+</code> <code class="mi">1</code><code class="p">):</code>
+             <code class="n">l1</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code> <code class="n">w0</code><code class="p">)</code>
+             <code class="n">l2</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l1</code><code class="p">,</code> <code class="n">w1</code><code class="p">)</code>
+             <code class="n">e2</code> <code class="o">=</code> <code class="n">l2</code> <code class="o">-</code> <code class="n">y</code>
+             <code class="n">u2</code> <code class="o">=</code> <code class="n">a</code> <code class="o">*</code> <code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l1</code><code class="o">.</code><code class="n">T</code><code class="p">,</code> <code class="n">e2</code><code class="p">)</code>
+             <code class="n">w1</code> <code class="o">-=</code> <code class="n">u2</code>
+             <code class="n">e1</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">e2</code><code class="p">,</code> <code class="n">w1</code><code class="o">.</code><code class="n">T</code><code class="p">)</code>
+             <code class="n">u1</code> <code class="o">=</code> <code class="n">a</code> <code class="o">*</code> <code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code> <code class="n">e1</code><code class="p">)</code>
+             <code class="n">w0</code> <code class="o">-=</code> <code class="n">u1</code>
+             <code class="n">mse</code> <code class="o">=</code> <code class="p">(</code><code class="n">e2</code> <code class="o">**</code> <code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code>
+             <code class="k">if</code> <code class="n">s</code> <code class="o">%</code> <code class="mi">750</code> <code class="o">==</code> <code class="mi">0</code><code class="p">:</code>
+                 <code class="k">print</code><code class="p">(</code><code class="n">f</code><code class="s1">'step={s:5d} | mse={mse:.6f}'</code><code class="p">)</code>
+         <code class="n">step</code><code class="o">=</code>  <code class="mi">750</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.039263</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">1500</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.009867</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">2250</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.000666</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">3000</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.000027</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">3750</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.000001</code>
+         <code class="n">step</code><code class="o">=</code> <code class="mi">4500</code> <code class="o">|</code> <code class="n">mse</code><code class="o">=</code><code class="mf">0.000000</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">84</code><code class="p">]:</code> <code class="n">l2</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">84</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code><code class="mf">0.35634333</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.75275415</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.88135507</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.01179945</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.49809208</code><code class="p">]])</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">85</code><code class="p">]:</code> <code class="n">y</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">85</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code><code class="mf">0.35653172</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.75278835</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.88134183</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.01166919</code><code class="p">],</code>
+                <code class="p">[</code><code class="mf">0.49810907</code><code class="p">]])</code>
+
+<code class="n">In</code> <code class="p">[</code><code class="mi">86</code><code class="p">]:</code> <code class="p">(</code><code class="n">l2</code> <code class="o">-</code> <code class="n">y</code><code class="p">)</code>
+<code class="n">Out</code><code class="p">[</code><code class="mi">86</code><code class="p">]:</code> <code class="n">array</code><code class="p">([[</code><code class="o">-</code><code class="mf">0.00018839</code><code class="p">],</code>
+                <code class="p">[</code><code class="o">-</code><code class="mf">0.00003421</code><code class="p">],</code>
+                <code class="p">[</code> <code class="mf">0.00001324</code><code class="p">],</code>
+                <code class="p">[</code> <code class="mf">0.00013025</code><code class="p">],</code>
+                <code class="p">[</code><code class="o">-</code><code class="mf">0.00001699</code><code class="p">]])</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Classification"><div class="sect2" id="idm45625233909880">
+<h2>Classification</h2>
+
+<p><a data-type="indexterm" data-primary="classification task" data-secondary="neural networks applied to" id="ix_classif_shallow_nn_app"/>Next is the classification problem. The implementation in this context is pretty close to the estimation problem. <a data-type="indexterm" data-primary="sigmoid activation function" id="idm45625233907160"/>However, the sigmoid function is used again for activation. The following Python code generates the random sample data first:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">87</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">features</code><code> </code><code class="o">=</code><code> </code><code class="mi">5</code><code>
+</code><code>         </code><code class="n">samples</code><code> </code><code class="o">=</code><code> </code><code class="mi">10</code><code>
+</code><code>         </code><code class="n">units</code><code> </code><code class="o">=</code><code> </code><code class="mi">10</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">88</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">seed</code><code class="p">(</code><code class="mi">200</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">l0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">randint</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="p">(</code><code class="n">samples</code><code class="p">,</code><code> </code><code class="n">features</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO9-1" href="#callout_interactive_neural_networks_CO9-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">w0</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">features</code><code class="p">,</code><code> </code><code class="n">units</code><code class="p">)</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">w1</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">random</code><code class="p">(</code><code class="p">(</code><code class="n">units</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">y</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">random</code><code class="o">.</code><code class="n">randint</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="p">(</code><code class="n">samples</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO9-2" href="#callout_interactive_neural_networks_CO9-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">89</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">l0</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO9-3" href="#callout_interactive_neural_networks_CO9-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">89</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">90</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO9-4" href="#callout_interactive_neural_networks_CO9-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">90</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO9-1" href="#co_interactive_neural_networks_CO9-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Binary features data (input layer)</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO9-2" href="#co_interactive_neural_networks_CO9-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Binary labels data</p></dd>
+</dl>
+
+<p>The implementation of the learning algorithm again makes use of a <code>for</code> loop to repeat the weights-updating step as often as necessary. Depending on the random numbers generated for the features and labels data, an accuracy of 100% can be achieved after enough learning steps:</p>
+
+<pre data-type="programlisting" data-code-language="python"><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">91</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">a</code><code> </code><code class="o">=</code><code> </code><code class="mf">0.1</code><code>
+</code><code>         </code><code class="n">steps</code><code> </code><code class="o">=</code><code> </code><code class="mi">20000</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">92</code><code class="p">]</code><code class="p">:</code><code> </code><code class="k">for</code><code> </code><code class="n">s</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">steps</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>             </code><code class="n">l1</code><code> </code><code class="o">=</code><code> </code><code class="n">sigmoid</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="p">,</code><code> </code><code class="n">w0</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-1" href="#callout_interactive_neural_networks_CO10-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">l2</code><code> </code><code class="o">=</code><code> </code><code class="n">sigmoid</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l1</code><code class="p">,</code><code> </code><code class="n">w1</code><code class="p">)</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-2" href="#callout_interactive_neural_networks_CO10-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">e2</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code> </code><code class="o">-</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-3" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">d2</code><code> </code><code class="o">=</code><code> </code><code class="n">e2</code><code> </code><code class="o">*</code><code> </code><code class="n">sigmoid</code><code class="p">(</code><code class="n">l2</code><code class="p">,</code><code> </code><code class="bp">True</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-4" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">u2</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l1</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">d2</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-5" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">w1</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u2</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-6" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">e1</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">d2</code><code class="p">,</code><code> </code><code class="n">w1</code><code class="o">.</code><code class="n">T</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-7" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">d1</code><code> </code><code class="o">=</code><code> </code><code class="n">e1</code><code> </code><code class="o">*</code><code> </code><code class="n">sigmoid</code><code class="p">(</code><code class="n">l1</code><code class="p">,</code><code> </code><code class="bp">True</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-8" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">u1</code><code> </code><code class="o">=</code><code> </code><code class="n">a</code><code> </code><code class="o">*</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">l0</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code> </code><code class="n">d1</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-9" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">w0</code><code> </code><code class="o">-</code><code class="o">=</code><code> </code><code class="n">u1</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-10" href="#callout_interactive_neural_networks_CO10-2"><img src="Images/2.png" alt="2" width="12" height="12"/></a><code>
+</code><code>             </code><code class="n">mse</code><code> </code><code class="o">=</code><code> </code><code class="p">(</code><code class="n">e2</code><code> </code><code class="o">*</code><code class="o">*</code><code> </code><code class="mi">2</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">(</code><code class="p">)</code><code>
+</code><code>             </code><code class="k">if</code><code> </code><code class="n">s</code><code> </code><code class="o">%</code><code> </code><code class="mi">2000</code><code> </code><code class="o">==</code><code> </code><code class="mi">0</code><code class="p">:</code><code>
+</code><code>                 </code><code class="k">print</code><code class="p">(</code><code class="n">f</code><code class="s1">'</code><code class="s1">step={s:5d} | mse={mse:.5f}</code><code class="s1">'</code><code class="p">)</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code> </code><code class="mi">2000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00933</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code> </code><code class="mi">4000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.02399</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code> </code><code class="mi">6000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.05134</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code> </code><code class="mi">8000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00064</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">10000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00013</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">12000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00009</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">14000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00007</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">16000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00007</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">18000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00012</code><code>
+</code><code>         </code><code class="n">step</code><code class="o">=</code><code class="mi">20000</code><code> </code><code class="o">|</code><code> </code><code class="n">mse</code><code class="o">=</code><code class="mf">0.00015</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">93</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">acc</code><code> </code><code class="o">=</code><code> </code><code class="n">l2</code><code class="o">.</code><code class="n">round</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">==</code><code> </code><code class="n">y</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-11" href="#callout_interactive_neural_networks_CO10-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code>         </code><code class="n">acc</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-12" href="#callout_interactive_neural_networks_CO10-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">93</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">,</code><code>
+</code><code>                </code><code class="p">[</code><code> </code><code class="bp">True</code><code class="p">]</code><code class="p">]</code><code class="p">)</code><code>
+</code><code>
+</code><code class="n">In</code><code> </code><code class="p">[</code><code class="mi">94</code><code class="p">]</code><code class="p">:</code><code> </code><code class="nb">sum</code><code class="p">(</code><code class="n">acc</code><code class="p">)</code><code> </code><code class="o">/</code><code> </code><code class="nb">len</code><code class="p">(</code><code class="n">acc</code><code class="p">)</code><code>  </code><a class="co" id="co_interactive_neural_networks_CO10-13" href="#callout_interactive_neural_networks_CO10-3"><img src="Images/3.png" alt="3" width="12" height="12"/></a><code>
+</code><code class="n">Out</code><code class="p">[</code><code class="mi">94</code><code class="p">]</code><code class="p">:</code><code> </code><code class="n">array</code><code class="p">(</code><code class="p">[</code><code class="mf">1.</code><code class="p">]</code><code class="p">)</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_interactive_neural_networks_CO10-1" href="#co_interactive_neural_networks_CO10-1"><img src="Images/1.png" alt="1" width="12" height="12"/></a></dt>
+<dd><p>Forward propagation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO10-2" href="#co_interactive_neural_networks_CO10-3"><img src="Images/2.png" alt="2" width="12" height="12"/></a></dt>
+<dd><p>Backward propagation</p></dd>
+<dt><a class="co" id="callout_interactive_neural_networks_CO10-3" href="#co_interactive_neural_networks_CO10-11"><img src="Images/3.png" alt="3" width="12" height="12"/></a></dt>
+<dd><p>Accuracy of the classification<a data-type="indexterm" data-primary="" data-startref="ix_nn_shallow" id="idm45625232625496"/><a data-type="indexterm" data-primary="" data-startref="ix_shallow_nn" id="idm45625232624520"/><a data-type="indexterm" data-primary="" data-startref="ix_classif_shallow_nn_app" id="idm45625232623576"/></p></dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="References"><div class="sect1" id="idm45625232622440">
+<h1>References</h1>
+
+<p>Books cited in this appendix:</p>
+
+<ul class="author-date-bib">
+<li>
+<p>Chollet, Francois. 2017. <em>Deep Learning with Python</em>. Shelter Island: Manning.</p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm45625236964232"><sup><a href="app01.xhtml#idm45625236964232-marker">1</a></sup> Since there is no hidden layer, backward propagation does take place with a factor of 1 as the value of the derivative. Output and input layers are directly connected.</p></div></div></section></div>
+
+
+
+  </body></html>

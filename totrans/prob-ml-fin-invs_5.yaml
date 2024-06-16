@@ -1,42 +1,57 @@
 - en: Chapter 5\. The Probabilistic Machine Learning Framework
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第五章。概率机器学习框架
 - en: Probability theory is nothing but common sense reduced to calculation.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 概率论不过是普通常识化为计算而已。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: —Pierre-Simon Laplace, chief contributor to epistemic statistics and probabilistic
     inference
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: —皮埃尔-西蒙·拉普拉斯，认知统计学和概率推理的主要贡献者
 - en: 'Recall the inverse probability rule from [Chapter 2](ch02.html#analyzing_and_quantifying_uncertainty),
     which states that given a hypothesis H about a model parameter and some observed
     dataset D:'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 回顾来自[第二章](ch02.html#analyzing_and_quantifying_uncertainty)的逆概率规则，该规则指出，给定关于模型参数的假设H和一些观察到的数据集D：
 - en: P(H|D) = P(D|H) × P(H) / P(D)
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: P(H|D) = P(D|H) × P(H) / P(D)
 - en: It is simply amazing that this trivial reformulation of the product rule is
     the foundation on which the complex structures of epistemic inference in general,
     and probabilistic machine learning (PML) in particular, are built. It is the fundamental
     reason why both these structures are mathematically sound and logically cohesive.
     On closer examination, we will see that the inverse probability rule combines
     conditional and unconditional probabilities in profound ways.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅仅是这个乘法规则的微不足道的改写就是一般认知推理和概率机器学习（PML）复杂结构建立的基础，这简直令人惊叹。这是为什么这两种结构在数学上是严谨和逻辑上一致的根本原因。在更深入的检验中，我们将看到逆概率规则以深远方式结合了条件概率和无条件概率。
 - en: In this chapter, we will analyze and reflect on each term in the rule to gain
     a better understanding of it. We will also explore how these terms satisfy each
     of the requirements for the next generation of ML framework for finance and investing
     that we outlined in [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear).
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们将分析和反思规则中的每个术语，以更好地理解它。我们还将探讨这些术语如何满足我们在[第一章](ch01.html#the_need_for_probabilistic_machine_lear)中概述的下一代金融和投资机器学习框架的每一个要求。
 - en: 'Applying the inverse probability rule to real-world problems is nontrivial
     for two reasons: logical and computational. As was explained in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical),
     our minds are not very good at processing probabilities, especially conditional
@@ -45,27 +60,35 @@
     problems. The development of ground-breaking numerical algorithms and the ubiquity
     of cheap computing power in the 20th century has solved this problem for the most
     part.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 将逆概率规则应用于现实问题有两个非常重要的原因：逻辑和计算。正如在[第四章](ch04.html#the_dangers_of_conventional_statistical)中解释的那样，我们的大脑在处理概率时并不擅长，特别是条件概率。还提到了P(D)，逆概率规则中的分母，对于大多数现实问题而言是解析上难以处理的归一化常数。20世纪突破性数值算法的发展和廉价计算能力的普及在很大程度上解决了这个问题。
 - en: We will address the computational challenges of applying the inverse probability
     rule in the next chapter. In this chapter, we address the logical challenges of
     applying the rule with a simple example from the world of high-yield bonds. All
     PML models, regardless of their complexity, follow the same process of applying
     the inverse probability rule.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将在下一章讨论应用逆概率规则的计算挑战。在本章中，我们通过高收益债券领域的一个简单例子解决了适用该规则的逻辑挑战。所有的PML模型，无论其复杂性如何，都遵循应用逆概率规则的相同过程。
 - en: Inferring a model’s parameters is only half the solution. We want to use our
     model to make predictions and simulate data. Prior and posterior predictive distributions
     are data-generating distributions of our model that are related to and derived
     from the inverse probability rule. We also discuss how these predictive distributions
     enable forward uncertainty propagation of PML model outputs by generating new
     data based on the model assumptions and the observed data.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 推断模型参数只是解决方案的一半。我们希望使用我们的模型进行预测和模拟数据。先验和后验预测分布是我们模型的数据生成分布，它们与逆概率规则相关并从中派生。我们还讨论这些预测分布如何通过基于模型假设和观察数据生成新数据，从而实现PML模型输出的前向不确定性传播。
 - en: Investigating the Inverse Probability Rule
+  id: totrans-11
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 调查逆概率规则
 - en: You might want to go back to the inverting probabilities section in [Chapter 2](ch02.html#analyzing_and_quantifying_uncertainty)
     and refresh your memory about how the probabilities were analyzed and computed
     in the Monty Hall problem. Each term in the inverse probability rule that we calculated
@@ -73,22 +96,29 @@
     function, and serves a specific purpose in the mechanism of PML models. It is
     important that we understand these terms so that we can apply the PML mechanism
     to solve complex problems in finance and investing.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能想回到 [第二章](ch02.html#analyzing_and_quantifying_uncertainty) 中的反转概率部分，复习一下蒙提霍尔问题中如何分析和计算概率的记忆。我们计算的反向概率规则中的每个术语都有特定的名称，如后验概率分布或似然函数，并在概率机器学习模型的机制中担任特定的角色。重要的是，我们理解这些术语，以便能够将概率机器学习机制应用于解决金融和投资中的复杂问题。
 - en: '*P(H) is the prior probability distribution* that encodes our current state
     of knowledge about model parameters and quantifies their epistemic uncertainty
     before we observe any new data. This prior knowledge of parameters may be based
     on logic, prior empirical studies of a base rate, expert judgment, or institutional
     knowledge. It may also express our ignorance explicitly.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '*P(H) 是先验概率分布*，它编码了关于模型参数的当前知识状态，并量化了在观察任何新数据之前的认知不确定性。这些参数的先验知识可能基于逻辑、先前的经验研究基础率、专家判断或机构知识。它还可以明确表达我们的无知。'
 - en: In the Monty Hall problem, our prior probability distribution of which door
     (S[1], S[2], S[3]) the car was behind was P(S[1], S[2], S[3]) = (⅓, ⅓, ⅓). This
     is because before we made our choice of door or observed our dataset D, the most
     plausible hypothesis was that the car was equally likely to be behind any one
     of the three doors.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 在蒙提霍尔问题中，我们对汽车可能位于哪扇门（S[1]、S[2]、S[3]）的先验概率分布为 P(S[1], S[2], S[3]) = (⅓, ⅓, ⅓)。这是因为在我们选择门或观察数据集
+    D 之前，最合理的假设是汽车可能在这三扇门中的任何一扇后面。
 - en: All models have implicit and explicit assumptions and constraints that require
     human judgment. Note that the prior probability distribution is an explicitly
     stated model assumption and expressed in a mathematically rigorous manner. It
@@ -103,8 +133,10 @@
     as the model ingests more data, the mechanism of epistemic inference automatically
     reduces the weight it assigns to the model’s priors. This is an important self-correcting
     mechanism of probabilistic models, given their sensitivity to prior distributions.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有模型都有明示和隐含的假设和约束条件，需要人类判断。请注意，先验概率分布是明确声明的模型假设，并以数学严谨的方式表达。它始终可以被质疑或更改。频率主义者的抱怨是，先验知识以先验概率分布的形式可能被滥用，用来支持似是而非的推论。这确实是可能的，就像所有模型一样，概率模型也无法免受GIGO（垃圾进，垃圾出）病毒的影响。认知推断可能对先验概率分布的选择敏感。然而，关于先验的分歧并不证明不诚实或不一致的推断。更重要的是，如果有人想要不诚实，明确声明的先验概率分布将是操纵推论的最后一地方。此外，随着模型吸收更多数据，认知推断的机制会自动减少模型先验的权重分配。鉴于其对先验分布的敏感性，这是概率模型的重要自我修正机制。
 - en: Recall the no free lunch (NFL) theorems from [Chapter 2](ch02.html#analyzing_and_quantifying_uncertainty)
     that say that if we want our algorithms to perform optimally, we have to “pay”
     for that outperformance with prior knowledge and assumptions about our specific
@@ -115,8 +147,10 @@
     including prior knowledge about our problem domain, our algorithms could end up
     performing no better than random guessing. The risk is that the performance could
     be worse and cause irreparable harm.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 回想一下来自[第2章](ch02.html#analyzing_and_quantifying_uncertainty)的无免费午餐（NFL）定理，它说如果我们希望我们的算法表现最佳，我们必须通过先验知识和假设了解我们特定问题领域及其基础数据分布。由于这种明确的透明度，对使用先验概率分布进行统计推断的普遍反对只是意识形态上的大放厥词，如果不是彻头彻尾的愚蠢的话。根据NFL定理，这也是危险和风险的。如果我们不包括关于问题领域的先验知识，我们的算法可能最终表现不如随机猜测。风险在于性能可能更差，并造成无法弥补的损害。
 - en: It is imperative that your prior probability distribution avoid assigning a
     zero probability to any model parameter. That is because no amount of contradictory
     data observed afterward can change that zero value. Unless, of course, you are
@@ -124,8 +158,10 @@
     is impossible to be realized within the age of the universe. That is the generally
     accepted definition of an impossible event in physics, because anything is possible
     in infinite space and time.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 要确保你的先验概率分布不要将任何模型参数的概率分配为零是至关重要的。这是因为之后观察到的任何矛盾数据都无法改变这个零值。当然，除非你确信这个关于零值参数的具体假设在宇宙存在的年龄内不可能实现。这是物理学中通常接受的不可能事件的定义，因为在无限的空间和时间里任何事情都是可能的。
 - en: In finance, with creative, emotional, and free-willed human beings, you would
     be wise to place a much higher bar on what is considered impossible. For instance,
     nobody thought that negative nominal interest rates were possible or made any
@@ -136,97 +172,141 @@
     in [Chapter 2](ch02.html#analyzing_and_quantifying_uncertainty), $15 trillion
     in European and Japanese government bonds were trading in the markets at negative
     nominal interest rates for over a decade!
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融领域，面对富有创造力、情感丰富和自由意志的人类，你会明智地对被认为不可能的事情设定更高的标准。例如，没有人认为负名义利率是可能的或者有任何意义的。请注意，名义利率大约等于实际利率加通货膨胀率。因此，负名义利率意味着你付给别人借款的资本，并且有义务在贷款期间继续支付他们的利息费用。荒谬吧！正如在[第2章](ch02.html#analyzing_and_quantifying_uncertainty)中提到的，长达十多年来，欧洲和日本政府债券市场上有15万亿美元的债券以负名义利率交易！
 - en: '*P(D|H) is the likelihood function* that gives us the conditional probability
     of observing the sample data D given a specific hypothesis H about a model parameter.
     It quantifies the aleatory uncertainty of sample-to-sample data for the specific
     hypothesis of parameter value H. It is the same likelihood function that is used
     in conventional statistics for sampling distributions.'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '*P(D|H) 是似然函数*，它给出了在给定关于模型参数的特定假设 H 的情况下观察到样本数据 D 的条件概率。它量化了样本到样本数据在参数值 H 的特定假设下的随机不确定性。这是用于传统统计学中的抽样分布的相同似然函数。'
 - en: 'In the Monty Hall problem, we computed three likelihood functions: P(D | S[1]),
     P(D | S[2]), P(D | S[3]). Recall that by P(D|S[1]) we mean the probability of
     observing the dataset D given that the car is actually behind door 1, and so on.
     These likelihood functions gave us the conditional probabilities of observing
     our dataset D under each of the parameters S[1], S[2], S[3].'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在蒙特霍尔问题中，我们计算了三个似然函数：P(D | S[1]), P(D | S[2]), P(D | S[3])。回想一下，通过 P(D|S[1])
+    我们指的是在汽车实际上在门1后面的情况下观察数据集 D 的概率，依此类推。这些似然函数给出了在参数 S[1], S[2], S[3] 下观察到我们的数据集
+    D 的条件概率。
 - en: Note that likelihood is a function and not a probability distribution since
     the area under its curve does not generally add up to 1\. This is because the
     likelihood functions are conditioned on different hypotheses (S[1], S[2], S[3]).
     The probabilities computed from our Monty Hall likelihood functions were P(D |
     S[1]) = ½, P(D | S[2]) = 1, and P(D | S[3]) = 0, which adds up to 1.5.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，似然函数是一个函数而不是概率分布，因为其曲线下的面积通常不等于1。这是因为似然函数是在不同假设（S[1]、S[2]、S[3]）的条件下计算的。从蒙蒂霍尔似然函数计算的概率是
+    P(D | S[1]) = ½，P(D | S[2]) = 1，P(D | S[3]) = 0，总和为1.5。
 - en: '*P(D) is the marginal likelihood function* or the unconditional probability
     of observing the specific data sample D averaged over all plausible parameters
     or scenarios that could have generated it. It combines the aleatory uncertainty
     generated by our likelihood functions with our prior epistemic uncertainty about
     the parameter value that might have generated the data sample D.'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '*P(D) 是边际似然函数* 或观察到的特定数据样本D的无条件概率，平均值为所有可能生成它的参数或情景。它结合了我们似然函数产生的不确定性与我们关于可能生成数据样本D的参数值的先验不确定性。'
 - en: 'The unconditional probability of observing our specific dataset D, which was
     Monty opening door 3 to show us a goat after we had chosen door 1, was calculated
     using the law of total probability in [Chapter 2](ch02.html#analyzing_and_quantifying_uncertainty).
     This formula combined our prior probabilities and likelihood functions as follows:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据[第二章](ch02.html#analyzing_and_quantifying_uncertainty)的全概率法则，计算我们特定数据集D的无条件观察概率，即当蒙蒂在我们选择第1号门后打开第3号门展示一只山羊时。该公式将我们的先验概率和似然函数组合如下：
 - en: P(D) = P(D|S[1]) × P(S[1]) + P(D|S[2]) × P(S[2]) + P(D|S[3]) × P(S[3])
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D) = P(D|S[1]) × P(S[1]) + P(D|S[2]) × P(S[2]) + P(D|S[3]) × P(S[3])
 - en: P(D) = [½ × ⅓] + [1 × ⅓ ]+ [0 × ⅓ ] = ½
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D) = [½ × ⅓] + [1 × ⅓ ]+ [0 × ⅓ ] = ½
 - en: 'In general, the marginal likelihood of observing data D is computed as a weighted
     average over all possible parameters that could have produced the observed data
     with the weights provided by the prior probability distribution. Using the law
     of total of probability, P(D) in general is computed as:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，观察数据D的边际似然性被计算为在所有可能生成观察数据的参数上的加权平均，权重由先验概率分布提供。使用全概率法则，一般情况下，P(D) 被计算为：
 - en: P(D) = <math alttext="sigma-summation Underscript i Endscripts upper P left-parenthesis
     upper D vertical-bar upper H Subscript i Baseline right-parenthesis times upper
     P left-parenthesis upper H Subscript i Baseline right-parenthesis"><mrow><msub><mo>∑</mo>
     <mi>i</mi></msub> <mi>P</mi> <mrow><mo>(</mo> <mi>D</mi> <mo>|</mo> <msub><mi>H</mi>
     <mi>i</mi></msub> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi> <mrow><mo>(</mo> <msub><mi>H</mi>
     <mi>i</mi></msub> <mo>)</mo></mrow></mrow></math> for discrete functions
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D) = <math alttext="sigma-summation Underscript i Endscripts upper P left-parenthesis
+    upper D vertical-bar upper H Subscript i Baseline right-parenthesis times upper
+    P left-parenthesis upper H Subscript i Baseline right-parenthesis"><mrow><msub><mo>∑</mo>
+    <mi>i</mi></msub> <mi>P</mi> <mrow><mo>(</mo> <mi>D</mi> <mo>|</mo> <msub><mi>H</mi>
+    <mi>i</mi></msub> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi> <mrow><mo>(</mo> <msub><mi>H</mi>
+    <mi>i</mi></msub> <mo>)</mo></mrow></mrow></math> for discrete functions
 - en: P(D) = <math alttext="integral upper P left-parenthesis upper D vertical-bar
     upper H right-parenthesis times upper P left-parenthesis upper H right-parenthesis
     d upper H"><mrow><mo>∫</mo> <mi>P</mi> <mo>(</mo> <mi>D</mi> <mo>|</mo> <mi>H</mi>
     <mo>)</mo> <mo>×</mo> <mi>P</mi> <mo>(</mo> <mi>H</mi> <mo>)</mo> <mi>d</mi> <mi>H</mi></mrow></math>
     for continuous functions
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D) = <math alttext="integral upper P left-parenthesis upper D vertical-bar
+    upper H right-parenthesis times upper P left-parenthesis upper H right-parenthesis
+    d upper H"><mrow><mo>∫</mo> <mi>P</mi> <mo>(</mo> <mi>D</mi> <mo>|</mo> <mi>H</mi>
+    <mo>)</mo> <mo>×</mo> <mi>P</mi> <mo>(</mo> <mi>H</mi> <mo>)</mo> <mi>d</mi> <mi>H</mi></mrow></math>
+    for continuous functions
 - en: Recall from [Chapter 3](ch03.html#quantifying_output_uncertainty_with_mon) that
     a probability-weighted average sum is an arithmetic mean known as the expected
     value. So P(D) computes the expectation of observing the specific data sample
     D based on all our prior uncertain estimates of our model’s parameters. This prior
     expected mean of the specific data sample we have observed acts as a normalizing
     constant that is generally hard to solve analytically for real-world problems.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据[第三章](ch03.html#quantifying_output_uncertainty_with_mon)，概率加权平均和被称为期望值的算术平均数是等效的。因此，P(D)
+    计算了基于我们模型参数的所有先验不确定估计来观察特定数据样本D的期望。我们观察到的特定数据样本的这种先验期望均值充当一个通常在现实世界问题中难以解析求解的归一化常数。
 - en: '*P(H|D) is the posterior probability distribution* and is the target of our
     inference. It updates our prior knowledge about model parameters based on the
     observed in-sample data D. It combines the prior epistemic uncertainty of our
     parameters and the aleatory uncertainty of our in-sample data. In the Monty Hall
     problem, we computed the posterior probability, P(S[2] | D), that the car is behind
     door 2 given our dataset D as:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '*P(H|D) 是后验概率分布*，也是我们推理的目标。它基于观察到的样本数据D更新我们对模型参数的先验知识。它结合了我们参数的先验认知不确定性和样本数据的随机不确定性。在蒙提霍尔问题中，我们计算了后验概率
+    P(S[2] | D)，即我们的数据集D给出车在门2后的概率：'
 - en: P(S[2]|D) = P(D|S[2]) × P(S[2]) / P(D)
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(S[2]|D) = P(D|S[2]) × P(S[2]) / P(D)
 - en: P(S[2]|D) = [1 × ⅓ ] / ½ = ⅔
+  id: totrans-32
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(S[2]|D) = [1 × ⅓ ] / ½ = ⅔
 - en: The posterior probability distribution can be viewed as a logical and dynamic
     integration of our prior knowledge with the observed sample data. When the data
     are sparse or noisy, the posterior probability distribution will be dominated
@@ -234,8 +314,10 @@
     will be relatively small. This is useful in situations where we have confidence
     in our prior knowledge and want to use it to make inferences in the face of sparse
     or noisy data.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 后验概率分布可以被视为我们先验知识与观察到的样本数据的逻辑和动态整合。当数据稀疏或噪声较大时，后验概率分布会受到先验概率分布的主导，并且似然函数的影响会相对较小。这在我们对先验知识有信心并希望在面对稀疏或噪声数据时进行推理时非常有用。
 - en: Conversely, as more data are accumulated, the posterior distribution will be
     increasingly influenced by the likelihood function. This is desirable learning
     behavior, as it means that our inference needs to reconcile observed data with
@@ -246,16 +328,20 @@
     are no issues with the data in terms or quality and accuracy, we have to question
     all our model assumptions, starting with our priors. This generally occurs when
     market regimes change.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，随着数据的积累，后验分布将越来越受到似然函数的影响。这种学习行为是可取的，因为它意味着我们的推理需要在收集更多信息时调和观察到的数据与我们的先验知识。数据可能会加强和精炼我们的先验知识，也可能由于数据太嘈杂或稀疏而未添加新知识。当数据无法调和并挑战我们的先验知识时，学习机会就会出现。假设在数据质量和准确性方面没有问题，我们必须质疑所有的模型假设，从我们的先验开始。这通常发生在市场制度变化时。
 - en: The balance between the prior distribution and the likelihood function in the
     posterior distribution can be adjusted by choosing an appropriate prior distribution
     and by collecting more or higher-quality data. Sensitivity analysis of the prior
     probability distribution can be used to assess the impact of different choices
     of the prior probability distribution on the posterior distribution and the final
     results. This involves thoughtful trial and error.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 先验分布和后验分布中似然函数之间的平衡可以通过选择适当的先验分布和收集更多或更高质量的数据来调整。先验概率分布的敏感性分析可用于评估不同先验概率分布选择对后验分布和最终结果的影响。这涉及深思熟虑的试错过程。
 - en: The posterior probability distribution also enables inverse uncertainty propagation
     of our model’s parameters. Recall from [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear)
     that inverse uncertainty propagation is the computation of uncertainty of a model’s
@@ -264,36 +350,48 @@
     posterior probability distribution learn our model’s parameters from the observed
     data and our prior knowledge about them, but it also quantifies the epistemic
     and aleatory uncertainty of these estimates.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 后验概率分布还能实现模型参数的逆不确定性传播。回顾第[1章](ch01.html#the_need_for_probabilistic_machine_lear)中的内容，逆不确定性传播是根据观察到的数据推断出模型输入参数的不确定性。后验概率分布编码了我们模型的概率学习。后验概率分布不仅从观察到的数据和我们对其先验知识学习我们模型的参数，还量化了这些估计的认知和随机不确定性。
 - en: The posterior probability distribution does all of this in a transparent manner,
     and this is very important in the finance and investment management industries,
     which are heavily regulated. Contrast this with other traditional ML algorithms
     like random forests, gradient-boosted machines, and deep learning models, which
     are essentially black boxes because the underlying logic of their inferences are
     generally hard to decipher.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 后验概率分布以透明的方式完成所有这些操作，这在金融和投资管理行业尤为重要，这些行业受到严格监管。与其他传统的机器学习算法（如随机森林、梯度提升机和深度学习模型）形成对比，这些算法通常是黑盒子，因为它们推断的基本逻辑通常难以解释。
 - en: The posterior distribution P(H | D) can also serve as the prior probability
     distribution P(H) when a new data sample arrives in the next iteration of the
     learning cycle. This enables dynamic, iterative, and integrative PML models. This
     is a very powerful mechanism for finance and investment models and is summarized
     in [Figure 5-1](#how_the_inverse_probability_rule_builds).
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 后验分布P(H | D)在下一个学习周期的新数据样本到来时也可以作为先验概率分布P(H)。这使得动态、迭代和综合的PML模型成为可能。这对金融和投资模型来说是一个非常强大的机制，并且在[图5-1](#how_the_inverse_probability_rule_builds)中进行了总结。
 - en: '![How the inverse probability rule builds upon knowledge with iterative probabilistic
     learning from data](assets/pmlf_0501.png)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![逆概率规则如何通过迭代概率学习从数据中构建知识](assets/pmlf_0501.png)'
 - en: Figure 5-1\. How the inverse probability rule builds upon knowledge with iterative
     probabilistic learning from data
+  id: totrans-40
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图5-1. 逆概率规则如何通过迭代概率学习从数据中构建知识
 - en: Estimating the Probability of Debt Default
+  id: totrans-41
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 估计债务违约的概率
 - en: Let’s apply the PML mechanism discussed in the previous section to the problem
     of estimating the probability that a company might default on its debt. Assume
     you are an analyst at a hedge fund that buys high-yielding debt of companies with
@@ -301,80 +399,106 @@
     risk-adjusted returns. These bonds are also known pejoratively as junk bonds because
     of their risky nature and the real possibility that these companies may not be
     able to pay back their bond holders.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将前面讨论的PML机制应用到估计一家公司可能违约其债务的问题上。假设你是一家对高风险信用公司的公共信用市场中的高收益债券感兴趣的对冲基金的分析师，因为它们通常提供有吸引力的风险调整后回报。由于其高风险性质以及这些公司可能无法偿还债券持有者的实际可能性，这些债券也被贬称为垃圾债券。
 - en: Your fund’s analysts evaluate the credit risk of these companies using the company’s
     proprietary knowledge, experience, and management methods. When a portfolio manager
     estimates that there is only a 10% chance that a company might default, they buy
     its bonds at market prices that compensate the fund for the risk it is taking.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 你基金的分析师们通过公司的专有知识、经验和管理方法评估这些公司的信用风险。当投资组合经理估计某家公司可能违约的概率只有10%时，他们以市场价格购买其债券，以补偿基金承担的风险。
 - en: Your fund also uses conventional ML algorithms to search various data sources
     for information relating to the companies in their portfolio. These data might
     include earnings releases, press releases, analyst reports, credit market analyses,
     investor sentiment surveys, and the like. As soon as the ML classification model
     receives each piece of information that might affect a portfolio company, it immediately
     classifies the information as either a positive or negative rating for the company.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的基金还使用传统的机器学习算法，从各种数据源中搜索与其投资组合中公司相关的信息。这些数据可能包括盈利发布、新闻稿、分析师报告、信用市场分析、投资者情绪调查等。每当机器学习分类模型接收到可能影响投资组合公司的每一条信息时，它会立即将这些信息分类为该公司的正面或负面评级。
 - en: Over the years, your fund’s ML classification system has built a very valuable
     proprietary database of the vital information characteristics or features of these
     risky corporate borrowers. In particular, it has found that companies that eventually
     default on their debt accumulate 70% negative ratings. However, the companies
     that do not eventually default only accumulate 40% negative ratings.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 多年来，你基金的机器学习分类系统建立了一份非常有价值的专有数据库，详细记录了这些高风险企业借款人的关键信息特征。特别是，它发现那些最终违约的公司累积了70%的负面评级。然而，那些最终不违约的公司只累积了40%的负面评级。
 - en: Say you have been asked by your portfolio manager to develop a PML model that
     takes advantage of these proprietary resources to evaluate continually the probabilities
     of debt default as soon as new information about a company is processed by the
     ML classification system. If you are successful in developing this PML model,
     your fund will have an edge in the timing and direction of its high-yield debt
     trading strategies.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设您的投资组合经理要求您开发一个PML模型，利用这些专有资源，以便在ML分类系统处理公司新信息时不断评估债务违约的概率。如果您成功开发了这个PML模型，您的基金将在高收益债券交易策略的时机和方向上获得优势。
 - en: Now assume that your ML classification system has just alerted you of a negative
     rating it has assigned to XYZ, a new company in the funds’ bond portfolio that
     you are charged with monitoring. How would you update the probability of default
     of XYZ company based on the new negative rating? Let’s apply the PML model to
     this simple problem as a way to learn the PML process that you would apply to
     real, complex trades and investments.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在假设您的ML分类系统刚刚通知您给XYZ分配了一个负面评级，XYZ是您负责监控的基金债券投资组合中的一个新公司。如何基于新的负面评级更新XYZ公司的违约概率？让我们将PML模型应用于这个简单问题，作为学习您将应用于真实复杂交易和投资的PML过程的一种方式。
 - en: The probabilities of XYZ company defaulting—P(default)—and not defaulting—P(no
     default)—on its debt obligations are the model’s parameters that you want to estimate.
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: XYZ公司违约（P(违约)）和不违约（P(未违约)）其债务义务的概率是模型要估计的参数。
 - en: Negative and positive ratings about XYZ company comprise the data that will
     inform you and condition your parameter estimates.
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 有关XYZ公司的负面和正面评级包括将为您提供信息并影响您的参数估计。
 - en: You assume that all ratings are independent of one another and also that all
     the ratings are being sampled from the same underlying statistical distribution.
+  id: totrans-50
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 假设所有评级彼此独立，并且所有评级都是从同一潜在统计分布中抽样得到的。
 - en: Since XYZ company is in your fund’s portfolio, your prior probability of default
     before seeing any negative or positive ratings is P(default) = 10%.
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于XYZ公司位于您基金的投资组合中，您在看到任何负面或正面评级之前的违约先验概率为P(违约) = 10%。
 - en: This implies that the prior probability that XYZ will not default on its debt
     is P(no default) = 90%.
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这意味着XYZ不违约其债务的先验概率是P(未违约) = 90%。
 - en: The likelihood that you would observe a negative rating from your ML classification
     system if XYZ were to default eventually is P(negative | default) = 70%.
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果XYZ最终违约的话，您的ML分类系统观察到负面评级的可能性是P(负面 | 违约) = 70%。
 - en: The likelihood of XYZ not defaulting eventually despite a negative rating is
     P(negative | no default) = 40%.
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 尽管有负面评级，XYZ公司最终不违约的可能性是P(负面 | 未违约) = 40%。
 - en: 'It might seem odd that P(negative | default) + P(negative | no default) = 0.7
     + 0.4 = 1.1\. These two probabilities don’t add up to 1 because they are conditioned
     on two noncomplementary hypotheses about the portfolio company. It might be helpful
@@ -383,27 +507,38 @@
     40% of the time. Default coins show their negative side 70% of the time. You are
     trying to figure out which one of the two types of weighted coins your portfolio
     manager has chosen from a bag filled with both two types of coins.'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 或许会觉得奇怪，P(负面 | 违约) + P(负面 | 未违约) = 0.7 + 0.4 = 1.1。这两个概率之和不为1，因为它们条件是关于投资组合公司的两种非互补假设。可以将任何投资组合公司视为两种类型的加权硬币之一可能会有帮助：不违约硬币和违约硬币。不违约硬币在40%的时间内显示其负面面。违约硬币在70%的时间内显示其负面面。您正试图弄清楚您的投资组合经理从一个包含这两种硬币的袋子中选择了哪一种。
 - en: 'You want to estimate the posterior probability of default after observing a
     negative rating, P(default | negative), and in light of your institutional knowledge
     of credit risk management. You now have all the probabilities and information
     you need to create a PML model and apply the inverse probability rule. Let’s encode
     the solution in Python:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 您希望在观察到负面评级后估计违约后验概率P(违约 | 负面)，并结合您对信用风险管理的机构知识。现在您已经拥有所有的概率和信息，可以创建一个PML模型并应用逆概率规则。让我们用Python编码解决方案：
 - en: '[PRE0]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '![Image](assets/pmlf_05in01.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](assets/pmlf_05in01.png)'
 - en: Based on our code, you can see the posterior probability of default of company
     XYZ given it has just received a negative rating P(default | negative) = 16%.
     The probability of default has risen from our prior probability of 10%, as would
     be expected.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据我们的代码，可以看到公司 XYZ 在刚刚收到负面评级后的违约后验概率 P(default | negative) = 16%。违约概率从我们先前的
+    10% 的先验概率上升，这是可以预料的。
 - en: 'Say a few days later your ML classifier alerts you to another negative rating
     about XYZ company. How do you update the probability of default now? The PML process
     is exactly the same. But now our prior probability of default is our current posterior
@@ -411,96 +546,140 @@
     features of the PML model: it learns dynamically by continually integrating our
     prior knowledge with new data in a mathematically rigorous manner. Let’s continue
     to code our solution to demonstrate this:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设几天后，您的 ML 分类器向您报告 XYZ 公司另一条负面评级。现在如何更新违约概率？PML 过程完全相同。但现在我们的违约的先验概率是我们先前计算的当前后验概率。这是
+    PML 模型最强大的特性之一：以数学严谨的方式持续集成我们的先验知识和新数据来动态学习。让我们继续编写我们的解决方案来演示这一点：
 - en: '[PRE1]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '![Image](assets/pmlf_05in02.png)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_05in02.png)'
 - en: '[PRE2]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '![Image](assets/pmlf_05in03.png)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_05in03.png)'
 - en: The probability of default given two negative ratings, P(default | 2 negatives),
     has gone up substantially to 25% in light of new information about the company,
     and its probability of default is approaching the fund’s risk limit. You decide
     to bring these results to the attention of the portfolio manager, who can do a
     more in-depth, holistic analysis of XYZ company and the current market environment.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 在了解到公司的新信息后，两次负面评级条件下公司违约的概率 P(default | 2 negatives) 显著上升至 25%，接近基金风险限制。您决定将这些结果提供给投资组合经理，进行更深入、全面的
+    XYZ 公司及当前市场环境分析。
 - en: It is important to note that PML models can ingest data one point at a time
     or all at once. The resulting final posterior probability will be the same regardless
     of the order in which the data arrives. Let’s verify this claim. Let’s assume
     instead that the fund’s ML classifier spat out two negative ratings of XYZ company
     within minutes.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，PML 模型可以一次或逐点摄取数据。无论数据到达的顺序如何，最终得到的后验概率将是相同的。让我们验证这一点。假设基金的 ML 分类器在几分钟内向我们报告
+    XYZ 公司两次负面评级。
 - en: Assume again that the ratings of the ML classification system are independent
     and sampled from the same distribution as before.
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 再次假设 ML 分类系统的评级是独立的，并且从以前相同的分布中抽样。
 - en: 'The probability of two consecutive negative ratings given that XYZ will default,
     P(2 negatives | default), is computed using the product rule for independent events:'
+  id: totrans-68
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 考虑到 XYZ 会违约的情况下，计算连续两次负面评级的概率 P(2 negatives | default) 使用独立事件的乘法规则：
 - en: P(2 negatives | default) = P(negative | default) × P(negative | default) = 0.70
     × 0.70 = 0.49
+  id: totrans-69
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(2 negatives | default) = P(negative | default) × P(negative | default) = 0.70
+    × 0.70 = 0.49
 - en: 'Similarly, probability of two negative ratings is computed given that XYZ will
     not default eventually: P(2 negatives | no default) = 0.40 × 0.40 = 0.16.'
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 同样地，考虑到 XYZ 最终不会违约的情况下，计算两次负面评级的概率：P(2 negatives | no default) = 0.40 × 0.40
+    = 0.16。
 - en: 'The marginal likelihood or unconditional probability of observing two negative
     ratings for XYZ company is a weighted average over both possibilities of the company
     meeting its debt obligations:'
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 观察 XYZ 公司两次负面评级的边际似然或无条件概率是对公司遵守其债务义务两种可能性的加权平均：
 - en: P(2 negatives) = P(2 negatives | default) × P(default) + P(2 negatives | no
     default) × P( no default)
+  id: totrans-72
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(2 negatives) = P(2 negatives | default) × P(default) + P(2 negatives | no
+    default) × P(no default)
 - en: Plugging in the numbers for P(2 negatives) = (0.49 × 0.1) + (0.16 × 0.9) = 0.193
+  id: totrans-73
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将 P(2 negatives) 的数值代入计算：P(2 negatives) = (0.49 × 0.1) + (0.16 × 0.9) = 0.193
 - en: 'Therefore, the posterior probability of XYZ company defaulting given two consecutive
     negative ratings is found:'
+  id: totrans-74
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 因此，找到 XYZ 公司在连续两次负面评级后违约的后验概率：
 - en: P(default | 2 negatives) = P(2 negatives | default) × P(default) / P(2 negatives)
+  id: totrans-75
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(default | 2 negatives) = P(2 negatives | default) × P(default) / P(2 negatives)
 - en: Plugging in the numbers for P(default | 2 negatives) = 0.049/0.193 = 0.25 or
     25%
+  id: totrans-76
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将 P(default | 2 negatives) 的数值代入计算：0.049/0.193 = 0.25 或 25%
 - en: This is the same posterior probability we calculated for `posterior2` in the
     Python code.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 这与我们在 Python 代码中计算的`posterior2`的后验概率相同。
 - en: Generating Data with Predictive Probability Distributions
+  id: totrans-78
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用预测概率分布生成数据
 - en: As was mentioned in [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear),
     PML models are generative models that learn the underlying statistical structure
     of the data. This enables them to simulate new data seamlessly, including generating
@@ -509,95 +688,132 @@
     prior and posterior predictive distributions, which simulate potential data that
     a PML model could generate in the future and that are consistent with observed
     training data, model assumptions, and prior knowledge.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 如[第一章](ch01.html#the_need_for_probabilistic_machine_lear)中提到的，PML模型是生成模型，能够学习数据的潜在统计结构。这使它们能够无缝地模拟新数据，包括生成可能缺失或损坏的数据。最重要的是，PML模型能够通过其模型输出进行前向不确定性传播。它通过其先验和后验预测分布来实现这一点，这些分布模拟了PML模型未来可能生成的数据，并与观察到的训练数据、模型假设和先验知识一致。
 - en: It is important to note that the prior and posterior distributions are probability
     distributions for inferring the distributions of our model’s *parameters* before
     and after training, respectively. They enable inverse uncertainty propagation.
     In contrast, the prior and posterior predictive distributions are probability
     distributions of our model for *generating new data* before and after training,
     respectively. They enable forward uncertainty propagation.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，先验和后验分布是用于推断模型参数在训练前后的概率分布，它们支持反向不确定性传播。相比之下，先验和后验预测分布是模型在训练前后用于生成新数据的概率分布，它们支持前向不确定性传播。
 - en: 'The prior and posterior predictive distributions combine two types of uncertainty:
     the aleatory uncertainty of sample-to-sample data simulated from its likelihood
     function; and the epistemic uncertainty of its parameters encoded in its prior
     and posterior probability distributions. Let’s continue to work on the example
     in the previous section to illustrate and explore these two predictive distributions.'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 先验和后验预测分布结合了两种不确定性：从其似然函数模拟的样本到样本数据的随机不确定性；以及编码在其先验和后验概率分布中的参数的认知不确定性。让我们继续在前一节的示例中工作，以说明和探索这两种预测分布。
 - en: '*The prior predictive distribution P(D′)* is the prior probability distribution
     of simulated data (D′) we expect to observe in the training data (D) *before*
     we actually start training our model. The prior predictive distribution P(D′)
     does this by averaging the likelihood function P(D′ | H) over the prior probability
     distribution P(H) of the parameters.'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '*先验预测分布P(D′)* 是我们预期在训练数据(D)中观察到的模拟数据(D′)的先验概率分布，*在* 我们实际开始训练模型之前。先验预测分布P(D′)通过对参数的先验概率分布P(H)进行似然函数P(D′
+    | H)的平均来实现这一点。'
 - en: Our PML model includes assumptions, constraints, likelihood functions, and prior
     probability distributions. The prior predictive distribution serves as a check
     on the appropriateness of our PML model before training begins. In essence, the
     prior predictive distribution P(D′) is retrodicting the training data (D) so that
     we can assess our model’s readiness for training. See [Figure 5-2](#the_prior_predictive_distribution_gener).
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的PML模型包括假设、约束、似然函数和先验概率分布。先验预测分布在训练开始之前作为我们的PML模型是否适用的检查。实质上，先验预测分布P(D′)在对训练数据(D)进行回溯预测，以便我们评估模型是否准备好进行训练。参见[图5-2](#the_prior_predictive_distribution_gener)。
 - en: '![The prior predictive distribution generates new data before training. This
     simulated data is used to check if the model is ready for training.](assets/pmlf_0502.png)'
+  id: totrans-84
   prefs: []
   type: TYPE_IMG
+  zh: '![先验预测分布在训练之前生成新数据。这些模拟数据用于检查模型是否准备好进行训练。](assets/pmlf_0502.png)'
 - en: Figure 5-2\. The prior predictive distribution generates new data before training.
     This simulated data is used to check if the model is ready for training.
+  id: totrans-85
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图5-2. 先验预测分布在训练之前生成新数据。这些模拟数据用于检查模型是否准备好进行训练。
 - en: If the actual training data (D) do not fall within a reasonable range of the
     simulated data (D′) generated by our prior predictive distribution, we should
     consider revising our model, starting with the prior probability distribution
     and then the likelihood function.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果实际的训练数据(D)不在由我们先验预测分布生成的模拟数据(D′)的合理范围内，我们应考虑修订我们的模型，从先验概率分布开始，然后是似然函数。
 - en: 'In the previous section, we already calculated the prior predictive mean of
     a negative rating, P(negative), as an expected value or weighted average mean
     when we calculated its marginal likelihood of observing a negative rating:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前面的部分中，当我们计算观察到负面评级的边缘似然函数时，我们已经计算出了负面评级的先验预测平均值P(负面)作为期望值或加权平均值：
 - en: P(negative) = P(negative | default) × P(default) + P(negative | no default)
     × P( no default)
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(负面) = P(负面 | 违约) × P(违约) + P(负面 | 未违约) × P(未违约)
 - en: P(negative) = (0.70 × 0.10) + (0.40 × 0.90) = 0.43
+  id: totrans-89
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(负面) = (0.70 × 0.10) + (0.40 × 0.90) = 0.43
 - en: We can similarly work out the prior predictive mean of a positive rating, P(positive),
     by using the complement of the negative likelihood functions.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过使用负面似然函数的补集类似地计算正面评级的先验预测平均值P(正面)。
 - en: P(positive | default) = 1 – P(negative | default) and
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(正面 | 违约) = 1 – P(负面 | 违约) 并且
 - en: P(positive | no default) = 1 – P(negative | no default).
+  id: totrans-92
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(正面 | 未违约) = 1 – P(负面 | 未违约)。
 - en: 'Using these probabilities to compute the marginal likelihood function and plugging
     in the numbers, we get:'
+  id: totrans-93
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 利用这些概率计算边缘似然函数并插入数字，我们得到：
 - en: P(positive) = P(positive | default) × P(default) + P(positive | no default)
     × P( no default)
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(正面) = P(正面 | 违约) × P(违约) + P(正面 | 未违约) × P(未违约)
 - en: P(positive) = (0.30 × 0.10) + (0.60 × 0.90) = 0.57
+  id: totrans-95
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(正面) = (0.30 × 0.10) + (0.60 × 0.90) = 0.57
 - en: 'In general, the prior predictive distribution is computed as follows:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 总的来说，先验预测分布的计算方法如下：
 - en: P(D′) = <math alttext="sigma-summation Underscript i Endscripts upper P left-parenthesis
     upper D prime vertical-bar upper H Subscript i Baseline right-parenthesis times
     upper P left-parenthesis upper H Subscript i Baseline right-parenthesis"><mrow><msub><mo>∑</mo>
@@ -605,18 +821,32 @@
     <mo>|</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi>
     <mrow><mo>(</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>)</mo></mrow></mrow></math>
     for discrete functions
+  id: totrans-97
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D′) = <math alttext="sigma-summation Underscript i Endscripts upper P left-parenthesis
+    upper D prime vertical-bar upper H Subscript i Baseline right-parenthesis times
+    upper P left-parenthesis upper H Subscript i Baseline right-parenthesis"><mrow><msub><mo>∑</mo>
+    <mi>i</mi></msub> <mi>P</mi> <mrow><mo>(</mo> <msup><mi>D</mi> <mo>'</mo></msup>
+    <mo>|</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>)</mo></mrow></mrow></math>
+    用于离散函数
 - en: P(D′) = <math alttext="integral upper P left-parenthesis upper D prime vertical-bar
     upper H right-parenthesis times upper P left-parenthesis upper H right-parenthesis
     d upper H"><mrow><mo>∫</mo> <mi>P</mi> <mrow><mo>(</mo> <msup><mi>D</mi> <mo>'</mo></msup>
     <mo>|</mo> <mi>H</mi> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi> <mrow><mo>(</mo>
     <mi>H</mi> <mo>)</mo></mrow> <mi>d</mi> <mi>H</mi></mrow></math> for continuous
     functions
+  id: totrans-98
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D′) = <math alttext="integral upper P left-parenthesis upper D prime vertical-bar
+    upper H right-parenthesis times upper P left-parenthesis upper H right-parenthesis
+    d upper H"><mrow><mo>∫</mo> <mi>P</mi> <mrow><mo>(</mo> <msup><mi>D</mi> <mo>'</mo></msup>
+    <mo>|</mo> <mi>H</mi> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi> <mrow><mo>(</mo>
+    <mi>H</mi> <mo>)</mo></mrow> <mi>d</mi> <mi>H</mi></mrow></math> 用于连续函数
 - en: Note that there is a difference between the marginal likelihood function and
     the prior predictive distribution, even though the formulas look the same. The
     marginal likelihood function is the expected value of observing a specific data
@@ -626,8 +856,10 @@
     In our example, it gives you the unconditional probabilities of observing a negative
     and a positive rating for a portfolio company before you actually begin monitoring
     the company.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '注意边缘似然函数和先验预测分布之间存在差异，尽管它们的公式看起来相同。边缘似然函数是观察特定数据样本（D），如负面评级的期望值。先验预测分布是在实际观察到任何数据之前给出其样本空间内任何可能数据（D′）的无条件概率分布。在我们的例子中，在你开始监控公司之前，它给出了投资组合公司观察到负面评级和正面评级的无条件概率。  '
 - en: '*Posterior predictive distribution P(D″ | D)* simulates the posterior probability
     distribution of out-of-sample or test data (D″) we expect to observe in the future
     after we have trained our model on the training data (D). It simulates test data
@@ -635,35 +867,50 @@
     probability distribution P(H|D). In essence, the trained posterior predictive
     distribution P(D″ | D) is predicting the unseen test data (D^) so that we can
     assess our model’s readiness for testing. See [Figure 5-3](#the_posterior_predictive_distribution_g).'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '*后验预测分布 P(D″ | D)* 模拟了在训练模型后，我们期望在未来观察到的样本或测试数据 (D″) 的后验概率分布。它通过对后验概率分布 P(H|D)
+    中的似然函数 P(D″ | H) 求平均来模拟测试数据样本 (D″)。简而言之，训练后的后验预测分布 P(D″ | D) 预测了未见测试数据 (D^)，以便评估模型的测试准备情况。见
+    [图 5-3](#the_posterior_predictive_distribution_g)。'
 - en: '![The posterior predictive distribution generates new data after training.
     This simulated data is used to check if the model is ready for testing.](assets/pmlf_0503.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![在训练后生成新数据的后验预测分布。这些模拟数据用于检查模型是否准备好进行测试。](assets/pmlf_0503.png)'
 - en: Figure 5-3\. The posterior predictive distribution generates new data after
     training. This simulated data is used to check if the model is ready for testing.
+  id: totrans-102
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-3\. 后验预测分布在训练后生成新数据。这些模拟数据用于检查模型是否准备好进行测试。
 - en: Note that after we have trained our PML model on the in-sample data (D) and
     captured its aleatory uncertainty by using the likelihood function P(D|H), our
     posterior distribution P(H|D) gives us a better estimate of our parameter (H)
     and its epistemic uncertainty compared to our prior distribution P(H). Our likelihood
     function P(D″| H) continues to express the aleatory uncertainty of observing the
     out-of-sample data (D″).
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，当我们在样本数据 (D) 上训练了我们的 PML 模型，并使用似然函数 P(D|H) 捕获了其偶然不确定性后，我们的后验分布 P(H|D) 相较于我们的先验分布
+    P(H) 给出了参数 (H) 及其认识不确定性的更好估计。我们的似然函数 P(D″| H) 继续表达观察未见样本数据 (D″) 的偶然不确定性。
 - en: The posterior predictive distribution serves as a final model check in the test
     environment. We can evaluate the usefulness of our model based on how closely
     the out-of-sample data distribution follows the data distribution predicted by
     the posterior predictive probability distribution.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 后验预测分布在测试环境中作为最终的模型检查。我们可以根据样本数据分布与后验预测概率分布预测的数据分布的接近程度来评估模型的实用性。
 - en: 'In general, the posterior predictive distribution is given by the following
     formulas:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 总的来说，后验预测分布由以下公式给出：
 - en: P(D″ | D) = <math alttext="sigma-summation Underscript i Endscripts upper P
     left-parenthesis upper D double-prime vertical-bar upper H Subscript i Baseline
     right-parenthesis times upper P left-parenthesis upper H Subscript i Baseline
@@ -672,9 +919,18 @@
     <mo>|</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi>
     <mrow><mo>(</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow></mrow></math>
     for discrete functions
+  id: totrans-106
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D″ | D) = <math alttext="sigma-summation Underscript i Endscripts upper P
+    left-parenthesis upper D double-prime vertical-bar upper H Subscript i Baseline
+    right-parenthesis times upper P left-parenthesis upper H Subscript i Baseline
+    vertical-bar upper D right-parenthesis"><mrow><msub><mo>∑</mo> <mi>i</mi></msub>
+    <mi>P</mi> <mrow><mo>(</mo> <msup><mi>D</mi> <mrow><mo>'</mo><mo>'</mo></mrow></msup>
+    <mo>|</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <msub><mi>H</mi> <mi>i</mi></msub> <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow></mrow></math>
+    适用于离散函数
 - en: P(D″ | D) = <math alttext="integral upper P left-parenthesis upper D double-prime
     vertical-bar upper H right-parenthesis times upper P left-parenthesis upper H
     vertical-bar upper D right-parenthesis d upper H"><mrow><mo>∫</mo> <mi>P</mi>
@@ -682,99 +938,137 @@
     <mi>H</mi> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi> <mrow><mo>(</mo> <mi>H</mi>
     <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow> <mi>d</mi> <mi>H</mi></mrow></math> for
     continuous functions
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(D″ | D) = <math alttext="integral upper P left-parenthesis upper D double-prime
+    vertical-bar upper H right-parenthesis times upper P left-parenthesis upper H
+    vertical-bar upper D right-parenthesis d upper H"><mrow><mo>∫</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <msup><mi>D</mi> <mrow><mo>'</mo><mo>'</mo></mrow></msup> <mo>|</mo>
+    <mi>H</mi> <mo>)</mo></mrow> <mo>×</mo> <mi>P</mi> <mrow><mo>(</mo> <mi>H</mi>
+    <mo>|</mo> <mi>D</mi> <mo>)</mo></mrow> <mi>d</mi> <mi>H</mi></mrow></math> 适用于连续函数
 - en: 'The probability of observing another negative rating for XYZ company, given
     that we have already observed two negative ratings, needs to be updated. While
     it is still the expected value of generating another negative rating as before,
     the weights assigned to each parameter value are provided by the posterior probability
     distribution conditioned on observing two negative ratings. This is called the
     posterior predictive mean and is calculated as follows:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要更新观察到XYZ公司再次获得负面评级的概率，鉴于我们已经观察到两个负面评级。虽然它仍然是生成另一个负面评级的期望值，但每个参数值分配的权重由条件于观察到两个负面评级的后验概率分布提供。这称为后验预测均值，计算如下：
 - en: P(negative | 2 negatives) = P(negative | default) × P(default | 2 negatives)
     + P(negative | no default) × P(no default | 2 negatives) = (0.7 × 0.25) + (0.4
     × 0.75) = 0.475 or 47.5%
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(负面 | 2个负面) = P(负面 | 默认) × P(默认 | 2个负面) + P(负面 | 非默认) × P(非默认 | 2个负面) = (0.7
+    × 0.25) + (0.4 × 0.75) = 0.475或47.5%
 - en: What is the probability of observing a positive rating for XYZ company now that
     we have observed two negative ratings? Since the posterior predictive distribution
     is a probability distribution, it follows that P(positive | 2 negatives) = 1 −
     P(negative | 2 negatives) = 0.525 or 52.5%. You can check for yourself that this
     is true by working through the probabilities as we have done in the previous sections.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们观察到两个负面评级后，观察到XYZ公司获得正面评级的概率是多少？由于后验预测分布是一个概率分布，所以P(正面 | 2个负面) = 1 − P(负面
+    | 2个负面) = 0.525或52.5%。您可以通过像我们在前面章节中所做的概率计算来检验这一点。
 - en: Summary
+  id: totrans-111
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 摘要
 - en: 'In this chapter, we investigated the specific terms of the inverse probability
     rule and how they support a comprehensive PML framework discussed in [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear).
     Specifically, the following terms of the rule enable continual knowledge integration
     and inverse uncertainty propagation:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们研究了逆概率规则的具体术语及其如何支持在[第一章](ch01.html#the_need_for_probabilistic_machine_lear)中讨论的全面概率机器学习框架。具体来说，规则的以下术语支持持续的知识整合和逆不确定性传播：
 - en: The prior probability distribution P(H) encodes our current knowledge and epistemic
     uncertainty about our model’s parameters before we observe any in-sample or training
     data.
+  id: totrans-113
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 先验概率分布P(H)编码了我们对模型参数的当前知识和认识论不确定性，在我们观察到任何样本内或训练数据之前。
 - en: The likelihood function P(D|H) captures the data distribution and aleatory uncertainty
     of sample-to-sample training data we observe given a specific value of our model’s
     parameters.
+  id: totrans-114
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 似然函数P(D|H)捕获了数据分布和样本对样本训练数据的随机不确定性，给定我们模型参数的特定值。
 - en: The marginal likelihood function P(D) gives us the unconditional probability
     of observing a specific sample by averaging over all possible parameter values,
     weighted by their prior probabilities. It combines the aleatory uncertainty of
     the observed sample data with the epistemic uncertainty about each parameter that
     might have generated that sample. It is a generally intractable constant that
     normalizes the posterior probability distribution so that it integrates to 1.
+  id: totrans-115
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 边际似然函数P(D)通过对所有可能参数值加权平均其先验概率，给出了观察特定样本的无条件概率。它结合了观察样本数据的随机不确定性与可能生成该样本的每个参数的认识论不确定性。它是一个通常不可解的常数，用于归一化后验概率分布，使其积分为1。
 - en: The posterior probability distribution P(H|D) updates the estimates of our model’s
     parameters by integrating our prior knowledge about them with how plausible it
     is for each parameter to have generated the in-sample data that we actually observe.
     It is the target probability distribution that interests us most as it encodes
     the probabilistic learning of our model’s parameters, including their aleatory
     and epistemic uncertainties.
+  id: totrans-116
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 后验概率分布P(H|D)通过将我们对模型参数的先验知识与每个参数生成我们实际观察到的样本数据的可能性进行整合来更新我们对模型参数的估计。这是我们最感兴趣的目标概率分布，因为它编码了我们模型参数的概率学习，包括它们的随机性和认识论不确定性。
 - en: 'The prior and posterior predictive distributions enable forward uncertainty
     propagation of our PML model. They also act as checks on the usefulness of our
     models:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 先验和后验预测分布支持我们PML模型的前向不确定性传播。它们还作为我们模型有效性的检验：
 - en: The prior predictive distribution P(D′) gives us the unconditional probabilities
     of observing hypothetical in-sample training data (D′) before we actually begin
     our experiment and observe them. Note that this is not the actually observed in-sample
     data D.
+  id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 先验预测分布 P(D′) 提供了我们在实际开始实验并观察之前观察到假想的样本训练数据 (D′) 的无条件概率。请注意，这不是实际观察到的样本数据 D。
 - en: The posterior predictive distribution P(D″|D) gives us the conditional probabilities
     of observing hypothetical out-of-sample test data (D″) after our PML model has
     learned its parameters from in-sample training data (D).
+  id: totrans-119
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 后验预测分布 P(D″|D) 提供了我们在我们的PML模型从样本内训练数据(D)中学习其参数后，观察到假想的样本外测试数据(D″)的条件概率。
 - en: It is important to note that the prior P(H) and posterior distributions P(H
     | D) give us the probability distributions about our model’s parameters before
     and after training our model on in-sample data D, respectively.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要注意，先验分布 P(H) 和后验分布 P(H | D) 分别提供了我们关于我们模型参数的概率分布，这些参数是在样本数据 D 上训练我们的模型之前和之后的。
 - en: The prior predictive P(D′) and posterior predictive P(D″ | D) distributions
     give us the data-generating probability distributions of simulated in-sample (D′)
     and out-of-sample data (D″) before and after training our model on in-sample data
     D, respectively.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 先验预测 P(D′) 和后验预测 P(D″ | D) 分布分别提供了在我们在样本数据 D 上训练我们的模型之前和之后，模拟的样本内 (D′) 和样本外数据
+    (D″) 的数据生成概率分布。
 - en: These powerful mechanisms enable dynamic, iterative, and integrative machine
     learning conditioned on data while quantifying both the aleatory and epistemic
     uncertainties of those learnings. The PML model enables both inference of model
@@ -783,8 +1077,10 @@
     in a logically consistent and mathematically rigorous manner while continually
     ingesting new data. This provides rock solid support for sound, dynamic, data-based
     decision making and risk management.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些强大的机制使得在数据条件下动态、迭代和整合的机器学习成为可能，同时量化这些学习的随机和认知不确定性。PML模型使得能够基于数据推断模型参数和预测。它在逻辑一致和数学严谨的情况下无缝集成了逆向不确定性传播和正向不确定性传播，同时不断地吸收新数据。这为基于数据的决策制定和风险管理提供了坚实的支持。
 - en: 'In the next chapter, we explore one of the most important features of PML models,
     especially for finance and investing. What puts PML models in a class of their
     own is that they know what they don’t know and calibrate their epistemic uncertainty
@@ -792,26 +1088,38 @@
     of traditional ML systems that are extremely confident regardless of their ignorance.
     Adapting a famous line from Detective “Dirty” Harry, an iconic movie cop: a model’s
     got to know its limitations.'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一章中，我们探索了 PML 模型的一个最重要的特性，特别是在金融和投资领域。将PML模型置于其独特的类别中的一个重要特征是它们知道自己不知道的东西，并据此校准他们的认知不确定性。这使我们远离了传统机器学习系统的潜在灾难性和破坏性后果，后者无论其无知如何，都极其自信。借用来自标志性电影警察“肮脏哈里”的一句名言，一个模型必须知道自己的限制。
 - en: Further Reading
+  id: totrans-124
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步阅读
 - en: 'Downey, Allen B. “Bayes’s Theorem.” In *Think Bayes: Bayesian Statistics in
     Python*, 2nd ed. O’Reilly Media, 2021.'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: Downey, Allen B. “贝叶斯定理。”在 *Think Bayes：Python中的贝叶斯统计*，第2版。奥莱利媒体，2021年。
 - en: 'Jaynes, E. T. *Probability Theory: The Logic of Science*. Edited by G. Larry
     Bretthorst. New York: Cambridge University Press, 2003.'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: Jaynes, E. T. *概率论：科学的逻辑*。G. Larry Bretthorst 编。纽约：剑桥大学出版社，2003年。
 - en: 'McElreath, Richard. “Small Worlds and Large Worlds.” In *Statistical Rethinking:
     A Bayesian Course with Examples in R and Stan*, 19–48\. Boca Raton, FL: Chapman
     and Hall/CRC, 2016.'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: McElreath, Richard。“小世界和大世界。”在 *统计重新思考：具有R和Stan示例的贝叶斯课程*，19-48页。博卡拉顿，佛罗里达州：查普曼和霍尔/CRC出版社，2016年。
 - en: Ross, Kevin. “Introduction to Prediction.” In *An Introduction to Bayesian Reasoning
     and Methods*. [Bookdown.org](http://Bookdown.org), 2022\. [*https://bookdown.org/kevin_davisross/bayesian-reasoning-and-methods/*](https://bookdown.org/kevin_davisross/bayesian-reasoning-and-methods/).
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: Ross, Kevin。“预测简介。”在 *贝叶斯推理与方法介绍*。[Bookdown.org](http://Bookdown.org)，2022年。[*https://bookdown.org/kevin_davisross/bayesian-reasoning-and-methods/*](https://bookdown.org/kevin_davisross/bayesian-reasoning-and-methods/)。

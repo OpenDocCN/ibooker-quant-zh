@@ -1,17 +1,21 @@
 - en: Chapter 1\. Python and Algorithmic Trading
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: At Goldman [Sachs] the number of people engaged in trading shares has fallen
     from a peak of 600 in 2000 to just two today.^([1](ch01.html#idm45785394843768))
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: '*The Economist*'
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -21,13 +25,16 @@
     touches on such diverse topics as Python deployment, interactive financial analytics,
     machine and deep learning, object-oriented programming, socket communication,
     visualization of streaming data, and trading platforms.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
 - en: For a quick refresher on important Python topics, read the [Appendix A](app01.html#python_numpy_pandas)
     first.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: Python for Finance
+  id: totrans-6
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -37,6 +44,7 @@
     language and technology platform in the financial industry. Of course, there were
     early adopters, mainly hedge funds, but widespread adoption probably started only
     around 2011.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: One major obstacle to the adoption of Python in the financial industry has been
@@ -47,9 +55,11 @@
     which relies on interpretation instead of compilation, is generally quite slow
     at doing so. As a consequence, pure Python proved too slow for many real-world
     financial applications, such as option pricing or risk management.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: Python Versus Pseudo-Code
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -60,13 +70,16 @@
     as an intermediate step towards its proper technological implementation. Many
     felt that, with Python, the pseudo-code step would not be necessary anymore. And
     they were proven mostly correct.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: Consider, for instance, the Euler discretization of the geometric Brownian motion,
     as in [Equation 1-1](#euler_disc_intro).
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: Equation 1-1\. Euler discretization of geometric Brownian motion
+  id: totrans-12
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
@@ -77,25 +90,39 @@
     <mrow><mo>(</mo> <mrow><mo>(</mo> <mi>r</mi> <mo>-</mo> <mn>0</mn> <mo>.</mo>
     <mn>5</mn> <msup><mi>σ</mi> <mn>2</mn></msup> <mo>)</mo></mrow> <mi>T</mi> <mo>+</mo>
     <mi>σ</mi> <mi>z</mi> <msqrt><mi>T</mi></msqrt> <mo>)</mo></mrow></mrow></math>
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S Subscript upper T Baseline equals upper S 0 exp left-parenthesis
+    left-parenthesis r minus 0.5 sigma squared right-parenthesis upper T plus sigma
+    z StartRoot upper T EndRoot right-parenthesis" display="block"><mrow><msub><mi>S</mi>
+    <mi>T</mi></msub> <mo>=</mo> <msub><mi>S</mi> <mn>0</mn></msub> <mo form="prefix">exp</mo>
+    <mrow><mo>(</mo> <mrow><mo>(</mo> <mi>r</mi> <mo>-</mo> <mn>0</mn> <mo>.</mo>
+    <mn>5</mn> <msup><mi>σ</mi> <mn>2</mn></msup> <mo>)</mo></mrow> <mi>T</mi> <mo>+</mo>
+    <mi>σ</mi> <mi>z</mi> <msqrt><mi>T</mi></msqrt> <mo>)</mo></mrow></mrow></math>
 - en: 'For decades, the LaTeX markup language and compiler have been the gold standard
     for authoring scientific documents containing mathematical formulae. In many ways,
     Latex syntax is similar to or already like pseudo-code when, for example, laying
     out equations, as in [Equation 1-1](#euler_disc_intro). In this particular case,
     the Latex version looks like this:'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'In Python, this translates to executable code, given respective variable definitions,
     that is also really close to the financial formula as well as to the Latex representation:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: However, the speed issue remains. Such a difference equation, as a numerical
     approximation of the respective stochastic differential equation, is generally
     used to price derivatives by Monte Carlo simulation or to do risk analysis and
@@ -104,9 +131,11 @@
     often in almost real-time or at least near-time. Python, as an interpreted high-level
     programming language, was never designed to be fast enough to tackle such computationally
     demanding tasks.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
 - en: NumPy and Vectorization
+  id: totrans-19
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -117,6 +146,7 @@
     bit of overhead at run-time.^([3](ch01.html#idm45785393485592)) `NumPy`, on the
     other hand, uses specialization as its major approach to avoid overhead and to
     be as good and as fast as possible in certain application scenarios.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: The major class of `NumPy` is the regular array object, called `ndarray` object
@@ -126,84 +156,110 @@
     this context is *vectorization*. Basically, this approach avoids looping on the
     Python level and delegates the looping to specialized `NumPy` code, generally
     implemented in C and therefore rather fast.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
 - en: 'Consider the simulation of 1,000,000 end of period values <math alttext="upper
     S Subscript upper T"><msub><mi>S</mi> <mi>T</mi></msub></math> according to [Equation
     1-1](#euler_disc_intro) with pure Python. The major part of the following code
     is a `for` loop with 1,000,000 iterations:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_python_and_algorithmic_trading_CO1-1)'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: The initial index level.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](assets/2.png)](#co_python_and_algorithmic_trading_CO1-2)'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: The constant short rate.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](assets/3.png)](#co_python_and_algorithmic_trading_CO1-3)'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: The time horizon in year fractions.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](assets/4.png)](#co_python_and_algorithmic_trading_CO1-4)'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: The constant volatility factor.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](assets/5.png)](#co_python_and_algorithmic_trading_CO1-5)'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: An empty `list` object to collect simulated values.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](assets/6.png)](#co_python_and_algorithmic_trading_CO1-6)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
 - en: The main `for` loop.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](assets/7.png)](#co_python_and_algorithmic_trading_CO1-7)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: The simulation of a *single* end-of-period value.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
 - en: '[![8](assets/8.png)](#co_python_and_algorithmic_trading_CO1-8)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: Appends the simulated value to the `list` object.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: 'With `NumPy`, you can avoid looping on the Python level completely by the use
     of vectorization. The code is much more concise, more readable, and faster by
     a factor of about eight:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](assets/1.png)](#co_python_and_algorithmic_trading_CO2-1)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: This single line of `NumPy` code simulates all the values and stores them in
     an `ndarray` object.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: Vectorization is a powerful concept for writing concise, easy-to-read, and easy-to-maintain
     code in finance and algorithmic trading. With `NumPy`, vectorized code does not
     only make code more concise, but it also can speed up code execution considerably
     (by a factor of about eight in the Monte Carlo simulation, for example).
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: It’s safe to say that `NumPy` has significantly contributed to the success of
@@ -214,6 +270,7 @@
     science. The `SciPy` project recognized the need for a more powerful numerical
     data structure and consolidated older projects like `Numeric` and `NumArray` in
     this area into a new, unifying one in the form of `NumPy`.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: In algorithmic trading, a Monte Carlo simulation might not be the most important
@@ -223,9 +280,11 @@
     strategies or the processing of tick data streams during trading hours. This is
     where the [`pandas` data analysis package](http://pandas.pydata.org) comes into
     play.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: pandas and the DataFrame Class
+  id: totrans-47
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -240,6 +299,7 @@
     to the core business of money management, AQR Capital Management open sourced
     the `pandas` project in 2009, which marks the beginning of a major success story
     in open source–based data and financial analytics.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: 'Partly due to `pandas`, Python has become a major force in data and financial
@@ -248,6 +308,7 @@
     sources like [Quandl](http://quandl.com), `pandas` even allows students to do
     sophisticated financial analytics with the lowest barriers of entry ever: a regular
     notebook computer with an internet connection suffices.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: 'Assume an algorithmic trader is interested in trading Bitcoin, the cryptocurrency
@@ -259,46 +320,61 @@
     not explicitly imported, the Quandl Python wrapper package by default returns
     a `DataFrame` object that is then used to add a simple moving average (SMA) of
     100 days, as well as to visualize the raw data alongside the SMA:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_python_and_algorithmic_trading_CO3-1)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: Imports and configures the plotting package.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](assets/2.png)](#co_python_and_algorithmic_trading_CO3-5)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: Imports the `configparser` module and reads credentials.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](assets/3.png)](#co_python_and_algorithmic_trading_CO3-8)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: Imports the Quandl Python wrapper package and provides the API key.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](assets/4.png)](#co_python_and_algorithmic_trading_CO3-10)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: Retrieves daily data for the Bitcoin exchange rate and returns a `pandas` `DataFrame`
     object with a single column.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](assets/5.png)](#co_python_and_algorithmic_trading_CO3-11)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the SMA for 100 days in vectorized fashion.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](assets/6.png)](#co_python_and_algorithmic_trading_CO3-12)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: Selects data from the 1st of January 2013 on and plots it.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: Obviously, `NumPy` and `pandas` measurably contribute to the success of Python
@@ -310,13 +386,16 @@
     the way, we will also implement classes and modules that will make any algorithmic
     trading project more efficient. However, the main packages used throughout will
     be `NumPy` and `pandas`.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
 - en: '![pfat 0101](assets/pfat_0101.png)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
 - en: Figure 1-1\. Historical Bitcoin exchange rate in USD from the beginning of 2013
     until mid-2020
+  id: totrans-66
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
@@ -328,9 +407,11 @@
     time series visualized. Like `NumPy`, `pandas` allows for rather concise, vectorized
     code that is also generally executed quite fast due to heavy use of compiled code
     under the hood.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: Algorithmic Trading
+  id: totrans-68
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -343,11 +424,13 @@
     often perfectly. Another example is algorithms for finding the root(s) of an equation
     if it (they) exist(s) at all. In that sense, the objective of a mathematical algorithm
     is often well specified and an optimal solution is often expected.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: 'But what about the objective of financial trading algorithms? This question
     is not that easy to answer in general. It might help to step back for a moment
     and consider general motives for trading. In Dorn et al. (2008) write:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: Trading in financial markets is an important economic activity. Trades are necessary
@@ -355,6 +438,7 @@
     convert back into cash when the money is wanted. They are also needed to move
     money around within the market, to exchange one asset for another, to manage risk,
     and to exploit information about future price movements.
+  id: totrans-71
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -363,49 +447,62 @@
     the first place. For our purposes, a nonexhaustive list of financial trading motives
     of people and financial institutions managing money of their own or for others
     includes the following:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: Beta trading
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: Earning market risk premia by investing in, for instance, exchange traded funds
     (ETFs) that replicate the performance of the S&P 500.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: Alpha generation
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
 - en: Earning risk premia independent of the market by, for example, selling short
     stocks listed in the S&P 500 or ETFs on the S&P 500.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
 - en: Static hedging
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: Hedging against market risks by buying, for example, out-of-the-money put options
     on the S&P 500.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
 - en: Dynamic hedging
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
 - en: Hedging against market risks affecting options on the S&P 500 by, for example,
     dynamically trading futures on the S&P 500 and appropriate cash, money market,
     or rate instruments.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: Asset-liability management
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
 - en: Trading S&P 500 stocks and ETFs to be able to cover liabilities resulting from,
     for example, writing life insurance policies.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: Market making
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: Providing, for example, liquidity to options on the S&P 500 by buying and selling
     options at different bid and ask prices.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: 'All these types of trades can be implemented by a discretionary approach, with
@@ -420,15 +517,18 @@
     number of people actively engaged in trading shares at Goldman Sachs in 2000 and
     in 2016\. It is a trend that was foreseen 25 years ago, as Solomon and Corso (1991)
     point out:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: Computers have revolutionized the trading of securities and the stock market
     is currently in the midst of a dynamic transformation. It is clear that the market
     of the future will not resemble the markets of the past.
+  id: totrans-86
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: ''
+  id: totrans-87
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -439,6 +539,7 @@
     a single global market for the trading of securities. The continuing improvements
     in technology will make it possible to execute trades globally by electronic trading
     systems.
+  id: totrans-88
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -454,6 +555,7 @@
     not allow one to perfectly hedge away market risks affecting options, but it is
     useful in getting close to the ideal and is therefore still used on a large scale
     in the financial industry.^([5](ch01.html#idm45785397451960))
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: This book focuses on algorithmic trading in the context of *alpha generating
@@ -465,12 +567,14 @@
     returns 7%, then alpha is -3% points. In general, such numbers are not adjusted
     for risk, and other risk characteristics, such as maximal drawdown (period), are
     usually considered to be of second order importance, if at all.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: This book focuses on alpha-generating strategies, or strategies that try to
     generate positive returns (above a benchmark) independent of the market’s performance.
     Alpha is defined in this book (in the simplest way) as the excess return of a
     strategy over the benchmark financial instrument’s performance.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: There are other areas where trading-related algorithms play an important role.
@@ -482,6 +586,7 @@
     (at best possible prices) of large orders or the execution of an order with as
     little market and price impact as possible. A more subtle motive might be to disguise
     an order by executing it on a number of different exchanges.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: 'An important question remains to be addressed: is there any advantage to using
@@ -492,6 +597,7 @@
     is Warren Buffett. On the other hand, statistical analyses show that the majority
     of active portfolio managers rarely beat relevant benchmarks consistently. Referring
     to the year 2015, Adam Shell writes:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: Last year, for example, when the Standard & Poor’s 500-stock index posted a
@@ -500,10 +606,12 @@
     outlook is just as gloomy, with 84% of large-cap funds generating lower returns
     than the S&P 500 in the latest five year period and 82% falling shy in the past
     10 years, the study found.^([7](ch01.html#idm45785397441432))
+  id: totrans-94
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: 'In an empirical study published in December 2016, Harvey et al. write:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: We analyze and contrast the performance of discretionary and systematic hedge
@@ -513,6 +621,7 @@
     (raw) returns, but that after adjusting for exposures to well‐known risk factors,
     the risk‐adjusted performance is similar. In the case of macro, systematic funds
     outperform discretionary funds, both on an unadjusted and risk‐adjusted basis.
+  id: totrans-96
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -522,6 +631,7 @@
     (value, momentum, etc.), and volatility (buying at-the-money puts and calls).
     The *adjusted return appraisal ratio* divides alpha by the adjusted return volatility.
     For more details and background, see the original study.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: The study’s results illustrate that systematic (“algorithmic”) macro hedge funds
@@ -531,28 +641,36 @@
     involve political and macroeconomic elements. Systematic equity hedge funds only
     beat their discretionary counterparts on the basis of the adjusted return appraisal
     ratio (0.35 versus 0.25).
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: '|  | Systematic macro | Discretionary macro | Systematic equity | Discretionary
     equity |'
+  id: totrans-99
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- | --- | --- |'
+  id: totrans-100
   prefs: []
   type: TYPE_TB
 - en: '| Return average | 5.01% | 2.86% | 2.88% | 4.09% |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
 - en: '| Return attributed to factors | 0.15% | 1.28% | 1.77% | 2.86% |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
 - en: '| Adj. return average (alpha) | 4.85% | 1.57% | 1.11% | 1.22% |'
+  id: totrans-103
   prefs: []
   type: TYPE_TB
 - en: '| Adj. return volatility | 0.93% | 5.10% | 3.18% | 4.79% |'
+  id: totrans-104
   prefs: []
   type: TYPE_TB
 - en: '| Adj. return appraisal ratio | 0.44 | 0.31 | 0.35 | 0.25 |'
+  id: totrans-105
   prefs: []
   type: TYPE_TB
 - en: Compared to the S&P 500, hedge fund performance overall was quite meager for
@@ -560,53 +678,65 @@
     8.5% to investors (see this [article](https://oreil.ly/N59Hf) in *Investopedia*).
     This illustrates how hard it is, even with multimillion dollar budgets for research
     and technology, to generate alpha.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: Python for Algorithmic Trading
+  id: totrans-107
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 'Python is used in many corners of the financial industry but has become particularly
     popular in the algorithmic trading space. There are a few good reasons for this:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
 - en: Data analytics capabilities
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: A major requirement for every algorithmic trading project is the ability to
     manage and process financial data efficiently. Python, in combination with packages
     like `NumPy` and `pandas`, makes life easier in this regard for every algorithmic
     trader than most other programming languages do.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
 - en: Handling of modern APIs
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: Modern online trading platforms like the ones from [FXCM](http://fxcm.co.uk)
     and [Oanda](http://oanda.com) offer RESTful application programming interfaces
     (APIs) and socket (streaming) APIs to access historical and live data. Python
     is in general well suited to efficiently interact with such APIs.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: Dedicated packages
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: In addition to the standard data analytics packages, there are multiple packages
     available that are dedicated to the algorithmic trading space, such as [`PyAlgoTrade`](https://oreil.ly/IpIt1)
     and [`Zipline`](https://oreil.ly/2cSKR) for the backtesting of trading strategies
     and [`Pyfolio`](https://oreil.ly/KT7V8) for performing portfolio and risk analysis.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: Vendor sponsored packages
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: More and more vendors in the space release open source Python packages to facilitate
     access to their offerings. Among them are online trading platforms like Oanda,
     as well as the leading data providers like [Bloomberg](https://oreil.ly/oSxei)
     and [Refinitiv](https://oreil.ly/1SNBN).
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: Dedicated platforms
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: '[Quantopian](http://quantopian.com), for example, offers a standardized backtesting
@@ -614,17 +744,21 @@
     where people can exchange ideas with like-minded others via different social network
     features. From its founding until 2020, Quantopian has attracted more than 300,000
     users.'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: Buy- and sell-side adoption
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: More and more institutional players have adopted Python to streamline development
     efforts in their trading departments. This, in turn, requires more and more staff
     proficient in Python, which makes learning Python a worthwhile investment.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: Education, training, and books
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: Prerequisites for the widespread adoption of a technology or programming language
@@ -633,6 +767,7 @@
     growth in such offerings recently, educating and training more and more people
     in the use of Python for finance. This can be expected to reinforce the trend
     of Python adoption in the algorithmic trading space.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: In summary, it is rather safe to say that Python plays an important role in
@@ -640,9 +775,11 @@
     important in the future. It is therefore a good choice for anyone trying to enter
     the space, be it as an ambitious “retail” trader or as a professional employed
     by a leading financial institution engaged in systematic trading.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: Focus and Prerequisites
+  id: totrans-124
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -654,15 +791,22 @@
     The reader is also expected to have some experience with typical tools used for
     interactive analytics with Python, such as `IPython`, to which VanderPlas (2016)
     also provides an introduction.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的重点是将 Python 作为算法交易的编程语言。本书假设读者已经具有一些 Python 和用于数据分析的流行 Python 包的经验。好的入门书籍包括
+    Hilpisch（2018）、McKinney（2017）和 VanderPlas（2016），这些都可以用来建立 Python 在数据分析和金融领域的扎实基础。读者也应具有一些使用
+    Python 进行交互式分析的典型工具的经验，例如 `IPython`，VanderPlas（2016）也对其进行了介绍。
 - en: This book presents and explains Python code that is applied to the topics at
     hand, like backtesting trading strategies or working with streaming data. It cannot
     provide a thorough introduction to all packages used in different places. It tries,
     however, to highlight those capabilities of the packages that are central to the
     exposition (such as vectorization with `NumPy`).
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书呈现并解释了应用于所讨论主题的 Python 代码，例如回测交易策略或处理流数据。它不能对不同地方使用的所有包提供全面的介绍。但它尝试着突出这些包的那些对于表达（例如
+    `NumPy` 的向量化）的核心能力。
 - en: The book also cannot provide a thorough introduction and overview of all financial
     and operational aspects relevant for algorithmic trading. The approach instead
     focuses on the use of Python to build the necessary infrastructure for automated
@@ -672,25 +816,34 @@
     (statistical) verification or an in-depth discussion of their intricacies. Whenever
     it seems appropriate, references are given that point the reader to sources that
     address issues left open during the exposition.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书也无法对算法交易相关的所有财务和运营方面进行全面介绍和概述。相反，该方法侧重于使用 Python 构建自动算法交易系统所需的基础设施。当然，大多数例子都来自算法交易领域。然而，当涉及动量或均值回归策略时，它们更多地被简单地使用，而没有提供（统计）验证或对其复杂性的深入讨论。每当适当时，都会提供参考资料，指向解决在表达过程中留下的问题的来源。
 - en: All in all, this book is written for readers who have some experience with both
     Python and (algorithmic) trading. For such a reader, the book is a practical guide
     to the creation of automated trading systems using Python and additional packages.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 总的来说，本书是为那些既有 Python 又有（算法）交易经验的读者编写的。对于这样的读者，本书是使用 Python 和其他包构建自动化交易系统的实用指南。
 - en: This book uses a number of Python programming approaches (for example, object
     oriented programming) and packages (for example, `scikit-learn`) that cannot be
     explained in detail. The focus is on applying these approaches and packages to
     different steps in an algorithmic trading process. It is therefore recommended
     that those who do not yet have enough Python (for finance) experience additionally
     consult more introductory Python texts.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书采用了许多 Python 编程方法（例如，面向对象编程）和包（例如，`scikit-learn`），这些方法和包无法详细解释。重点是将这些方法和包应用于算法交易过程的不同步骤。因此，建议那些尚未具有足够
+    Python（金融）经验的人额外查阅更多入门 Python 文本。
 - en: Trading Strategies
+  id: totrans-130
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 交易策略
 - en: Throughout this book, four different algorithmic trading strategies are used
     as examples. They are introduced briefly in the following sections and in some
     more detail in [Chapter 4](ch04.html#vectorized_backtesting). All these trading
@@ -706,13 +859,16 @@
     discussions and the Python implementations concise and easier to understand, in
     line with the approach (discussed earlier) of focusing on Python for algorithmic
     trading.^([9](ch01.html#idm45785393679512))
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: The remainder of this chapter gives a quick overview of the four trading strategies
     used in this book.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: Simple Moving Averages
+  id: totrans-133
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -722,9 +878,11 @@
     is that a shorter-term SMA being higher in value than a longer term SMA signals
     a long market position and the opposite scenario signals a neutral or short market
     position.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: Momentum
+  id: totrans-135
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -733,9 +891,11 @@
     time. For example, when a stock index has seen a negative return on average over
     the last five days, it is assumed that its performance will be negative tomorrow,
     as well.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: Mean Reversion
+  id: totrans-137
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -744,9 +904,11 @@
     For example, assume that a stock trades 10 USD under its 200 days SMA level of
     100\. It is then expected that the stock price will return to its SMA level sometime
     soon.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: Machine and Deep Learning
+  id: totrans-139
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -754,6 +916,7 @@
     box approach to predicting market movements. For simplicity and reproducibility,
     the examples in this book mainly rely on historical return observations as features
     to train machine and deep learning algorithms to predict stock market movements.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: This book does not introduce algorithmic trading in a systematic fashion. Since
@@ -763,9 +926,11 @@
     of the fact that the algorithmic trading world in general is secretive and that
     almost everyone who is successful is naturally reluctant to share their secrets
     in order to protect their sources of success (that is, their alpha).
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: Conclusions
+  id: totrans-142
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -777,6 +942,7 @@
     among them the fact that some of the biggest buy- and sell-side institutions make
     heavy use of Python in their trading operations and constantly look for seasoned
     Python professionals.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: This book focuses on applying Python to the different disciplines in algorithmic
@@ -785,125 +951,151 @@
     in general. However, it systematically combines these two fascinating worlds to
     provide a valuable source for the generation of alpha in today’s competitive financial
     and cryptocurrency markets.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: References and Further Resources
+  id: totrans-145
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: 'Black, Fischer, and Myron Scholes. 1973\. “The Pricing of Options and Corporate
     Liabilities.” *Journal of Political Economy* 81 (3): 638-659.'
+  id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Chan, Ernest. 2013\. *Algorithmic Trading: Winning Strategies and Their Rationale*.
     Hoboken et al: John Wiley & Sons.'
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Dorn, Anne, Daniel Dorn, and Paul Sengmueller. 2008\. “Why Do People Trade?”
     *Journal of Applied Finance* (Fall/Winter): 37-50.'
+  id: totrans-149
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Harvey, Campbell, Sandy Rattray, Andrew Sinclair, and Otto Van Hemert. 2016\.
     “Man vs. Machine: Comparing Discretionary and Systematic Hedge Fund Performance.”
     *The Journal of Portfolio Management* White Paper, Man Group.'
+  id: totrans-150
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Hilpisch, Yves. 2015\. *Derivatives Analytics with Python: Data Analysis, Models,
     Simulation, Calibration and Hedging*. Wiley Finance. Resources under [*http://dawp.tpq.io*](http://dawp.tpq.io).'
+  id: totrans-151
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '⸻. 2018\. *Python for Finance: Mastering Data-Driven Finance*. 2nd ed. Sebastopol:
     O’Reilly. Resources under [*https://py4fi.pqp.io*](https://py4fi.pqp.io).'
+  id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '⸻. 2020\. *Artificial Intelligence in Finance: A Python-Based Guide*. Sebastopol:
     O’Reilly. Resources under [*https://aiif.pqp.io*](https://aiif.pqp.io).'
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Kissel, Robert. 2013\. *The Science of Algorithmic Trading and Portfolio Management*.
     Amsterdam et al: Elsevier/Academic Press.'
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Lewis, Michael. 2015\. *Flash Boys: Cracking the Money Code*. New York, London:
     W.W. Norton & Company.'
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'McKinney, Wes. 2017\. *Python for Data Analysis: Data Wrangling with Pandas,
     NumPy, and IPython*. 2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Merton, Robert. 1973\. “Theory of Rational Option Pricing.” *Bell Journal of
     Economics and Management Science* 4: 141-183.'
+  id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Narang, Rishi. 2013\. *Inside the Black Box: A Simple Guide to Quantitative
     and High Frequency Trading*. Hoboken et al: John Wiley & Sons.'
+  id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Solomon, Lewis, and Louise Corso. 1991\. “The Impact of Technology on the Trading
     of Securities: The Emerging Global Market and the Implications for Regulation.”
     *The John Marshall Law Review* 24 (2): 299-338.'
+  id: totrans-159
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'VanderPlas, Jake. 2016\. *Python Data Science Handbook: Essential Tools for
     Working with Data*. Sebastopol: O’Reilly.'
+  id: totrans-160
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: ^([1](ch01.html#idm45785394843768-marker)) “Too Squid to Fail.” *The Economist*,
     29\. October 2016.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: ^([2](ch01.html#idm45785394872712-marker)) For details, see Hilpisch (2018,
     ch. 12).
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: ^([3](ch01.html#idm45785393485592-marker)) For example, `list` objects are not
     only mutable, which means that they can be changed in size, but they can also
     contain almost any other kind of Python object, like `int`, `float`, `tuple` objects
     or `list` objects themselves.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: ^([4](ch01.html#idm45785397477592-marker)) See [The Mathematics of the Rubik’s
     Cube](https://oreil.ly/16pIA) or [Algorithms for Solving Rubik’s Cube.](https://oreil.ly/XM0ZP)
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: ^([5](ch01.html#idm45785397451960-marker)) See Hilpisch (2015) for a detailed
     analysis of delta hedging strategies for European and American options using Python.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: ^([6](ch01.html#idm45785397446152-marker)) See the book by Lewis (2015) for
     a non-technical introduction to HFT.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: '^([7](ch01.html#idm45785397441432-marker)) Source: “66% of Fund Managers Can’t
     Match S&P Results.” *USA Today*, March 14, 2016.'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: ^([8](ch01.html#idm45785397437656-marker)) Annualized performance (above the
     short-term interest rate) and risk measures for hedge fund categories comprising
     a total of 9,000 hedge funds over the period from June 1996 to December 2014.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: ^([9](ch01.html#idm45785393679512-marker)) See the book by Kissel (2013) for
     an overview of topics related to algorithmic trading, the book by Chan (2013)
     for an in-depth discussion of momentum and mean-reversion strategies, or the book
     by Narang (2013) for a coverage of quantitative and HFT trading in general.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL

@@ -1,19 +1,26 @@
 - en: Chapter 7\. Probabilistic Machine Learning with Generative Ensembles
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第7章。生成集成的概率机器学习
 - en: Don’t look for the needle in the haystack. Just buy the haystack!
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 不要在干草堆里找针。直接买下整个干草堆！
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: — John Bogle, inventor of the index fund and founder of the Vanguard Group
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: — 约翰·博格尔，指数基金发明者及先锋集团创始人
 - en: Most of us probably didn’t know we were learning one of the most powerful and
     robust ML algorithms in high school when we were finding the line of best fit
     to a scatter of data points. The ordinary least squares (OLS) algorithm that is
@@ -23,8 +30,10 @@
     in general. Linear regression and classification models are considered to be the
     most basic artificial neural networks. It is for these reasons that linear models
     are considered to be the “mother of all parametric models.”
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数人可能不知道，在高中时，我们学习到了最强大和最稳健的机器学习算法之一，即通过找到数据点的最佳拟合直线来进行普通最小二乘（OLS）算法的估计。这一算法是由阿德里安-玛丽·勒让德和卡尔·高斯在两百多年前开发的，用于估计线性回归模型的参数。这类模型拥有最悠久的历史，并被视为通用机器学习模型的基准。线性回归和分类模型被认为是最基础的人工神经网络模型。正因如此，线性模型被称为“所有参数模型的鼻祖”。
 - en: 'Linear regression models play a pivotal role in modern financial practice,
     academia, and research. The two foundational models of financial theory are linear
     regression models: the capital asset pricing model (CAPM) is a simple linear regression
@@ -34,8 +43,10 @@
     feature such as the inflation rate. Linear models are also the model of choice
     for many high-frequency traders (HFT), who are some of the most sophisticated
     algorithmic traders in the industry.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归模型在现代金融实践、学术界和研究中发挥着至关重要的作用。金融理论的两个基础模型都是线性回归模型：资本资产定价模型（CAPM）是一个简单的线性回归模型；而套利定价理论模型（APT）是一个多重回归模型。投资经理广泛使用的因子模型只是带有公共和专有因子的多重回归模型。因子是金融特征，如通货膨胀率。线性模型也是许多高频交易者（HFT）的首选模型，后者是行业中最复杂的算法交易者之一。
 - en: There are many reasons why linear regression models are so popular. These models
     have a sound mathematical foundation and have been applied extensively in various
     fields—from astronomy to medicine to economics—for over two centuries. They are
@@ -46,8 +57,10 @@
     regression models can be trained very quickly and handle noisy financial data
     well. They are highly scalable to large datasets and become even more powerful
     in higher-dimensional spaces.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性回归模型之所以如此受欢迎有很多原因。这些模型有坚实的数学基础，并在过去两个多世纪中在各个领域广泛应用——从天文学到医学再到经济学。它们被视为基础模型和任何解决方案的第一近似。线性回归模型有一个封闭的解析解，大多数人在高中就学过。这些模型易于构建和解释。大多数电子表格软件包都已经内置了这种算法及相关的统计分析。线性回归模型可以快速训练，并能很好地处理嘈杂的金融数据。它们在大数据集上高度可伸缩，并在更高维度的空间中变得更加强大。
 - en: In this chapter, we examine how a probabilistic linear regression model is fundamentally
     different from a conventional/frequentist linear regression model that is based
     on maximum likelihood estimates (MLE) of parameters. Probabilistic models are
@@ -55,23 +68,31 @@
     realities. As usual, probabilistic models demonstrate this usefulness by including
     the additional dimension of epistemic uncertainty about the model’s parameters
     and by explicitly including our prior knowledge or ignorance about them.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们探讨了概率线性回归模型与基于最大似然估计（MLE）参数的传统/频率线性回归模型在本质上的区别。概率模型比MLE模型更有用，因为它们在对金融现实建模时更少出错。通常情况下，概率模型通过包含关于模型参数的认知不确定性的附加维度，以及明确包含我们的先验知识或无知来展示其有用性。
 - en: The inclusion of epistemic uncertainty in the model transforms probabilistic
     machine learning into a form of ensemble machine learning since each set of possible
     parameters generates a different regression model. This also has the desirable
     effect of increasing the uncertainty of the model’s predictions when the ensemble
     has to extrapolate beyond the training or test data. As discussed in [Chapter 6](ch06.html#the_dangers_of_conventional_ai_systems),
     we want our ML system to be aware of its ignorance. A model should know its limitations.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在模型中加入认知不确定性将概率机器学习转变为集成机器学习的一种形式，因为每组可能的参数生成不同的回归模型。这还具有当集成需要在训练数据或测试数据之外进行外推时增加模型预测不确定性的理想效果。如
+    [第六章](ch06.html#the_dangers_of_conventional_ai_systems) 中所讨论的，我们希望我们的ML系统能够意识到它的无知。一个模型应该了解自己的局限性。
 - en: We demonstrate these fundamental differences in approach by developing a probabilistic
     market model (MM) that transforms the MLE-based MM that we worked on in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
     We also use credible intervals instead of flawed confidence intervals. Furthermore,
     our probabilistic models seamlessly simulate data before and after being trained
     on in-sample data.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过开发一个概率市场模型（MM）来展示这些方法论上的基本差异，该模型转变了我们在 [第四章](ch04.html#the_dangers_of_conventional_statistical)
+    中使用的基于MLE的市场模型。我们还使用可信区间而不是有缺陷的置信区间。此外，我们的概率模型可以在内部数据训练之前和之后无缝地模拟数据。
 - en: Numerical computations of probabilistic models present a major challenge in
     applying probabilistic machine learning (PML) models to real-world problems. The
     grid approximation method that we used in the previous chapter does not scale
@@ -85,12 +106,17 @@
     algorithms in machine learning. These advanced MCMC sampling algorithms can be
     applied to problems with a basic understanding of the complex mathematics underpinning
     them, as discussed in [Chapter 6](ch06.html#the_dangers_of_conventional_ai_systems).
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在将概率模型应用于现实世界问题时，概率模型的数值计算提出了重大挑战。我们在上一章中使用的网格逼近方法在参数数量增加时并不适用。在前一章中，我们介绍了马尔可夫链蒙特卡洛（MCMC）采样方法。在本章中，我们将使用PyMC库构建我们的PML模型，这是Python中最流行的开源概率机器学习库。PyMC的语法接近实际开发中概率模型的方式。它具有几种高级的MCMC和其他概率算法，如汉密尔顿蒙特卡洛（HMC）和自动微分变分推断（ADVI），可以说是机器学习中一些最复杂的算法。这些高级MCMC采样算法可以应用于具有基本理解复杂数学支持的问题，如
+    [第六章](ch06.html#the_dangers_of_conventional_ai_systems) 中所讨论的。
 - en: MLE Regression Models
+  id: totrans-11
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: MLE回归模型
 - en: Deterministic linear models, such as those found in physics and engineering,
     make mind-blowingly precise estimates and predictions that market participants
     can only dream about for their financial models. On the other hand, all nondeterministic
@@ -100,88 +126,126 @@
     by the vertical lines that go from the line of best fit to the observed data points.
     The goal of training the model is to learn the optimal parameters that minimize
     some average of the residuals.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定性线性模型，如物理学和工程学中的模型，提供了令市场参与者们为其财务模型所梦寐以求的极其精确的估计和预测。另一方面，所有的非确定性或统计线性模型都包含一个随机成分，该成分捕捉了模型预测（Y）与观察值（Y'）之间的差异。这种差异称为残差，并且在
+    [图 7-1](#the_line_of_best_fit_of_a_linear_regres) 中通过从最佳拟合线到观测数据点的垂直线来表示。训练模型的目标是学习最优参数，以最小化残差的某种平均值。
 - en: '![The line of best fit of a linear regression model. The residuals are the
     vertical lines between the observed data and the fitted line.](assets/pmlf_0701.png)'
+  id: totrans-13
   prefs: []
   type: TYPE_IMG
+  zh: '![线性回归模型的最佳拟合线。残差是观测数据与拟合线之间的垂直线。](assets/pmlf_0701.png)'
 - en: Figure 7-1\. The line of best fit of a linear regression model. The residuals
     are the vertical lines between the observed data and the fitted line.^([1](ch07.html#ch07fn1))
+  id: totrans-14
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图7-1. 线性回归模型的最佳拟合线。残差是观测数据与拟合线之间的垂直线。^([1](ch07.html#ch07fn1))
 - en: 'As shown in [Figure 7-1](#the_line_of_best_fit_of_a_linear_regres), the target
     (Y) of a simple linear regression model has only one feature (X) and is expressed
     as:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 如[图 7-1](#the_line_of_best_fit_of_a_linear_regres)所示，简单线性回归模型的目标（Y）只有一个特征（X），表达为：
 - en: Y = a + b × X + e, where a and b are constants to be learned from training data
     by minimizing the residual, e = Y − Y′.
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Y = a + b × X + e，其中 a 和 b 是通过最小化残差 e = Y − Y′ 从训练数据中学习的常数。
 - en: 'A multiple linear regression model uses a linear combination of more than one
     feature for predicting the target. The general form of linear regression is expressed
     as:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 多元线性回归模型使用多个特征的线性组合来预测目标。线性回归的一般形式表达为：
 - en: Y = b[0] + b[1] × X[1] + b[2] × X[2] + …+ b[n] × X[n] + e, where b[0] − b[n]
     are constants to be learned from training data by minimizing the residual, e =
     Y − Y′.
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Y = b[0] + b[1] × X[1] + b[2] × X[2] + …+ b[n] × X[n] + e，其中 b[0] − b[n] 是从训练数据中学习的常数，通过最小化残差
+    e = Y − Y′。
 - en: It is important to note that in a linear model, it is the coefficients (b[0]
     – b[n]) that have to be linear, and not the features. Recall from [Chapter 4](ch04.html#the_dangers_of_conventional_statistical)
     that a financial analyst, relying on modern portfolio theory and the practice
     of the frequentist statistical approach, incorrectly assumes that there is an
     underlying, time-invariant, stochastic process generating the price data of an
     asset such as a stock.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，在线性模型中，必须使得系数（b[0] – b[n]）是线性的，而不是特征本身。回想一下[第4章](ch04.html#the_dangers_of_conventional_statistical)中提到的，一个依赖于现代投资组合理论和频率统计方法的金融分析师错误地假设，存在一个潜在的、时间不变的、随机过程来生成像股票这样的资产的价格数据。
 - en: Market Model
+  id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 市场模型
 - en: 'This stochastic process can be modeled as an MM, which is basically a simple
     linear regression model of the realized excess returns of the stock (target) regressed
     on the realized excess returns of the overall market (feature), as formulated
     here:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个随机过程可以被建模为一个MM，基本上是一个简单线性回归模型，股票的实现超额收益（目标）回归到整体市场的实现超额收益（特征），如下所示：
 - en: (R − F) = a + b (M − F) + e                      *(Equation 7.1)*
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: (R − F) = a + b (M − F) + e                      *(方程 7.1)*
 - en: Y = (R – F) is the target, X = (M − F) is the feature.
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Y = (R – F) 是目标，X = (M − F) 是特征。
 - en: R is the realized return of the stock.
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: R 是股票的实现收益。
 - en: F is the return on a risk-free asset (such as the 10-year US Treasury note).
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: F 是无风险资产的回报（如10年期美国国债）。
 - en: M is the realized return of a market portfolio (such as the S&P 500 index).
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: M 是市场投资组合（如标准普尔500指数）的实现收益。
 - en: a (alpha) is the expected stock-specific return.
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: a（alpha）是预期的特定股票收益。
 - en: b (beta) is the level of systematic risk exposure to the market.
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: b（贝塔）是对市场系统风险敞口的水平。
 - en: e (residual) is the unexpected stock-specific return.
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: e（残差）是未预期的特定股票收益。
 - en: Even though the alpha and beta parameters of this underlying random process
     may be unknown or unknowable, the analyst is made to believe that these parameters
     are constant and have “true” values. The assumed time-invariant nature of this
@@ -191,33 +255,48 @@
     It is the randomness of sample-to-sample data that creates aleatory uncertainty
     in the estimates of the true, fixed parameters, according to frequentists. The
     aleatory uncertainty of the parameters is captured by the residual, e = (Y – Y′).
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管这个潜在随机过程的 alpha 和 beta 参数可能是未知的或无法得知的，但分析师被误导认为这些参数是恒定的并且具有“真实”值。这个隐含的时间不变性随机过程的假设意味着，模型参数可以从涉及的各种证券的价格数据的任意随机样本中估计出来，这些数据跨越了相当长的时间。这个隐含假设被称为静态遍历条件。根据频率主义者的观点，样本到样本数据的随机性创造了真实固定参数估计的不确定性，这种参数的随机不确定性被残差
+    e = (Y – Y′) 所捕捉。
 - en: Model Assumptions
+  id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 模型假设
 - en: 'Many analysts are generally not aware that in order to make sound inferences
     about the model parameters, they have to make further assumptions about the residuals
     based on the Gauss-Markov theorem, namely:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多分析师通常没有意识到，为了对模型参数做出合理的推断，他们必须基于高斯-马尔可夫定理对残差做进一步假设，即：
 - en: The residuals are independent and identically distributed.
+  id: totrans-33
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 残差是独立同分布的。
 - en: The expected mean of the residuals is zero.
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 残差的期望均值为零。
 - en: The variance of the residuals is constant and finite.
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 残差的方差是恒定的且有限。
 - en: Learning Parameters Using MLE
+  id: totrans-36
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用MLE学习参数
 - en: If the analyst assumes that the residuals are normally distributed, then it
     can be shown with basic calculus that the maximum likelihood estimate (MLE) for
     both parameters, alpha and beta, have the same values as those obtained using
@@ -226,70 +305,97 @@
     the mean squared error or the expected value of the square of the residuals E[(Y
     − Y′)²)]. However, the MLE algorithm is preferred over the OLS algorithm because
     it can be applied to many different types of likelihood functions.^([2](ch07.html#ch07fn2))
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果分析人员假设残差服从正态分布，那么可以用基本的微积分证明，最大似然估计（MLE）的α和β两个参数与我们在高中学到并在[第四章](ch04.html#the_dangers_of_conventional_statistical)应用Statsmodels库中使用的OLS算法得到的值相同。这是因为这两种算法都在最小化均方误差或残差平方的期望值E[(Y
+    − Y′)²)]。然而，MLE算法优于OLS算法，因为它可以适用于许多不同类型的似然函数。^([2](ch07.html#ch07fn2))
 - en: It is common knowledge that while financial data are abundant, they have very
     low signal-to-noise ratios. One of the biggest risks in financial ML is that of
     variance or overfitting of data. When the model is trained on data, the algorithm
     learns the noise instead of the signal. This results in model parameter estimates
     that vary wildly from sample to sample. Consequently, the model performs poorly
     in out-of-sample testing.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 众所周知，尽管财务数据丰富，但它们的信噪比非常低。金融机器学习中最大的风险之一是数据的方差或过拟合。当模型在数据上训练时，算法学习的是噪声而不是信号。这导致模型参数估计在样本之间变化非常大。因此，模型在样本外测试中表现不佳。
 - en: In multiple linear regression, overfitting of the data also occurs because the
     model might have highly correlated features. This is also called multicollinearity
     and is common in the financial and business world, where most features are interconnected,
     especially in times of financial distress.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 在多元线性回归中，数据的过拟合也会发生，因为模型可能具有高度相关的特征。这也称为多重共线性，在金融和商业世界中很常见，特别是在金融困境时期，大多数特征都相互关联。
 - en: Conventional statisticians have developed two ad hoc methods called regularizations
     to reduce this overfitting of noisy data by creating a penalty term in the optimization
     algorithm for reducing the impact of any one parameter. Never mind that this is
     the antithesis of the frequentist decree of letting “only the data speak for themselves.”
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 传统统计学家开发了两种临时方法称为正则化，通过在优化算法中创建惩罚项来减少噪声数据的过拟合，减少任何一个参数的影响。别管这是让“只让数据自己说话”的频率学派法则的反义。
 - en: 'There are two types of regularization methods that penalize model complexity:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种惩罚模型复杂性的正则化方法：
 - en: Lasso or L1 regularization
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: Lasso或L1正则化
 - en: Penalizes the sum of the absolute values of the parameters. In Lasso regression,
     many of the parameters are shrunk to zero. Lasso is also used to eliminate correlated
     features and improve the interpretation of complex models.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 惩罚参数的绝对值之和。在Lasso回归中，许多参数都会被收缩到零。Lasso也用于消除相关特征并改善复杂模型的解释性。
 - en: Ridge or L2 regularization
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 岭回归或L2正则化
 - en: Penalizes the sum of the coefficients squared of the parameters. In ridge regression,
     all parameters are shrunk to near zero, which reduces the impact of any one feature
     on the target variable.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 惩罚参数系数的平方和。在岭回归中，所有参数都会被收缩到接近零，这减少了任何一个特征对目标变量的影响。
 - en: In other words, instead of “only letting the data speak for themselves,” L2
     regularization stifles all the voices, while L1 regularization silences many of
     them. Of course, models are regularized to make them useful in finance and investing,
     where data are extremely noisy, and the following Fisher’s dictum results in regression
     models failing abysmally and losing money.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，L2正则化不仅“让数据自己说话”，而且让所有声音都变得沉默，而L1正则化则让许多声音静音。当然，模型被正则化是为了使其在金融和投资中有用，那里的数据极其嘈杂，而以下的Fisher法则导致回归模型惨败并且亏损。
 - en: Quantifying Parameter Uncertainty with Confidence Intervals
+  id: totrans-47
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 用置信区间量化参数不确定性
 - en: After estimating the model parameters from training data, the analyst computes
     the confidence intervals for alpha and beta to quantify their aleatory uncertainty.
     Most analysts are unaware about the three types of errors of using confidence
     intervals and don’t understand their flaws, as was discussed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
     If they did, they would never use confidence intervals in financial analysis except
     in special cases when the central limit theorem applies.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 从训练数据估计模型参数后，分析师计算alpha和beta的置信区间，以量化它们的随机不确定性。大多数分析师不了解使用置信区间的三种错误类型，并不理解它们的缺陷，正如在[第4章](ch04.html#the_dangers_of_conventional_statistical)中所讨论的那样。如果他们了解的话，他们在金融分析中除了在中心极限定理适用的特殊情况下，将不会使用置信区间。
 - en: Predicting and Simulating Model Outputs
+  id: totrans-49
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 预测和模拟模型输出
 - en: Now that the linear model has been built, it is tested on unseen data to evaluate
     its usefulness for estimating and predicting. The same type of scoring algorithms
     that are used to evaluate the performance of the model on training data are used
@@ -298,12 +404,16 @@
     in [Chapter 3](ch03.html#quantifying_output_uncertainty_with_mon). This is because
     MLE models are not generative models. They do not learn the underlying statistical
     structure of the data and so are unable to simulate data.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在线性模型已经建立，可以在未见数据上进行测试，以评估其用于估计和预测的实用性。与评估模型在训练数据上表现的评分算法相同，也会用于测试数据，计算其实用性。然而，要模拟数据，分析师将不得不建立一个单独的蒙特卡罗模拟（MCS）模型，如在[第3章](ch03.html#quantifying_output_uncertainty_with_mon)中讨论的那样。这是因为MLE模型不是生成模型。它们不会学习数据的潜在统计结构，因此无法模拟数据。
 - en: Probabilistic Linear Ensembles
+  id: totrans-51
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 概率线性集成
 - en: In MLE modeling, the financial analyst tries to build models that are expected
     to emulate a “true” model that is supposedly optimal, elegant, and eternal. In
     probabilistic modeling, the financial analyst is freed from such ideological burdens.
@@ -312,29 +422,37 @@
     know that all models are wrong regardless of whether they are treated as prophetic
     or pathetic. We only evaluate them on their usefulness in achieving our financial
     goals.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 在极大似然估计（MLE）建模中，财务分析师试图构建预计能够模拟“真实”模型的模型，这种模型被认为是最优的、优雅的和永恒的。在概率建模中，财务分析师摆脱了这种意识形态的负担。他们无需为其金融模型仅仅是近似、混乱和短暂而道歉，因为这些模型仅仅反映了数学和市场的现实。我们知道，所有模型都是错误的，无论它们是被视为预言还是可悲的。我们仅仅根据它们在实现我们的财务目标方面的有用性来评估它们。
 - en: 'The financial analyst using the probabilistic framework not only applies the
     inverse probability rule, but also inverts the MLE modeling paradigm. Spurning
     ideological dictums of orthodox statistics in favor of common sense and the principles
     of the scientific method, they invert the conventional treatment of data and parameters:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用概率框架的财务分析师不仅应用逆概率规则，还颠覆了MLE建模范式。他们摒弃了正统统计学的意识形态教条，转而采用常识和科学方法的原则，他们颠覆了数据和参数的传统处理方式：
 - en: Training data of excess returns, such as Y = (R − F) and X = (M − F), are treated
     as constants because their values have already been realized and recorded and
     will never change. That is the epitome of what a constant means.
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 超额回报的训练数据，如Y = (R − F)和X = (M − F)，被视为常数，因为它们的值已经实现和记录，永远不会改变。这就是常数意味着什么的典范。
 - en: Model parameters, such as alpha (a), beta (b), and the residual (e), are treated
     as variables with probability distributions since their values are unknown and
     uncertain. Financial model parameters have aleatory, epistemic, and ontological
     uncertainty. Their estimates keep changing depending on the sample used, assumptions
     applied, and the time period involved. That is the quintessence of what a variable
     means.
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模型参数，如alpha（α）、beta（β）和残差（e），被视为具有概率分布的变量，因为它们的值是未知和不确定的。金融模型参数存在随机性、认知性和本体性不确定性。它们的估计值会随着使用的样本、应用的假设和涉及的时间段而变化。这就是变量意味着什么的本质。
 - en: The analyst understands that the search for any “true” constant parameter value
     of a financial model is a fool’s errand. This is because the dynamic randomness
     of markets and their participants ensure that probability distributions are never
@@ -342,8 +460,10 @@
     emotional human beings make a mockery of theoretical, MLE-based “absolutist” financial
     models almost every day. The frequentist claim that financial model parameters
     have “true” values is simply unscientific, ideological drivel.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 分析师明白，寻找金融模型的任何“真实”恒定参数值是一件愚蠢的事情。这是因为市场的动态随机性及其参与者确保概率分布从不是静态遍历的。这些分析师痛苦地意识到，有创造力、自由意志、情感丰富的人类几乎每天都在嘲笑理论上基于MLE的“绝对主义”金融模型。频率主义者声称金融模型参数具有“真实”值简直是不科学、意识形态的废话。
 - en: 'We will use the probabilistic framework to explicitly state our assumptions
     and assign specific probability distributions to all the terms of the probabilistic
     framework so far discussed. Each probability distribution has additional parameters
@@ -352,52 +472,73 @@
     analysts will change any and all probability distributions, including their parameters.
     All financial models are developed based on the most fundamental of heuristic
     techniques: trial and error.'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用概率框架明确陈述我们的假设，并为到目前为止讨论过的概率框架中的所有术语分配具体的概率分布。每个概率分布都有额外的参数，分析师将必须估计这些参数。分析师必须指明他们选择的理由。如果在测试阶段模型失败，分析师将改变所有概率分布，包括它们的参数。所有的金融模型都是基于最基本的试错技术开发的。
 - en: 'In a probabilistic framework, we apply the inverse probability rule to estimate
     our model parameters, as developed in [Chapter 5](ch05.html#the_probabilistic_machine_learning_fram).
     After we have designed our model, we will develop it in Python using the PyMC
     library. Based on the terms defined for the MM, the probabilistic linear ensemble
     (PLE) is formulated as:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在概率框架中，我们应用逆概率规则来估计我们的模型参数，如在 [第5章](ch05.html#the_probabilistic_machine_learning_fram)
+    中发展的那样。设计完模型后，我们将使用Python和PyMC库开发它。基于MM定义的术语，概率线性集成（PLE）被表述为：
 - en: P(a, b, e| X, Y) = P(Y| a, b, e, X) P(a, b, e) / P(Y|X) where
+  id: totrans-59
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(a, b, e| X, Y) = P(Y| a, b, e, X) P(a, b, e) / P(Y|X)，其中
 - en: Y = a + b × X + e, as expressed in the MLE linear model, but without its explicit
     or implicit assumptions. These will be specified explicitly in the PLE.
+  id: totrans-60
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Y = a + b × X + e，如MLE线性模型中所述，但不包括其明示或暗示的假设。这些将在PLE中明确指定。
 - en: P(a, b, e) are the prior probabilities of all model parameters before observing
     the training data (X, Y).
+  id: totrans-61
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(a, b, e) 是在观察训练数据 (X, Y) 之前所有模型参数的先验概率。
 - en: P(Y| a, b, e, X) is the likelihood of observing the target training data Y given
     the parameters a, b, e, and feature training data X.
+  id: totrans-62
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(Y| a, b, e, X) 是在给定参数 a, b, e 和特征训练数据 X 的情况下观察目标训练数据 Y 的似然性。
 - en: P(Y|X) is the marginal likelihood of observing the training values of target
     Y given the training values of feature X averaged over all possible prior values
     of the parameters (a, b, e).
+  id: totrans-63
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(Y|X) 是观察到特征 X 的训练值的目标 Y 的边际似然性，平均值为所有可能先验参数 (a, b, e)。
 - en: P(a, b, e| X, Y) is the posterior probabilities of the parameters a, b, e given
     the training data (X,Y).
+  id: totrans-64
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P(a, b, e| X, Y) 是在观察训练数据 (X,Y) 后参数 a, b, e 的后验概率。
 - en: We now discuss each component of the PLE model in more detail.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在详细讨论PLE模型的每个组成部分。
 - en: Prior Probability Distributions P(a, b, e)
+  id: totrans-66
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 先验概率分布 P(a, b, e)
 - en: Before the analyst sees any training data (X,Y), they may specify the prior
     probability distributions of the PLE parameters (a, b, e) and quantify their epistemic
     uncertainty. All prior distributions are assumed to be independent of one another.
@@ -408,8 +549,10 @@
     bounds of 0 and 1 should be avoided unless you are absolutely certain that a parameter
     can take these values. The main objective is to specify one of the most important
     model assumptions explicitly and quantitatively.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 在分析员看到任何训练数据（X, Y）之前，他们可以指定PLE参数（a, b, e）的先验概率分布，并量化其认识上的不确定性。所有先验分布假定彼此独立。这些先验分布可以基于个人、机构、经验或常识。如果分析员对参数没有任何先验知识，他们可以用均匀分布表达他们的无知，认为每个值在上限和下限之间是等可能的。请记住，除非您绝对确定参数可以取这些值，否则应避免设置上限和下限为0和1。主要目标是明确和定量化最重要的模型假设之一。
 - en: Given the tendency of models to overfit noisy financial data that don’t have
     any persistent structural unity, the analyst is aware that it is foolish to follow
     the orthodox dictum of “only letting the data speak for themselves.” The ad hoc
@@ -417,31 +560,43 @@
     merely prior probability distributions in disguise. It can be shown mathematically
     that L1 regularization is equivalent to using a Laplacian prior, and L2 regularization
     is equivalent to using a Gaussian prior.^([3](ch07.html#ch07fn3))
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于模型易于过度拟合嘈杂的金融数据，这些数据没有任何持久的结构统一性，分析员意识到盲目遵循“只让数据说话”的正统格言是愚蠢的。在MLE模型中的正则化方法的特设使用仅仅是伪装的先验概率分布。可以数学上证明，L1正则化等同于使用拉普拉斯先验，而L2正则化等同于使用高斯先验。^([3](ch07.html#ch07fn3))
 - en: 'The analyst systematically follows the probabilistic framework and explicitly
     quantifies their knowledge, or ignorance, about the model parameters with prior
     probability distributions. This makes the model transparent so it can be changed
     and critiqued by anyone, especially the portfolio manager. For instance, the analyst
     could assume that:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 分析员系统地遵循概率框架，并明确量化他们关于模型参数的知识或无知，使用先验概率分布。这使得模型透明，可以被任何人，尤其是投资组合经理，改变和批评。例如，分析员可以假设：
 - en: 'alpha is normally distributed: a ~Normal()'
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: alpha服从正态分布：a ~Normal()
 - en: 'beta is normally distributed: b ~Normal()'
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: beta服从正态分布：b ~Normal()
 - en: 'Residual is Half-Student’s t-distributed: e ~HalfStudentT()'
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 残差是半学生t分布的：e ~HalfStudentT()
 - en: Likelihood Function P(Y| a, b, e, X)
+  id: totrans-73
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 似然函数 P(Y| a, b, e, X)
 - en: After the analyst observes the training data (X,Y), they need to formulate a
     likelihood function that best fits that data and quantifies the aleatory uncertainty
     of the model parameters (a, b, e). This is the same likelihood function that was
@@ -451,100 +606,141 @@
     t-distribution to model the financial realities of fat-tailed asset price returns.
     Also, if the likelihood function can accommodate outliers as well as the Student’s
     t-distribution does, the linear regression is termed a robust linear regression.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 分析员观察训练数据（X, Y）后，需要制定一个最适合该数据的似然函数，并量化模型参数（a, b, e）的随机不确定性。这与MLE线性模型中使用的似然函数相同。在标准线性回归中，假定残差（e）的似然函数是高斯或正态分布。然而，分析员使用学生t分布来模拟尾部肥厚的资产价格回报的金融实际情况。此外，如果似然函数能够像学生t分布一样容纳离群值，线性回归被称为健壮线性回归。
 - en: 'Student’s t-distribution is a family of distributions that can approximate
     a range of other probability distributions based on its degrees of freedom parameter,
     v, which is a real number that can range from 0 to infinity. Student’s t-distributions
     are fat-tailed for lower values of v and get more normally distributed as v gets
     larger. It is important to note that for:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 学生t分布是一类分布，可以根据其自由度参数v来逼近一系列其他概率分布，该参数是一个实数，可以从0到无穷大。对于较小的v值，学生t分布尾部肥厚，随着v的增大，趋于正态分布。重要的是要注意：
 - en: v ≤ 1, t-distributions have no defined mean and variance
+  id: totrans-76
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当 v ≤ 1 时，t-分布没有定义的均值和方差。
 - en: 1 < v ≤ 2, t-distributions have a defined mean but no defined variance
+  id: totrans-77
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当 1 < v ≤ 2 时，t-分布具有定义的均值但没有定义的方差。
 - en: v > 30, t-distributions are approximately normally distributed
+  id: totrans-78
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当 v > 30 时，t-分布近似正态分布。
 - en: 'Say the analyst assigns a Student’s t-distribution with v = 6 to the likelihood
     function. Why v = 6? Financial research and practice has shown that this t-distribution
     does a good job of describing the fat-tailed stock price returns. So we are applying
     prior common knowledge to the choice of the likelihood function. The specific
     likelihood function can be expressed mathematically as:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设分析员将 v = 6 分配给似然函数的学生 t-分布。为什么是 v = 6？金融研究和实践表明，这种 t-分布很好地描述了尾部股票价格回报。因此，我们将先前的共同知识应用于似然函数的选择。具体的似然函数可以数学表达为：
 - en: Y ~StudentT(u, e, v = 6) where u = a + b × X and (a, b, e) are as defined by
     their prior probability distributions
+  id: totrans-80
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Y ~StudentT(u, e, v = 6)，其中 u = a + b × X，而 (a, b, e) 则由它们的先验概率分布定义。
 - en: Marginal Likelihood Function P(Y|X)
+  id: totrans-81
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 边缘似然函数 P(Y|X)
 - en: This is the hardest function to compute given it is averaging the likelihood
     functions over all the model’s parameters. The complexity increases as the types
     of probability distributions and number of parameters increase. As was mentioned
     earlier, we need groundbreaking algorithms to approximate this function numerically.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是最难计算的函数，因为它是在所有模型参数的似然函数上取平均。随着概率分布类型和参数数量的增加，复杂性也会增加。正如前面提到的，我们需要开创性的算法来数值近似这个函数。
 - en: Posterior Probability Distributions P(a, b, e| X, Y)
+  id: totrans-83
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 后验概率分布 P(a, b, e| X, Y)
 - en: 'Now that we have our model specified, we can compute the posterior probabilities
     for all our model’s parameters (a, b, e) given our training data (X,Y). To recap,
     our model is specified as follows:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经确定了我们的模型，我们可以计算所有模型参数 (a, b, e) 在给定训练数据 (X,Y) 的后验概率。总结一下，我们的模型规定如下：
 - en: Y ~StudentT(u, e, v = 6)
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Y ~StudentT(u, e, v = 6)
 - en: u = a + b × X
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: u = a + b × X
 - en: a ~Normal(), b ~Normal(), e ~HalfStudentT()
+  id: totrans-87
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: a ~Normal()，b ~Normal()，e ~HalfStudentT()
 - en: X,Y are training data pairs in a sample time period that reflect the current
     market conditions.
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: X,Y 是一个样本时间段内反映当前市场情况的训练数据对。
 - en: Model parameters, their probability distributions, and their relationships are
     displayed in [Figure 7-2](#probabilistic_market_model_showing_prio).
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型参数及其概率分布以及它们之间的关系显示在 [图 7-2](#probabilistic_market_model_showing_prio) 中。
 - en: '![Probabilistic market model showing prior distributions used for parameters
     and the likelihood function used to fit training data](assets/pmlf_0702.png)'
+  id: totrans-90
   prefs: []
   type: TYPE_IMG
+  zh: '![概率市场模型显示用于参数的先验分布及用于拟合训练数据的似然函数](assets/pmlf_0702.png)'
 - en: Figure 7-2\. Probabilistic market model showing prior distributions used for
     parameters and the likelihood function used to fit training data
+  id: totrans-91
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-2\. 概率市场模型显示用于参数的先验分布及用于拟合训练数据的似然函数。
 - en: Because of the complexity of any realistic model, especially the marginal likelihood
     function, we can only approximate the posterior distributions of each of its parameters.
     PyMC uses the appropriate state-of-the-art MCMC algorithm to simulate the posterior
     distribution by sampling from it as discussed in Chapter 6\. We then use the ArviZ
     library to explore these samples, enabling us to draw inferences and make predictions
     from them.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于任何现实模型的复杂性，尤其是边缘似然函数，我们只能近似计算其每个参数的后验分布。PyMC 使用先进的 MCMC 算法来模拟后验分布，通过从中抽样，正如第
+    6 章所讨论的那样。然后我们使用 ArviZ 库来探索这些样本，从而能够从中得出推断和预测。
 - en: Assembling PLEs with PyMC and ArviZ
+  id: totrans-93
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 使用 PyMC 和 ArviZ 组装 PLEs
 - en: Let’s now build our PLE in Python by leveraging its extensive ecosystem of powerful
     libraries. In addition to the standard Python stack of NumPy, pandas, and Matplotlib,
     we will also be using PyMC, ArviZ, and Xarray libraries. As mentioned earlier,
@@ -553,8 +749,12 @@
     ensembles. It converts inference data of probabilistic ensembles into Xarray objects,
     which are labeled, multidimensional arrays. You can search the web for links to
     the relevant documentation of the previously mentioned libraries.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们通过利用其强大的库生态系统在 Python 中构建我们的 PLE。除了 NumPy、pandas 和 Matplotlib 的标准 Python
+    栈之外，我们还将使用 PyMC、ArviZ 和 Xarray 库。正如之前提到的，PyMC 是 Python 中最流行的概率机器学习库。ArviZ 是一种概率语言无关的用于分析和可视化概率集合的工具。它将概率集合的推断数据转换为
+    Xarray 对象，这些对象是标记的、多维的数组。您可以搜索网络以获取先前提到的库的相关文档链接。
 - en: Building an ensemble of any kind requires a systematic process, and our PLE
     is no exception. We will follow the high-level ensemble-building process outlined
     in [Figure 7-3](#high_level_process_for_assembling_proba). Each phase and its
@@ -563,19 +763,28 @@
     this is an iterative, nonlinear process in practice. For instance, you could easily
     go back and forth from the training phase to the analyze features and target data
     phase. With that nonlinearity in mind, let’s go to the first phase.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建任何类型的集成都需要一个系统化的过程，我们的 PLE 也不例外。我们将按照 [图 7-3](#high_level_process_for_assembling_proba)
+    中概述的高层次集成构建过程。每个阶段及其组成部分将与相关代码一起解释。需要注意的是，即使我们将按顺序进行集成构建过程，但在实践中这是一个迭代的、非线性的过程。例如，您可以轻松地在训练阶段和分析特征和目标数据阶段之间来回切换。有了这种非线性性质，让我们开始第一个阶段。
 - en: '![High-level process for assembling probabilistic learning ensembles](assets/pmlf_0703.png)'
+  id: totrans-96
   prefs: []
   type: TYPE_IMG
+  zh: '![用于组装概率学习集合的高级过程](assets/pmlf_0703.png)'
 - en: Figure 7-3\. High-level process for assembling probabilistic learning ensembles
+  id: totrans-97
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 7-3\. 用于组装概率学习集合的高级过程
 - en: Define Ensemble Performance Metrics
+  id: totrans-98
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 定义集成性能指标
 - en: Our financial objectives and activities should drive the effort of building
     our PLE. Consequently, this influences the metrics we use to evaluate its performance.
     Our financial tasks are generally to estimate the parameters of a financial model
@@ -584,38 +793,54 @@
     propagation and forward propagation seamlessly. More importantly, these generative
     ensembles direct us to consider the aleatory and epistemic uncertainties of the
     problem we are addressing and its possible solutions.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的金融目标和活动应该推动我们构建 PLE 的努力。因此，这影响了我们用来评估其性能的度量标准。我们的金融任务通常是估计金融模型的参数或预测其输出或两者兼而有之。正如您现在所知，概率机器学习系统非常适合这两项任务，因为它们无缝地进行逆传播和正向传播。更重要的是，这些生成集合引导我们考虑我们正在解决的问题及其可能解决方案的不确定性。
 - en: Financial activities
+  id: totrans-100
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 金融活动
 - en: 'Plausible estimates of the regression parameters alpha and beta in Equation
     7.1 are required for several financial activities that are practiced in the industry:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 方程式 7.1 中回归参数 alpha 和 beta 的合理估计是行业中几种金融活动所必需的：
 - en: Jensen’s alpha
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 詹森的 alpha
 - en: By regressing the returns of a fund against the returns of its benchmark portfolio,
     investors evaluate the skill of the fund’s manager by estimating the regression’s
     alpha parameter. This metric is known as Jensen’s alpha in the industry.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将基金的回报与其基准投资组合的回报进行回归，投资者通过估计回归的 alpha 参数来评估基金经理的技能。这个度量标准在行业中被称为詹森的 alpha。
 - en: Market neutral strategies
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 市场中性策略
 - en: Alpha can also be viewed as the asset-specific expected return regardless of
     the movements of the market. If a fund manager finds this return significantly
     attractive, they can try to isolate it and capture it by hedging out the asset’s
     exposure to market movements. This also involves estimating the asset’s beta,
     or sensitivity to the market. The portfolio consisting of the asset and the hedge
     becomes indifferent or neutral to the vagaries of the market.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: Alpha也可以被视为与市场动态无关的特定资产预期收益率。如果基金经理发现这种回报率非常吸引人，他们可以尝试通过对冲资产市场波动的暴露来孤立并捕捉它。这还涉及估计资产的贝塔（beta），或对市场敏感性的评估。包含该资产和对冲的投资组合变得对市场的变化不敏感或中性。
 - en: Cross-hedging
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 交叉对冲
 - en: By assuming constant variance of the residuals in Equation 7.1, the beta parameter
     can also be shown mathematically to correlate the volatility of one asset (Y)
     with the volatility of another related asset (X). Cross-hedging programs in corporate
@@ -623,29 +848,41 @@
     by their company, say jet fuel, with another related commodity, such as oil. Treasury
     departments buy or sell financial instruments, such as futures, in the open market
     to hedge their input costs.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设方程式7.1中残差的方差恒定不变，可以数学上显示贝塔参数与一个资产（Y）的波动性和另一个相关资产（X）的波动性相关。企业财务部门的交叉对冲计划利用这种与贝塔相关的相关性，通过另一个相关商品（例如石油）对公司所需的商品（例如喷气燃料）进行对冲。财务部门在开放市场购买或出售期货等金融工具，以对冲其输入成本。
 - en: Cost of equity capital
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 股本成本
 - en: Corporate financial analysts estimate the cost of their company’s equity capital
     by estimating the realized return, R, in the regression Equation 7.1\. This is
     supposedly the expected return on their stock that their public shareholders are
     demanding. Many analysts still use their stock’s CAPM model and estimate R by
     making alpha = 0 in Equation 7.1.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 公司财务分析师通过估计回归方程式7.1中的实现回报率R来估算其公司股本的成本。这被认为是公众股东要求的其股票的预期收益率。许多分析师仍然使用其股票的CAPM模型，并通过在方程式7.1中使alpha
+    = 0来估计R。
 - en: In this chapter, we will focus on estimating Apple’s equity price returns by
     using its MM, and not its CAPM, for the reasons detailed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical).
     We will estimate the posterior probability distribution of Apple’s excess returns
     (R - F) given the current market regime. The generative linear ensemble can be
     applied to all the financial activities discussed earlier.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们将通过使用其MM而不是CAPM来估计苹果公司的股本回报率，原因详见[第四章](ch04.html#the_dangers_of_conventional_statistical)。我们将估计给定当前市场制度的苹果公司超额回报（R
+    - F）的后验概率分布。这种生成线性合奏可以应用于前述的所有财务活动中。
 - en: Objective function
+  id: totrans-111
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 目标函数
 - en: A rule that is formulated to measure the performance of a model or ensemble
     is called an objective function. This function generally measures the difference
     between the ensemble’s estimates or predictions compared with the corresponding
@@ -654,54 +891,76 @@
     mean squared error (MSE) and median absolute errors (MAE). The choice of an objective
     function depends on the business problem we are trying to solve. An objective
     function that reduces losses/costs is called a loss/cost function.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个旨在衡量模型或合奏性能的规则被称为目标函数。这个函数通常衡量合奏的估计或预测与相应实现或观察值之间的差异。在机器学习回归模型中，用于衡量预测值与观察值之间差异的常见目标函数包括均方误差（MSE）和中位绝对误差（MAE）。选择目标函数取决于我们试图解决的业务问题。减少损失/成本的目标函数称为损失/成本函数。
 - en: 'Another regression objective function is R-squared. In frequentist statistics,
     it is defined as the variance of the predicted values divided by the total variance
     of the data. Note that R-squared can be interpreted mathematically as a standardized
     MSE objective function that needs to be maximized:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个回归目标函数是R平方。在频率统计学中，它被定义为预测值的方差除以数据的总方差。请注意，R平方可以数学上解释为需要最大化的标准化MSE目标函数：
 - en: R-squared(Y) = 1 – MSE(Y)/Var(Y)
+  id: totrans-114
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: R平方(Y) = 1 - MSE(Y) / Var(Y)
 - en: Since we are dealing with aleatory and epistemic uncertainties in our probabilistic
     models, this R-squared formula has to be modified so that its value does not exceed
     1\. The probabilistic version of R-squared is modified to equal the variance of
     the predicted values divided by the variance of predicted values plus the expected
     variance of the errors. It can be interpreted as a variance decomposition.^([4](ch07.html#ch07fn4))
     We will call this version of the R-squared objective function *probabilistic R-squared*.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于我们在概率模型中处理的是偶然性和认知不确定性，因此必须修改此 R 平方公式，以便其值不超过 1。概率版本的 R 平方被修改为等于预测值的方差除以预测值的方差加上误差的预期方差。
+    它可以解释为方差分解。 我们将称这个版本的 R 平方目标函数为*概率 R 平方*。
 - en: Performance metrics
+  id: totrans-116
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 性能指标
 - en: 'As mentioned earlier, financial data are very noisy, which implies that we
     need to be realistic about the performance metrics we establish for each development
     phase. At a minimum, we want our model to do better than random guessing, i.e.,
     we want performance scores greater than 50%. We would like our PLE to meet or
     exceed the following performance metrics:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如前面提到的，金融数据非常嘈杂，这意味着我们需要对每个开发阶段建立的性能指标保持现实。 至少，我们希望我们的模型比随机猜测做得更好，即，我们希望性能得分大于
+    50%。 我们希望我们的 PLE 达到或超过以下性能指标：
 - en: Probabilistic R-squared prior score > 55%
+  id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 概率 R 平方先验分数 > 55%
 - en: Probabilistic R-squared training score > 60%
+  id: totrans-119
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 概率 R 平方训练得分 > 60%
 - en: Probabilistic R-squared test score > 65%
+  id: totrans-120
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 概率 R 平方测试得分 > 65%
 - en: 'Highest-density intervals (HDIs): 90% HDI to include almost all training and
     test data (HDI will be explained shortly)'
+  id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最高密度区间（HDIs）：90% HDI 包含几乎所有训练和测试数据（HDI 将很快解释）
 - en: Keep in mind that all these metrics will be based on personal and organization
     preferences and are imperfect, as are the models used to produce them. It requires
     judgment and domain expertise. Regardless, we will use these metrics as another
@@ -709,73 +968,111 @@
     we revise our PLE until we are confident that it will give us a high enough positive
     expected value in the financial activity we want to apply it to. Only then do
     we deploy our PLE out of the lab.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 请记住，所有这些度量标准将基于个人和组织的偏好，并且是不完美的，就像用于生成它们的模型一样。 这需要判断力和领域专业知识。 尽管如此，我们将使用这些指标作为另一个输入来帮助我们评估我们的
+    PLE，批评它，并修订它。 在实践中，我们修改我们的 PLE，直到我们确信它将为我们想要应用它的金融活动提供足够高的预期正值。 只有在那之后我们才会将我们的
+    PLE 部署到实验室之外。
 - en: Analyze Data and Engineer Features
+  id: totrans-123
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 分析数据和工程特征
 - en: We have already done data analysis of the target and features in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical)
     and in rewriting Equation 7.1.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经对目标和特征进行了数据分析，在[第 4 章](ch04.html#the_dangers_of_conventional_statistical)和重新编写方程
+    7.1 中进行了分析。
 - en: Data exploration
+  id: totrans-125
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 数据探索
 - en: In general, in this phase you would define your target of interest, such as
     predicting asset price returns or estimating volatility. These target variables
     are real valued numbers and are termed as regression targets. Alternatively, a
     target of interest could also be classification of a company’s creditworthiness
     based on predictions of whether it will default or not. These are classification
     targets that take on discrete numbers like 0 or 1.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 一般来说，在这个阶段，您将定义您感兴趣的目标，例如预测资产价格回报或估计波动性。 这些目标变量是实值数字，被称为回归目标。 或者，感兴趣的目标也可以是基于预测公司是否会违约的预测的分类。
+    这些是取值为离散数字（如 0 或 1）的分类目标。
 - en: You would then identify various sources of data that will enable you to analyze
     your target and features in sufficient detail. Data sources can be expensive,
     and you will have to figure out how to get them in a cost-effective manner. Cleaning
     and processing data from various sources is generally quite time-consuming.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，您将确定各种数据源，这些数据源将使您能够对您的目标和特征进行足够详细的分析。 数据源可能很昂贵，您将不得不想出如何以成本有效的方式获得它们。 清理和处理来自各种来源的数据通常非常耗时。
 - en: Feature engineering
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 特征工程
 - en: Recall that a feature is some representation of data that serves as an independent
     variable enabling inference or prediction of a model’s target variable. Feature
     engineering is the practice of selecting, designing, and developing a useful set
     of features that work together to enable reliable inferences or predictions of
     the target variable(s) in out-of-sample data.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住，特征是作为独立变量的数据表示，使模型的目标变量推断或预测成为可能。特征工程是选择、设计和开发一组有用的特征的实践，这些特征共同作用，使得在样本外数据上能够可靠地推断或预测目标变量。
 - en: 'To predict a target variable, such as price returns, a model can have many
     different types of features. Here are examples of various types of features:'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 要预测目标变量（例如价格回报），模型可以拥有许多不同类型的特征。以下是各种类型特征的例子：
 - en: Fundamental
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 基本面
 - en: Company sales, interest rates, exchange rates, GDP growth rate
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 公司销售，利率，汇率，GDP增长率
 - en: Technical
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 技术
 - en: Momentum indicators, fund flows, liquidity
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 动量指标，资金流动，流动性
 - en: Sentiment
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 情绪
 - en: Consumer sentiment, investor sentiment
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 消费者情绪，投资者情绪
 - en: Other
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 其他
 - en: Proprietary mathematical or statistical indicators
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 专有的数学或统计指标
 - en: After you have selected and developed a possible set of features, it is generally
     a good idea to use relative changes in feature levels, rather than absolute levels,
     as inputs into your features’ dataframe. This reduces the serial autocorrelation
@@ -784,8 +1081,10 @@
     interested in understanding if a good or bad condition is getting better or worse.
     So market participants are continually reacting to relative changes in levels
     in terms of percentages or differences.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 在选择和开发了一组可能的特征之后，通常建议使用特征级别的相对变化，而不是绝对水平，作为输入到您的特征数据框架中。这减少了金融时间序列中普遍存在的串行自相关。串行相关发生在一个变量在时间上与其自身的过去值相关联的时候。交易员和投资者通常有兴趣了解一个好的或坏的条件是变好还是变差。因此，市场参与者通常在百分比或差异的相对变化上持续反应水平。
 - en: If we have more than one feature, we need to check if some of them are highly
     correlated with one another. Recall that this issue is called multicollinearity.
     Highly correlated features can unduly amplify the same signal in data, leading
@@ -793,23 +1092,31 @@
     or no multicollinearity among features. Unfortunately, that almost never happens
     in practice. Coming up with a threshold variance above which you would remove
     redundant features is a judgment call based on the business context.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们有多个特征，我们需要检查它们是否彼此高度相关。回顾一下，这个问题被称为多重共线性。高度相关的特征可以在数据中过度放大相同的信号，导致无效的推断和预测。理想情况下，特征之间应该没有相关性或者没有多重共线性。不幸的是，这在实践中几乎从不发生。确定一个阈值方差，高于这个阈值的特征应该被移除，这是基于业务背景的判断调用。
 - en: Feature engineering is critical to the performance of all ML systems. It requires
     domain expertise, judgment, experience, common sense, and a lot of trial and error.
     These are the qualities that enable human intelligence to distinguish correlation
     from causation, which AI-enabled agents cannot do to this day.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 特征工程对所有机器学习系统的性能至关重要。它需要领域专业知识、判断力、经验、常识以及大量的试错。这些是使人类智慧能够区分相关性和因果关系的特质，而目前AI能力仍无法做到。
 - en: 'We are going to keep our feature engineering simple in this primer and leverage
     a vast body of financial knowledge and experience on market models. Our PLE has
     a single feature: the market as represented by the S&P 500 index.'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本篇介绍中，我们将保持特征工程的简单性，并利用市场模型上的广泛金融知识和经验。我们的PLE（预测建模环境）只有一个特征：由标准普尔500指数代表的市场。
 - en: Data analysis
+  id: totrans-143
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 数据分析
 - en: PLEs demonstrate their strengths when we have small datasets, such that a weak
     or flat prior is not overwhelmed by the likelihood function. Here we will look
     at 31 days of data in the last two months of last year, from 11/15/2022 to 12/31/22\.
@@ -819,66 +1126,94 @@
     Because financial time series have strong serial correlation, we cannot use the
     standard cross-validation method, since it assumes that each data sample is independent
     and identically distributed.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: PLEs 在我们拥有小数据集时展现出其优势，这样弱或平坦的先验就不会被似然函数所压倒。在过去的去年的最后两个月，即从 11/15/2022 到 12/31/22，我们将观察
+    31 天的数据。这个时期涵盖了两次联邦储备委员会会议，并且异常波动。我们将在前 21 天的数据上训练我们的 PLE，并在最后 10 天的数据上进行测试。这被称为时间序列拆分的交叉验证方法。由于金融时间序列具有较强的串行相关性，我们不能使用标准的交叉验证方法，因为它假设每个数据样本都是独立且同分布的。
 - en: 'Let’s actually download price data for Apple Inc., S&P 500, and the 10-year
     treasury note, and compute the daily price returns as we did for our linear MM
     in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical):'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们实际下载苹果公司、标准普尔 500 指数和 10 年期国库券的价格数据，并像我们对线性 MM 所做的那样计算每日价格回报率：[第四章](ch04.html#the_dangers_of_conventional_statistical)。
 - en: '[PRE0]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Develop and Retrodict Prior Ensemble
+  id: totrans-147
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 开发和反推先验集合
 - en: Let’s start developing our PLE using the PyMC library. At this point, we explicitly
     state the assumptions of our ensemble in the prior probability distributions of
     the parameters and the likelihood function. This also includes our hypothesis
     about the functional form of the underlying data-generating process, i.e., linear
     with some noise.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们开始使用 PyMC 库开发我们的 PLE。在这一点上，我们明确陈述了我们集合的假设，即参数的先验概率分布和似然函数。这还包括我们关于底层数据生成过程的功能形式的假设，即线性加上一些噪声。
 - en: After that, we check to see if the ensemble’s prior predictive distribution
     generates data that is plausible and may have occurred in the past, and are now
     in our training data sample. A prediction of a past event is called retrodiction
     and is used as a model check, before and after it is trained. If the data generated
     by the prior ensemble are implausible, because they don’t fall within our highest
     density interval, we revise all of our model assumptions.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 之后，我们检查集合的先验预测分布是否生成了可能发生在过去的、现在在我们的训练数据样本中的数据。对过去事件的预测称为反推，并用作模型检查，在训练之前和之后。如果由先验集合生成的数据不合理，因为它们不在我们的最高密度区间内，我们会修正我们所有的模型假设。
 - en: Specify distributions and their parameters
+  id: totrans-150
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 指定分布及其参数
 - en: We incorporate our prior knowledge into the ensemble by specifying the prior
     probability distributions of its parameters, P(a), P(b), and P(e). After that,
     we specify the likelihood of observing our data given the parameters, P(D | a,
     b, e).
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过指定其参数的先验概率分布 P(a)、P(b) 和 P(e) 将我们的先验知识纳入集合中。之后，我们指定了在给定参数时观察数据的似然性，即 P(D
+    | a, b, e)。
 - en: In the following Python code block, we have chosen a Student’s t-distribution
     with nu = 6 for the likelihood function of our ensemble. Of course, we could also
     add nu as another unknown parameter that needs to be inferred. However, that would
     merely increase the complexity without adding much in terms of increasing your
     understanding of the development process.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的 Python 代码块中，我们选择了学生 t 分布，其自由度为 6，作为我们集合的似然函数。当然，我们也可以将 nu 添加为另一个需要推断的未知参数。然而，这只会增加复杂性，而不会增加对开发过程的理解。
 - en: '[PRE1]'
+  id: totrans-153
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[Figure 7-2](#probabilistic_market_model_showing_prio) was generated by the
     `graphviz` method shown in the following code:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 7-2](#probabilistic_market_model_showing_prio)是通过以下代码中所示的 `graphviz` 方法生成的：'
 - en: '[PRE2]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Sample distributions and simulate data
+  id: totrans-156
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 采样分布并模拟数据
 - en: Before we train our model, we should check the usefulness of the assumptions
     of our prior ensemble. The goal is to make sure that the ensemble is good enough
     for the training phase. This is done by conducting what is called a prior predictive
@@ -886,44 +1221,66 @@
     distribution that may have been realized in the past. Recall that this is called
     a retrodiction as opposed to a prediction, which simulates a data distribution
     that is most likely to occur in the future.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们训练模型之前，我们应该检查先验集合假设的有效性。目标是确保集合对训练阶段足够好。通过进行所谓的先验预测检查来完成这一点。我们使用集合的先验预测分布来模拟可能在过去实现的数据分布。回顾这被称为回测，与预测相对应，后者模拟未来最可能发生的数据分布。
 - en: 'In the following code block, we simulate 21,000 data samples from the prior
     predictive distribution. We let ArviZ return the `InferenceData` object so that
     we can visualize and analyze the generated data samples. Expand the display after
     the inference object is returned to examine the structure of the various groups.
     We will need them for analysis and inference:'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下代码块中，我们从先验预测分布中模拟了21,000个数据样本。我们让ArviZ返回`InferenceData`对象，以便我们可以可视化和分析生成的数据样本。在推断对象返回后展开显示以检查各组的结构。我们将需要它们进行分析和推断：
 - en: '[PRE3]'
+  id: totrans-159
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '![Image](assets/pmlf_07in01.png)'
+  id: totrans-160
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in01.png)'
 - en: 'Let’s plot the marginal prior distributions of each parameter before we conduct
     prior predictive checks. Note that a kernel density estimate is a smoothed-out
     histogram of a continuous variable:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们在进行先验预测检查之前，绘制每个参数的边际先验分布。请注意，核密度估计是连续变量的平滑直方图：
 - en: '[PRE4]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '![Image](assets/pmlf_07in02.png)'
+  id: totrans-163
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in02.png)'
 - en: '[PRE5]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '![Image](assets/pmlf_07in03.png)'
+  id: totrans-165
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in03.png)'
 - en: '[PRE6]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '![Image](assets/pmlf_07in04.png)'
+  id: totrans-167
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in04.png)'
 - en: 'Let’s create a prior ensemble of 1000 regression lines, one for each value
     of the ensemble’s parameters (a, b) sampled from its prior distributions, and
     plot the epistemic uncertainty around the prior mean of the untrained linear ensemble.
@@ -931,42 +1288,62 @@
     This displays the epistemic and aleatory uncertainties of the data distributions.
     Note that the training data is plotted to give us some context and a baseline
     for the ensemble’s retrodictions:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们创建一个包含1000条回归线的先验集合，每条线对应集合参数（a, b）的一个取样自其先验分布的值，并绘制未经训练的线性集合的先验均值周围的认知不确定性。我们还使用集合的先验预测分布来模拟数据。这显示了数据分布的认知和偶然不确定性。请注意，训练数据被绘制以便为我们提供一些背景和集合回测的基准：
 - en: '[PRE7]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '![Image](assets/pmlf_07in05.png)'
+  id: totrans-170
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in05.png)'
 - en: 'It is very important to observe that the linear ensemble’s epistemic uncertainty
     increases as we move away from the center of the plot. Confessions of ignorance
     is what we are seeking in any model: it should become increasingly unsure about
     its expected values as it moves into regions where it has no data and must extrapolate.
     Our ensemble knows its limitations.'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 非常重要的是观察到，随着我们远离图的中心，线性集合的认知不确定性增加。承认对任何模型的无知是我们所追求的：随着其移动到没有数据且必须外推的区域，预期值的不确定性应该增加。我们的集合知道它的局限性。
 - en: 'This is seen more clearly in the next plot where we generate and distribute
     the prior predictive data samples into a 90% high-density interval (HDI) and then
     conduct a prior predictive check:'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 这在下一个图中更清楚地显示出来，我们将先验预测数据样本生成并分布到90%高密度区间（HDI），然后进行先验预测检查：
 - en: '[PRE8]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '![Image](assets/pmlf_07in06.png)'
+  id: totrans-174
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in06.png)'
 - en: '[PRE9]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '![Image](assets/pmlf_07in07.png)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in07.png)'
 - en: Evaluate and revise untrained model
+  id: totrans-177
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 评估和修订未训练的模型
 - en: 'Specifying a probabilistic model is never easy, and requires many revisions.
     Let’s use qualitative and quantitative prior predictive checks to see if our prior
     model is plausible and ready for training. From the recent plots, we can see that
@@ -974,16 +1351,23 @@
     the prior predictive check shows some low probability, extreme returns that have
     not occurred in the recent past. Let’s now compute the probabilistic R-squared
     measure to evaluate the ensemble’s retrodictions before it has been trained:'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定概率模型从未容易，需要多次修订。让我们使用定性和定量的先验预测检查来看看我们的先验模型是否合理并准备好进行训练。从最近的图表可以看出，我们的集合在90%
+    HDI带内模拟了所有训练数据。然而，先验预测检查显示了一些低概率的极端回报，在最近的过去并未发生。现在让我们计算概率R平方度量来评估集合在训练之前的回测：
 - en: '[PRE10]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: The probabilistic R-squared metric of the prior ensemble is 61%, with a standard
     deviation of 10%. This exceeds our performance benchmark of 55% for the prior
     model.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 先验整体的概率R平方指标为61%，标准偏差为10%。这超过了我们对先验模型的55%的性能基准。
 - en: Please note that this performance is a result of many revisions to the prior
     model I made by changing the values of the various parameters of the prior distributions.
     I also experimented with different distributions, including a uniform prior for
@@ -991,117 +1375,168 @@
     see here is closer to the median score. Feel free to make your own revisions to
     the prior model until you are satisfied that your ensemble is plausible and ready
     to be trained by in-sample data.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，这种表现是通过对先验模型的多次修订而实现的，我改变了先验分布的各种参数值。我还尝试了不同的分布，包括alpha参数的均匀先验。所有先验分数均大于55%，而您在此处看到的接近中位数分数。请随意对先验模型进行修改，直到您满意为止，确保您的整体模型是合理的并且可以通过内样本数据进行训练。
 - en: Train and Retrodict Posterior Model
+  id: totrans-182
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 训练和回溯后验模型
 - en: We now have an ensemble that is ready to be trained, and we are confident it
     reflects our prior knowledge, including the epistemic uncertainty of its parameters
     and the aleatory uncertainty of the data it might generate. Let’s train it with
     actual in-sample data our ensemble has been anticipating by computing the posterior
     distribution.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们有一个准备好进行训练的整体模型，我们对其反映了先验知识的信心，包括其参数的认知不确定性和可能生成的数据的不确定性。让我们使用实际的内样本数据对其进行训练，计算后验分布。
 - en: Train and sample posterior
+  id: totrans-184
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 训练和采样后验
 - en: 'We execute the default sampler of PyMC, the Hamiltonian Monte Carlo (HMC) algorithm,
     a second-generation MCMC algorithm. PyMC directs HMC to generate dependent random
     samples from the joint posterior distribution of all the parameters:'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们执行PyMC的默认采样器，即Hamiltonian Monte Carlo (HMC)算法，这是第二代MCMC算法。PyMC指示HMC从所有参数的联合后验分布中生成依赖性随机样本：
 - en: '[PRE11]'
+  id: totrans-186
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '![Image](assets/pmlf_07in08.png)'
+  id: totrans-187
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in08.png)'
 - en: 'Evaluating the quality of the MCMC sampling is an advanced topic and will not
     be covered in this primer. Since we have no divergences in the Markov chains,
     let’s analyze the marginal distribution of each parameter and make inferences
     about each of them:'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估MCMC采样质量是一个高级主题，不在本入门指南的讨论范围内。由于马尔可夫链中没有发散，让我们分析每个参数的边际分布并对其进行推断：
 - en: '[PRE12]'
+  id: totrans-189
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '![Image](assets/pmlf_07in09.png)'
+  id: totrans-190
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in09.png)'
 - en: '[PRE13]'
+  id: totrans-191
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '![Image](assets/pmlf_07in10.png)'
+  id: totrans-192
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in10.png)'
 - en: 'We can summarize the posterior distributions in a pandas DataFrame as follows:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以将后验分布总结为一个pandas DataFrame如下：
 - en: '[PRE14]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '![Image](assets/pmlf_07in11.png)'
+  id: totrans-195
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in11.png)'
 - en: 'This statistical summary gives you the mean, standard deviation, and a 94%
     credible interval for all our parameters. Note that the 94% credible intervals
     are computed as the differences between the highest density intervals (HDI): hdi_97%
     – hdi_3% = hdi_94%.'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个统计摘要为所有参数提供了平均值、标准差和94%可信区间。请注意，94%可信区间是通过最高密度区间（HDI）计算得出的：hdi_97% – hdi_3%
+    = hdi_94%。
 - en: 'Unlike the shenanigans of frequentist confidence intervals discussed in [Chapter 4](ch04.html#the_dangers_of_conventional_statistical),
     a credible interval is exactly what a confidence interval pretends to be but is
     not. Credible intervals are a postdata methodology for making valid statistical
     inferences from a single experiment. This is exactly what we want as researchers,
     scientists, and practitioners in any field. For instance, the 94% credible interval
     for beta in the summary table means the following:'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 与讨论[第四章](ch04.html#the_dangers_of_conventional_statistical)中频繁主义置信区间的把戏不同，可信区间正是置信区间所假装的但实际上并非如此。可信区间是一种后数据方法，用于从单个实验中进行有效的统计推断。这正是我们作为研究人员、科学家和从业者所需要的。例如，总结表中beta的94%可信区间意味着以下内容：
 - en: There is a 94% probability that beta is in the *specific interval [1.12 and
     1.55].* It is as simple as that. Unlike confidence intervals, we don’t have to
     deal with some warped definition that defies any semblance of common sense to
     interpret credible intervals.
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: beta在*特定区间[1.12和1.55]*内的概率为94%。就是这么简单。与置信区间不同，我们不必处理一些扭曲的定义，这些定义无法解释任何常识的影响。
 - en: There are no assumptions of asymptotic normality of any distribution.
+  id: totrans-199
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 没有任何分布的渐近正态性假设。
 - en: There are no underhanded invocations to the central limit theorem.
+  id: totrans-200
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 没有不诚实地引用中心极限定理。
 - en: Beta is not a point estimate with only aleatory uncertainty.
+  id: totrans-201
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Beta 不是仅具有偶然不确定性的点估计。
 - en: We are ignorant of the exact value of beta. It is highly unlikely that we will
     ever know the exact values of any model parameter for any realistic scenario in
     the social and economic sciences.
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我们对 beta 的确切值一无所知。在社会和经济科学的实际场景中，我们几乎不可能知道任何模型参数的确切值。
 - en: Parameters like beta are better interpreted as probability distributions with
     both aleatory and epistemic uncertainties.
+  id: totrans-203
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 像 beta 这样的参数最好解释为具有偶然和认识不确定性的概率分布。
 - en: It is much more realistic to model and interpret parameters like beta as unknowable
     variables rather than as unknowable constants.
+  id: totrans-204
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将像 beta 这样的参数建模和解释为不可知变量，而不是不可知常数，更符合实际。
 - en: It is important to note that credible intervals are not unique within a posterior
     distribution. Our preferred way is to choose the narrowest interval with the highest
     probability density within the posterior distribution. Such an interval is also
     known as the highest-density interval (HDI) and is the method we have been following
     in this chapter.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，在后验分布中，可信区间并不唯一。我们的首选方法是在后验分布中选择概率密度最高的最窄区间。这样的区间也被称为最高密度区间（HDI），这是本章节中我们一直在遵循的方法。
 - en: 'You might be wondering why PyMC/ArviZ developers have chosen the default credible
     interval to be 94%. It is a reminder that there are no physical or socioeconomic
     laws that dictate that we choose 95% or any other specific percentage. I believe
@@ -1109,77 +1544,118 @@
     95% significance level in the social and economic sciences. At any rate, ArviZ
     provides a method for changing the default interval, as shown in the following
     code block:'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: PyMC/ArviZ 开发者为何选择默认的可信区间为 94% 或许让你感到疑惑。这是一个提醒，没有物理或社会经济法律规定我们必须选择 95% 或其他特定百分比。我认为这是对传统统计界的微妙讽刺，因为社会和经济科学中神化了
+    95% 显著水平。无论如何，ArviZ 提供了更改默认区间的方法，如下面的代码块所示：
 - en: '[PRE15]'
+  id: totrans-207
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'It helps to visualize the posterior distributions of our model parameters for
     credible intervals with different probabilities. The following plot shows 70%
     credible intervals for all three parameters:'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 有助于可视化我们模型参数的后验分布，以评估不同概率下的可信区间。以下图表展示了三个参数的 70% 可信区间：
 - en: '[PRE16]'
+  id: totrans-209
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '![Image](assets/pmlf_07in12.png)'
+  id: totrans-210
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in12.png)'
 - en: 'More often than not, we have to evaluate point estimates in making our financial
     and investment decisions. We can estimate how plausible any point estimate of
     a parameter is based on where it lies within its posterior probability distribution.
     For instance, if we want to evaluate the point estimate = 1.15 for beta, we can
     use it as a reference value and compare it to an HDI, as shown in the following
     code:'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数情况下，我们必须评估点估计以做出我们的金融和投资决策。我们可以根据参数后验概率分布的位置来评估任何参数的点估计 = 1.15 的可信度。例如，如果我们想评估
+    beta 的点估计 = 1.15，我们可以将其作为参考值与 HDI 进行比较，如下所示的代码：
 - en: '[PRE17]'
+  id: totrans-212
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '![Image](assets/pmlf_07in13.png)'
+  id: totrans-213
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in13.png)'
 - en: This plot implies that 94.5% of the distribution is above beta = 1.15\. Beta
     = 1.15 is in the left tail of the distribution since only 5.5% of the distribution
     is below it. Note that the two percentages may not add up to 100% because of rounding
     errors. So, it is reasonable to conclude that beta = 1.15 is not the best estimate.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个图表表明，分布的 94.5% 在 beta = 1.15 以上。由于只有 5.5% 的分布在其下方，所以 beta = 1.15 位于分布的左尾部。请注意，这两个百分比可能因为四舍五入误差而不加总为
+    100%。因此，合理推断 beta = 1.15 不是最佳估计。
 - en: Retrodict and simulate training data
+  id: totrans-215
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 逆推和模拟训练数据
 - en: 'We now use the posterior predictive distribution (PPD) to simulate data from
     the trained ensemble and follow the same steps we did with the ensemble’s prior
     predictive distribution. This will help us to evaluate how well the ensemble has
     been trained:'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们使用后验预测分布（PPD）来模拟训练集中的数据，并遵循我们在先验预测分布中所做的相同步骤。这将帮助我们评估集合训练的效果：
 - en: '[PRE18]'
+  id: totrans-217
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[PRE19]'
+  id: totrans-218
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '![Image](assets/pmlf_07in14.png)'
+  id: totrans-219
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in14.png)'
 - en: '[PRE20]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '![Image](assets/pmlf_07in15.png)'
+  id: totrans-221
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in15.png)'
 - en: '[PRE21]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '![Image](assets/pmlf_07in16.png)'
+  id: totrans-223
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_07in16.png)'
 - en: Evaluate and revise trained model
+  id: totrans-224
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 评估和修订训练模型
 - en: 'As we did earlier, let’s use qualitative and quantitative checks to see if
     our posterior model is plausible and ready for testing. The posterior predictive
     check shows us a range of returns that are more consistent with the recent historical
@@ -1187,82 +1663,119 @@
     most of the training data it has been trained on within the 90% HDI band. Let’s
     now compute the probabilistic R-squared measure to evaluate the trained ensemble’s
     performance:'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们之前所做的，让我们使用定性和定量检查来查看我们的后验模型是否合理，并准备好进行测试。后验预测检查向我们展示了一系列与苹果最近的历史回报更一致的回报范围。从其追溯预测中，我们可以看到我们的集成已在90%
+    HDI带内模拟了大部分它所训练的训练数据。现在让我们计算概率R平方指标来评估训练集成的性能：
 - en: '[PRE22]'
+  id: totrans-226
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 'The probabilistic R-squared metric of the posterior ensemble is 65%, with a
     standard deviation of 8%. This is a performance improvement compared to that of
     the untrained ensemble. We can make this comparison because we are using the same
     dataset to make the performance comparison. It also exceeds the training score
     benchmark of 60%. Our ensemble is ready for its main test: predictions based on
     out-of-sample or unseen test data.'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 后验集成的概率R平方指标为65%，标准差为8%。与未训练的集成相比，这是一个性能改进。我们可以进行这种比较，因为我们使用相同的数据集进行性能比较。它还超过了60%的训练分数基准。我们的集成已准备好进行其主要测试：基于样本外或未见过的测试数据的预测。
 - en: Test and Evaluate Ensemble Predictions
+  id: totrans-228
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 测试和评估集成预测
 - en: We are now confident that our trained ensemble reflects both our prior knowledge
     and new learnings from the in-sample data that were observed. Moreover, the ensemble
     has updated its parameter probability distributions in light of the training data,
     including their epistemic uncertainties. Consequently, the data distributions
     that the ensemble will generate have also been updated, including their aleatory
     uncertainties.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在确信，我们训练的集成反映了我们的先验知识和从样本内数据中获得的新学习。此外，集成已经根据训练数据更新了其参数概率分布，包括它们的认识不确定性。因此，集成生成的数据分布也已更新，包括它们的偶然不确定性。
 - en: The various steps that led us here are all necessary but not sufficient for
     us to decide if we are going to commit hard-earned capital to the predictions
     of our ensemble. One of the most important tests for any ML system is how well
     it performs on previously unseen, out-of-sample test data.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 带我们到这里的各种步骤都是必要的，但不足以决定我们是否要将我们的集成预测的硬赚资本承诺下去。对于任何ML系统来说，最重要的测试之一是它在先前未见的样本外测试数据上的表现。
 - en: Swap data and resample posterior predictive distribution
+  id: totrans-231
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 交换数据并重新采样后验预测分布
 - en: PyMC provides mutable data containers that enable the swapping of training data
     for test data without any other changes to the ensemble. We now have to resample
     the posterior predictive distribution with the new test data for our target and
     features.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: PyMC提供了可变数据容器，使得在不对集成做任何其他更改的情况下可以交换训练数据和测试数据。现在，我们必须使用新的测试数据重新对后验预测分布进行重采样，以用于我们的目标和特征。
 - en: '[PRE23]'
+  id: totrans-233
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: Predict and simulate test data
+  id: totrans-234
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 预测和模拟测试数据
 - en: 'This creates a new inference group called predictions. We repeat the same steps
     as we did in the training phase but use test data instead:'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 这创建了一个名为预测的新推断组。我们重复了在训练阶段所做的相同步骤，但使用测试数据：
 - en: '[PRE24]'
+  id: totrans-236
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '![Image](assets/pmlf_07in17.png)'
+  id: totrans-237
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](assets/pmlf_07in17.png)'
 - en: '[PRE25]'
+  id: totrans-238
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '![Image](assets/pmlf_07in18.png)'
+  id: totrans-239
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](assets/pmlf_07in18.png)'
 - en: Evaluate, revise, or deploy ensemble
+  id: totrans-240
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 评估、修订或部署集成
 - en: 'From the recent plot we can see that our ensemble has simulated all of the
     test data within the 90% HDI band. Let’s also compute the probabilistic R-squared
     measure to evaluate the ensemble’s predictive performance:'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 从最近的图中，我们可以看到我们的集成在90% HDI带内模拟了所有的测试数据。让我们计算概率R平方指标来评估集成的预测性能：
 - en: '[PRE26]'
+  id: totrans-242
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: The probabilistic R-squared metric of the tested ensemble is 69%, with a standard
     deviation of 13%. It is better than our training score and exceeds the test score
     benchmark of 65%. We are ready to deploy our tested ensemble into our paper trading
@@ -1270,18 +1783,24 @@
     fictitious capital. This enables us to evaluate how our ensemble performs in real
     time before we are ready to deploy it into production and commit real hard-earned
     capital to our system.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 经过测试的集成的概率R平方指标为69%，标准差为13%。它优于我们的训练分数，并超过了65%的测试分数基准。我们已准备将经过测试的集成部署到我们的模拟交易系统或其他使用实时数据源和虚拟资本的模拟金融系统中。这使我们能够在准备将其投入生产并将真正的资本投入到我们的系统之前，在实时环境中评估我们的集成表现。
 - en: Summary
+  id: totrans-244
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 摘要
 - en: In this chapter, we saw how probabilistic linear regression (PLE) modeling is
     fundamentally different from conventional linear regression (MLE) modeling. The
     probabilistic framework provides a systematic method for modeling physical phenomena
     in general and financial realities in particular.
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们看到概率线性回归（PLE）建模与传统的最大似然估计（MLE）建模有根本的区别。概率框架为一般情况下的物理现象建模和特定的金融现实提供了系统化方法。
 - en: Conventional financial models use the MLE method to compute the optimal values
     of parameters that fit the data. That would be appropriate if we were dealing
     with time-invariant statistical distributions. It is inappropriate in finance
@@ -1291,8 +1810,10 @@
     for the many possible scenarios that are plausible and synthesize their expertise.
     This is exactly what a probabilistic ensemble does for us. It gives us the weighted
     average of all the estimates of model parameters.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 传统的金融模型使用MLE方法计算适合数据的参数的最优值。如果我们处理的是时间不变的统计分布，那将是合适的。但在金融领域，这是不适当的，因为我们没有这样的时间不变分布。从嘈杂的金融数据中学习最优参数值是次优的和风险的。在这种情况下，我们不应该依赖一个专家，而是依赖于一群专家，他们可以为多种可能的情景提供合理的综合意见。这正是概率集合为我们所做的。它为我们提供了模型参数所有估计的加权平均值。
 - en: In probabilistic regression modeling, as opposed to conventional linear modeling,
     data are treated as fixed and parameters are treated as variables because common
     sense and facts support such an approach. There is no need for the conventional
@@ -1300,8 +1821,10 @@
     distributions in disguise. Most importantly, in the probabilistic paradigm, we
     are freed from ideological dictums like “let only the data speak for themselves”
     and unscientific claims of the existence of “true models” or “true parameters.”
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 在概率回归建模中，与传统的线性建模相反，数据被视为固定的，而参数被视为变量，因为常识和事实支持这种方法。不需要像L1和L2正则化那样的常规使用临时方法，这些方法仅仅是伪装成先验概率分布。最重要的是，在概率范式中，我们摆脱了“让数据自己说话”的意识形态口号以及存在“真实模型”或“真实参数”的非科学主张。
 - en: Probabilistic ensembles make no pretense to analytical elegance. They do not
     lull us into a false sense of security about our financial activities with point
     estimates and bogus analytical solutions fit only for toy problems. Probabilistic
@@ -1309,51 +1832,82 @@
     uncertainties. These models are suited for endemic uncertainties of finance and
     investing. Most importantly, it reminds us of the uncertainty of our knowledge,
     inferences, and predictions.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 概率集合并不对分析优雅性做任何假设。它们不会用点估计和仅适用于玩具问题的伪分析解决方案让我们对我们的金融活动产生虚假的安全感。概率集合是量化无规和认知不确定性的数值模型。这些模型适用于金融和投资的固有不确定性。最重要的是，它提醒我们关于我们知识、推论和预测的不确定性。
 - en: In the next chapter, we will explore how to apply our probabilistic estimates
     and predictions to decision making in the face of three-dimensional uncertainty
     and incomplete information.
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的章节中，我们将探讨如何在面对三维不确定性和不完整信息的情况下，应用我们的概率估计和预测进行决策。
 - en: References
+  id: totrans-250
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: Dürr, Oliver, and Beate Sick. *Probabilistic Deep Learning with Python, Keras,
     and TensorFlow Probability*. Manning Publications, 2020.
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: Dürr, Oliver, and Beate Sick. *Probabilistic Deep Learning with Python, Keras,
+    and TensorFlow Probability*. Manning Publications, 2020.
 - en: 'Gelman Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. “R-Squared for Bayesian
     Regression Models.” *The American Statistician* 73, no. 3 (2019): 307–309\. [*https://doi.org/10.1080/00031305.2018.1549100*](https://doi.org/10.1080/00031305.2018.1549100).'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 'Gelman Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. “R-Squared for Bayesian
+    Regression Models.” *The American Statistician* 73, no. 3 (2019): 307–309\. [*https://doi.org/10.1080/00031305.2018.1549100*](https://doi.org/10.1080/00031305.2018.1549100).'
 - en: 'Murphy, Kevin P. *Machine Learning: A Probabilistic Perspective*. Cambridge,
     MA: The MIT Press, 2012.'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 'Murphy, Kevin P. *Machine Learning: A Probabilistic Perspective*. Cambridge,
+    MA: The MIT Press, 2012.'
 - en: Further Reading
+  id: totrans-254
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 进一步阅读
 - en: 'Martin, Osvaldo A., Ravin Kumar, and Junpeng Lao. *Bayesian Modeling and Computation
     in Python*. 1st ed. Boca Raton, FL: CRC Press, 2021.'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 'Martin, Osvaldo A., Ravin Kumar, and Junpeng Lao. *Bayesian Modeling and Computation
+    in Python*. 1st ed. Boca Raton, FL: CRC Press, 2021.'
 - en: ^([1](ch07.html#ch07fn1-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch07.html#ch07fn1-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([2](ch07.html#ch07fn2-marker)) Oliver Dürr and Beate Sick, “Building Loss
     Functions with the Likelihood Approach,” in *Probabilistic Deep Learning with
     Python, Keras, and TensorFlow Probability* (Manning Publications, 2020), 93–127.
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch07.html#ch07fn2-marker)) Oliver Dürr 和 Beate Sick，《使用似然方法构建损失函数》，收录于《Python、Keras
+    和 TensorFlow Probability 的概率深度学习》（Manning Publications, 2020），第93–127页。
 - en: '^([3](ch07.html#ch07fn3-marker)) Kevin P. Murphy, “Sparse Linear Models,” in
     *Machine Learning: A Probabilistic Perspective* (Cambridge, MA: The MIT Press,
     2012), 421–78.'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch07.html#ch07fn3-marker)) Kevin P. Murphy，《稀疏线性模型》，收录于《机器学习：概率视角》（The
+    MIT Press, 2012），第421–78页。
 - en: '^([4](ch07.html#ch07fn4-marker)) Andrew Gelman et al., “R-Squared for Bayesian
     Regression Models,” *The American Statistician* 73, no. 3 (2019): 307–309, [*https://doi.org/10.1080/00031305.2018.1549100*](https://doi.org/10.1080/00031305.2018.1549100).'
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch07.html#ch07fn4-marker)) Andrew Gelman 等，《贝叶斯回归模型的R平方》，《The American
+    Statistician》73卷3期（2019年）：第307–309页，[*https://doi.org/10.1080/00031305.2018.1549100*](https://doi.org/10.1080/00031305.2018.1549100)。

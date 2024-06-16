@@ -1,20 +1,27 @@
 - en: Chapter 3\. Quantifying Output Uncertainty with Monte Carlo Simulation
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第3章 用蒙特卡洛模拟量化输出的不确定性
 - en: I of dice possess the science and in numbers thus am skilled.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 我掌握骰子的科学，我精于数字。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: —King Rituparna of the Mahabharata (circa 900 BCE), on estimating the leaves
     on a tree from a randomly selected branch
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: —《摩诃婆罗多》中的王子吉尔陀兰（约公元前900年），关于从随机选择的树枝上估计树叶数目的话语
 - en: The importance of Monte Carlo simulation (MCS), also known as the Monte Carlo
     method, cannot be overstated. In finance and investing, MCS is used to value all
     types of assets, optimize diverse portfolios, estimate risks, and evaluate complex
@@ -24,16 +31,20 @@
     valued using any other technique. While the mathematics underpinning MCS is not
     simple, applying the method is actually quite easy, especially once you understand
     the key statistical concepts on which it is based.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 蒙特卡洛模拟（MCS），又称蒙特卡洛方法，在金融和投资领域中的重要性不可忽视。MCS用于估值各种资产、优化多样化投资组合、估计风险和评估复杂的交易策略。MCS特别用于解决那些没有解析解的问题。^[1](ch03.html#ch03fn1)确实，有许多类型的金融衍生品——如回溯期权和亚洲期权——不能用任何其他技术进行估值。尽管支撑MCS的数学并不简单，但一旦理解了其基于的关键统计概念，应用这一方法实际上是相当容易的。
 - en: MCS also pervades machine learning algorithms in general and probabilistic machine
     learning in particular. As discussed in [Chapter 1](ch01.html#the_need_for_probabilistic_machine_lear)
     and demonstrated in the simulated solution to the Monte Hall problem in [Chapter 2](ch02.html#analyzing_and_quantifying_uncertainty),
     MCS enables you to quantify the uncertainty of a model’s outputs in a process
     called forward propagation. It takes the traditional scenario and sensitivity
     analysis used by financial analysts to a completely different level.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: MCS也广泛应用于机器学习算法，尤其是概率机器学习领域。正如在[第1章](ch01.html#the_need_for_probabilistic_machine_lear)中讨论的，并在[第2章](ch02.html#analyzing_and_quantifying_uncertainty)中模拟解决蒙特霍尔问题中展示的，MCS使您能够量化模型输出的不确定性，这是一种称为前向传播的过程。它将金融分析师使用的传统场景和敏感性分析提升到完全不同的水平。
 - en: You might be wondering how a method that uses random sampling can lead to a
     stable solution. Isn’t that a contradiction in terms? In a sense it is. However,
     when you understand a couple of statistical theorems, you will see that repetition
@@ -45,37 +56,52 @@
     in finance and investing. In particular, we apply MCS to a capital budgeting project,
     in this case a software development project, and estimate the uncertainty in its
     value and duration.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能会想，一个使用随机抽样的方法如何会导致一个稳定的解？这不是自相矛盾吗？从某种意义上来说确实如此。然而，当你理解了一些统计定理之后，你会发现在某些情况下多次试验可以驯服随机性，并使其收敛到一个稳定的解。这正是我们在模拟解决蒙特霍尔问题时观察到的，大约经过1000次试验后，解决方案收敛到了理论值。在本章中，我们使用蒙特卡洛模拟来回顾关键的统计概念，并向你展示如何将这一强大的工具应用于解决金融和投资领域中的实际问题。特别是，我们将蒙特卡洛模拟应用于一个资本预算项目，即软件开发项目，并估计其价值和持续时间的不确定性。
 - en: 'Monte Carlo Simulation: Proof of Concept'
+  id: totrans-7
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 蒙特卡洛模拟：概念验证
 - en: Before we begin going down this path, how do we know that MCS actually works
     as described? Let’s do a simple proof-of-concept of MCS by computing the value
     of pi, a known constant. [Figure 3-1](#the_blue_circle_of_unit_length_in_a_red)
     shows how we set up the simulation to estimate pi.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们开始探索这条路之前，我们怎么知道MCS确实像描述的那样有效？让我们通过计算π这个已知常数来进行一个简单的MCS概念验证。[图3-1](#the_blue_circle_of_unit_length_in_a_red)展示了我们如何设置模拟以估计π的值。
 - en: '![The blue circle of unit length in a red square with sides of two unit lengths
     is simulated to estimate the value of pi using MCS.](assets/pmlf_0301.png)'
+  id: totrans-9
   prefs: []
   type: TYPE_IMG
+  zh: '![在边长为两个单位长度的红色正方形中，单位长度的蓝色圆圈模拟计算π的值，使用蒙特卡洛模拟。](assets/pmlf_0301.png)'
 - en: Figure 3-1\. The blue circle of unit length in a red square with sides of two
     unit lengths is simulated to estimate the value of pi using MCS
+  id: totrans-10
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图3-1\. 在边长为两个单位长度的红色正方形中，单位长度的蓝色圆圈模拟计算π的值，使用蒙特卡洛模拟。
 - en: 'As the Python code shows, you simulate the random spraying of N points to fill
     up the entire square. Next we count M points in the circle of unit length R. The
     area of the circle is pi × R² = M. The length of the square is 2R, so its area
     is 2R × 2R = 4 × R² = N. This implies that the ratio of the area of the circle
     to the area of the square is pi/4 = M/N. So pi = 4 × M/N:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如Python代码所示，你模拟N个点随机喷洒以填满整个正方形。接下来我们计算半径为R的圆内的M个点。圆的面积是pi × R² = M。正方形的边长是2R，所以它的面积是2R
+    × 2R = 4 × R² = N。这意味着圆的面积与正方形的面积的比值是pi/4 = M/N。因此pi = 4 × M/N：
 - en: '[PRE0]'
+  id: totrans-12
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: As in the Monty Hall simulation, you can see from the results of this simulation
     that the MCS approximation of pi is close to the theoretical value. Moreover,
     the difference between the estimate and the theoretical value gets closer to 0
@@ -83,34 +109,48 @@
     of areas of the square and circle more accurate, giving you a better estimate
     of pi. Let’s now explore the key statistical concepts that enable MCS to harness
     randomness to solve complex problems with or without analytical solutions.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像蒙特霍尔模拟一样，你可以从这个模拟的结果中看到MCS对pi的近似值接近理论值。此外，随着你增加在正方形上喷洒的点数N，估计值与理论值之间的差异越来越接近0。这使得正方形和圆形的面积比更加准确，从而给出更好的pi的估计值。现在让我们来探讨一下关键的统计概念，这些概念使得MCS能够利用随机性来解决复杂问题，无论是否具有解析解。
 - en: Key Statistical Concepts
+  id: totrans-14
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 关键统计概念
 - en: Here are some very important statistical concepts that you need to understand
     so that you will have deeper insights into why MCS works and how to apply it to
     solve complex problems in finance and investing. These are also the concepts that
     provide the theoretical foundation of financial, statistical, and machine learning
     models in general.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一些非常重要的统计概念，你需要理解这些概念，这样你就能更深入地理解为什么MCS有效，以及如何将其应用于解决金融和投资中的复杂问题。这些概念也是金融、统计和机器学习模型的理论基础。
 - en: Mean and Variance
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 均值和方差
 - en: '[Figure 3-2](#formulas_for_arithmetic_mean_and_standa) should refresh your
     memory of the basic descriptive statistical concepts you learned in high school.'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图3-2](#formulas_for_arithmetic_mean_and_standa)应该可以让你回忆起你在高中学到的基本描述性统计概念。'
 - en: '![Formulas for arithmetic mean and standard deviation](assets/pmlf_0302.png)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![算术平均值和标准差的公式](assets/pmlf_0302.png)'
 - en: Figure 3-2\. Formulas for a sample’s mean and standard deviation^([2](ch03.html#ch03fn2))
+  id: totrans-19
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图3-2\. 样本均值和标准差的公式^([2](ch03.html#ch03fn2))
 - en: 'The arithmetic mean is a measure of the central tendency of a sample of data
     points. It is simple to calculate: add up all the point values in a sample and
     divide the sum by the total number of points. Other measures of central tendencies
@@ -120,24 +160,30 @@
     the outliers are. The mode is the most frequent value observed in a data. It is
     also unaffected by outliers. Sometimes there may be many modes in a sample, and
     other times a mode may not even exist.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 算术平均值是数据点样本中心趋势的一种测量方法。它很容易计算：将样本中的所有点值相加并将总和除以点的总数。数据集中心趋势的其他测量方法是中位数和众数。要记住中位数是将数据集分为上半部分和下半部分的值。虽然算术平均值对异常值很敏感，但中位数不受异常值的影响。众数是数据中观察到的最频繁的值。它也不受异常值的影响。有时一个样本中可能有许多众数，而其他时候众数甚至可能不存在。
 - en: It is important to note that the sum of all deviations from the arithmetic mean
     of the values always equals zero. That is what makes the arithmetic mean a good
     measure of the central tendency of a sample. It is also why you have to square
     the deviations from the mean to make them positive, so they do not cancel one
     another out. The average deviation from the mean gives you a sense of dispersion,
     or spread of the data sample, from its arithmetic mean.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，所有值相对于值的算术平均值的偏差的总和总是等于零。这就是使算术平均值成为样本中心趋势的一个好的测量方法的原因。这也是为什么你必须对偏差进行平方使其变为正数，以防它们相互抵消。从平均值得到的平均偏差可以让你对数据样本的分散性或数据样本与其算术平均值的散布情况有一个感觉。
 - en: Note that the variance of a sample is calculated by adding the sum of the squared
     deviations and dividing them by one less than the total number of points (n).
     The reason you use n-1 instead of n is that you have lost a degree of freedom
     by calculating the mean; i.e. the mean and n-1 points will give you the entire
     dataset. Standard deviation, which is in the units of the mean, is obtained by
     taking the square root of variance.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，样本方差通过将平方偏差的总和加起来并将其除以总点数（n）减1来计算。您使用n-1而不是n的原因是，通过计算平均值，您已经失去了一个自由度；即平均值和n-1个点将为您提供整个数据集。标准偏差，单位为平均值，是通过取方差的平方根获得的。
 - en: Volatility of asset price returns is calculated using the standard deviation
     of sample returns. If the returns are compounded continuously in a financial model,
     such as is assumed in geometric Brownian motion (GBM), we use the natural logarithm
@@ -147,21 +193,29 @@
     when performing multiplications involving numerous values less than 1, the precision
     of the computation can be compromised due to the inherent numerical underflow
     limitations of computers.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 资产价格回报的波动性是使用样本回报的标准偏差计算的。如果在金融模型中连续复利回报，如几何布朗运动（GBM）中所假设的，我们使用价格回报的自然对数来计算波动性。这还具有使分析和数值计算变得更加简单的额外优势，因为乘法操作可以转换为其对数的加法。此外，当执行涉及多个小于1的值的乘法时，由于计算机固有的数值下溢限制，计算的精度可能会受到影响。
 - en: 'Expected Value: Probability-Weighted Arithmetic Mean'
+  id: totrans-24
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 期望值：概率加权算术平均数
 - en: 'An important type of arithmetic mean is the expected value of a trade or investment.
     Expected value is defined as a probability-weighted arithmetic mean of future
     payoffs:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种重要的算术平均数类型是交易或投资的期望值。期望值定义为未来支付的概率加权算术平均数：
 - en: E[S] = P(S[1]) x Payoff(S[1]) + ....+ P(S[n]) x Payoff(S[n])
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: E[S] = P(S[1]) x Payoff(S[1]) + ....+ P(S[n]) x Payoff(S[n])
 - en: In finance, you should use expected value to estimate the future returns of
     your trades and investments. Other measurements used for this purpose are incomplete
     or misleading. For instance, it is common to hear traders on financial news networks
@@ -172,12 +226,16 @@
     to be. If the reward-to-risk ratio is the key metric you’re going to consider
     in an opportunity, don’t waste your time with investing. Just buy a lottery ticket.
     The reward-to-risk ratio can go over 100 million to 1.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 在金融领域，您应该使用期望值来估计您交易和投资的未来回报。其他用于此目的的测量方法是不完整或具有误导性的。例如，常见的金融新闻网络上的交易员谈论的回报风险比。这种比率是一个不完整的度量标准，因为它没有考虑到正面和负面支付的预计概率。您可以构建一个交易，使其具有任何您想要的回报风险比。它并不能说明您认为支付的可能性有多大。如果回报风险比是您要考虑的关键指标，那么不要浪费时间投资。直接买一张彩票就好了。回报风险比可以超过一亿比一。
 - en: Why Volatility Is a Nonsensical Measure of Risk
+  id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 为什么波动率是一个荒谬的风险测量方法
 - en: Suppose the price of stock A goes up 5% in one month, 10% the next, and 20%
     in the third month. The monthly compounded return of A, the geometric mean of
     the returns, would be about 11.49%, with a monthly standard deviation, or volatility,
@@ -187,22 +245,28 @@
     B, which declines –10% three months in a row. The monthly compounded return would
     be –10%, but the monthly volatility would be zero. Which stock would you like
     in your portfolio?
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设股票A的价格一个月上涨5%，下个月上涨10%，第三个月上涨20%。A的每月复利回报率，即回报的几何平均数，大约为11.49%，每月标准偏差或波动率为7.64%。请注意，我们使用[图3-2](#formulas_for_arithmetic_mean_and_standa)中的公式，并且在分母中使用2，因为此估计是基于三个月的样本。与之相比，股票B连续三个月下跌-10%。每月复利回报率将为-10%，但每月波动率将为零。您更希望哪只股票进入您的投资组合？
 - en: Volatility is a nonsensical measure of risk because it treats profits that don’t
     equal the arithmetic mean (a measure of expectation) as risky as losses that do
     the same. What is also absurd is that losses that meet expectations are not considered
     a risk. Clearly, a loss is a loss whether or not it equals the average loss of
     the sample of returns.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 波动率是一种荒谬的风险度量，因为它将不等于算术平均值（期望的一种度量）的利润视为与同等亏损一样的风险。同样荒谬的是，符合期望的亏损不被视为风险。显然，不管它是否等于回报样本的平均亏损，亏损就是亏损。
 - en: Volatility doesn’t consider the direction of the dispersion of returns and treats
     positive and negative deviations from the mean equally. So, volatility misestimates
     asymmetric risk. The volatility that investors talk about and don’t want is the
     semistandard deviation of losses. However, semistandard deviation is analytically
     intractable and doesn’t lend itself to elegant formulas in financial theories.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 波动率不考虑回报分布的方向性，将正向和负向偏差对待得一视同仁。因此，波动率误估了非对称风险。投资者谈论并且不想要的波动性是损失的半标准差。然而，半标准差在分析上是棘手的，并且不适合于金融理论中的优雅公式。
 - en: This implies that any risk or performance measure that is based on the volatility
     of returns is inherently flawed. The Sharpe ratio measures asset price returns
     in excess of a benchmark return and divides that by the volatility of asset price
@@ -211,22 +275,30 @@
     and commodity trading advisors reject the Sharpe ratio as a flawed measure of
     performance. Worse still, volatility underestimates financial risk, which we discuss
     shortly.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着基于回报波动性的任何风险或绩效度量本质上是有缺陷的。夏普比率衡量资产价格回报超过基准回报并将其除以资产价格回报的波动性。这是一种在学术界和行业中广受欢迎的标准投资绩效指标。然而，许多价值投资者，如沃伦·巴菲特、对冲基金经理和大宗商品交易顾问，都认为夏普比率是一种有缺陷的绩效衡量指标。更糟糕的是，波动性低估了金融风险，我们很快会讨论这一点。
 - en: Tip
+  id: totrans-33
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 小贴士
 - en: If your investment’s positive returns are not meeting your expectations and
     its resultant volatility is keeping you up at night, you may rest assured, as
     help is nigh. Now you can lower the volatility of your investment returns by transferring
     those risky, positive return deviations to me for free!
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你投资的正回报未达到预期，并且其结果的波动性让你夜不能寐，你可以放心了，因为帮助即将到来。现在，你可以通过免费转移那些有风险的正回报偏差来降低你的投资回报的波动性！
 - en: Skewness and Kurtosis
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 偏度和峰度
 - en: Skewness measures the asymmetry of a distribution about its arithmetic mean.
     The skewness of a normal distribution is zero. Skewness is computed in a manner
     similar to that of variance, but instead of squaring the deviation from the mean,
@@ -234,25 +306,34 @@
     deviations and so gives you the direction of average deviation from the mean.
     Skewness tells you where the expected value (mean) of the distribution is with
     respect to the median and the mode. See [Figure 3-3](#skewed_distributions_compared_to_a_symm).
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 偏度衡量了分布关于其算术平均值的不对称性。正态分布的偏度为零。偏度的计算方式类似于方差，但是不是对偏离平均值的平方，而是将其提升到三次方。这样可以保留偏离的正负号，从而给出平均偏离的方向。偏度告诉你期望值（平均值）相对于中位数和众数的分布位置。参见
+    [图 3-3](#skewed_distributions_compared_to_a_symm)。
 - en: '![Skewed distributions compared to a symmetrical distribution such as the normal
     distribution](assets/pmlf_0303.png)'
+  id: totrans-37
   prefs: []
   type: TYPE_IMG
+  zh: '![与正态分布等对称分布相比的偏态分布](assets/pmlf_0303.png)'
 - en: Figure 3-3\. Skewed distributions compared to a symmetrical distribution such
     as the normal distribution^([3](ch03.html#ch03fn3))
+  id: totrans-38
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-3\. 与正态分布等对称分布相比的偏态分布^([3](ch03.html#ch03fn3))
 - en: As an investor or trader, you want your return distribution to be as positively
     skewed as possible. In a positively skewed distribution, the expected value is
     going to be greater than the median, and so it will be in the upper half of the
     distribution—positive returns are going to outweigh the negative returns on average.
     As discussed earlier, volatility is directionless and so will misestimate asymmetric
     risks of skewed distributions.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为投资者或交易员，你希望你的回报分布尽可能向正偏态发展。在正偏态分布中，期望值将大于中位数，因此它将位于分布的上半部分——平均而言，正回报将超过负回报。正如前面所讨论的，波动性是无方向性的，因此会误估偏态分布的非对称风险。
 - en: Kurtosis is a measure of how peaked the distribution is about the arithmetic
     mean and how fat its tails are compared to that of a normal distribution. Like
     skewness, kurtosis is computed in a manner similar to that of variance, but instead
@@ -262,34 +343,48 @@
     In fact, a Cauchy (or Lorentzian) distribution looks deceptively similar to a
     normal distribution but has very fat tails because of its infinite mean and variance,
     as shown in [Figure 3-4](#compare_cauchysoliduslorentzian_distri).
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 峰度是衡量分布在算术平均值周围有多陡峭，尾部有多肥厚，与正态分布相比的一种度量。像偏度一样，峰度是通过类似于方差的方法计算的，但不是将偏离均值平方，而是提升到四次方。肥尾分布意味着低概率事件比如果分布是正态的话更有可能发生。均匀分布没有尾巴。事实上，柯西（或洛伦兹）分布看起来与正态分布非常相似，但由于其无限的均值和方差，其尾部非常肥厚，正如在[图 3-4](#compare_cauchysoliduslorentzian_distri)中所示。
 - en: '![Compare Cauchy/Lorentzian distribution with the Normal distribution.](assets/pmlf_0304.png)'
+  id: totrans-41
   prefs: []
   type: TYPE_IMG
+  zh: '![比较柯西/洛伦兹分布与正态分布。](assets/pmlf_0304.png)'
 - en: Figure 3-4\. Compare the tails of the Cauchy distribution with the normal distribution^([4](ch03.html#ch03fn4))
+  id: totrans-42
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-4. 比较柯西分布的尾部与正态分布^([4](ch03.html#ch03fn4))
 - en: The Gaussian or Normal Distribution
+  id: totrans-43
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 高斯或正态分布
 - en: Gaussian distributions are found everywhere in nature and are used in all the
     sciences. It is quite common to see data distributed like a bell curve, as shown
     in [Figure 3-5](#the_gaussian_or_normal_distributionsour). That is why the Gaussian
     distribution is also called the normal distribution.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 高斯分布在自然界中随处可见，并且在所有科学中都被使用。我们经常看到数据呈钟形曲线分布，就像在[图 3-5](#the_gaussian_or_normal_distributionsour)中展示的那样。这就是为什么高斯分布也被称为正态分布。
 - en: '![About 99.7% of the area of a Gaussian or normal distribution falls within
     3 standard deviations from the mean](assets/pmlf_0305.png)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![大约 99.7% 的高斯或正态分布面积落在均值的三个标准差内](assets/pmlf_0305.png)'
 - en: Figure 3-5\. About 99.7% of the area of a Gaussian or normal distribution falls
     within 3 standard deviations from the mean^([5](ch03.html#ch03fn5))
+  id: totrans-46
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-5. 大约 99.7% 的高斯或正态分布面积落在均值的三个标准差内^([5](ch03.html#ch03fn5))
 - en: Unfortunately, financial data and academic research show that normal distributions
     are not so common in all financial markets. But that hasn’t stopped most academics
     and many practitioners from using them for their models. Why? Because Gaussian
@@ -300,12 +395,17 @@
     68% of the data are within one standard deviation of the mean, 95% are within
     two standard deviations of the mean, and almost all the data are within three
     standard deviations of the mean.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，金融数据和学术研究显示，正态分布在所有金融市场中并不如此常见。但这并没有阻止大多数学者和许多从业者将其用于他们的模型。为什么？因为高斯分布在解析上可处理，并且适合于不使用计算机就能解决的优雅公式。如果你知道高斯分布的均值和标准差，你就知道关于分布的一切。例如，在[图 3-3](#skewed_distributions_compared_to_a_symm)中，你可以看到大约
+    68% 的数据落在均值的一个标准差内，95% 落在两个标准差内，几乎所有数据都落在均值的三个标准差内。
 - en: Why Volatility Underestimates Financial Risk
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 为什么波动率低估了金融风险
 - en: The S&P 500 is a global market index and is used by market participants worldwide
     as a benchmark for the equity market. The index represents an equity portfolio
     composed of 500 of some of the best companies in the world at any time. Financial
@@ -313,50 +413,71 @@
     operate 24 hours a day for over 5 days of the week. I can attest to that, as I
     trade the ETF (exchange-traded fund) as well as options and futures based on this
     index.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: S&P 500 是一个全球市场指数，作为股票市场的基准，被全球市场参与者广泛使用。该指数代表一个由全球一些顶级公司组成的股权投资组合。基于 S&P 500
+    的金融工具是世界上最流动的市场，每周运行超过 5 天，全天 24 小时。我可以证明这一点，因为我交易基于该指数的 ETF（交易所交易基金），以及期权和期货。
 - en: According to modern portfolio theory (MPT), asset price returns of the S&P 500
     index should be approximately normally distributed. It also assumes that the mean
     and variance of this distribution are stationary ergodic. What this means is that
     these two parameters are time invariant, and we can estimate them from a reasonably
     large sample taken from any time period.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据现代投资组合理论（MPT），标准普尔500指数的资产价格回报应该大致服从正态分布。它还假设这个分布的均值和方差是平稳的遍历的。这意味着这两个参数是时间不变的，我们可以从任何时间段的一个相当大的样本中估计它们。
 - en: 'In the following Python code, we test the fundamental tenet of MPT that asset
     price returns are normally distributed. We import 30 years of S&P 500 price data
     and compute its daily returns, skewness, and kurtosis:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的Python代码中，我们测试了MPT的基本原则，即资产价格回报是正态分布的。我们导入了30年的标准普尔500价格数据，并计算了其日回报、偏度和峰度：
 - en: '[PRE1]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '![Image](assets/pmlf_03in01.png)'
+  id: totrans-53
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_03in01.png)'
 - en: Clearly, the daily return distribution doesn’t look anything close to normal.
     It has a negative skew of 0.07 and very fat tails with a kurtosis of 11.43\. If
     S&P 500 daily returns were normally distributed, what would it look like? Let’s
     simulate the world that theoretical finance claims we should be living in.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 显然，日回报分布看起来与正态分布差别很大。它的负偏度为0.07，非常厚的尾部，峰度为11.43。如果标准普尔500的日回报真的是正态分布，会是什么样子呢？让我们模拟一下理论金融声称我们应该生活在其中的世界。
 - en: 'The time-invariant tenet of MPT implies that we can estimate its statistical
     moments using a sufficiently large sample from any time period. Thirty years’
     worth of data certainly qualifies. We use the mean and standard deviation from
     the previously mentioned historical data as our estimates for those parameters:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: MPT的时间不变原则意味着，我们可以利用来自任何时间段的足够大的样本估计其统计矩。三十年的数据绝对够用。我们使用上述历史数据的均值和标准差作为这些参数的估计值：
 - en: '[PRE2]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '![Image](assets/pmlf_03in02.png)'
+  id: totrans-57
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_03in02.png)'
 - en: Since we are sampling randomly from a normal distribution, the values for both
     skewness and kurtosis have minor sampling errors around zero. Regardless, the
     two distributions look nothing like each other. The daily returns of the S&P 500
     over the last 30 years are certainly not normally distributed.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于我们是从正态分布中随机抽样，偏度和峰度的值在零周围有轻微的抽样误差。无论如何，这两个分布看起来完全不像。过去30年的标准普尔500日回报显然不是正态分布的。
 - en: Most financial time series are asymmetric and fat-tailed. These are not nice-to-know
     financial and statistical trivia. Asset price return distributions with negatively
     skewed, fat tails have the potential to bankrupt investors, corporations, and
@@ -365,12 +486,16 @@
     of the devastating consequences of building theoretical models using elegant mathematical
     equations that ignore the basic principles of the scientific method and the noisy,
     ugly, fat-tailed realities of real-world data.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数金融时间序列都是不对称且有厚尾。这些并不是好玩的金融和统计小知识。具有负偏斜和厚尾的资产价格回报分布可能会使投资者、公司和整个经济陷入破产，如果它们的建模者忽视了这些，因为他们会低估极端事件的概率。大金融危机最近提醒了我们，使用忽视科学方法基本原则和真实世界数据中的嘈杂、丑陋和厚尾现实的优雅数学方程建立理论模型可能会带来灾难性后果。
 - en: The Law of Large Numbers
+  id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 大数定理
 - en: This is one of the most important statistical theorems. The law of large numbers
     (LLN) says that if samples are independent and drawn from the same distribution,
     the sample mean will almost surely converge to the theoretical mean as the sample
@@ -378,41 +503,58 @@
     the value of the sum of all the numbers that appear on each throw of a die divided
     by the total number of throws or trials approaches 3.5 as the number of trials
     increases.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是最重要的统计定理之一。大数定理（LLN）说，如果样本是独立的，并且从同一分布中抽取，那么样本均值几乎肯定会随着样本量的增加收敛于理论均值。在[图 3-6](#the_sample_mean_of_dice_throws_approach)中，每次掷骰子所得数字之和除以总掷骰子次数或试验次数的值，在试验次数增加时接近3.5。
 - en: '![The sample mean of dice throws approaches its theoretical mean as the sample
     size gets larger.](assets/pmlf_0306.png)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![骰子投掷的样本均值在样本量增大时逼近其理论均值。](assets/pmlf_0306.png)'
 - en: Figure 3-6\. The sample mean of dice throws approaches its theoretical mean
     as the sample size gets larger^([6](ch03.html#ch03fn6))
+  id: totrans-63
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-6\. 骰子投掷的样本均值在样本量增大时逼近其理论均值^([6](ch03.html#ch03fn6))
 - en: Note that the theoretical average does not have to be a physical outcome. There
     is no 3.5 on any fair die. Also, notice how the outcomes of the first few trials
     vary widely about the mean. However, in the long run, they converge inexorably
     to the theoretical mean. Of course, we assume that the die is fair and that we
     don’t know the physics of the dice throws.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，理论平均值不必是物理结果。任何公平骰子上都没有 3.5。此外，请注意前几次试验的结果如何在均值周围广泛变化。然而，从长远来看，它们无情地收敛到理论均值。当然，我们假设骰子是公平的，并且我们不知道掷骰子的物理学。
 - en: The Central Limit Theorem
+  id: totrans-65
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 中心极限定理
 - en: The central limit theorem (CLT) says that if you keep taking samples from an
     unknown population of any shape and calculate the mean of each of the samples
     of size n, the distribution of these sample means will be normally distributed,
     as shown in [Figure 3-7](#the_sampling_distribution_of_the_sample).
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 中心极限定理（CLT）指出，如果你不断从一个未知的任意形状的总体中抽取样本，并计算每个大小为 n 的样本的均值，则这些样本均值的分布将呈正态分布，如 [图 3-7](#the_sampling_distribution_of_the_sample)
+    所示。
 - en: '![The sampling distribution of the sample mean is normally distributed.](assets/pmlf_0307.png)'
+  id: totrans-67
   prefs: []
   type: TYPE_IMG
+  zh: '![样本均值的抽样分布是正态分布。](assets/pmlf_0307.png)'
 - en: Figure 3-7\. The sampling distribution of the sample mean is normally distributed^([7](ch03.html#ch03fn7))
+  id: totrans-68
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-7\. 样本均值的抽样分布是正态分布^([7](ch03.html#ch03fn7))
 - en: 'This is one of the most amazing statistical phenomena. To appreciate the power
     of the CLT, consider a fair die that has a uniform distribution since each number
     on the die is equally likely at ⅙. [Figure 3-8](#the_clt_shows_us_how_uniform_distributi)
@@ -420,47 +562,66 @@
     each throw and repeat the trials many times. Behold the magic of the CLT: horizontal
     lines are transformed into an approximate bell curve. If we increase the number
     of trials or tosses of the die, the curve will look like a bell curve.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是最惊人的统计现象之一。要欣赏中心极限定理（CLT）的威力，考虑一个公平的骰子，因为每个数字在骰子上出现的概率都是相等的（1/6）。[图 3-8](#the_clt_shows_us_how_uniform_distributi)
+    显示了当你投掷一个公平的骰子并将每次投掷出现的数字相加并重复试验时会发生什么。瞧，CLT的魔力：水平线变成了近似的钟形曲线。如果我们增加试验或者投掷骰子的次数，曲线将看起来像钟形曲线。
 - en: '![The CLT shows us how uniform distributions of two dice are transformed into
     an approximate Gaussian distribution.](assets/pmlf_0308.png)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![CLT 显示我们如何将两个骰子的均匀分布转换为近似的高斯分布。](assets/pmlf_0308.png)'
 - en: Figure 3-8\. The CLT shows us how the uniform distribution of a fair die is
     transformed into an approximate Gaussian distribution^([8](ch03.html#ch03fn8))
+  id: totrans-71
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-8\. CLT 显示我们如何将公平骰子的均匀分布转换为近似的高斯分布^([8](ch03.html#ch03fn8))
 - en: Theoretical Underpinnings of MCS
+  id: totrans-72
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: MCS 的理论基础
 - en: 'MCS is based on the two most important theorems in statistics already mentioned:
     the law of large numbers (LLN) and the central limit theorem (CLT).^([9](ch03.html#ch03fn9))
     Recall that the LLN ensures that as the number of trials increases, the sample
     mean almost surely converges to the theoretical or population mean. The CLT ensures
     that the sampling errors or fluctuations of the sample averages from the theoretical
     mean become normally distributed as sample sizes get larger.'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: MCS 基于统计学中已提到的两个最重要的定理：大数定律（LLN）和中心极限定理（CLT）。^([9](ch03.html#ch03fn9)) 请注意，LLN
+    确保随着试验次数的增加，样本均值几乎肯定收敛于理论或总体均值。CLT 确保随着样本大小的增大，从理论均值得到的样本平均值的抽样误差或波动成为正态分布。
 - en: One of the reasons MCS works and is scalable to multidimensional problems is
     that the sampling error is independent of the dimension of the variable. This
     sampling error approaches zero asymptotically as the square root of the sample
     size and not the dimension of the variable. This is very important. It implies
     that a sampling error in an MCS is the same for a single variable as it is for
     a 100-dimensional variable.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: MCS 起作用并且可扩展到多维问题的原因之一是抽样误差与变量的维度无关。这种抽样误差随着样本大小的平方根而渐近地接近于零，而不是变量的维度。这是非常重要的。这意味着
+    MCS 中的抽样误差对单个变量和 100 维变量来说是一样的。
 - en: However, the error decreases as the square root of the sample size n. So you
     have to increase the MCS iterations by a factor of 100 to increase the accuracy
     of its estimate by a single digit. But with computing power becoming cheaper by
     the day, this is not as big an issue now as it was in the last century.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，误差随着样本大小 n 的平方根而减少。因此，为了使其估计的精度增加一个数量级，你必须将 MCS 迭代增加 100 倍。但随着计算能力日益便宜，这不像上个世纪那样成为大问题。
 - en: Valuing a Software Project
+  id: totrans-76
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 估值软件项目
 - en: 'Let’s increase our understanding of MCS by applying it to a real-life financial
     problem such as valuing a capital project. The discounted cash flow (DCF) model
     discussed in the previous chapter is used extensively in corporations worldwide
@@ -473,43 +634,60 @@
     the project to the present. The reason the FCFs are discounted is that we need
     to account for an investor’s opportunity cost of capital for undertaking the project
     instead of another investment of similar risk. The model is set up in four steps:'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将MCS应用于如估值资本项目等真实金融问题，增进我们对MCS的理解。在全球范围内，估值资本项目和其他投资（如债券和股票）广泛使用的贴现现金流量（DCF）模型在上一章中详细讨论。贴现现金流量（DCF）模型预测预期的自由现金流（FCF）在N期间，通常以年为单位。一个时间段内的自由现金流等于运营活动的现金减去资本支出。模型还需要估计公司投资者每期所需的回报率（R）。这个利率被称为折现率，因为它用于将项目的N期自由现金流折现到现在。折现自由现金流的原因是我们需要考虑投资者进行项目投资而不是进行类似风险的其他投资的机会成本。模型分为四个步骤：
 - en: Forecast the expected free cash flows (FCFs) of the project for each of the
     N periods.
+  id: totrans-78
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 预测每个N期间项目的预期自由现金流（FCF）。
 - en: Estimate the appropriate opportunity cost or discount rate (R) per period.
+  id: totrans-79
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 估计适当的机会成本或每期折现率（R）。
 - en: Discount each period’s expected FCFs back to the present.
+  id: totrans-80
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 折现每个期望FCF回到现在。
 - en: 'Add the discounted expected FCFs (previously described) to get the expected
     net present value (NPV):'
+  id: totrans-81
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将预期折现的FCF（前述）相加以获得预期的净现值（NPV）：
 - en: Expected NPV of project = FCF[0] + FCF[1] / (1 + R) + FCF[2] / (1 + R)² + ...+
     FCF[n] / (1 + R)^N
+  id: totrans-82
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 项目的预期NPV = FCF[0] + FCF[1] / (1 + R) + FCF[2] / (1 + R)² + ...+ FCF[n] / (1
+    + R)^N
 - en: The NPV decision rule says that you should accept any investment whose expected
     NPV is greater than zero. This is because an investment with a positive expected
     NPV gives investors a higher rate of return than an alternative investment of
     similar risk, which is their opportunity cost.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: NPV决策规则表明，您应接受任何其预期NPV大于零的投资。这是因为具有正预期NPV的投资提供给投资者比类似风险的替代投资更高的回报率，这是他们的机会成本。
 - en: To create our DCF model, we need to focus on the main drivers of costs and revenues
     for our software project. We also need to make sure that these variables are not
     strongly correlated with one another. Ideally, all FCFs of the model should be
     formulated using very few noncorrelated variables or risk factors.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 要创建我们的DCF模型，我们需要关注软件项目的主要成本和收入驱动因素。我们还需要确保这些变量之间没有强相关性。理想情况下，模型的所有FCF应该使用非常少的非相关变量或风险因素进行制定。
 - en: 'As you know, software development is labor intensive, and so our main cost
     driver will be salaries and wages. Also, some developers will be working part
     time and some full time on the project. However, for developing the cost of labor,
@@ -517,141 +695,197 @@
     the software, i.e., we estimate the effort as if all required developers were
     working full time. Scheduling is where we will figure out how much time to allot
     and when we will need each developer:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您所知，软件开发是劳动密集型的，因此我们的主要成本驱动因素将是工资和薪水。此外，一些开发人员将在项目上兼职工作，而一些则是全职工作。然而，对于开发劳动成本，我们只需要所需开发人员的全职当量（FTE），即我们估算的努力，就好像所有必需的开发人员都在全职工作。排程是我们将确定分配多少时间以及何时需要每个开发人员的地方：
 - en: '[PRE3]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '![Image](assets/pmlf_03in03.png)![Image](assets/pmlf_03in04.png)'
+  id: totrans-87
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](assets/pmlf_03in03.png)![Image](assets/pmlf_03in04.png)'
 - en: Note that we did not discount the FCF distributions at the risk-free rate. The
     risk-free rate is the interest rate on a government security such as the US 10-year
     note. This is a common mistake in NPV simulations, but is incorrect, since each
     simulation is estimating the expected value of the FCF. Each FCF needs to be discounted
     at the risk-adjusted discount rate to account for the total risk of the project.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，我们没有按无风险利率贴现FCF分布。无风险利率是像美国10年期票据这样的政府证券的利率。这是NPV模拟中的常见错误，但是是不正确的，因为每个模拟都在估计FCF的预期值。每个FCF需要按风险调整折现率贴现，以考虑项目的总风险。
 - en: The distribution of risk-adjusted NPVs in the code output needs to be interpreted
     with caution. Using the dispersion of NPVs to make decisions would double count
     project risk. Using dispersion of NPVs adjusted at the risk-free rate to account
     for total risk has no sound theoretical basis in corporate finance.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要谨慎解释代码输出中风险调整净现值的分布。使用净现值的分散性来做决策将会双重计算项目风险。使用根据无风险利率调整后的净现值的分散性来考虑总体风险在公司财务中没有坚实的理论基础。
 - en: Building a Sound MCS
+  id: totrans-90
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 构建一个完善的蒙特卡洛模拟（MCS）
 - en: 'To harness the power of MCS to solve complex financial and investment-related
     problems in the face of uncertainty, it is important that you follow a sound and
     replicable process. Here is a 10-step process for doing just that:'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 要利用MCS的力量来解决复杂的金融和投资相关问题，在面对不确定性时，遵循一个健全且可复制的过程是非常重要的。以下是一个完成这一目标的10步流程：
 - en: Formulate how target/dependent variables of your model are affected by features/independent
     variables, also called risk factors in finance.
+  id: totrans-92
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 构建你的模型中目标/依赖变量如何受特征/独立变量（在金融中也称为风险因素）影响的公式。
 - en: Specify the probability distribution of each risk factor. Some common ones include
     Gaussian, Student’s t-distribution, Cauchy, and binomial probability distributions.
+  id: totrans-93
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 指定每个风险因素的概率分布。一些常见的包括高斯分布、学生t分布、柯西分布和二项式概率分布。
 - en: Specify initial values and how time is discretized, such as in seconds, minutes,
     days, weeks, or years.
+  id: totrans-94
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 指定初始值和时间的离散化方式，例如秒、分钟、天、周或年。
 - en: Specify how each risk factor changes over time, if at all.
+  id: totrans-95
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 指定每个风险因素随时间如何变化，如果有的话。
 - en: Specify how each risk factor is affected by other risk factors. This is important
     since correlation among risk factors can incorrectly amplify or dampen effects.
     This phenomenon is also called multicollinearity.
+  id: totrans-96
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 指定每个风险因素如何受其他风险因素影响。这很重要，因为风险因素之间的相关性可能会错误地放大或减弱效果。这种现象也称为多重共线性。
 - en: Let the computer draw a random value from the probability distribution of each
     independent risk factor.
+  id: totrans-97
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 让计算机从每个独立风险因素的概率分布中随机抽取一个值。
 - en: Compute the value of each risk factor based on that random value.
+  id: totrans-98
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 根据随机值计算每个风险因素的值。
 - en: Compute target/dependent variables based on the computed value of all risk factors.
+  id: totrans-99
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 根据所有风险因素的计算值计算目标/依赖变量。
 - en: Iterate steps 6–8 as many times as necessary.
+  id: totrans-100
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 反复执行步骤6至8直至必要次数。
 - en: Record and analyze descriptive statistics of all iterations.
+  id: totrans-101
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 记录并分析所有迭代的描述统计数据。
 - en: 'The power of MCS is that it transforms a complex, intractable problem that
     involves integral calculus into a simple one of descriptive statistics with its
     sampling algorithms. However, there are many challenges to building a sound MCS.
     Here are the most important ones:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: MCS的威力在于，它将涉及积分微积分的复杂棘手问题转化为使用抽样算法进行描述统计的简单问题。然而，构建一个完善的MCS也面临许多挑战。以下是最重要的挑战：
 - en: Specifying how each independent variable changes over time. Serial correlation
     (also known as autocorrelation) is the correlation of a variable with an instance
     of itself in the past. This correlation is not constant and usually changes over
     time, especially in financial markets.
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 指定每个独立变量随时间如何变化。串行相关性（也称为自相关性）是变量与过去自身实例的相关性。这种相关性不是恒定的，通常随时间变化，特别是在金融市场中。
 - en: Specifying how each feature/independent variable is affected by other independent
     variables of the model. Correlations among independent variables/risk factors
     usually change over time.
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 指定模型中每个特征/独立变量如何受其他独立变量的影响。独立变量/风险因素之间的相关性通常随时间变化。
 - en: Fitting a theoretical probability distribution to the actual outcomes. Probability
     distributions of variables usually change over time.
+  id: totrans-105
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将理论概率分布拟合到实际结果中。变量的概率分布通常随时间变化。
 - en: Convergence to the best estimate is nonlinear, making it slow and costly. It
     may not occur quickly enough to be of any practical value to trading or investing.
+  id: totrans-106
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 收敛到最佳估计是非线性的，使其变慢且昂贵。它可能不会足够快地发生以对交易或投资产生任何实际价值。
 - en: 'These challenges can be met as follows:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以如下解决这些挑战：
 - en: Rigorous data analysis, domain knowledge, and industry expertise. You need to
     balance rigorous financial modeling with time, cost, and the effectiveness of
     the models that you produce.
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 严格的数据分析、领域知识和行业专业知识。你需要在制定严谨的财务建模与时间、成本以及你所生成模型的有效性之间取得平衡。
 - en: Treat all financial models as flawed and imperfect guides. Don’t let the mathematical
     jargon intimidate or lull you into a false sense of security. Remember the adage
     “All models are wrong, but some are useful.”
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将所有金融模型视为有缺陷和不完美的指导。不要让数学术语使你感到威胁或陷入虚假安全感。记住这句格言：“所有模型都是错误的，但有些是有用的。”
 - en: Managing risk is of paramount importance. Always size capital positions appropriately,
     have wide error margins, and fallback plans if models fail.
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 管理风险至关重要。始终适当规模化资本位置，具备宽泛的误差边界，并在模型失效时有备用计划。
 - en: Clearly, there is no substitute for managerial experience and business judgment.
     Rely on your common sense, be skeptical, and ask difficult questions of a model’s
     assumptions, inputs, and outputs.
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 显然，没有什么能替代管理经验和商业判断力。依靠常识，持怀疑态度，并对模型的假设、输入和输出提出困难问题。
 - en: Summary
+  id: totrans-112
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Fundamentally, MCS is a set of numerical techniques that uses random sampling
     of probability distributions for computing approximate estimates or for simulating
     uncertainties of outcomes of a model. The central idea is to harness the statistical
@@ -659,8 +893,10 @@
     models and analytically intractable problems. MCS transforms a complex, often
     intractable, multidimensional problem in integral calculus into a much easier
     problem of descriptive statistics that any practitioner can use.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 从根本上讲，MCS是一组使用概率分布的随机抽样进行近似估计或模拟模型结果不确定性的数值技术。其核心思想是利用随机性的统计特性来开发复杂确定性模型和解析难题的近似解决方案。MCS将多维积分微积分中常常难以处理的复杂问题转化为任何从业者都能使用的描述统计问题。
 - en: MCS is especially useful when there is no analytically tractable solution to
     a problem you are trying to solve. It enables you to quantify the probability
     and impact of all possible outcomes given your assumptions. It should be used
@@ -669,14 +905,18 @@
     understanding of the risk of complex financial models. Monte Carlo methods are
     one of the most powerful numerical tools and are pivotal to probabilistic machine
     learning.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您尝试解决的问题没有解析可追踪的解时，MCS尤为有用。它使您能够根据您的假设量化所有可能结果的概率和影响。当传统的最佳、最坏和基础情况分析对您的决策和风险管理可能不足时，应使用MCS。MCS使您更好地了解复杂金融模型的风险。蒙特卡洛方法是最强大的数值工具之一，对于概率机器学习至关重要。
 - en: In this chapter, we have applied MCS using independent random sampling. This
     involves randomly selecting samples from a probability distribution, with each
     sample being independent of any previous samples. This approach is efficient for
     simulating simple target probability distributions when samples are not correlated.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们使用独立随机抽样应用了MCS。这涉及从概率分布中随机选择样本，每个样本与任何先前样本都是独立的。当样本不相关时，这种方法用于模拟简单目标概率分布是有效的。
 - en: However, when dealing with complex target distributions and correlated samples,
     we have to use more advanced correlated random sampling methods. These dependent
     random sampling Monte Carlos are crucial to probabilistic machine learning. In
@@ -684,55 +924,85 @@
     Markov chain Monte Carlo (MCMC) methods, which are powerful techniques for sampling
     from complex distributions with dependencies. In [Chapter 7](ch07.html#probabilistic_machine_learning_with_gen),
     we will apply these methods to financial modeling using the PMC library.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，当处理复杂的目标分布和相关样本时，我们必须使用更先进的相关随机抽样方法。这些依赖性随机抽样蒙特卡洛方法对于概率机器学习至关重要。在[第6章](ch06.html#the_dangers_of_conventional_ai_systems)中，我们将研究马尔可夫链蒙特卡洛（MCMC）方法，这是从具有依赖性的复杂分布中抽样的强大技术。在[第7章](ch07.html#probabilistic_machine_learning_with_gen)中，我们将应用这些方法来进行金融建模，使用PMC库。
 - en: References
+  id: totrans-117
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Brandimarte, Paolo. *Handbook in Monte Carlo Simulation: Applications in Financial
     Engineering, Risk Management, and Economics*. Hoboken, NJ: John Wiley & Sons,
     2014.'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 'Brandimarte, Paolo. *Monte Carlo Simulation: Applications in Financial Engineering,
+    Risk Management, and Economics*. Hoboken, NJ: John Wiley & Sons, 2014.'
 - en: 'Cemgil, A. Taylan. “A Tutorial Introduction to Monte Carlo Methods, Markov
     Chain Monte Carlo and Particle Filtering.” In *Academic Press Library in Signal
     Processing: Volume 1: Signal Processing Theory and Machine Learning*, edited by
     Paulo S. R. Diniz, Johan A. K. Suykens, Rama Chellappa, and Sergios Theodoridis,
     1065–1114\. Oxford, UK: Elsevier, 2014.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: Cemgil, A. Taylan。“蒙特卡罗方法、马尔可夫链蒙特卡罗和粒子滤波的教程简介”，收录于《*学术出版社信号处理系列：第1卷：信号处理理论和机器学习*》，由Paulo
+    S. R. Diniz、Johan A. K. Suykens、Rama Chellappa和Sergios Theodoridis 编辑，1065–1114页。牛津，英国：Elsevier，2014年。
 - en: '^([1](ch03.html#ch03fn1-marker)) Paolo Brandimarte, “Introduction to Monte
     Carlo Methods,” in *Handbook in Monte Carlo Simulation: Applications in Financial
     Engineering, Risk Management, and Economics* (Hoboken, NJ: John Wiley & Sons,
     2014).'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch03.html#ch03fn1-marker)) Paolo Brandimarte，“蒙特卡罗方法简介”，收录于《*蒙特卡罗模拟手册：金融工程、风险管理和经济应用*》。霍博肯，新泽西州：John
+    Wiley & Sons，2014年。
 - en: ^([2](ch03.html#ch03fn2-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch03.html#ch03fn2-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([3](ch03.html#ch03fn3-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch03.html#ch03fn3-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([4](ch03.html#ch03fn4-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([4](ch03.html#ch03fn4-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([5](ch03.html#ch03fn5-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([5](ch03.html#ch03fn5-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([6](ch03.html#ch03fn6-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([6](ch03.html#ch03fn6-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([7](ch03.html#ch03fn7-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([7](ch03.html#ch03fn7-marker)) 改编自维基共享资源上的一幅图像。
 - en: ^([8](ch03.html#ch03fn8-marker)) Adapted from an image on Wikimedia Commons.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([8](ch03.html#ch03fn8-marker)) 改编自维基共享资源上的一幅图像。
 - en: '^([9](ch03.html#ch03fn9-marker)) A. Taylan Cemgil, “A Tutorial Introduction
     to Monte Carlo Methods, Markov Chain Monte Carlo and Particle Filtering,” in *Academic
     Press Library in Signal Processing: Volume 1: Signal Processing Theory and Machine
     Learning*, ed. Paulo S. R. Diniz, Johan A. K. Suykens, Rama Chellappa, and Sergios
     Theodoridis (Oxford, UK: Elsevier, 2014), 1065–1114.'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([9](ch03.html#ch03fn9-marker)) A. Taylan Cemgil，“蒙特卡罗方法、马尔可夫链蒙特卡罗和粒子滤波的教程简介”，收录于《*学术出版社信号处理系列：第1卷：信号处理理论和机器学习*》，由Paulo
+    S. R. Diniz、Johan A. K. Suykens、Rama Chellappa和Sergios Theodoridis 编辑，1065–1114页。牛津，英国：Elsevier，2014年。

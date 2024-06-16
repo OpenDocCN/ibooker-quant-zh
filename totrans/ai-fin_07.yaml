@@ -1,39 +1,51 @@
 - en: Chapter 5\. Machine Learning
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第5章 机器学习
 - en: Dataism says that the universe consists of data flows, and the value of any
     phenomenon or entity is determined by its contribution to data processing….Dataism
     thereby collapses the barrier between animals [humans] and machines, and expects
     electronic algorithms to eventually decipher and outperform biochemical algorithms.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 数据主义认为宇宙由数据流组成，任何现象或实体的价值取决于其对数据处理的贡献……数据主义因此消除了动物（人类）和机器之间的障碍，并期望电子算法最终能够解读和超越生物化学算法。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Yuval Noah Harari (2015)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Yuval Noah Harari（2015年）
 - en: Machine learning is the scientific method on steroids. It follows the same process
     of generating, testing, and discarding or refining hypotheses. But while a scientist
     may spend his or her whole life coming up with and testing a few hundred hypotheses,
     a machine learning system can do the same in a second. Machine learning automates
     discovery. It’s no surprise, then, that it’s revolutionizing science as much as
     it’s revolutionizing business.
+  id: totrans-4
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 机器学习是科学方法的高级版本。它遵循生成、测试、丢弃或精炼假设的相同过程。但是，一个科学家可能花一生时间提出和测试几百个假设，而一个机器学习系统可以在一秒钟内完成相同的工作。机器学习自动化了发现过程。因此，它正像革新商业一样，革新了科学。
 - en: ''
+  id: totrans-5
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Pedro Domingos (2015)
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Pedro Domingos（2015）
 - en: This chapter is about *machine learning as a process*. Although it uses specific
     algorithms and specific data for illustration, the notions and approaches discussed
     in this chapter are general in nature. The goal is to present the most important
@@ -41,8 +53,10 @@
     easy-to-visualize manner. The approach of this chapter is practical and illustrative
     in nature, omitting most technical details throughout. In that sense, the chapter
     provides a kind of blueprint for later, more realistic machine learning applications.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章讨论的是*机器学习作为一个过程*。尽管使用了特定的算法和特定的数据来进行说明，但本章讨论的概念和方法是普遍适用的。本章的目标是以简单易懂和易于可视化的方式呈现机器学习的最重要元素。本章的方法是实用和说明性的，避免了大部分技术细节。从这个意义上说，本章提供了后续更为现实的机器学习应用的一种蓝图。
 - en: '[“Learning”](#ml_learning) briefly discusses the very notion of a machine that
     *learns*. [“Data”](#ml_data) imports and preprocesses the sample data used in
     later sections. The sample data is based on a time series for the EUR/USD exchange
@@ -56,33 +70,46 @@
     characteristics in the context of estimation problems. [“Cross-Validation”](#ml_cross_val)
     illustrates the concept of cross-validation to avoid, among other things, overfitting
     due to a too-large model capacity.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“学习”](#ml_learning)简要讨论了“学习”的机器概念。[“数据”](#ml_data)导入并预处理后续章节中使用的样本数据。样本数据基于EUR/USD汇率的时间序列。[“成功”](#ml_success)实施OLS回归和神经网络估计，使用均方误差作为成功的度量标准。[“容量”](#ml_capacity)讨论了模型容量在估计问题中使模型更成功的作用。[“评估”](#ml_evaluation)解释了模型评估在机器学习过程中的角色，通常基于验证数据子集。[“偏差和方差”](#ml_bias_var)讨论了*高偏差*和*高方差*模型在估计问题背景下的典型特征。[“交叉验证”](#ml_cross_val)说明了交叉验证的概念，以避免由于过大的模型容量而导致的过拟合，其中之一。'
 - en: VanderPlas (2017, ch. 5) discusses topics similar to the ones covered in this
     chapter, making use primarily of the `scikit-learn` Python package. Chollet (2017,
     ch. 4) also provides an overview similar to the one provided here, but primarily
     makes use of the `Keras` deep learning package. Goodfellow et al. (2016, ch. 5)
     give a more technical and mathematical overview of machine learning and related
     important concepts.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: VanderPlas（2017年，第5章）讨论了与本章类似的主题，主要使用了`scikit-learn` Python包。Chollet（2017年，第4章）也提供了类似于这里提供的概述，但主要使用了`Keras`深度学习包。Goodfellow等人（2016年，第5章）对机器学习及其相关重要概念进行了更为技术化和数学化的概述。
 - en: Learning
+  id: totrans-10
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 学习
 - en: 'On a formal, more abstract level, *learning* by an algorithm or computer program
     can be defined as in Mitchell (1997):'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 在更正式、更抽象的层面上，*学习*通过算法或计算机程序可以定义为 Mitchell（1997）中的方式：
 - en: A computer program is said to learn from experience <math alttext="upper E"><mi>E</mi></math>
     with respect to some class of tasks <math alttext="upper T"><mi>T</mi></math>
     and performance measure <math alttext="upper P"><mi>P</mi></math> , if its performance
     at tasks in <math alttext="upper T"><mi>T</mi></math> , as measured by <math alttext="upper
     P"><mi>P</mi></math> , improves with experience <math alttext="upper E"><mi>E</mi></math>
     .
+  id: totrans-12
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 据说计算机程序在某类任务<math alttext="upper T"><mi>T</mi></math>和性能度量<math alttext="upper
+    P"><mi>P</mi></math>方面通过经验<math alttext="upper E"><mi>E</mi></math>来学习，如果它在任务<math
+    alttext="upper T"><mi>T</mi></math>上的表现，由<math alttext="upper P"><mi>P</mi></math>来衡量，随着经验<math
+    alttext="upper E"><mi>E</mi></math>而改善。
 - en: There is a class of tasks that are to be performed (for example, *estimation*
     or *classification*). Then there is a performance measure, such as the *mean-squared
     error* (MSE) or the *accuracy ratio*. Then there is *learning* as measured by
@@ -90,53 +117,79 @@
     task. The class of tasks at hand is described in general based on the given data
     set, which includes the features data and the labels data in the case of supervised
     learning, or only the features data in the case of unsupervised learning.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 存在一类任务需要执行（例如，*估计*或*分类*）。然后有性能度量，例如*均方误差*（MSE）或*准确率比*。然后有*学习*，以算法在任务上的经验改进的性能来衡量。手头的任务类别是根据给定数据集描述的一般性质，其中包括监督学习情况下的特征数据和标签数据，或无监督学习情况下仅包括特征数据。
 - en: Learning Task Versus Task to Learn
+  id: totrans-14
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 学习任务与待学习的任务
 - en: In the definition of learning through an algorithm or computer program, it is
     important to note the difference between the task of learning and the tasks to
     be learned. *Learning* means to learn how to (best) execute a certain task, such
     as estimation or classification.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在通过算法或计算机程序进行学习的定义中，重要的是要注意学习任务和待学习任务之间的差异。*学习*意味着学习如何（最好地）执行某个任务，如估计或分类。
 - en: Data
+  id: totrans-16
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 数据
 - en: 'This section introduces the sample data set to be used in the sections to follow.
     The sample data is created based on a real financial time series for the EUR/USD
     exchange rate. First, the data is imported from a CSV file, and then the data
     is resampled to monthly data and stored in a `Series` object:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了接下来要使用的样本数据集。样本数据基于 EUR/USD 汇率的真实金融时间序列创建而成。首先，从 CSV 文件导入数据，然后将数据重新采样为月度数据，并存储在一个`Series`对象中：
 - en: '[PRE0]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO1-1)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO1-1)'
 - en: Imports the financial time series data
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入金融时间序列数据
 - en: '[![2](Images/2.png)](#co_machine_learning_CO1-3)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO1-3)'
 - en: Resamples the data to monthly time intervals
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据重新采样为月度时间间隔
 - en: '[Figure 5-1](#figure_ml_01) shows the financial time series.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 5-1](#figure_ml_01)显示了金融时间序列。'
 - en: '![aiif 0501](Images/aiif_0501.png)'
+  id: totrans-24
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0501](Images/aiif_0501.png)'
 - en: Figure 5-1\. EUR/USD exchange rate as time series (monthly)
+  id: totrans-25
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-1\. EUR/USD 汇率作为时间序列（月度）
 - en: 'To have a single feature only, the following Python code creates a synthetic
     feature vector. This allows for simple visualizations in two dimensions. The synthetic
     feature (independent variable), of course, does not have any explanatory power
@@ -146,88 +199,138 @@
     composed of a one-dimensional features vector and a one-dimensional labels vector.
     [Figure 5-2](#figure_ml_01_) visualizes the sample data set that implies an *estimation
     problem* is the task at hand:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了只有一个特征，以下 Python 代码创建了一个合成特征向量。这允许在二维中进行简单的可视化。当然，这个合成特征（自变量）对 EUR/USD 汇率（标签数据，因变量）没有任何解释能力。接下来，还将这些数据抽象为标签数据是顺序和时间性质的事实。本章中将样本数据集作为由一维特征向量和一维标签向量组成的通用数据集进行处理。[图 5-2](#figure_ml_01_)展示了暗示一个*估计问题*是当前任务的样本数据集的可视化：
 - en: '[PRE1]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO2-1)'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO2-1)'
 - en: Transforms the labels data to an `ndarray` object
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 将标签数据转换为一个`ndarray`对象。
 - en: '[![2](Images/2.png)](#co_machine_learning_CO2-2)'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO2-2)'
 - en: Subtracts the mean value from the data element-wise
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 逐元素从数据中减去均值
 - en: '[![3](Images/3.png)](#co_machine_learning_CO2-3)'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO2-3)'
 - en: Creates a synthetic feature as an `ndarray` object
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个合成特征作为 `ndarray` 对象
 - en: '![aiif 0502](Images/aiif_0502.png)'
+  id: totrans-34
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0502](Images/aiif_0502.png)'
 - en: Figure 5-2\. Sample data set
+  id: totrans-35
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-2\. 样本数据集
 - en: Success
+  id: totrans-36
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 成功
 - en: 'The measure of success for estimation problems in general is the MSE, as used
     in [Chapter 1](ch01.xhtml#artificial_intelligence). Based on the MSE, success
     is judged given the labels data as the relevant benchmark and the predicted values
     of an algorithm after having been exposed to the data set or parts of it. As in
     [Chapter 1](ch01.xhtml#artificial_intelligence), two algorithms are considered
     in this and the following sections: OLS regression and neural networks.'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 一般情况下，估计问题的成功度量是 MSE，如在[第1章](ch01.xhtml#artificial_intelligence)中使用的。根据 MSE，根据标签数据作为相关基准以及算法在暴露于数据集或其部分后的预测值进行评判。与[第1章](ch01.xhtml#artificial_intelligence)类似，本节及其后续节考虑了两种算法：OLS
+    回归和神经网络。
 - en: 'First is OLS regression. The application is straightforward, as the following
     Python code illustrates. The regression result is shown in [Figure 5-3](#figure_ml_02)
     for a regression including monomials up to the fifth order. The resulting MSE
     is also calculated:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先是 OLS 回归。应用是直接的，如下面的 Python 代码所示。回归结果在[图 5-3](#figure_ml_02)中展示，包括至五阶的单项式回归。计算得到的
+    MSE 也相应计算：
 - en: '[PRE2]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO3-1)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO3-1)'
 - en: The function `MSE` calculates the mean-squared error.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数 `MSE` 计算均方误差。
 - en: '[![2](Images/2.png)](#co_machine_learning_CO3-2)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO3-2)'
 - en: The fitting of the OLS regression model up to and including fifth-order monomials.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: OLS 回归模型拟合到包括五阶单项式为止。
 - en: '[![3](Images/3.png)](#co_machine_learning_CO3-4)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO3-4)'
 - en: The prediction by the OLS regression model given the optimal parameters.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出最优参数的 OLS 回归模型预测。
 - en: '[![4](Images/4.png)](#co_machine_learning_CO3-5)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO3-5)'
 - en: The MSE value given the prediction values.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出预测值的 MSE 值。
 - en: '![aiif 0503](Images/aiif_0503.png)'
+  id: totrans-48
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0503](Images/aiif_0503.png)'
 - en: Figure 5-3\. Sample data and cubic regression line
+  id: totrans-49
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-3\. 样本数据和三次回归线
 - en: 'OLS regression is generally solved analytically. Therefore, no iterated learning
     takes place. However, one can simulate a learning procedure by gradually exposing
     the algorithm to more data. The following Python code implements OLS regression
@@ -236,88 +339,139 @@
     is implemented based on the smaller sub-sets, whereas the prediction steps are
     implemented based on the whole features data in each case. In general, the MSE
     drops significantly when increasing the training data set:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: OLS 回归通常通过解析方法求解。因此，不存在迭代学习。然而，可以通过逐渐向算法暴露更多数据来模拟学习过程。以下 Python 代码实现了 OLS 回归和预测，从仅有的几个样本开始逐步增加数量，最终达到完整数据集的长度。回归步骤基于较小的子集实现，而预测步骤基于每种情况下的全部特征数据。一般而言，增加训练数据集时，MSE
+    明显下降：
 - en: '[PRE3]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO4-1)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO4-1)'
 - en: Regression step based on data sub-set
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于数据子集的回归步骤
 - en: '[![2](Images/2.png)](#co_machine_learning_CO4-2)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO4-2)'
 - en: Prediction step based on the complete data set
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于完整数据集的预测步骤
 - en: '[![3](Images/3.png)](#co_machine_learning_CO4-3)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO4-3)'
 - en: Resulting MSE value
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果 MSE 值
 - en: 'Second is the neural network. The application to the sample data is again straightforward
     and similar to the case in [Chapter 1](ch01.xhtml#artificial_intelligence). [Figure 5-4](#figure_ml_03)
     shows how the neural network approximates the sample data:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次是神经网络。对样本数据的应用再次是直接的，类似于[第1章](ch01.xhtml#artificial_intelligence)中的情况。[图 5-4](#figure_ml_03)展示了神经网络如何逼近样本数据：
 - en: '[PRE4]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO5-1)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO5-1)'
 - en: The neural network is a shallow network with a single hidden layer.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 神经网络是一个单隐藏层的浅层网络。
 - en: '[![2](Images/2.png)](#co_machine_learning_CO5-3)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO5-3)'
 - en: The fitting step with a relatively high number of epochs.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 拟合步骤，具有相对较多的周期数。
 - en: '[![3](Images/3.png)](#co_machine_learning_CO5-4)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO5-4)'
 - en: The prediction step that also flattens the `ndarray` object.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 预测步骤还会将 `ndarray` 对象展平。
 - en: '[![4](Images/4.png)](#co_machine_learning_CO5-5)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO5-5)'
 - en: The resulting MSE value for the DNN prediction.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: DNN 预测的结果 MSE 值。
 - en: '![aiif 0504](Images/aiif_0504.png)'
+  id: totrans-68
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0504](Images/aiif_0504.png)'
 - en: Figure 5-4\. Sample data and neural network approximation
+  id: totrans-69
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-4\. 示例数据和神经网络近似
 - en: 'With the `Keras` package, the MSE values are stored after every learning step.
     [Figure 5-5](#figure_ml_04) shows how the MSE value (“loss”) decreases on average
     (as far as one can tell from the plot) with the increasing number of epochs over
     which the neural network is trained:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`Keras`包，在每个学习步骤后存储MSE值。[图 5-5](#figure_ml_04)显示了神经网络训练的时期增加时（从图中可以看出）MSE值（“损失”）的平均减少：
 - en: '[PRE5]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '![aiif 0505](Images/aiif_0505.png)'
+  id: totrans-72
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0505](Images/aiif_0505.png)'
 - en: Figure 5-5\. MSE values against number of training epochs
+  id: totrans-73
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-5\. MSE值与训练时期数量的关系
 - en: Capacity
+  id: totrans-74
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 容量
 - en: 'The *capacity* of a model or algorithm defines what types of functions or relationships
     the model or algorithm can basically learn. In the case of OLS regression based
     on monomials only, there is only one parameter that defines the capacity of the
@@ -325,41 +479,61 @@
     is set to `deg=3`, the OLS regression model can learn functional relationships
     of constant, linear, quadratic, or cubic type. The higher the parameter `deg`
     is, the higher the capacity of the OLS regression model will be.'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型或算法的*容量*定义了模型或算法基本可以学习的函数或关系类型。在仅基于单项式的OLS回归中，只有一个参数定义了模型的容量：最高单项式的次数。如果将该次数参数设为`deg=3`，OLS回归模型可以学习常数、线性、二次或三次类型的函数关系。参数`deg`越高，OLS回归模型的容量就越高。
 - en: 'The following Python code starts at `deg=1` and increases the degree in increments
     of two. The MSE values monotonically decrease with the increasing degree parameter.
     [Figure 5-6](#figure_ml_05) shows the regression lines for all degrees considered:'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码从`deg=1`开始，每次增加两个单位的次数。随着次数参数的增加，MSE值单调减少。[图 5-6](#figure_ml_05)展示了考虑的所有次数的回归线：
 - en: '[PRE6]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO6-1)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO6-1)'
 - en: Regression step for different values for `deg`
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 不同`deg`值的回归步骤
 - en: '![aiif 0506](Images/aiif_0506.png)'
+  id: totrans-80
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0506](Images/aiif_0506.png)'
 - en: Figure 5-6\. Regression lines for different highest degrees
+  id: totrans-81
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-6\. 不同最高次数的回归线
 - en: 'The capacity of a neural network depends on a number of *hyperparameters*.
     Among them are, in general, the following:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 神经网络的容量取决于一些*超参数*。其中通常包括以下内容：
 - en: Number of hidden layers
+  id: totrans-83
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 隐藏层的数量
 - en: Number of hidden units for each hidden layer
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每个隐藏层的隐藏单元数量
 - en: 'Together, these two hyperparameters define the number of trainable parameters
     (weights) in the neural network. The neural network model in the previous section
     has a relatively low number of trainable parameters. Adding, for example, just
@@ -367,40 +541,62 @@
     Although the number of training epochs may need to be increased, the MSE value
     decreases significantly for the neural network with the higher capacity, and the
     fit also seems much better visually, as [Figure 5-7](#figure_ml_06) shows:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 综合考虑这两个超参数，它们定义了神经网络中可训练参数（权重）的数量。前一节中的神经网络模型具有相对较少的可训练参数。例如，仅增加一个相同大小的层，可显著增加可训练参数的数量。虽然可能需要增加训练时期的数量，但容量更高的神经网络模型的MSE值显著减少，视觉上的拟合效果也更好，正如[图 5-7](#figure_ml_06)所示：
 - en: '[PRE7]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO7-1)'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO7-1)'
 - en: Adds potentially many layers to the neural network
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 可能向神经网络添加许多层
 - en: '[![2](Images/2.png)](#co_machine_learning_CO7-2)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO7-2)'
 - en: A deep neural network with three hidden layers
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 深度神经网络具有三个隐藏层
 - en: '[![3](Images/3.png)](#co_machine_learning_CO7-3)'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO7-3)'
 - en: The summary shows the increased number of trainable parameters (increased capacity)
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 摘要显示了可训练参数的增加数量（增加的容量）
 - en: '![aiif 0507](Images/aiif_0507.png)'
+  id: totrans-93
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0507](Images/aiif_0507.png)'
 - en: Figure 5-7\. Sample data and DNN approximation (higher capacity)
+  id: totrans-94
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-7\. 示例数据和DNN近似（更高容量）
 - en: Evaluation
+  id: totrans-95
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 评估
 - en: In the previous sections, the analysis focuses on the performance of estimation
     algorithms on the sample data set as a whole. As a general rule, the capacity
     of the model or algorithm directly influences its performance when training and
@@ -411,46 +607,66 @@
     of a future stock price, given the history of stock prices, or the classification
     of potential debtors as “creditworthy” or “not creditworthy,” given the data from
     existing debtors.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前几节中，分析侧重于估算算法在整个样本数据集上的性能。一般规则是，模型或算法的能力直接影响其在相同数据集上进行训练和评估时的性能。然而，在机器学习中，“简单且容易的情况”只是其中之一。更复杂和有趣的情况是，训练完成的模型或算法需要在其从未见过的数据上进行泛化。例如，这样的泛化可以是根据股票历史价格预测（估算）未来股票价格，或者根据现有债务人的数据对潜在债务人进行“信用良好”或“不良信用”的分类。
 - en: Although the term *prediction* is often used freely in the context of estimations,
     given the features data set used for training, a real prediction probably entails
     predicting something not known up front and never seen before. Again, the prediction
     of a future stock price is a good example for a real prediction in a temporal
     sense.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管在估算的上下文中经常自由使用“预测”这个术语，但在用于训练的特征数据集上，真正的预测可能意味着预测一些事先不知道并且从未见过的东西。再次强调，预测未来股票价格是在时间上的真正预测的一个很好的例子。
 - en: 'In general, a given data set is divided into sub-sets that each have different
     purposes:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 一般而言，给定数据集被划分为各具不同目的的子集：
 - en: Training data set
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练数据集
 - en: This is the sub-set used for the training of the algorithm.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是用于算法训练的子集。
 - en: Validation data set
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 验证数据集
 - en: This is the sub-set used for validating the performance of the algorithm during
     training—and this data set is different from the training data set.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是用于在训练期间验证算法性能的子集，而这个数据集与训练数据集不同。
 - en: Test data set
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试数据集
 - en: This is the sub-set on which the trained algorithm is only tested after the
     training is finished.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是在训练完成后仅对已训练算法进行测试的子集。
 - en: Insights that are gained by applying a (currently) trained algorithm on the
     validation data set might reflect on the training itself (for example, by adjusting
     the hyperparameters of a model). On the other hand, the idea is that insights
     from testing the trained algorithm on the test data set shall not be reflected
     in the training itself or the hyperparameters.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将（当前）训练过的算法应用于验证数据集获得的见解，可能会反映在训练本身上（例如通过调整模型的超参数）。另一方面，测试训练过的算法在测试数据集上的见解则不应该反映在训练本身或超参数中。
 - en: 'The following Python code chooses, somewhat arbitrarily, 25% of the sample
     data for testing; the model or algorithm will not see this data before the training
     (learning) is finished. Similarly, 25% of the sample data is reserved for validation;
@@ -458,59 +674,92 @@
     during many learning iterations. The remaining 50% is used for the training (learning)
     itself.^([1](ch05.xhtml#idm45625305881528)) Given the sample data set, it makes
     sense to apply shuffling techniques to populate all sample data sub-sets randomly:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码有些随意地选择了样本数据的25%进行测试；模型或算法在训练（学习）完成之前不会见到这些数据。同样地，样本数据的25%用于验证；这些数据用于在训练步骤中监视性能，可能在许多学习迭代中都会用到。剩余的50%用于训练（学习）本身。^([1](ch05.xhtml#idm45625305881528))
+    鉴于样本数据集，将洗牌技术应用于随机填充所有样本数据子集是合理的：
 - en: '[PRE8]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO8-1)'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO8-1)'
 - en: Number of test data set samples
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试数据集样本数量
 - en: '[![2](Images/2.png)](#co_machine_learning_CO8-2)'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO8-2)'
 - en: Number of validation data set samples
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 验证数据集样本数量
 - en: '[![3](Images/3.png)](#co_machine_learning_CO8-3)'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO8-3)'
 - en: Randomized index for complete data set
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 完整数据集的随机索引
 - en: '[![4](Images/4.png)](#co_machine_learning_CO8-5)'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO8-5)'
 - en: Resulting sorted indexes for the data sub-sets
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 对数据子集进行排序后的索引结果
 - en: '[![5](Images/5.png)](#co_machine_learning_CO8-8)'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_machine_learning_CO8-8)'
 - en: Resulting features data sub-sets
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 得到的特征数据子集
 - en: '[![6](Images/6.png)](#co_machine_learning_CO8-11)'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_machine_learning_CO8-11)'
 - en: Resulting labels data sub-sets
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 得到的标签数据子集
 - en: Randomized Sampling
+  id: totrans-120
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 随机抽样
 - en: The randomized population of training, validation, and test data sets is a common
     and useful technique for data sets that are neither sequence-like nor temporal
     in nature. However, when one is dealing, say, with a financial time series, shuffling
     the data is generally to be avoided because it breaks up temporal structures and
     sneaks foresight bias into the process by using, for example, later samples for
     training and implementing the testing on earlier samples.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于既非顺序类也非时间性质的数据集，随机化训练、验证和测试数据集是一种常见且有用的技术。然而，当处理例如财务时间序列时，应避免对数据进行洗牌，因为这会破坏时间结构，并通过在训练中使用稍后的样本并在较早的样本上实施测试，引入先见性偏差。
 - en: 'Based on the training and validation data sub-sets, the following Python code
     implements a regression for different `deg` parameter values and calculates the
     MSE values for the predictions on both data sub-sets. Although the MSE values
@@ -519,94 +768,146 @@
     again. This phenomenon indicates what is called *overfitting*. [Figure 5-8](#figure_ml_07)
     shows the regression fits for the different values of `deg` and compares the fits
     for both the training data and validation data sets:'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于训练和验证数据子集，以下Python代码实现了不同`deg`参数值的回归，并计算了对两个数据子集进行预测的MSE值。尽管训练数据集上的MSE值单调下降，但验证数据集上的MSE值通常会在某个参数值达到最小值后再次增加。这种现象表明了所谓的*过拟合*。[图 5-8](#figure_ml_07)显示了不同`deg`值的回归拟合，并比较了训练数据和验证数据集的拟合情况：
 - en: '[PRE9]'
+  id: totrans-123
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO9-1)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO9-1)'
 - en: MSE value for the training data set
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练数据集的MSE值
 - en: '[![2](Images/2.png)](#co_machine_learning_CO9-2)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO9-2)'
 - en: MSE value for the validation data set
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 验证数据集的MSE值
 - en: '![aiif 0508](Images/aiif_0508.png)'
+  id: totrans-128
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0508](Images/aiif_0508.png)'
 - en: Figure 5-8\. Training and validation data including regression fits
+  id: totrans-129
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-8\. 包括回归拟合的训练和验证数据
 - en: 'With `Keras` and the neural network model, the validation data set performance
     can be monitored for every single learning step. One can also use callback functions
     to stop the model training early when no further improvements, say, in the performance
     on the training data set, are observed. The following Python code makes use of
     such a callback function. [Figure 5-9](#figure_ml_08) shows the predictions of
     the neural network for the training and validation data sets:'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`Keras`和神经网络模型，可以监控每个学习步骤的验证数据集性能。还可以使用回调函数在观察到训练数据集上的性能没有进一步改进时，提前停止模型训练。以下Python代码利用了这样的回调函数。[图 5-9](#figure_ml_08)显示了神经网络对训练和验证数据集的预测：
 - en: '[PRE10]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO10-1)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO10-1)'
 - en: Learning is stopped based on training data MSE value.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于训练数据MSE值停止学习。
 - en: '[![2](Images/2.png)](#co_machine_learning_CO10-2)'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO10-2)'
 - en: It is only stopped after a certain number of epochs that do not show an improvement.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 只有在一定数量的时期内没有显示改进时才会停止。
 - en: '[![3](Images/3.png)](#co_machine_learning_CO10-3)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO10-3)'
 - en: The best weights are restored when the learning is stopped.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 当学习停止时，最佳权重会被恢复。
 - en: '[![4](Images/4.png)](#co_machine_learning_CO10-4)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO10-4)'
 - en: The validation data sub-sets are specified.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定了验证数据子集。
 - en: '[![5](Images/5.png)](#co_machine_learning_CO10-5)'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_machine_learning_CO10-5)'
 - en: The callback function is passed to the `fit()` method.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 回调函数被传递给`fit()`方法。
 - en: '![aiif 0509](Images/aiif_0509.png)'
+  id: totrans-142
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0509](Images/aiif_0509.png)'
 - en: Figure 5-9\. Training and validation data including DNN predictions
+  id: totrans-143
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-9\. 包括DNN预测的训练和验证数据
 - en: '`Keras` allows analysis of the change in the MSE values on both data sets for
     every single epoch the model has been trained in. [Figure 5-10](#figure_ml_09)
     shows that the MSE values decrease with the increasing number of training epochs,
     although only on average and not monotonically:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Keras`允许分析模型在每个训练时期中在两个数据集上的MSE值的变化。[图 5-10](#figure_ml_09)显示，随着训练时期数量的增加，MSE值平均下降，但不是单调的：'
 - en: '[PRE11]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '![aiif 0510](Images/aiif_0510.png)'
+  id: totrans-146
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0510](Images/aiif_0510.png)'
 - en: Figure 5-10\. MSE values for DNN model on the training and validation data sets
+  id: totrans-147
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 5-10\. DNN模型在训练和验证数据集上的MSE值
 - en: 'In the case of OLS regression, one would probably choose a high—but not too
     high—value for the degree parameter, such as `deg=9`. The parameterization of
     the neural network model automatically gives the best model configuration at the
@@ -614,29 +915,42 @@
     both models to each other and to the test data set. Given the nature of the sample
     data, the somewhat better test data set performance of the neural network should
     not come as a surprise:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 在OLS回归的情况下，人们可能会选择一个高但不太高的度参数值，如`deg=9`。神经网络模型的参数化在训练结束时自动给出最佳模型配置。[Figure 5-10](#figure_ml_09)
+    比较了两种模型的预测结果以及测试数据集。考虑到样本数据的性质，神经网络在测试数据集上表现稍好并不奇怪：
 - en: '[PRE12]'
+  id: totrans-149
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '![aiif 0511](Images/aiif_0511.png)'
+  id: totrans-150
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0511](Images/aiif_0511.png)'
 - en: Figure 5-11\. Test data and predictions from OLS regression and the DNN model
+  id: totrans-151
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 5-11\. 测试数据及OLS回归和DNN模型的预测结果
 - en: Bias and Variance
+  id: totrans-152
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 偏差和方差
 - en: A major problem in ML in general and when applying ML algorithms to financial
     data in particular is the problem of *overfitting*. A model is overfitting its
     training data when the performance is worse on the validation and test data than
     on the training data. An example using OLS regression can illustrate the problem
     both visually and numerically.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 机器学习普遍存在的主要问题，特别是在应用于金融数据时，是*过拟合*问题。当模型在验证和测试数据上的表现比在训练数据上差时，就称为模型过拟合训练数据。以OLS回归为例，可以通过视觉和数值上的示例来说明这个问题。
 - en: 'The following Python code uses smaller sub-sets for both training and validation
     and implements a linear regression, as well as one of higher order. The linear
     regression fit, as shown in [Figure 5-12](#figure_ml_11), has a *high bias* on
@@ -644,112 +958,175 @@
     are relatively high. The higher-order fit shows a *high variance*. It hits all
     training data points exactly, but the fit itself varies significantly to achieve
     the perfect fit:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码使用较小的训练和验证子集实施了线性回归，以及一个高阶回归。如[Figure 5-12](#figure_ml_11)所示，线性回归拟合在训练数据集上具有*高偏差*，预测和标签数据之间的绝对差异相对较大。高阶拟合显示了*高方差*，它精确地命中所有训练数据点，但拟合本身因为追求完美拟合而变化显著：
 - en: '[PRE13]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO11-1)'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO11-1)'
 - en: Smaller features data sub-set
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 较小特征数据子集
 - en: '[![2](Images/2.png)](#co_machine_learning_CO11-3)'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO11-3)'
 - en: Smaller labels data sub-set
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 较小标签数据子集
 - en: '[![3](Images/3.png)](#co_machine_learning_CO11-5)'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO11-5)'
 - en: High bias OLS regression (linear)
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 高偏差OLS回归（线性）
 - en: '[![4](Images/4.png)](#co_machine_learning_CO11-6)'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO11-6)'
 - en: High variance OLS regression (higher order)
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 高方差OLS回归（更高阶）
 - en: '[![5](Images/5.png)](#co_machine_learning_CO11-7)'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_machine_learning_CO11-7)'
 - en: Enlarged features data set for plotting
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于绘图的扩大特征数据集
 - en: '![aiif 0512](Images/aiif_0512.png)'
+  id: totrans-166
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 0512](Images/aiif_0512.png)'
 - en: Figure 5-12\. High bias and high variance OLS regression fits
+  id: totrans-167
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 5-12\. 高偏差和高方差OLS回归拟合
 - en: '[Figure 5-12](#figure_ml_11) shows that a high bias fit performs worse in the
     example than a high variance fit on the training data. But the high variance fit,
     which is overfitting here to a large extent, performs much worse on the validation
     data. This can be illustrated by comparing performance measures for all cases.
     The following Python code calculates not only the MSE values, but also the <math
     alttext="upper R squared"><msup><mi>R</mi> <mn>2</mn></msup></math> values:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Figure 5-12](#figure_ml_11) 显示，在这个例子中，高偏差拟合在训练数据上的表现比高方差拟合差。但是这里的高方差拟合过度拟合，其在验证数据上表现更差。可以通过比较所有情况下的性能指标来说明这一点。以下Python代码不仅计算了MSE值，还计算了<math
+    alttext="upper R squared"><msup><mi>R</mi> <mn>2</mn></msup></math>值：'
 - en: '[PRE14]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO12-1)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO12-1)'
 - en: Model bias as mean absolute differences
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型偏差定义为平均绝对差异
 - en: '[![2](Images/2.png)](#co_machine_learning_CO12-2)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO12-2)'
 - en: Model variance as variance of model predictions
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型方差定义为模型预测的方差
 - en: '[![3](Images/3.png)](#co_machine_learning_CO12-3)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO12-3)'
 - en: Performance of *high bias* model on *training data*
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高偏差*模型在*训练数据*上的表现'
 - en: '[![4](Images/4.png)](#co_machine_learning_CO12-4)'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO12-4)'
 - en: Performance of *high bias* model on *validation data*
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高偏差*模型在*验证数据*上的表现'
 - en: '[![5](Images/5.png)](#co_machine_learning_CO12-5)'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_machine_learning_CO12-5)'
 - en: Performance of *high variance* model on *training data*
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高方差*模型在*训练数据*上的表现'
 - en: '[![6](Images/6.png)](#co_machine_learning_CO12-6)'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_machine_learning_CO12-6)'
 - en: Performance of *high variance* model on *validation data*
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高方差*模型在*验证数据*上的表现'
 - en: The results show that performance of the high bias model is roughly comparable
     on both the training and validation data sets. By contrast, the performance of
     the high variance model is perfect on the training data and pretty bad on the
     validation data.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果显示，高偏差模型在训练和验证数据集上的表现大致相当。相比之下，高方差模型在训练数据上表现完美，但在验证数据上表现非常糟糕。
 - en: Cross-Validation
+  id: totrans-183
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 交叉验证
 - en: A standard approach to avoid overfitting is *cross-validation*, during which
     multiple training and validation data populations are tested. The `scikit-learn`
     package provides functionality to implement cross-validation in a standardized
     way. The function `cross_val_score` can be applied to any `scikit-learn` model
     object.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免过拟合的标准方法是*交叉验证*，在此期间会对多个训练和验证数据集进行测试。`scikit-learn`包提供了一种标准化的实现交叉验证的功能。`cross_val_score`函数可应用于任何`scikit-learn`模型对象。
 - en: 'The following code implements the OLS regression approach on the complete sample
     data set, using a polynomial OLS regression model from `scikit-learn`. The five-fold
     cross-validation is implemented for different degrees for the highest polynomial.
@@ -759,171 +1136,263 @@
     or the final 20% of the data is used (data on the right-hand side in [Figure 5-3](#figure_ml_02)).
     Similarly, the best validation scores are observed for the middle 20% of the sample
     data set:'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码在完整样本数据集上实现OLS回归方法，使用`scikit-learn`的多项式OLS回归模型。为最高多项式的不同度数实现了五折交叉验证。随着最高度数的增加，交叉验证得分平均变得更差。当使用前20%数据用于验证（[图5-3](#figure_ml_02)左侧的数据）或使用最后20%数据时，特别糟糕的结果被观察到（[图5-3](#figure_ml_02)右侧的数据）。类似地，最佳验证分数出现在样本数据集中间的20%上：
 - en: '[PRE15]'
+  id: totrans-186
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO13-1)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO13-1)'
 - en: Creates a polynomial regression model class
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建多项式回归模型类
 - en: '[![2](Images/2.png)](#co_machine_learning_CO13-2)'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO13-2)'
 - en: Adjusts the default printing settings for `numpy`
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整了`numpy`的默认打印设置
 - en: '[![3](Images/3.png)](#co_machine_learning_CO13-3)'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO13-3)'
 - en: Implements the five-fold cross-validation
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现了五折交叉验证
 - en: '`Keras` provides wrapper classes to use `Keras` model objects with `scikit-learn`
     functionality, such as the `cross_val_score` function. The following example uses
     the `KerasRegressor` class to wrap the neural network models and to apply the
     cross-validation to them. The cross-validation scores are better throughout for
     the two networks tested when compared to the OLS regression cross-validation scores.
     The neural network capacity does not play too large a role in this example:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Keras`提供了包装类，用于将`Keras`模型对象与`scikit-learn`功能结合使用，例如`cross_val_score`函数。以下示例使用`KerasRegressor`类来包装神经网络模型，并对其应用交叉验证。与OLS回归交叉验证得分相比，这两个测试网络的交叉验证得分整体更好。在本例中，神经网络的容量并不起太大的作用：'
 - en: '[PRE16]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](Images/1.png)](#co_machine_learning_CO14-1)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_machine_learning_CO14-1)'
 - en: Wrapper class for neural network with *low* capacity
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有*低*容量的神经网络的包装类
 - en: '[![2](Images/2.png)](#co_machine_learning_CO14-2)'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_machine_learning_CO14-2)'
 - en: Cross-validation for neural network with *low* capacity
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有*低*容量的神经网络的交叉验证
 - en: '[![3](Images/3.png)](#co_machine_learning_CO14-3)'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_machine_learning_CO14-3)'
 - en: Wrapper class for neural network with *high* capacity
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有*高*容量的神经网络的包装类
 - en: '[![4](Images/4.png)](#co_machine_learning_CO14-4)'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_machine_learning_CO14-4)'
 - en: Cross-validation for neural network with *high* capacity
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 具有*高*容量的神经网络的交叉验证
 - en: Avoiding Overfitting
+  id: totrans-203
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 避免过拟合
 - en: Overfitting—when a model performs much better on a training data set than on
     the validation and test data sets—is to be avoided in ML in general and in finance
     in particular. Proper evaluation procedures and analyses, such as cross-validation,
     help in preventing overfitting and in finding, for example, an adequate model
     capacity.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 过拟合指的是模型在训练数据集上表现比在验证和测试数据集上表现要好得多，这在机器学习中一般以及在金融领域尤其要避免。适当的评估程序和分析，比如交叉验证，有助于预防过拟合并找到合适的模型容量。
 - en: Conclusions
+  id: totrans-205
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: 'This chapter presents a blueprint for a machine learning process. The main
     elements presented are as follows:'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章提供了一个机器学习过程的蓝图。所呈现的主要元素如下：
 - en: Learning
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 学习
 - en: What exactly is meant by machine *learning*?
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 机器*学习*到底意味着什么？
 - en: Data
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据
 - en: What raw data and what (preprocessed) features and labels data is to be used?
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用什么原始数据以及哪些（预处理过的）特征和标签数据？
 - en: Success
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 成功
 - en: Given the problem as defined indirectly by the data (estimation, classification,
     etc.), what is the appropriate measure of success?
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于数据间接定义的问题（估计、分类等），什么是成功的适当衡量标准？
 - en: Capacity
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 容量
 - en: Which role does the model capacity play, and what might be an adequate capacity
     given the problem at hand?
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 模型容量扮演着什么角色，以及针对手头问题，什么样的容量可能是合适的？
 - en: Evaluation
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估
 - en: How shall the model performance be evaluated given the purpose of the trained
     model?
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于训练模型的目的，如何评估模型的性能？
 - en: Bias and variance
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 偏差和方差
 - en: 'Which models are better suited for the problem at hand: those with rather high
     bias or rather high variance?'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 针对手头问题，哪种模型更适合：那些具有相当高的偏差还是相当高的方差？
 - en: Cross-validation
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 交叉验证
 - en: For non-sequence-like data sets, how does the model perform when cross-validated
     on different configurations for the training and validation data sub-sets used?
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于非序列型数据集，当在不同配置上进行交叉验证时，模型在训练和验证数据子集上的表现如何？
 - en: This blueprint is applied loosely in subsequent chapters to a number of real-world
     financial use cases. For more background information and details about machine
     learning as a process, refer to the references listed at the end of this chapter.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 此蓝图松散应用于后续章节中的多个实际金融用例。有关机器学习作为过程的更多背景信息和细节，请参阅本章末尾列出的参考文献。
 - en: References
+  id: totrans-222
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍和论文：
 - en: 'Chollet, François. 2017\. *Deep Learning with Python*. Shelter Island: Manning.'
+  id: totrans-224
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Chollet，François。2017。*深度学习与Python*。Shelter Island：Manning。
 - en: 'Domingos, Pedro. 2015\. *The Master Algorithm: How the Quest for the Ultimate
     Learning Machine Will Remake Our World.* New York: Basic Books.'
+  id: totrans-225
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Domingos，Pedro。2015。*大师算法：寻找终极学习机器的探索如何重塑我们的世界*。纽约：基础书籍。
 - en: 'Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016\. *Deep Learning*.
     Cambridge: MIT Press. [*http://deeplearningbook.org*](http://deeplearningbook.org).'
+  id: totrans-226
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Goodfellow，Ian，Yoshua Bengio和Aaron Courville。2016。*深度学习*。剑桥：麻省理工学院出版社。[*http://deeplearningbook.org*](http://deeplearningbook.org)。
 - en: 'Harari, Yuval Noah. 2015\. *Homo Deus: A Brief History of Tomorrow.* London:
     Harvill Secker.'
+  id: totrans-227
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Harari，Yuval Noah。2015。*人类大未来：明日简史*。伦敦：Harvill Secker。
 - en: 'Mitchell, Tom M. 1997\. *Machine Learning*. New York: McGraw-Hill.'
+  id: totrans-228
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Mitchell，Tom M。1997。*机器学习*。纽约：麦格劳希尔。
 - en: 'VanderPlas, Jake. 2017\. *Python Data Science Handbook*. Sebastopol: O’Reilly.'
+  id: totrans-229
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: VanderPlas，Jake。2017。*Python数据科学手册*。Sebastopol：O’Reilly。
 - en: ^([1](ch05.xhtml#idm45625305881528-marker)) Often, the rule of thumb mentioned
     in this context is “60%, 20%, 20%” for the split of a given data set into training,
     validation, and testing data sub-sets.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch05.xhtml#idm45625305881528-marker))在这个上下文中提到的经验法则通常是“60％，20％，20％”，用于将给定数据集分割为训练、验证和测试数据子集。

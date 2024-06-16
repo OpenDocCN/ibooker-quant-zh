@@ -1,18 +1,22 @@
 - en: Chapter 6\. Dynamic Economy
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: Multiperiod models of securities markets are much more realistic than single
     period models. In fact, they are extensively used for practical purposes in the
     financial industry.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Stanley Pliska (1997)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -20,14 +24,17 @@
     in the sense that any consumption process can be financed by trading the given
     set of financial securities, adjusting portfolios through time as uncertainty
     is resolved bit by bit.
+  id: totrans-4
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: ''
+  id: totrans-5
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Darrell Duffie (1986)
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -35,6 +42,7 @@
     rates—is revealed gradually over time. While static model economies are an elegant
     way of introducing fundamental notions in finance, a realistic financial model
     requires a dynamic representation of the financial world.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: 'The formalism needed to properly model dynamic economies is more involved and
@@ -44,6 +52,7 @@
     (1973) option pricing model in a discrete Monte Carlo simulation version. In this
     context, *discrete time* means that the set of relevant dates is extended from
     just two to a larger, but still finite, number—say, to five or 50.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: 'The tools used in this chapter are more or less the same as before: linear
@@ -52,39 +61,48 @@
     are great resources for dynamic financial modeling in discrete time. Glasserman
     (2004) is a comprehensive reference book for Monte Carlo simulation methods in
     finance.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: Topics covered in this chapter are stochastic processes, option pricing in dynamically
     complete markets, binomial option pricing, Black-Scholes-Merton (1973) dynamic
     simulation, early exercise and American option pricing, as well as Least-Squares
     Monte Carlo (LSM) option pricing.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following table gives an overview of the topics in finance, mathematics,
     and Python found in this chapter:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: '| Finance | Mathematics | Python |'
+  id: totrans-12
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- |'
+  id: totrans-13
   prefs: []
   type: TYPE_TB
 - en: '| Uncertainty, tree-based | Stochastic process, binomial tree | `NumPy`, `ndarray`
     |'
+  id: totrans-14
   prefs: []
   type: TYPE_TB
 - en: '| Uncertainty, simulation-based | Stochastic process, Monte Carlo simulation
     | `NumPy`, `ndarray`, `rng.standard_normal` |'
+  id: totrans-15
   prefs: []
   type: TYPE_TB
 - en: '| European option pricing | Inner values, backward induction, risk-neutral
     expectation | `NumPy`, `ndarray`, `np.maximum` |'
+  id: totrans-16
   prefs: []
   type: TYPE_TB
 - en: '| American option pricing | Inner values, continuation values, OLS regression,
     backward induction, risk-neutral expectation | `NumPy`, `ndarray`, `np.polyval`,
     `np.polyfit`, `np.where` |'
+  id: totrans-17
   prefs: []
   type: TYPE_TB
 - en: As in [Chapter 5](ch05_split_000.xhtml#static_economy), the major goal of this
@@ -96,9 +114,11 @@
     and does not try to provide a general framework for dynamic economies in discrete
     time. Such a general framework, including many examples implemented in Python,
     is found in Hilpisch (2015).
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
 - en: Binomial Option Pricing
+  id: totrans-19
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -108,6 +128,7 @@
     relies on continuous time finance and stochastic calculus, the binomial option
     pricing model is, in a sense, a discrete time version of the BSM model that can
     be fully understood with elementary mathematics only.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: 'In the Cox-Ross-Rubinstein (1979) model, there are two traded financial assets:
@@ -121,6 +142,7 @@
     <mi>T</mi> <mo>}</mo></mrow></math> , with <math alttext="upper M plus 1 comma
     upper M greater-than 1"><mrow><mi>M</mi> <mo>+</mo> <mn>1</mn> <mo>,</mo> <mi>M</mi>
     <mo>></mo> <mn>1</mn></mrow></math> elements.'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
 - en: 'Given a stock price of <math alttext="upper S Subscript t Sub Subscript i"><msub><mi>S</mi>
@@ -128,6 +150,7 @@
     date <math alttext="upper S Subscript t Sub Subscript i plus 1"><msub><mi>S</mi>
     <msub><mi>t</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub></msub></math>
     can only take on two different values:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper S Subscript t Sub Subscript i plus 1 Baseline equals StartLayout
@@ -138,10 +161,20 @@
     <msub><mi>t</mi> <mi>i</mi></msub></msub> <mo>·</mo> <mi>u</mi></mrow></mtd></mtr>
     <mtr><mtd columnalign="left"><mrow><msub><mi>S</mi> <msub><mi>t</mi> <mi>i</mi></msub></msub>
     <mo>·</mo> <mi>d</mi></mrow></mtd></mtr></mtable></mfenced></mrow></math>
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S Subscript t Sub Subscript i plus 1 Baseline equals StartLayout
+    Enlarged left-brace 1st Row  upper S Subscript t Sub Subscript i Baseline dot
+    u 2nd Row  upper S Subscript t Sub Subscript i Baseline dot d EndLayout" display="block"><mrow><msub><mi>S</mi>
+    <msub><mi>t</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub></msub> <mo>=</mo>
+    <mfenced separators="" open="{" close=""><mtable><mtr><mtd columnalign="left"><mrow><msub><mi>S</mi>
+    <msub><mi>t</mi> <mi>i</mi></msub></msub> <mo>·</mo> <mi>u</mi></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><msub><mi>S</mi> <msub><mi>t</mi> <mi>i</mi></msub></msub>
+    <mo>·</mo> <mi>d</mi></mrow></mtd></mtr></mtable></mfenced></mrow></math>
 - en: <math alttext="u"><mi>u</mi></math> stands for an *upward movement* and <math
     alttext="d"><mi>d</mi></math> for a *downward movement*.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: 'To simplify the handling of dates, assume an evenly spaced time grid with <math
@@ -156,6 +189,7 @@
     <mo>,</mo> <msub><mi>t</mi> <mn>2</mn></msub> <mo>=</mo> <mn>2</mn> <mi>Δ</mi>
     <mi>t</mi> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo> <mo>,</mo> <mi>T</mi> <mo>}</mo></mrow></math>
     . In addition, define:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="StartLayout Enlarged left-brace 1st Row  u identical-to e Superscript
@@ -166,19 +200,30 @@
     <mrow><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup></mrow></mtd></mtr>
     <mtr><mtd columnalign="left"><mrow><mi>d</mi> <mo>≡</mo> <msup><mi>e</mi> <mrow><mo>-</mo><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup>
     <mo>=</mo> <msup><mi>u</mi> <mrow><mo>-</mo><mn>1</mn></mrow></msup></mrow></mtd></mtr></mtable></mfenced></math>
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout Enlarged left-brace 1st Row  u identical-to e Superscript
+    sigma StartRoot normal upper Delta t EndRoot Baseline 2nd Row  d identical-to
+    e Superscript minus sigma StartRoot normal upper Delta t EndRoot Baseline equals
+    u Superscript negative 1 EndLayout" display="block"><mfenced separators="" open="{"
+    close=""><mtable><mtr><mtd columnalign="left"><mrow><mi>u</mi> <mo>≡</mo> <msup><mi>e</mi>
+    <mrow><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup></mrow></mtd></mtr>
+    <mtr><mtd columnalign="left"><mrow><mi>d</mi> <mo>≡</mo> <msup><mi>e</mi> <mrow><mo>-</mo><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup>
+    <mo>=</mo> <msup><mi>u</mi> <mrow><mo>-</mo><mn>1</mn></mrow></msup></mrow></mtd></mtr></mtable></mfenced></math>
 - en: It turns out that one consequence of this definition is the property <math alttext="u
     dot d equals 1"><mrow><mi>u</mi> <mo>·</mo> <mi>d</mi> <mo>=</mo> <mn>1</mn></mrow></math>
     , which will prove convenient in that it creates a so-called *recombining* binomial
     tree. <math><mrow><mi>σ</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>>0</mn></mrow></msub></mrow></math>
     represents the constant *volatility factor*.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
 - en: Assume that the risk-less, constant short rate is given by <math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi>
     <mrow><mn>≥0</mn></mrow></msub></mrow></math> . Given a bond price of <math alttext="upper
     B Subscript t Sub Subscript i"><msub><mi>B</mi> <msub><mi>t</mi> <mi>i</mi></msub></msub></math>
     , the price of the bond one period later is given by
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper B Subscript t Sub Subscript i plus 1 Baseline equals upper
@@ -188,19 +233,34 @@
     <mo>=</mo> <msub><mi>B</mi> <msub><mi>t</mi> <mi>i</mi></msub></msub> <mo>·</mo>
     <msup><mi>e</mi> <mrow><mi>r</mi><mo>·</mo><mo>(</mo><msub><mi>t</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub>
     <mo>-</mo><msub><mi>t</mi> <mi>i</mi></msub> <mo>)</mo></mrow></msup></mrow></math>
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper B Subscript t Sub Subscript i plus 1 Baseline equals upper
+    B Subscript t Sub Subscript i Baseline dot e Superscript r dot left-parenthesis
+    t Super Subscript i plus 1 Superscript minus t Super Subscript i Superscript right-parenthesis"
+    display="block"><mrow><msub><mi>B</mi> <msub><mi>t</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub></msub>
+    <mo>=</mo> <msub><mi>B</mi> <msub><mi>t</mi> <mi>i</mi></msub></msub> <mo>·</mo>
+    <msup><mi>e</mi> <mrow><mi>r</mi><mo>·</mo><mo>(</mo><msub><mi>t</mi> <mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub>
+    <mo>-</mo><msub><mi>t</mi> <mi>i</mi></msub> <mo>)</mo></mrow></msup></mrow></math>
 - en: or
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper B Subscript t plus normal upper Delta t Baseline equals
     upper B Subscript t Baseline dot e Superscript r dot normal upper Delta t" display="block"><mrow><msub><mi>B</mi>
     <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub> <mo>=</mo> <msub><mi>B</mi>
     <mi>t</mi></msub> <mo>·</mo> <msup><mi>e</mi> <mrow><mi>r</mi><mo>·</mo><mi>Δ</mi><mi>t</mi></mrow></msup></mrow></math>
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper B Subscript t plus normal upper Delta t Baseline equals
+    upper B Subscript t Baseline dot e Superscript r dot normal upper Delta t" display="block"><mrow><msub><mi>B</mi>
+    <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub> <mo>=</mo> <msub><mi>B</mi>
+    <mi>t</mi></msub> <mo>·</mo> <msup><mi>e</mi> <mrow><mi>r</mi><mo>·</mo><mi>Δ</mi><mi>t</mi></mrow></msup></mrow></math>
 - en: for some <math alttext="t element-of script upper T minus upper T"><mrow><mi>t</mi>
     <mo>∈</mo> <mi>𝒯</mi> <mo>∖</mo> <mi>T</mi></mrow></math> .
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: 'A central numerical parameter value to be derived, based on the preceding assumptions,
@@ -209,6 +269,7 @@
     known as well. Denote the *martingale probability* for an upward movement by <math><mrow><mi>q</mi><mo>∈</mo><msub><mi>ℝ</mi>
     <mrow><mn>>0</mn></mrow></msub> <mo>,</mo><mn>0</mn><mo><</mo><mi>q</mi><mo><</mo><mn>1</mn></mrow></math>.
     One gets from the martingale property for the stock price:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="StartLayout 1st Row 1st Column upper S Subscript t 2nd Column
@@ -235,77 +296,126 @@
     <mtr><mtd><mrow><mo>⇔</mo> <mi>q</mi></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msup><mi>e</mi>
     <mrow><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup> <mo>-</mo><mi>d</mi></mrow>
     <mrow><mi>u</mi><mo>-</mo><mi>d</mi></mrow></mfrac></mtd></mtr></mtable></math>
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="StartLayout 1st Row 1st Column upper S Subscript t 2nd Column
+    equals 3rd Column e Superscript minus r normal upper Delta t Baseline bold upper
+    E Superscript upper Q Baseline left-parenthesis upper S Subscript t plus normal
+    upper Delta t Baseline right-parenthesis 2nd Row 1st Column Blank 2nd Column equals
+    3rd Column e Superscript minus r normal upper Delta t Baseline left-parenthesis
+    q upper S Subscript t Baseline u plus left-parenthesis 1 minus q right-parenthesis
+    upper S Subscript t Baseline d right-parenthesis 3rd Row 1st Column 1 2nd Column
+    equals 3rd Column e Superscript minus r normal upper Delta t Baseline left-parenthesis
+    q u plus left-parenthesis 1 minus q right-parenthesis d right-parenthesis 4th
+    Row 1st Column q 2nd Column equals 3rd Column StartFraction e Superscript r normal
+    upper Delta t Baseline minus d Over u minus d EndFraction EndLayout" display="block"><mtable><mtr><mtd><msub><mi>S</mi>
+    <mi>t</mi></msub></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><msup><mi>e</mi> <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup>
+    <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub>
+    <mo>)</mo></mrow></mrow></mtd></mtr> <mtr><mtd><mo>=</mo></mtd> <mtd><mrow><msup><mi>e</mi>
+    <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup> <mfenced separators=""
+    open="(" close=")"><mi>q</mi> <msub><mi>S</mi> <mi>t</mi></msub> <mi>u</mi> <mo>+</mo>
+    <mrow><mo>(</mo> <mn>1</mn> <mo>-</mo> <mi>q</mi> <mo>)</mo></mrow> <msub><mi>S</mi>
+    <mi>t</mi></msub> <mi>d</mi></mfenced></mrow></mtd></mtr> <mtr><mtd><mrow><mo>⇔</mo>
+    <mn>1</mn></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mrow><msup><mi>e</mi> <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup>
+    <mfenced separators="" open="(" close=")"><mi>q</mi> <mi>u</mi> <mo>+</mo> <mo>(</mo>
+    <mn>1</mn> <mo>-</mo> <mi>q</mi> <mo>)</mo> <mi>d</mi></mfenced></mrow></mtd></mtr>
+    <mtr><mtd><mrow><mo>⇔</mo> <mi>q</mi></mrow></mtd> <mtd><mo>=</mo></mtd> <mtd><mfrac><mrow><msup><mi>e</mi>
+    <mrow><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup> <mo>-</mo><mi>d</mi></mrow>
+    <mrow><mi>u</mi><mo>-</mo><mi>d</mi></mrow></mfrac></mtd></mtr></mtable></math>
 - en: This shows that the martingale measure is fixed at every node and consequently
     for the whole tree.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
 - en: The basics of the binomial option pricing model are easily translated into Python
     code:^([1](ch06.xhtml#idm44853685071096))
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO1-1)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: The initial stock price value.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO1-2)'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: The strike price for the option to be valued.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO1-3)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: The constant risk-less short rate.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO1-4)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: The time horizon and option maturity.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO1-5)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: The constant volatility factor.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO1-6)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: The number of time intervals.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](Images/7.png)](#co_dynamic_economy_CO1-7)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: The resulting length of each time interval.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: '[![8](Images/8.png)](#co_dynamic_economy_CO1-8)'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: The discount factor for the fixed time interval.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: '[![9](Images/9.png)](#co_dynamic_economy_CO1-9)'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: The upward and downward factors.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: '[![10](Images/10.png)](#co_dynamic_economy_CO1-11)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: The martingale probability for an upward movement.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
 - en: 'The simulation of the stock price process and the valuation of options in this
@@ -313,68 +423,90 @@
     one based on *Python loops*, which might be easier to understand at the beginning,
     and one based on *vectorized* `NumPy` *code*, which is more concise and efficient,
     but may be a bit harder to grasp at first.'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: Simulation and Valuation Based on Python Loops
+  id: totrans-59
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'Even though the implementation in this subsection uses Python loops, the basic
     data structure is a `NumPy` `ndarray` object:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO2-1)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: Initializes the `ndarray` object.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO2-3)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
 - en: Sets the initial stock price value in the upper-lefthand corner.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO2-5)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: Sets a counter `z` to 1.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO2-6)'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: Iterates from `1` to `m+1`, that is, over all time steps after 0.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO2-7)'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: Iterates over the relevant nodes for the given time step.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO2-8)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the up and down values and sets them in the `ndarray` object.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](Images/7.png)](#co_dynamic_economy_CO2-10)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: Increases the counter by 1 to include more relevant nodes in the next step.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
 - en: '[![8](Images/8.png)](#co_dynamic_economy_CO2-11)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
 - en: The resulting recombining binomial tree.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: European option pricing
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -383,45 +515,60 @@
     *backward induction*. This basically means starting at the end, moving backward
     step by step to the present, and at every node repeatedly applying the risk-neutral
     pricing paradigm as introduced in the simple static two-state economy of [Chapter 2](ch02_split_000.xhtml#two_state_economy).
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following Python code assumes a European put option payoff:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO3-1)'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: The `ndarray` object for the inner values.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO3-2)'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: This calculates the inner values for the relevant nodes.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO3-4)'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: This does the node-wise valuation by applying risk-neutral pricing.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO3-5)'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: The resulting present value binomial tree.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO3-6)'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: The present value today of the European put option.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: American option pricing
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -433,6 +580,7 @@
     the continuation value, that is, the present value of not exercising the option.
     If that is the case, the option is exercised, and the value of the American option
     is set to the inner value. Formally, one gets'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper V Subscript t Baseline equals max left-bracket h Subscript
@@ -444,8 +592,18 @@
     <msup><mi>e</mi> <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup>
     <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>V</mi> <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub>
     <mo>)</mo></mrow></mfenced></mrow></math>
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper V Subscript t Baseline equals max left-bracket h Subscript
+    t Baseline comma e Superscript minus r normal upper Delta t Baseline bold upper
+    E Superscript upper Q Baseline left-parenthesis upper V Subscript t plus normal
+    upper Delta t Baseline right-parenthesis right-bracket" display="block"><mrow><msub><mi>V</mi>
+    <mi>t</mi></msub> <mo>=</mo> <mo movablelimits="true" form="prefix">max</mo> <mfenced
+    separators="" open="[" close="]"><msub><mi>h</mi> <mi>t</mi></msub> <mo>,</mo>
+    <msup><mi>e</mi> <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup>
+    <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>V</mi> <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub>
+    <mo>)</mo></mrow></mfenced></mrow></math>
 - en: where <math alttext="h Subscript t"><msub><mi>h</mi> <mi>t</mi></msub></math>
     is the inner value at time <math alttext="t"><mi>t</mi></math> , and <math alttext="e
     Superscript minus r normal upper Delta t Baseline bold upper E Superscript upper
@@ -453,156 +611,207 @@
     right-parenthesis"><mrow><msup><mi>e</mi> <mrow><mo>-</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup>
     <msup><mi>𝐄</mi> <mi>Q</mi></msup> <mrow><mo>(</mo> <msub><mi>V</mi> <mrow><mi>t</mi><mo>+</mo><mi>Δ</mi><mi>t</mi></mrow></msub>
     <mo>)</mo></mrow></mrow></math> is the continuation value.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: 'In Python, a single line of code needs to be added:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO4-1)'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: This line checks for the early exercise decision and puts the inner value as
     the American option value when it is higher than the continuation value.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO4-2)'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: The resulting binomial tree for the present values of the American put option.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO4-3)'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: The present value today of the American put option, which is considerably higher
     than without early exercise.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: Simulation and Valuation Based on Vectorized Code
+  id: totrans-104
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'The algorithm implementation that follows makes systematic use of `NumPy` vectorization
     capabilities. The implementation is presented step by step, also with some illustrating
     lines of code not needed for the algorithm implementation itself:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO5-1)'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
 - en: Creates an `ndarray` object for the number of upward movements from `0` to `m`.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO5-3)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: Calculating the squares by a vectorized operation.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO5-4)'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: Calculating the powers of 2 by using the `u` object as a vector exponent.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO5-5)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: Resizes the `u` object from one dimension to two dimensions. The number of upward
     movements is now stored in each row.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO5-6)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: Transposes the `u` object to get a two-dimensional `ndarray` object `d` with
     the number of downward movements in each column.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO5-8)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: Combines the `u` and `d` objects to arrive at the net number of upward and downward
     movements. For instance, `+2` means “two more upward movements than downward movements”
     or `-1` means “one more downward movement than upward movements.”^([2](ch06.xhtml#idm44853683423000))
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: 'Equipped with a matrix containing the net number of movements in the binomial
     tree, simulation of the stock price process boils down to a single line of code:'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO6-1)'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: The vectorized simulation of the stock price process (binomial tree).
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO6-2)'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: Only the numbers on and above the diagonal are relevant.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: 'The valuation of both the European and American put options is also vectorized
     to some extent. A single loop over the time steps remains:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE6]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO7-1)'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: The calculation of the inner value of the put option, fully vectorized this
     time.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO7-2)'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: As before, only the numbers on and above the diagonal are relevant.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO7-3)'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: Creates a copy of the `h` object.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO7-4)'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: The partly vectorized valuation algorithm for the European put option.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO7-6)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: The present value of the European put option.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO7-7)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
 - en: The partly vectorized valuation algorithm for the American put option.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](Images/7.png)](#co_dynamic_economy_CO7-10)'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
 - en: The present value of the American put option.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: European and American Options
+  id: totrans-141
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -611,9 +820,11 @@
     it can be used to value both European options and American options with high accuracy
     in an efficient manner. In the limit, making time steps infinitely small, the
     model converges to the Black-Scholes-Merton (1973) model, which is another advantage.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: Speed Comparison
+  id: totrans-143
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -621,80 +832,114 @@
     allows for significant speed improvements. The following code snippets implement
     the previous algorithms for a speed comparison based on a larger, more realistic
     number of time steps. First, the basic numerical parameters need to be adjusted:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE7]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO8-1)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: Increases the number of time intervals to a realistic level, yielding rather
     accurate numerical option values.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: 'The function `binomial_looping()` integrates all elements of the *loop-based
     implementation* of the simulation and valuation algorithm for the American put
     option:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE8]'
+  id: totrans-149
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'The execution takes less than 200 milliseconds on the author’s computer:'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE9]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'The function `binomial_vectorization()` integrates all elements of the *vectorized
     implementation* of the simulation and valuation algorithm for the American put
     option:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE10]'
+  id: totrans-153
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'This implementation is about 40 times faster than the loop-based one, which
     impressively illustrates the power of vectorized implementation approaches in
     terms of performance improvements:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种实现比基于循环的实现快约40倍，这充分展示了向量化实现方法在性能改进方面的强大力量：
 - en: '[PRE11]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Infrastructure and Performance
+  id: totrans-156
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基础设施和性能
 - en: All absolute times reported here are dependent both on the hardware and software
     configuration used. For instance, you can use `NumPy` in combination with the
     [Math Kernel Library (MKL) from Intel](https://oreil.ly/dWyk9). This combination
     can significantly speed up numerical operations on Intel processor-based systems.
     Relative times and speed-up factors should be roughly similar on different infrastructures.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这里报告的绝对时间都取决于所使用的硬件和软件配置。例如，您可以在Intel处理器系统上使用`NumPy`与[英特尔数学核心库（MKL）](https://oreil.ly/dWyk9)的组合。这种组合可以显著加快数值运算速度。在不同基础设施上，相对时间和加速比应大致相似。
 - en: Black-Scholes-Merton Option Pricing
+  id: totrans-158
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Black-Scholes-Merton期权定价
 - en: A static simulation version of the Black-Scholes-Merton (1973) model for option
     pricing is discussed in [Chapter 5](ch05_split_000.xhtml#static_economy). This
     section introduces a *dynamic simulation version* for their seminal option pricing
     model. For additional background information on the model, refer to [Chapter 5](ch05_split_000.xhtml#static_economy).
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: Black-Scholes-Merton（1973年）模型的静态仿真版本用于期权定价，在[第5章](ch05_split_000.xhtml#static_economy)中进行了讨论。本节介绍了他们开创性的期权定价模型的*动态仿真版本*。有关该模型的更多背景信息，请参阅[第5章](ch05_split_000.xhtml#static_economy)。
 - en: The stochastic differential equation for the Black-Scholes-Merton (1973) economy
     is given by
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: Black-Scholes-Merton（1973年）经济的随机微分方程如下
 - en: <math alttext="d upper S Subscript t Baseline equals r upper S Subscript t Baseline
     d t plus sigma upper S Subscript t Baseline d upper Z Subscript t" display="block"><mrow><mi>d</mi>
     <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>r</mi> <msub><mi>S</mi> <mi>t</mi></msub>
     <mi>d</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msub><mi>S</mi> <mi>t</mi></msub>
     <mi>d</mi> <msub><mi>Z</mi> <mi>t</mi></msub></mrow></math>
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="d upper S Subscript t Baseline equals r upper S Subscript t Baseline
+    d t plus sigma upper S Subscript t Baseline d upper Z Subscript t" display="block"><mrow><mi>d</mi>
+    <msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <mi>r</mi> <msub><mi>S</mi> <mi>t</mi></msub>
+    <mi>d</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msub><mi>S</mi> <mi>t</mi></msub>
+    <mi>d</mi> <msub><mi>Z</mi> <mi>t</mi></msub></mrow></math>
 - en: where <math><mrow><msub><mi>S</mi> <mi>t</mi></msub> <mo>∈</mo><msub><mi>ℝ</mi>
     <mrow><mn>>0</mn></mrow></msub></mrow></math> is the stock price at time <math
     alttext="t"><mi>t</mi></math> , <math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi>
@@ -703,12 +948,20 @@
     and <math alttext="upper Z Subscript t"><msub><mi>Z</mi> <mi>t</mi></msub></math>
     is an arithmetic Brownian motion (see Glasserman (2004, chapter 3) and Hilpisch
     (2018, chapter 12)).
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 在时间<math><mrow><msub><mi>t</mi> <mi>t</mi></msub> <mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>>0</mn></mrow></msub></mrow></math>处的股票价格，其中<math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>≥0</mn></mrow></msub></mrow></math>是恒定的短期利率，<math><mrow><mi>σ</mi><mo>∈</mo><msub><mi>ℝ</mi>
+    <mrow><mn>>0</mn></mrow></msub></mrow></math>是恒定的波动率因子，<math alttext="upper Z
+    Subscript t"><msub><mi>Z</mi> <mi>t</mi></msub></math>是算术布朗运动（参见Glasserman（2004年，第3章）和Hilpisch（2018年，第12章））。
 - en: Monte Carlo Simulation of Stock Price Paths
+  id: totrans-163
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 蒙特卡洛模拟股价路径
 - en: Assume a finite set of relevant points in time <math alttext="script upper T
     identical-to StartSet t 0 equals 0 comma t 1 comma t 2 comma period period period
     comma t Subscript upper M Baseline equals upper T EndSet"><mrow><mi>𝒯</mi> <mo>≡</mo>
@@ -725,6 +978,7 @@
     previous stock price <math alttext="upper S Subscript t minus normal upper Delta
     t"><msub><mi>S</mi> <mrow><mi>t</mi><mo>-</mo><mi>Δ</mi><mi>t</mi></mrow></msub></math>
     , can then be simulated according to the difference equation
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
@@ -737,105 +991,145 @@
     <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac></mfenced>
     <mi>Δ</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msqrt><mrow><mi>Δ</mi> <mi>t</mi></mrow></msqrt>
     <mi>z</mi></mfenced></mrow></math>
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
+    normal upper Delta t Baseline dot exp left-parenthesis left-parenthesis r minus
+    StartFraction sigma squared Over 2 EndFraction right-parenthesis normal upper
+    Delta t plus sigma StartRoot normal upper Delta t EndRoot z right-parenthesis"
+    display="block"><mrow><msub><mi>S</mi> <mi>t</mi></msub> <mo>=</mo> <msub><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mi>Δ</mi><mi>t</mi></mrow></msub> <mo>·</mo> <mo form="prefix">exp</mo>
+    <mfenced separators="" open="(" close=")"><mfenced separators="" open="(" close=")"><mi>r</mi>
+    <mo>-</mo> <mfrac><msup><mi>σ</mi> <mn>2</mn></msup> <mn>2</mn></mfrac></mfenced>
+    <mi>Δ</mi> <mi>t</mi> <mo>+</mo> <mi>σ</mi> <msqrt><mrow><mi>Δ</mi> <mi>t</mi></mrow></msqrt>
+    <mi>z</mi></mfenced></mrow></math>
 - en: where <math alttext="z"><mi>z</mi></math> is a standard normally distributed
     random variable. This scheme is called *Euler discretization*. It is known to
     be accurate in that it ensures convergence of the discrete time process to the
     continuous time process for <math alttext="normal upper Delta t"><mrow><mi>Δ</mi>
     <mi>t</mi></mrow></math> converging to 0.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: 'The dynamic Monte Carlo simulation is—with the background knowledge from the
     static simulation in [Chapter 5](ch05_split_000.xhtml#static_economy)—straightforward
     to implement in Python. [Figure 6-1](#bsm_dyn_01) shows 10 simulated stock price
     paths:'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE12]'
+  id: totrans-168
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO9-1)'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: The financial parameters are as before.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO9-6)'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: These are the Monte Carlo simulation parameters (paths, time steps, length of
     time interval, discount factor for single time interval).
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO9-12)'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: A two-dimensional `ndarray` object with standard normally distributed random
     numbers of appropriate size is generated.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO9-14)'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: Another two-dimensional `ndarray` object of the same shape is instantiated,
     and the initial values for the single stock price paths are set.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO9-17)'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: The single stock price paths are simulated based on the initial stock prices,
     the random number matrix, and the difference equation for the geometric Brownian
     motion.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO9-19)'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: Plots the first 10 simulated paths.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: '![ftwp 0601](Images/ftwp_0601.png)'
+  id: totrans-181
   prefs: []
   type: TYPE_IMG
 - en: Figure 6-1\. Simulated stock price paths for Black-Scholes-Merton (1973)
+  id: totrans-182
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: 'As in the static case, the end-of-period values of the stock price can be visualized
     in the form of a histogram (see [Figure 6-2](#bsm_dyn_02)):'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE13]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO10-1)'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: Mathematically expected value for <math alttext="upper S Subscript upper T"><msub><mi>S</mi>
     <mi>T</mi></msub></math> .
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO10-2)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: The average over all simulated values `ST`.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: '![ftwp 0602](Images/ftwp_0602.png)'
+  id: totrans-189
   prefs: []
   type: TYPE_IMG
 - en: Figure 6-2\. Frequency distribution of simulated end-of-period stock prices
     for Black-Scholes-Merton (1973)
+  id: totrans-190
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: Monte Carlo Valuation of the European Put Option
+  id: totrans-191
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: The Monte Carlo estimator for the price of the European put option is
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: <math alttext="upper P 0 equals e Superscript minus r upper T Baseline StartFraction
@@ -847,46 +1141,68 @@
     <mi>I</mi></munderover> <mo movablelimits="true" form="prefix">max</mo> <mrow><mo>(</mo>
     <mi>K</mi> <mo>-</mo> <msub><mi>S</mi> <mi>T</mi></msub> <mrow><mo>(</mo> <mi>i</mi>
     <mo>)</mo></mrow> <mo>,</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></math>
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: <math alttext="upper P 0 equals e Superscript minus r upper T Baseline StartFraction
+    1 Over upper I EndFraction sigma-summation Underscript i equals 1 Overscript upper
+    I Endscripts max left-parenthesis upper K minus upper S Subscript upper T Baseline
+    left-parenthesis i right-parenthesis comma 0 right-parenthesis" display="block"><mrow><msub><mi>P</mi>
+    <mn>0</mn></msub> <mo>=</mo> <msup><mi>e</mi> <mrow><mo>-</mo><mi>r</mi><mi>T</mi></mrow></msup>
+    <mfrac><mn>1</mn> <mi>I</mi></mfrac> <munderover><mo>∑</mo> <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+    <mi>I</mi></munderover> <mo movablelimits="true" form="prefix">max</mo> <mrow><mo>(</mo>
+    <mi>K</mi> <mo>-</mo> <msub><mi>S</mi> <mi>T</mi></msub> <mrow><mo>(</mo> <mi>i</mi>
+    <mo>)</mo></mrow> <mo>,</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></math>
 - en: 'where <math alttext="upper I"><mi>I</mi></math> is the number of simulated
     price paths. Against this background, European put option pricing boils down to
     a few lines of Python code only given the simulated stock price paths. [Figure 6-3](#bsm_dyn_03)
     shows a histogram of the simulated inner values at maturity:'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE14]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO11-1)'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the inner values in vectorized fashion.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO11-3)'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: Plots the frequency distribution of the inner values at maturity, illustrating
     the highly asymmetric payoff that is typical for an option.^([3](ch06.xhtml#idm44853679632632))
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO11-4)'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the average over all inner values and discounts the average to the
     present.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: '![ftwp 0603](Images/ftwp_0603.png)'
+  id: totrans-202
   prefs: []
   type: TYPE_IMG
 - en: Figure 6-3\. Frequency distribution of simulated inner values at maturity for
     the European put option
+  id: totrans-203
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
 - en: Monte Carlo Valuation of the American Put Option
+  id: totrans-204
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -898,53 +1214,68 @@
     us to present a concise, highly vectorized Python implementation. For an in-depth
     treatment of the LSM algorithm applied to the Black-Scholes-Merton (1973) model
     economy, including Python code, refer to Hilpisch (2015, chapter 7).
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following Python code implements the LSM algorithm for American option
     valuation:'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE15]'
+  id: totrans-207
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](Images/1.png)](#co_dynamic_economy_CO12-1)'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the inner values over the complete stock price path `ndarray` object.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_dynamic_economy_CO12-2)'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: Sets the initial simulated American option price values to the inner values
     at maturity.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_dynamic_economy_CO12-3)'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
 - en: The algorithm also works based on backward induction, starting at <math alttext="upper
     T minus normal upper Delta t"><mrow><mi>T</mi> <mo>-</mo> <mi>Δ</mi> <mi>t</mi></mrow></math>
     and stopping at <math alttext="normal upper Delta t"><mrow><mi>Δ</mi> <mi>t</mi></mrow></math>
     .
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_dynamic_economy_CO12-4)'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
 - en: This is the central step of the algorithm during which the continuation values
     are estimated (approximated) based on the OLS regression of the present simulated
     option values against the stock price levels.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_dynamic_economy_CO12-6)'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
 - en: If the inner value is higher than the estimated (approximated) continuation
     value, exercise takes place and otherwise not.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_dynamic_economy_CO12-7)'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: The present value is calculated as the average over the American option price
@@ -952,9 +1283,11 @@
     <mi>Δ</mi> <mi>t</mi></mrow></math> as derived based on the LSM algorithm and
     discounted for the last remaining time interval to the present <math alttext="t
     equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math> .
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
 - en: Early Exercise and Monte Carlo Simulation
+  id: totrans-220
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -968,9 +1301,11 @@
     American put option in this section based on simulation. Nevertheless, the LSM
     algorithm must be considered a major breakthrough that helped to kick off the
     computational period in finance (see [Chapter 1](ch01.xhtml#finance_python)).
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
 - en: Conclusions
+  id: totrans-222
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -981,6 +1316,7 @@
     efficient way and based on high school mathematics only. It is also a good “teaching
     and understanding” tool as compared to continuous time financial models that require
     advanced stochastic calculus.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: The second model is a *dynamic Monte Carlo simulation version* of the Black-Scholes-Merton
@@ -989,85 +1325,103 @@
     manner. Even the computationally demanding Least-Squares Monte Carlo algorithm
     by Longstaff and Schwartz (2001), involving a time-consuming OLS regression step,
     is quite fast when implemented based on vectorization techniques.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
 - en: In summary, `NumPy`, with its powerful vectorization capabilities, has proven
     once again that it allows not only for concise algorithmic code but also for fast
     execution times—even in the context of more realistic and complex dynamic model
     economies.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
 - en: Further Resources
+  id: totrans-226
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 'Papers cited in this chapter:'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
 - en: 'Black, Fischer and Myron Scholes. 1973\. “The Pricing of Options and Corporate
     Liabilities.” *Journal of Political Economy* 81 (3): 638–659.'
+  id: totrans-228
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Cox, John, Stephen Ross and Mark Rubinstein. 1979\. “Option Pricing: A Simplified
     Approach.” *Journal of Financial Economics* 7 (3): 229–263.'
+  id: totrans-229
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Duffie, Darrell. 1986\. “Stochastic Equilibria: Existence, Spanning Number,
     and the *No Expected Gains from Financial Trade* Hypothesis.” *Econometrica* 54
     (5): 1161–1183.'
+  id: totrans-230
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Longstaff, Francis and Eduardo Schwartz. 2001\. “Valuing American Options by
     Simulation: A Simple Least Squares Approach.” *Review of Financial Studies* 14
     (1): 113–147.'
+  id: totrans-231
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Merton, Robert. 1973\. “Theory of Rational Option Pricing.” *Bell Journal of
     Economics and Management Science* (4): 141–183.'
+  id: totrans-232
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Books cited in this chapter:'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
 - en: 'Duffie, Darrell. 1988\. *Security Markets—Stochastic Models*. San Diego: Academic
     Press.'
+  id: totrans-234
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Glasserman, Paul. 2004\. *Monte Carlo Methods in Financial Engineering*. New
     York: Springer Verlag.'
+  id: totrans-235
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Hilpisch, Yves. 2018\. *Python for Finance*. 2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-236
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Hilpisch, Yves. 2015\. *Derivatives Analytics with Python*. Wiley Finance.
+  id: totrans-237
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Pliska, Stanley. 1997\. *Introduction to Mathematical Finance.* Malden and
     Oxford: Blackwell Publishers.'
+  id: totrans-238
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: ^([1](ch06.xhtml#idm44853685071096-marker)) The parameters assumed in this chapter
     are from Longstaff and Schwartz (2001, table 1).
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
 - en: ^([2](ch06.xhtml#idm44853683423000-marker)) Note that only the numbers on and
     above the diagonal are relevant. Numbers below the diagonal can be ignored. They
     result from the specific vectorized operations implemented on the `ndarray` object.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
 - en: ^([3](ch06.xhtml#idm44853679632632-marker)) Here, as also often seen in practice,
     there is a large number of cases for which the option expires worthless, that
     is, with a payoff of 0.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL

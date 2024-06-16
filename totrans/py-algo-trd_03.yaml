@@ -1,17 +1,21 @@
 - en: Chapter 3\. Working with Financial Data
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: Clearly, data beats algorithms. Without comprehensive data, you tend to get
     non-comprehensive predictions.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Rob Thomas (2016)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -19,21 +23,27 @@
     illustrated in [Table 3-1](#types_of_data). Although it simplifies the financial
     data world, distinguishing data along the pairs *historical versus real-time*
     and *structured versus unstructured* often proves useful in technical settings.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
 - en: Table 3-1\. Types of financial data (examples)
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: '|   | Structured | Unstructured |'
+  id: totrans-6
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- | --- |'
+  id: totrans-7
   prefs: []
   type: TYPE_TB
 - en: '| Historical | End-of-day closing prices | Financial news articles |'
+  id: totrans-8
   prefs: []
   type: TYPE_TB
 - en: '| Real-time | Bid/ask prices for FX | Posts on Twitter |'
+  id: totrans-9
   prefs: []
   type: TYPE_TB
 - en: This book is mainly concerned with *structured data* (numerical, tabular data)
@@ -42,6 +52,7 @@
     traded at the Frankfurt Stock Exchange. However, this category also subsumes intraday
     data, such as 1-minute-bar data for the Apple, Inc. stock traded at the NASDAQ
     stock exchange. The processing of real-time, structured data is covered in [Chapter 7](ch07.html#realtime_sockets).
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: An algorithmic trading project typically starts with a trading idea or hypothesis
@@ -54,6 +65,7 @@
     Eikon Data API. Finally, [“Storing Financial Data Efficiently”](#storing_data)
     briefly shows how to store historical, structured data efficiently with `pandas`
     based on the [HDF5](http://hdfgroup.org) binary storage format.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: The goal for this chapter is to have available financial data in a format with
@@ -64,9 +76,11 @@
     For the time being, it is not yet relevant on which infrastructure exactly this
     Python environment is provided. For more details on efficient input-output operations
     with Python, see Hilpisch (2018, ch. 9).
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: Reading Financial Data From Different Sources
+  id: totrans-13
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -76,132 +90,199 @@
     with: *reading data*, *handling data*, and *storing data*. One of its strengths
     is the reading of data from different types of sources, as the remainder of this
     section illustrates.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节大量使用`pandas`的功能，这是Python中流行的数据分析包（参见[`pandas`首页](http://pandas.pydata.org)）。`pandas`全面支持本章所关注的三项主要任务：*读取数据*、*处理数据*和*存储数据*。其优势之一是从不同类型的数据源读取数据，正如本节剩余部分所示。
 - en: The Data Set
+  id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据集
 - en: In this section, we work with a fairly small data set for the Apple Inc. stock
     price (with symbol `AAPL` and Reuters Instrument Code or RIC `AAPL.O`) as retrieved
     from the Eikon Data API for April 2020.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我们使用了一个相对较小的数据集，涉及到2020年4月从Eikon数据API检索的苹果公司股票价格（具有符号`AAPL`和Reuters工具代码或RIC
+    `AAPL.O`）。
 - en: 'Since such historical financial data has been stored in a CSV file on disk,
     pure Python can be used to read and print its content:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这样的历史财务数据已存储在磁盘上的CSV文件中，可以使用纯Python来读取并打印其内容：
 - en: '[PRE0]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO1-1)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO1-1)'
 - en: Opens the file on disk (adjust path and filename if necessary).
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开磁盘上的文件（如有必要，请调整路径和文件名）。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO1-3)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO1-3)'
 - en: Sets up a `for` loop with five iterations.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置一个有五次迭代的`for`循环。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO1-4)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO1-4)'
 - en: Prints the first five lines in the opened CSV file.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印打开的CSV文件的前五行。
 - en: This approach allows for simple inspection of the data. One learns that there
     is a header line and that the single data points per row represent `Date, OPEN,
     HIGH, LOW, CLOSE, COUNT`, and `VOLUME`, respectively. However, the data is not
     yet available in memory for further usage with Python.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法允许简单地检查数据。您可以了解到存在一个标题行，并且每行的单个数据点代表`Date, OPEN, HIGH, LOW, CLOSE, COUNT`和`VOLUME`。然而，数据尚未在内存中可供Python进一步使用。
 - en: Reading from a CSV File with Python
+  id: totrans-26
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用Python从CSV文件中读取数据
 - en: 'To work with data stored as a CSV file, the file needs to be parsed and the
     data needs to be stored in a Python data structure. Python has a built-in module
     called `csv` that supports the reading of data from a CSV file. The first approach
     yields a `list` object containing other `list` objects with the data from the
     file:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 要处理存储为CSV文件的数据，需要解析文件并将数据存储在Python数据结构中。Python具有一个名为`csv`的内置模块，支持从CSV文件中读取数据。第一种方法生成一个包含文件数据的`list`对象：
 - en: '[PRE1]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO2-1)'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO2-1)'
 - en: Imports the `csv` module.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`csv`模块。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO2-2)'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO2-2)'
 - en: Instantiates a `csv.reader` iterator object.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化一个`csv.reader`迭代器对象。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO2-3)'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO2-3)'
 - en: A `list` comprehension adding every single line from the CSV file as a `list`
     object to the resulting `list` object.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用列表推导将CSV文件中的每一行作为`list`对象添加到结果`list`对象中。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO2-4)'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO2-4)'
 - en: Prints out the first five elements of the `list` object.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印出`list`对象的前五个元素。
 - en: 'Working with such a nested `list` object—for the calculation of the average
     closing price, for exammple—is possible in principle but not really efficient
     or intuitive. Using a `csv.DictReader` iterator object instead of the standard
     `csv.reader` object makes such tasks a bit more manageable. Every row of data
     in the CSV file (apart from the header row) is then imported as a `dict` object
     so that single values can be accessed via the respective key:'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`csv.DictReader`迭代器对象而不是标准的`csv.reader`对象来处理这样的嵌套`list`对象——比如计算平均收盘价——原则上是可行的，但并不是真正高效或直观的方法。这样做可以更轻松地管理任务。CSV文件中的每一行数据（除了标题行）都作为`dict`对象导入，以便可以通过相应的键访问单个值：
 - en: '[PRE2]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO3-1)'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO3-1)'
 - en: Here, the `csv.DictReader` iterator object is instantiated, which reads every
     data row into a `dict` object, given the information in the header row.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此，实例化了`csv.DictReader`迭代器对象，根据标题行中的信息将每一行数据读入`dict`对象。
 - en: 'Based on the single `dict` objects, aggregations are now somewhat easier to
     accomplish. However, one still cannot speak of a convenient way of calculating
     the mean of the Apple closing stock price when inspecting the respective Python
     code:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于单个`dict`对象，现在聚合操作变得更加容易。但是，当查看相应的Python代码时，仍然不能说计算苹果收盘股票价格的平均值是一种便捷的方式：
 - en: '[PRE3]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO4-1)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO4-1)'
 - en: First, a `list` object is generated via a list comprehension with all closing
     values; second, the sum is taken over all these values; third, the resulting sum
     is divided by the number of closing values.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，通过列表推导生成一个包含所有收盘价的列表对象；其次，计算所有这些值的总和；第三，将得到的总和除以收盘价的数量。
 - en: This is one of the major reasons why `pandas` has gained such popularity in
     the Python community. It makes the importing of data and the handling of, for
     example, financial time series data sets more convenient (and also often considerably
     faster) than pure Python.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是`pandas`在Python社区中如此受欢迎的主要原因之一。它使得导入数据和处理例如金融时间序列数据集等操作比纯Python更加便捷（通常也更快）。
 - en: Reading from a CSV File with pandas
+  id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用pandas从CSV文件读取数据
 - en: 'From this point on, this section uses `pandas` to work with the Apple stock
     price data set. The major function used is `read_csv()`, which allows for a number
     of customizations via different parameters (see the [`read_csv()` API reference](https://oreil.ly/IAVfO)).
@@ -209,126 +290,197 @@
     which is the central means of storing (tabular) data with `pandas`. The `DataFrame`
     class has many powerful methods that are particularly helpful in financial applications
     (refer to the [`DataFrame` API reference](https://oreil.ly/5-sNr)):'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 从此处开始，本节使用`pandas`处理苹果股票价格数据集。主要使用的函数是`read_csv()`，可以通过不同的参数进行多种自定义设置（参见[`read_csv()`
+    API参考](https://oreil.ly/IAVfO)）。`read_csv()`读取数据并生成一个`DataFrame`对象，这是使用`pandas`存储（表格）数据的主要方式。`DataFrame`类有许多强大的方法，特别适用于金融应用（参见[`DataFrame`
+    API参考](https://oreil.ly/5-sNr)）：
 - en: '[PRE4]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO5-1)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO5-1)'
 - en: The `pandas` package is imported.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入`pandas`包。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO5-2)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO5-2)'
 - en: This imports the data from the CSV file, indicating that the first column shall
     be treated as the index column and letting the entries in that column be interpreted
     as date-time information.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 此代码从CSV文件中导入数据，指示第一列将被视为索引列，并让该列中的条目被解释为日期时间信息。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO5-3)'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO5-3)'
 - en: This method call prints out meta information regarding the resulting `DataFrame`
     object.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 此方法调用打印出关于结果`DataFrame`对象的元信息。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO5-4)'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO5-4)'
 - en: The `data.tail()` method prints out by default the five most recent data rows.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '`data.tail()`方法默认打印出最近的五行数据。'
 - en: 'Calculating the mean of the Apple stock closing values now is only a single
     method call:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在计算苹果股票收盘价的平均值只需要一个方法调用：
 - en: '[PRE5]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[Chapter 4](ch04.html#vectorized_backtesting) introduces more functionality
     of `pandas` for the handling of financial data. For details on working with `pandas`
     and the powerful `DataFrame` class, also refer to the official [`pandas` Documentation
     page](https://oreil.ly/5PM-O) and to McKinney (2017).'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第四章](ch04.html#vectorized_backtesting)介绍了更多关于`pandas`处理金融数据的功能。有关使用`pandas`和强大的`DataFrame`类的详细信息，还请参阅官方[`pandas`文档页面](https://oreil.ly/5PM-O)和McKinney
+    (2017)。'
 - en: Although the Python standard library provides capabilities to read data from
     CSV files, `pandas` in general significantly simplifies and speeds up such operations.
     An additional benefit is that the data analysis capabilities of `pandas` are immediately
     available since `read_csv()` returns a `DataFrame` object.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管Python标准库提供了从CSV文件读取数据的能力，但总体而言，`pandas`显著简化和加速了此类操作。另一个好处是，由于`read_csv()`返回一个`DataFrame`对象，因此`pandas`的数据分析功能可以立即使用。
 - en: Exporting to Excel and JSON
+  id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 导出到Excel和JSON
 - en: '`pandas` also excels at exporting data stored in `DataFrame` objects when this
     data needs to be shared in a non-Python specific format. Apart from being able
     to export to CSV files, `pandas` also allows one to do the export in the form
     of Excel spreadsheet files as well as JSON files, both of which are popular data
     exchange formats in the financial industry. Such an exporting procedure typically
     needs a single method call only:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 在需要将存储在 `DataFrame` 对象中的数据以非特定于 Python 的格式共享时也表现出色。除了能够导出到 CSV 文件外，`pandas`
+    还允许将导出为 Excel 电子表格文件和 JSON 文件，这两种格式在金融行业中都很流行。这种导出过程通常仅需调用一个方法：'
 - en: '[PRE6]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO6-1)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO6-1)'
 - en: Exports the data to an Excel spreadsheet file on disk.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据导出到磁盘上的 Excel 电子表格文件。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO6-2)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO6-2)'
 - en: Exports the data to a JSON file on disk.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据导出到磁盘上的 JSON 文件。
 - en: In particular when it comes to the interaction with Excel spreadsheet files,
     there are more elegant ways than just doing a data dump to a new file. `xlwings`,
     for example, is a powerful Python package that allows for an efficient and intelligent
     interaction between Python and Excel (visit the [`xlwings` home page](http://xlwings.org)).
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 特别是在处理与 Excel 电子表格文件的交互时，有比仅仅将数据转储到新文件更加优雅的方式。`xlwings`，例如，是一个强大的 Python 包，允许
+    Python 与 Excel 之间进行高效智能的交互（访问[`xlwings`官网](http://xlwings.org)）。
 - en: Reading from Excel and JSON
+  id: totrans-69
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 从 Excel 和 JSON 文件读取数据。
 - en: 'Now that the data is also available in the form of an Excel spreadsheet file
     and a JSON data file, `pandas` can read data from these sources, as well. The
     approach is as straightforward as with CSV files:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在数据也以 Excel 电子表格文件和 JSON 数据文件的形式可用，`pandas` 可以从这些来源读取数据。这种方法与 CSV 文件一样简单：
 - en: '[PRE7]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO7-1)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO7-1)'
 - en: This reads the data from the Excel spreadsheet file to a new `DataFrame` object.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将从 Excel 电子表格文件中读取数据到一个新的 `DataFrame` 对象中。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO7-2)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO7-2)'
 - en: The first five rows of the first in-memory copy of the data are printed.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印第一个内存副本的前五行数据。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO7-3)'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO7-3)'
 - en: This reads the data from the JSON file to yet another `DataFrame` object.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将从 JSON 文件读取数据到另一个 `DataFrame` 对象中。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO7-4)'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO7-4)'
 - en: This then prints the first five rows of the second in-memory copy of the data.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将打印出第二个内存副本的前五行数据。
 - en: '`pandas` proves useful for reading and writing financial data from and to different
     types of data files. Often the reading might be tricky due to nonstandard storage
     formats (like a “;” instead of a “,” as separator), but `pandas` generally provides
@@ -336,12 +488,18 @@
     examples in this section use a small data set only, one can expect high performance
     input-output operations from `pandas` in the most important scenarios when the
     data sets are much larger.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas` 在从不同类型的数据文件读取和写入金融数据方面非常有用。由于非标准的存储格式（例如分隔符使用“;”而不是“,”），读取可能会有些棘手，但
+    `pandas` 通常提供了正确的参数组合来处理这些情况。尽管本节中的所有示例仅使用了一个小数据集，但在数据集更大的重要场景中，可以期待 `pandas`
+    提供高性能的输入输出操作。'
 - en: Working with Open Data Sources
+  id: totrans-81
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 处理开放数据源
 - en: To a great extent, the attractiveness of the Python ecosystem stems from the
     fact that almost all packages available are open source and can be used for free.
     Financial analytics in general and algorithmic trading in particular, however,
@@ -352,14 +510,20 @@
     ones provided by Yahoo! Finance or Google Finance), there are not too many left
     at the time of this writing in 2020\. One of the more obvious reasons for this
     trend might be the ever-changing terms of data licensing agreements.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 生态系统的吸引力在很大程度上源于几乎所有可用的包都是开源的，并且可以免费使用。然而，金融分析特别是算法交易不能仅仅依赖于开源软件和算法；数据也扮演着至关重要的角色，正如本章开头的引言所强调的那样。前一节使用了商业数据源的小数据集。虽然多年来一直有一些有用的开放（金融）数据源可用（例如
+    Yahoo! Finance 或 Google Finance 提供的数据），但到 2020 年撰写本文时，这类数据源并不多。这种趋势的一个显而易见的原因可能是数据许可协议条款的不断变化。
 - en: The one notable exception for the purposes of this book is [Quandl](http://quandl.com),
     a platform that aggregates a large number of open, as well as premium (i.e., to-be-paid-for)
     data sources. The data is provided via a unified API for which a Python wrapper
     package is available.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 这本书的一个显著例外是[Quandl](http://quandl.com)，这是一个汇总大量开放及高级（即需付费）数据源的平台。数据通过统一的 API
+    提供，可使用 Python 包进行封装。
 - en: The Python wrapper package for the Quandl data API (see the [Python wrapper
     page on Quandl](https://oreil.ly/xRt5x) and the [GitHub page](https://oreil.ly/LcJEo)
     of the package) is installed with `conda` through `conda install quandl`. The
@@ -369,14 +533,22 @@
     set* desired. (In the example, `BCHAIN` and `MKPRU`.) Such information can generally
     be looked up on the Quandl platform. For the example, the relevant page on Quandl
     is [BCHAIN/MKPRU](https://oreil.ly/APwvn).
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: Quandl 数据 API 的 Python 包（参见[Quandl 上的 Python 包页面](https://oreil.ly/xRt5x)和该包的[GitHub
+    页面](https://oreil.ly/LcJEo)）可通过 `conda` 安装，命令为 `conda install quandl`。第一个示例展示了如何获取比特币/美元汇率自加密货币比特币引入以来的历史平均价格。在
+    Quandl 中，请求始终需要指定*数据库*和具体的*数据集*（例如，`BCHAIN` 和 `MKPRU`）。这类信息通常可以在 Quandl 平台上查找。例如，在
+    Quandl 上与之相关的页面是[BCHAIN/MKPRU](https://oreil.ly/APwvn)。
 - en: By default, the `quandl` package returns a `pandas` `DataFrame` object. In the
     example, the `Value` column is also presented in annualized fashion (that is,
     with year end values). Note that the number shown for 2020 is the last available
     value in the data set (from May 2020) and not necessarily the year end value.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，`quandl` 包返回一个 `pandas` 的 `DataFrame` 对象。在示例中，`Value` 列也以年度化方式呈现（即年末值）。请注意，2020
+    年显示的数值是数据集中最后可用的数值（来自 2020 年 5 月），并非必然是年末值。
 - en: 'While a large part of the data sets on the Quandl platform are free, some of
     the free data sets require an API key. Such a key is required after a certain
     limit of free API calls too. Every user obtains such a key by signing up for a
@@ -385,62 +557,94 @@
     In the example, the API key (which is found on the account settings page) is stored
     as a string in the variable `quandl_api_key`. The concrete value for the key is
     read from a configuration file via the `configparser` module:'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管 Quandl 平台上的大部分数据集都是免费的，但一些免费数据集需要 API 密钥。在免费 API 调用达到一定限额后也需要此密钥。每位用户可以通过在[Quandl
+    注册页面](https://oreil.ly/sbh9j)注册获取此密钥。需要 API 密钥的数据请求需要在参数 `api_key` 中提供该密钥。在示例中，API
+    密钥（可在账户设置页面找到）存储为字符串，存放在变量 `quandl_api_key` 中。具体密钥值通过 `configparser` 模块从配置文件中读取：
 - en: '[PRE8]'
+  id: totrans-87
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO8-1)'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO8-1)'
 - en: Imports the Python wrapper package for Quandl.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入 Quandl 的 Python 包。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO8-2)'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO8-2)'
 - en: Reads historical data for the BTC/USD exchange rate.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 读取比特币/美元汇率的历史数据。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO8-3)'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO8-3)'
 - en: Selects the `Value` column, resamples it—from the originally *daily* values
     to *yearly* values—and defines the last available observation to be the relevant
     one.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择`Value`列，将其重新采样—从最初的*日常*值到*年度*值—并定义最后可用的观察结果是相关的观察结果。
 - en: 'Quandl also provides, for example, diverse data sets for single stocks, like
     end-of-day stock prices, stock fundamentals, or data sets related to options traded
     on a certain stock:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: Quandl还提供了例如单一股票的多样化数据集，如每日收盘股价、股票基本面或与某种股票交易的期权相关的数据集：
 - en: '[PRE9]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'The API key can also be configured permanently with the Python wrapper via
     the following:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: API密钥也可以通过以下Python包永久配置。
 - en: '[PRE10]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'The Quandl platform also offers premium data sets for which a subscription
     or fee is required. Most of these data sets offer free samples. The example retrieves
     option implied volatilities for the Microsoft Corp. stock. The free sample data
     set is quite large, with more than 4,100 rows and many columns (only a subset
     is shown). The last lines of code display the 30, 60, and 90 days implied volatility
     values for the five most recent days available:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: Quandl平台还提供了需要订阅或付费的高级数据集。其中大多数数据集提供免费样本。例如，此示例检索了Microsoft Corp.股票的期权隐含波动率。免费样本数据集非常庞大，有超过4,100行和多列（仅显示了部分子集）。代码的最后几行显示了最近五天可用的30天、60天和90天期权隐含波动率值：
 - en: '[PRE11]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: This concludes the overview of the Python wrapper package `quandl` for the Quandl
     data API. The Quandl platform and service is growing rapidly and proves to be
     a valuable source for financial data in an algorithmic trading context.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是Python包`quandl`用于Quandl数据API的概述。Quandl平台和服务正在迅速增长，并且在算法交易环境中证明是一个宝贵的金融数据来源。
 - en: Open source software is a trend that started many years ago. It has lowered
     the barriers to entry in many areas and also in algorithmic trading. A new, reinforcing
     trend in this regard is open data sources. In some cases, such as with Quandl,
@@ -448,33 +652,45 @@
     will completely replace professional data subscriptions any time soon, but they
     represent a valuable means to get started with algorithmic trading in a cost efficient
     manner.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 开源软件是多年前开始的趋势。它降低了许多领域的准入门槛，也包括算法交易。在这方面的一个新的增强趋势是开放数据源。在某些情况下，例如Quandl，它们甚至提供高质量的数据集。不能指望开放数据很快完全取代专业数据订阅，但它们代表了一种成本效益高的开始进行算法交易的宝贵手段。
 - en: Eikon Data API
+  id: totrans-102
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Eikon数据API
 - en: Open data sources are a blessing for algorithmic traders wanting to get started
     in the space and wanting to be able to quickly test hypotheses and ideas based
     on real financial data sets. Sooner or later, however, open data sets will not
     suffice anymore to satisfy the requirements of more ambitious traders and professionals.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 开放数据源对于希望进入该领域并希望能够基于真实金融数据集快速测试假设和想法的算法交易者来说是一种福音。然而，迟早会有一天，开放数据集将不再足以满足更有雄心的交易者和专业人士的需求。
 - en: '[Refinitiv](http://refinitiv.com) is one of the biggest financial data and
     news providers in the world. Its current desktop flagship product is [Eikon](https://oreil.ly/foYNk),
     which is the equivalent to the [Terminal](https://oreil.ly/kMJl7) by Bloomberg,
     the major competitor in the data services field. [Figure 3-1](#eikon_terminal)
     shows a screenshot of Eikon in the browser-based version. Eikon provides access
     to petabytes of data via a single access point.'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '[瑞弗官网](http://refinitiv.com)是全球最大的金融数据和新闻提供商之一。其当前桌面旗舰产品是[Eikon](https://oreil.ly/foYNk)，相当于彭博终端的[终端](https://oreil.ly/kMJl7)，这是数据服务领域的主要竞争对手。[图 3-1](#eikon_terminal)显示了浏览器版Eikon的屏幕截图。Eikon通过单一访问点提供对PB级数据的访问。'
 - en: '![pfat 0301](assets/pfat_0301.png)'
+  id: totrans-105
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0301](assets/pfat_0301.png)'
 - en: Figure 3-1\. Browser version of Eikon terminal
+  id: totrans-106
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-1\. Eikon终端的浏览器版本
 - en: Recently, Refinitiv have streamlined their API landscape and have released a
     Python wrapper package, called `eikon`, for the Eikon data API, which is installed
     via `pip install eikon`. If you have a subscription to the Refinitiv Eikon data
@@ -483,160 +699,262 @@
     API. A technical prerequisite is that a local desktop application is running that
     provides a desktop API session. The latest such desktop application at the time
     of this writing is called Workspace (see [Figure 3-2](#workspace_charting)).
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 最近，Refinitiv 简化了他们的 API 环境，并发布了一个名为`eikon`的 Python 封装包，用于 Eikon 数据 API，可通过`pip
+    install eikon`安装。如果您订阅了 Refinitiv Eikon 数据服务，可以使用这个 Python 包从统一的 API 中以编程方式检索历史数据，以及流式传输结构化和非结构化数据。技术先决条件是运行一个本地桌面应用程序，提供桌面
+    API 会话。在撰写本文时，最新的此类桌面应用程序称为 Workspace（见[图 3-2](#workspace_charting)）。
 - en: If you are an Eikon subscriber and have an account for the [Developer Community
     pages](https://oreil.ly/xowdi), you will find an overview of the Python Eikon
     Scripting Library under [Quick Start](https://oreil.ly/7dnQx).
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您是 Eikon 订阅者，并在[开发者社区页面](https://oreil.ly/xowdi)上有一个帐户，您将在[快速入门](https://oreil.ly/7dnQx)下找到
+    Python Eikon 脚本库的概述。
 - en: '![pfat 0302](assets/pfat_0302.png)'
+  id: totrans-109
   prefs: []
   type: TYPE_IMG
+  zh: '![pfat 0302](assets/pfat_0302.png)'
 - en: Figure 3-2\. Workspace application with desktop API services
+  id: totrans-110
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 3-2\. 带有桌面 API 服务的工作空间应用程序
 - en: 'In order to use the Eikon Data API, the Eikon `app_key` needs to be set. You
     get it via the App Key Generator (`APPKEY`) application in either Eikon or Workspace:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 若要使用 Eikon 数据 API，需要设置 Eikon `app_key`。您可以通过 Eikon 或 Workspace 中的 App Key Generator
+    (`APPKEY`) 应用程序获取它：
 - en: '[PRE12]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO9-1)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO9-1)'
 - en: Imports the `eikon` package as `ek`.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`eikon`包导入为`ek`。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO9-2)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO9-2)'
 - en: Sets the `app_key`.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置`app_key`。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO9-3)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO9-3)'
 - en: Shows the help text for the main module.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示主模块的帮助文本。
 - en: Retrieving Historical Structured Data
+  id: totrans-119
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 检索历史结构化数据
 - en: 'The retrieval of historical financial time series data is as straightforward
     as with the other wrappers used before:'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索历史金融时间序列数据与之前使用的其他封装包一样简单：
 - en: '[PRE13]'
+  id: totrans-121
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO10-1)'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO10-1)'
 - en: Defines a few symbols as a `list` object.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 将几个符号定义为`list`对象。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO10-2)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO10-2)'
 - en: The central line of code that retrieves data for the first symbol…
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索第一个符号的数据的核心代码行…
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO10-3)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO10-3)'
 - en: …for the given start date and…
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: …给定的开始日期和…
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO10-4)'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO10-4)'
 - en: …the given end date.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: …给定的结束日期。
 - en: '[![5](assets/5.png)](#co_working_with_financial_data_CO10-5)'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_financial_data_CO10-5)'
 - en: The time interval is here chosen to be `daily`.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 此处选择的时间间隔为`daily`。
 - en: '[![6](assets/6.png)](#co_working_with_financial_data_CO10-6)'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_financial_data_CO10-6)'
 - en: All fields are requested.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 请求所有字段。
 - en: '[![7](assets/7.png)](#co_working_with_financial_data_CO10-7)'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_working_with_financial_data_CO10-7)'
 - en: The function `get_timeseries()` returns a multi-index `DataFrame` object.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数`get_timeseries()`返回一个多索引`DataFrame`对象。
 - en: '[![8](assets/8.png)](#co_working_with_financial_data_CO10-8)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_working_with_financial_data_CO10-8)'
 - en: The values corresponding to each level are regular `DataFrame` objects.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 与每个级别对应的值是常规`DataFrame`对象。
 - en: '[![9](assets/9.png)](#co_working_with_financial_data_CO10-9)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_working_with_financial_data_CO10-9)'
 - en: This provides an overview of the data stored in the `DataFrame` object.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 这提供了存储在`DataFrame`对象中的数据概述。
 - en: '[![10](assets/10.png)](#co_working_with_financial_data_CO10-10)'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_working_with_financial_data_CO10-10)'
 - en: The final five rows of data are shown.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示最后五行数据。
 - en: 'The beauty of working with a professional data service API becomes evident
     when one wishes to work with multiple symbols and in particular with a different
     granularity of the financial data (that is, other time intervals):'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 当希望使用多个符号特别是不同的财务数据粒度（即其他时间间隔）时，与专业数据服务 API 合作的优势变得显而易见：
 - en: '[PRE14]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO11-1)'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO11-1)'
 - en: Data is retrieved for all symbols at once.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据同时检索所有符号。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO11-2)'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO11-2)'
 - en: The time interval…
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间间隔…
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO11-3)'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO11-3)'
 - en: …is drastically shortened.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: …显著缩短。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO11-4)'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO11-4)'
 - en: The function call retrieves minute bars for the symbols.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数调用检索了符号的分钟间隔条形图。
 - en: '[![5](assets/5.png)](#co_working_with_financial_data_CO11-5)'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_financial_data_CO11-5)'
 - en: Prints five rows from the Google, LLC, data set.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印了来自Google, LLC数据集的五行。
 - en: '[![6](assets/6.png)](#co_working_with_financial_data_CO11-6)'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_financial_data_CO11-6)'
 - en: Prints three data rows from every `DataFrame` object.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印了每个`DataFrame`对象的三行数据。
 - en: 'The preceding code illustrates how convenient it is to retrieve historical
     financial time series data from the Eikon API with Python. By default, the function
     `get_timeseries()` provides the following options for the `interval` parameter:
@@ -644,144 +962,230 @@
     This gives all the flexibility needed in an algorithmic trading context, particularly
     when combined with the resampling capabilities of `pandas` as shown in the following
     code:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述代码说明了通过Python从Eikon API检索历史金融时间序列数据是多么方便。默认情况下，函数`get_timeseries()`为`interval`参数提供以下选项：`tick`、`minute`、`hour`、`daily`、`weekly`、`monthly`、`quarterly`和`yearly`。这在算法交易环境中提供了所有所需的灵活性，特别是与`pandas`的重新采样能力结合使用，如下所示的代码：
 - en: '[PRE15]'
+  id: totrans-157
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO12-1)'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO12-1)'
 - en: A time interval of…
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间间隔为…
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO12-2)'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO12-2)'
 - en: …one hour is chosen (due to data retrieval limits).
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: …由于数据检索限制，选择了一个小时。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO12-3)'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO12-3)'
 - en: The `interval` parameter is set to `tick`.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 参数`interval`设定为`tick`。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO12-4)'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO12-4)'
 - en: Close to 50,000 price ticks are retrieved for the interval.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 获取了接近50,000个价格tick的间隔。
 - en: '[![5](assets/5.png)](#co_working_with_financial_data_CO12-5)'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_financial_data_CO12-5)'
 - en: The time series data set shows highly irregular (heterogeneous) interval lengths
     between two ticks.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 时间序列数据集显示了两个tick之间高度不规则（异质）的间隔长度。
 - en: '[![6](assets/6.png)](#co_working_with_financial_data_CO12-6)'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_financial_data_CO12-6)'
 - en: The tick data is resampled to a 30 second interval length (by taking the last
     value and the sum, respectively)…
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过采取最后一个值和总和的方式，重新采样tick数据为30秒间隔长度…
 - en: '[![7](assets/7.png)](#co_working_with_financial_data_CO12-7)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_working_with_financial_data_CO12-7)'
 - en: …which is reflected in the `DatetimeIndex` of the new `DataFrame` object.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: …反映在新`DataFrame`对象的`DatetimeIndex`中。
 - en: Retrieving Historical Unstructured Data
+  id: totrans-172
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 检索历史非结构化数据
 - en: A major strength of working with the Eikon API via Python is the easy retrieval
     of unstructured data, which can then be parsed and analyzed with Python packages
     for natural language processing (NLP). Such a procedure is as simple and straightforward
     as for financial time series data.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过Python通过Eikon API处理非结构化数据的主要优势是轻松检索，然后可以使用Python的自然语言处理（NLP）包解析和分析。这样的过程与金融时间序列数据一样简单和直观。
 - en: 'The code that follows retrieves news headlines for a fixed time interval that
     includes Apple Inc. as a company and “Macbook” as a word. The five most recent
     hits are displayed as a maximum:'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 随后的代码检索了包括苹果公司和“Macbook”作为关键词的固定时间间隔内的新闻标题。显示最近的五个点击数：
 - en: '[PRE16]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[PRE17]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO13-1)'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO13-1)'
 - en: The `query` parameter for the retrieval operation.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于检索操作的`query`参数。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO13-2)'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO13-2)'
 - en: Sets the maximum number of hits to five.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 将最大点击数设置为五。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO13-3)'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO13-3)'
 - en: Defines the interval…
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义了间隔…
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO13-4)'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO13-4)'
 - en: …for which to look for news headlines.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: …用于查找新闻标题。
 - en: '[![5](assets/5.png)](#co_working_with_financial_data_CO13-5)'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_financial_data_CO13-5)'
 - en: Gives out the results object (output shortened).
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 给出了结果对象（输出已缩短）。
 - en: '[![6](assets/6.png)](#co_working_with_financial_data_CO13-6)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_financial_data_CO13-6)'
 - en: One particular headline is picked…
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 挑选了一个特定的标题…
 - en: '[![7](assets/7.png)](#co_working_with_financial_data_CO13-7)'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_working_with_financial_data_CO13-7)'
 - en: …and the `story_id` shown.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: …并显示 `story_id`。
 - en: '[![8](assets/8.png)](#co_working_with_financial_data_CO13-8)'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](assets/8.png)](#co_working_with_financial_data_CO13-8)'
 - en: This retrieves the news text as html code.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将作为 HTML 代码检索新闻文本。
 - en: '[![9](assets/9.png)](#co_working_with_financial_data_CO13-9)'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](assets/9.png)](#co_working_with_financial_data_CO13-9)'
 - en: In `Jupyter Notebook`, for example, the html code…
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，在 `Jupyter Notebook` 中，HTML 代码…
 - en: '[![10](assets/10.png)](#co_working_with_financial_data_CO13-10)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](assets/10.png)](#co_working_with_financial_data_CO13-10)'
 - en: …can be rendered for better reading.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: …可渲染以提高阅读体验。
 - en: This concludes the illustration of the Python wrapper package for the Refinitiv
     Eikon data API.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 这结束了对 Refinitiv Eikon 数据 API 的 Python 封装包的说明。
 - en: Storing Financial Data Efficiently
+  id: totrans-198
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 高效存储金融数据
 - en: In algorithmic trading, one of the most important scenarios for the management
     of data sets is “retrieve once, use multiple times.” Or from an input-output (IO)
     perspective, it is “write once, read multiple times.” In the first case, data
@@ -790,118 +1194,185 @@
     tick data that is received continually is written to disk and later on again used
     multiple times for certain manipulations (like aggregations) in combination with
     a backtesting procedure.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 在算法交易中，数据集管理中最重要的一个场景是“获取一次，多次使用”。或者从输入输出（IO）的角度来看，是“写入一次，多次读取”。在第一种情况下，数据可能从
+    web 服务中检索，然后基于数据集的临时内存副本多次进行策略回测。在第二种情况下，连续接收的 tick 数据被写入磁盘，并在后续与回测过程中的某些操作（如聚合）结合使用多次。
 - en: This section assumes that the in-memory data structure to store the data is
     a `pandas` `DataFrame` object, no matter from which source the data is acquired
     (from a CSV file, a web service, etc.).
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节假设内存中存储数据的数据结构是 `pandas` 的 `DataFrame` 对象，无论数据来自何处（从 CSV 文件、web 服务等）。
 - en: To have a somewhat meaningful data set available in terms of size, the section
     uses a sample financial data set generated by the use of pseudorandom numbers.
     [“Python Scripts”](#sample_data) presents the Python module with a function called
     `generate_sample_data()` that accomplishes the task.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了有一个在大小上有意义的数据集可用，本节使用了由伪随机数生成的样本金融数据集。[“Python 脚本”](#sample_data) 提供了一个名为
+    `generate_sample_data()` 的函数，完成了任务。
 - en: 'In principle, this function generates a sample financial data set in tabular
     form of arbitrary size (available memory, of course, sets a limit):'
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 原则上，此函数以表格形式生成一个任意大小的样本金融数据集（当然，可用内存会设置限制）：
 - en: '[PRE18]'
+  id: totrans-203
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO14-1)'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO14-1)'
 - en: Imports the function from the Python script.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 从 Python 脚本导入函数。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO14-2)'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO14-2)'
 - en: Prints a sample financial data set with five rows and four columns.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印一个包含五行四列的样本金融数据集。
 - en: Storing DataFrame Objects
+  id: totrans-208
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 存储 DataFrame 对象
 - en: 'The storage of a `pandas` `DataFrame` object as a whole is made simple by the
     `pandas` `HDFStore` wrapper functionality for the [HDF5](http://hdfgroup.org)
     binary storage standard. It allows one to dump complete `DataFrame` objects in
     a single step to a file-based database object. To illustrate the implementation,
     the first step is to create a sample data set of meaningful size. Here the size
     of the `DataFrame` generated is about 420 MB:'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `pandas` 的 `HDFStore` 封装功能可以简化整个 `DataFrame` 对象的存储，支持 [HDF5](http://hdfgroup.org)
+    二进制存储标准。它允许一次性将完整的 `DataFrame` 对象导出到基于文件的数据库对象。为了说明其实现，第一步是创建一个具有意义的样本数据集。在这里，生成的
+    `DataFrame` 大约为 420 MB：
 - en: '[PRE19]'
+  id: totrans-210
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO15-1)'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO15-1)'
 - en: A sample financial data set with 5,000,000 rows and ten columns is generated;
     the generation takes a couple of seconds.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成一个包含 5,000,000 行和十列的样本金融数据集；生成过程需要几秒钟时间。
 - en: The second step is to open a `HDFStore` object (that is, a HDF5 database file)
     on disk and to write the `DataFrame` object to it.^([1](ch03.html#idm45785385472888))
     The size on disk of about 440 MB is a bit larger than for the in-memory `DataFrame`
     object. However, the writing speed is about five times faster than the in-memory
     generation of the sample data set.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二步是在磁盘上打开 `HDFStore` 对象（即 HDF5 数据库文件）并将 `DataFrame` 对象写入其中。^([1](ch03.html#idm45785385472888))
+    磁盘上的大小约为440 MB，比内存中的 `DataFrame` 对象稍大。然而，写入速度比内存生成示例数据集快约五倍。
 - en: Working in Python with binary stores like HDF5 database files usually gets you
     writing speeds close to the theoretical maximum of the hardware available:^([2](ch03.html#idm45785385469896))
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Python 中使用像 HDF5 数据库文件这样的二进制存储通常可以获得接近硬件可用的理论最大写入速度：^([2](ch03.html#idm45785385469896))
 - en: '[PRE20]'
+  id: totrans-215
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO16-1)'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO16-1)'
 - en: This opens the database file on disk for writing (and overwrites a potentially
     existing file with the same name).
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会打开磁盘上的数据库文件进行写入（并覆盖可能存在的同名文件）。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO16-2)'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO16-2)'
 - en: Writing the `DataFrame` object to disk takes less than a second.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 `DataFrame` 对象写入磁盘只需不到一秒钟。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO16-3)'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO16-3)'
 - en: This prints out meta information for the database file.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会打印出数据库文件的元信息。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO16-4)'
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO16-4)'
 - en: This closes the database file.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会关闭数据库文件。
 - en: 'The third step is to read the data from the file-based `HDFStore` object. Reading
     also generally takes place close to the theoretical maximum speed:'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三步是从基于文件的 `HDFStore` 对象中读取数据。读取速度通常接近理论上的最大速度：
 - en: '[PRE21]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO17-1)'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO17-1)'
 - en: Opens the database file for reading.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开数据库文件进行读取。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO17-2)'
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO17-2)'
 - en: Reading takes less than half of a second.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 读取时间少于半秒钟。
 - en: 'There is another, somewhat more flexible way of writing the data from a `DataFrame`
     object to an `HDFStore` object. To this end, one can use the `to_hdf()` method
     of the `DataFrame` object and set the `format` parameter to `table` (see the [`to_hdf`
@@ -909,65 +1380,104 @@
     data to the `table` object on disk and also, for example, the searching over the
     data on disk, which is not possible with the first approach. The price to pay
     is slower writing and reading speeds:'
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有另一种更灵活的方式将 `DataFrame` 对象中的数据写入 `HDFStore` 对象中。为此，可以使用 `DataFrame` 对象的 `to_hdf()`
+    方法，并将 `format` 参数设置为 `table`（参见 [`to_hdf` API 参考页面](https://oreil.ly/uu0_j)）。这允许在磁盘上的
+    `table` 对象上追加新数据，并且还可以进行数据搜索，这是第一种方法所不具备的。但代价是较慢的写入和读取速度：
 - en: '[PRE22]'
+  id: totrans-231
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO18-1)'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO18-1)'
 - en: This defines the writing format to be of type `table`. Writing becomes slower
     since this format type involves a bit more overhead and leads to a somewhat increased
     file size.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 这定义了写入格式为 `table` 类型。由于这种格式类型涉及更多开销，并导致稍微增加的文件大小，因此写入速度变慢。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO18-2)'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO18-2)'
 - en: Reading is also slower in this application scenario.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种应用场景中，读取速度也较慢。
 - en: 'In practice, the advantage of this approach is that one can work with the `table_frame`
     object on disk like with any other `table` object of the `PyTables` package that
     is used by `pandas` in this context. This provides access to certain basic capabilities
     of the [`PyTables`](http://pytables.org) package, such as appending rows to a
     `table` object:'
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，这种方法的优势在于可以像处理 `pandas` 中使用的 `PyTables` 包的任何其他 `table` 对象一样处理磁盘上的 `table_frame`
+    对象。这提供了对 `PyTables` 包的某些基本功能的访问，例如追加行到 `table` 对象：
 - en: '[PRE23]'
+  id: totrans-237
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO19-1)'
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO19-1)'
 - en: Imports the `PyTables` package.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 导入 `PyTables` 包。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO19-2)'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO19-2)'
 - en: Opens the database file for reading.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开数据库文件进行读取。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO19-3)'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO19-3)'
 - en: Shows the contents of the database file.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示数据库文件的内容。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO19-4)'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO19-4)'
 - en: Prints the first three rows in the table.
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印表中的前三行。
 - en: '[![5](assets/5.png)](#co_working_with_financial_data_CO19-5)'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_financial_data_CO19-5)'
 - en: Closes the database.
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 关闭数据库。
 - en: Although this second approach provides *more* flexibility, it does not open
     the doors to the full capabilities of the `PyTables` package. Nevertheless, the
     two approaches introduced in this sub-section are convenient and efficient when
@@ -976,18 +1486,24 @@
     and rapidly growing data sets like, for example, tick data with regard to stock
     prices or foreign exchange rates. To cope with the requirements of such a scenario,
     alternative approaches might prove useful.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管这种第二种方法提供了*更多*的灵活性，但它并不打开`PyTables`包的全部功能。尽管如此，在处理更多或少*不可变内存中适合的数据集*时，此子部分介绍的两种方法是方便和高效的。然而，如今算法交易一般需要处理不断增长的数据集，例如与股票价格或外汇汇率相关的时序数据。为了应对这种情况的要求，可能需要使用替代方法。
 - en: Using the `HDFStore` wrapper for the HDF5 binary storage standard, `pandas`
     is able to write and read financial data almost at the maximum speed the available
     hardware allows. Exports to other file-based formats, like CSV, are generally
     much slower alternatives.
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`HDFStore`包装器进行HDF5二进制存储标准，`pandas`能够几乎以可用硬件允许的最大速度写入和读取金融数据。与CSV等其他基于文件的格式相比，导出通常要慢得多。
 - en: Using TsTables
+  id: totrans-250
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用TsTables
 - en: The `PyTables` package, with the import name `tables`, is a wrapper for the
     HDF5 binary storage library that is also used by `pandas` for its `HDFStore` implementation
     presented in the previous sub-section. The `TsTables` package (see the [GitHub
@@ -998,88 +1514,137 @@
     approach that allows for a fast retrieval of data sub-sets selected by providing
     start and end dates and times, respectively. The major scenario supported by `TsTables`
     is “write once, retrieve multiple times.”
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PyTables`包，导入名为`tables`，是HDF5二进制存储库的包装器，也被`pandas`用于其在前述子部分中展示的`HDFStore`实现。`TsTables`包（参见[包的GitHub页面](https://oreil.ly/VGPas)）则致力于有效处理基于HDF5二进制存储库的大型金融时间序列数据集。它有效地增强了`PyTables`包，并为其能力添加了对时间序列数据的支持。它实现了一种分层存储方法，允许通过提供开始和结束日期和时间来快速检索数据子集。`TsTables`支持的主要场景是“一次写入，多次检索”。'
 - en: The setup illustrated in this sub-section is that data is continuously collected
     from a web source, professional data provider, etc. and is stored interim and
     in-memory in a `DataFrame` object. After a while or a certain number of data points
     retrieved, the collected data is then stored in a `TsTables` `table` object in
     an HDF5 database.
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 此子部分展示的设置是数据不断从网络源、专业数据提供商等收集，并在中间和内存中存储在`DataFrame`对象中。一段时间后或检索到一定数量的数据点后，收集的数据将存储在HDF5数据库中的`TsTables`
+    `table`对象中。
 - en: 'First, here is the generation of the sample data:'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，这里是生成样本数据的过程：
 - en: '[PRE24]'
+  id: totrans-254
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO20-1)'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO20-1)'
 - en: This generates a sample financial data set with 2,500,000 rows and five columns
     with a one second frequency; the sample data is rounded to two digits.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 这生成了一个包含250万行和五列，频率为一秒的样本金融数据集；样本数据四舍五入到两位小数。
 - en: 'Second, some more imports and the creation of the `TsTables` `table` object.
     The major part is the definition of the `desc` class, which provides the description
     for the `table` object’s data structure:'
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，导入更多内容并创建`TsTables` `table`对象。主要部分是定义`desc`类，提供`table`对象数据结构的描述：
 - en: 'Currently, `TsTables` only works with the old `pandas` version 0.19\. A friendly
     fork, working with newer versions of `pandas` is available under [*http://github.com/yhilpisch/tstables*](http://github.com/yhilpisch/tstables)
     which can be installed with the following:'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前，`TsTables`仅适用于旧版本0.19的`pandas`。有一个友好的分支，适用于更新的`pandas`版本，可在[*http://github.com/yhilpisch/tstables*](http://github.com/yhilpisch/tstables)上找到，并可通过以下方式安装：
 - en: '[PRE25]'
+  id: totrans-259
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[PRE26]'
+  id: totrans-260
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO21-1)'
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO21-1)'
 - en: '`TsTables` (installed from [*https://github.com/yhilpisch/tstables*](https://github.com/yhilpisch/tstables))…'
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TsTables`（从[*https://github.com/yhilpisch/tstables*](https://github.com/yhilpisch/tstables)安装）…'
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO21-2)'
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO21-2)'
 - en: …`PyTables` are imported.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: …导入了`PyTables`。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO21-3)'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO21-3)'
 - en: The first column of the table is a `timestamp` represented as an `int` value.
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 表的第一列是表示为`int`值的`timestamp`。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO21-4)'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO21-4)'
 - en: All data columns contain `float` values.
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有数据列都包含`float`值。
 - en: '[![5](assets/5.png)](#co_working_with_financial_data_CO21-5)'
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](assets/5.png)](#co_working_with_financial_data_CO21-5)'
 - en: This opens a new database file for writing.
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开一个新的数据库文件进行写入。
 - en: '[![6](assets/6.png)](#co_working_with_financial_data_CO21-6)'
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](assets/6.png)](#co_working_with_financial_data_CO21-6)'
 - en: The `TsTables` table is created at the root node, with name `data` and given
     the class-based description `desc`.
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TsTables`表在根节点创建，命名为`data`，并给出基于类的描述`desc`。'
 - en: '[![7](assets/7.png)](#co_working_with_financial_data_CO21-7)'
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](assets/7.png)](#co_working_with_financial_data_CO21-7)'
 - en: Inspecting the database file reveals the basic principle behind the hierarchical
     structuring in years, months, and days.
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查数据库文件揭示了按年、月和日进行分层结构化的基本原则。
 - en: 'Third is the writing of the sample data stored in a `DataFrame` object to the
     `table` object on disk. One of the major benefits of `TsTables` is the convenience
     with which this operation is accomplished, namely by a simple method call. Even
@@ -1087,165 +1652,251 @@
     in the database, `TsTables` chunks the data into sub-sets of a single day. In
     the example case where the frequency is set to one second, this translates into
     24 x 60 x 60 = 86,400 data rows per full day’s worth of data:'
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三步是将存储在`DataFrame`对象中的样本数据写入到磁盘上的`table`对象中。`TsTables`的主要优势之一是通过简单的方法调用轻松完成此操作。更重要的是，在这里的便利性与速度结合。关于数据库的结构，`TsTables`将数据分块成一天的子集。在例子中，如果频率设置为一秒钟，这意味着每天将有24
+    x 60 x 60 = 86,400个数据行：
 - en: '[PRE27]'
+  id: totrans-276
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[PRE28]'
+  id: totrans-277
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO22-1)'
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO22-1)'
 - en: This appends the `DataFrame` object via a simple method call.
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过简单的方法调用将`DataFrame`对象追加到表中。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO22-2)'
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO22-2)'
 - en: The `table` object shows 86,400 rows per day after the `append()` operation.
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: '`table`对象在`append()`操作后每天显示86,400行。'
 - en: 'Reading sub-sets of the data from a `TsTables` `table` object is generally
     really fast since this is what it is optimized for in the first place. In this
     regard, `TsTables` supports typical algorithmic trading applications, like backtesting,
     pretty well. Another contributing factor is that `TsTables` returns the data already
     as a `DataFrame` object such that additional conversions are not necessary in
     general:'
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`TsTables`表对象中读取数据子集通常非常快，因为这是其首要优化目标。在这方面，`TsTables`非常支持典型的算法交易应用，如回测。另一个贡献因素是，`TsTables`返回的数据已经作为`DataFrame`对象，因此通常不需要额外的转换：
 - en: '[PRE29]'
+  id: totrans-283
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO23-1)'
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO23-1)'
 - en: This defines the starting date and…
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 这定义了起始日期和…
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO23-2)'
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO23-2)'
 - en: …end date for the data retrieval operation.
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: …数据检索操作的结束日期。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO23-3)'
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO23-3)'
 - en: The `read_range()` method takes the start and end dates as input—reading here
     is only a matter of milliseconds.
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: '`read_range()`方法以起始和结束日期作为输入，读取操作仅需几毫秒。'
 - en: New data that is retrieved during a day can be appended to the `TsTables` `table`
     object, as illustrated previously. The package is therefore a valuable addition
     to the capabilities of `pandas` in combination with `HDFStore` objects when it
     comes to the efficient storage and retrieval of (large) financial time series
     data sets over time.
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 在一天内检索到的新数据可以追加到`TsTables`表对象中，如前所示。因此，该包在与`HDFStore`对象结合使用时，对于高效存储和检索（大型）金融时间序列数据集是一种宝贵的补充。
 - en: Storing Data with SQLite3
+  id: totrans-291
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用SQLite3存储数据
 - en: Financial time series data can also be written directly from a `DataFrame` object
     to a relational database like `SQLite3`. The use of a relational database might
     be useful in scenarios where the SQL query language is applied to implement more
     sophisticated analyses. With regard to speed and also disk usage, relational databases
     cannot, however, compare with the other approaches that rely on binary storage
     formats like HDF5.
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 金融时间序列数据也可以直接从`DataFrame`对象写入到关系数据库（如`SQLite3`）。在应用SQL查询语言来实现更复杂的分析时，关系数据库的使用可能会很有用。然而，就速度和磁盘使用情况而言，关系数据库无法与依赖二进制存储格式（如HDF5）的其他方法相比。
 - en: 'The `DataFrame` class provides the method `to_sql()` (see the [`to_sql()` API
     reference page](https://oreil.ly/ENhoW)) to write data to a table in a relational
     database. The size on disk with 100+ MB indicates that there is quite some overhead
     when using relational databases:'
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DataFrame`类提供了`to_sql()`方法（参见[`to_sql()` API参考页面](https://oreil.ly/ENhoW)），用于将数据写入关系数据库中的表中。100+
+    MB的磁盘大小表明在使用关系数据库时存在相当大的开销：'
 - en: '[PRE30]'
+  id: totrans-294
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO24-1)'
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO24-1)'
 - en: The sample financial data set has 1,000,000 rows and five columns; memory usage
     is about 46 MB.
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 示例金融数据集有100万行和五列；内存使用约为46 MB。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO24-3)'
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO24-3)'
 - en: This imports the `SQLite3` module.
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 这导入了`SQLite3`模块。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO24-4)'
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO24-4)'
 - en: A connection is opened to a new database file.
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开到新数据库文件的连接。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO24-5)'
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO24-5)'
 - en: Writing the data to the relational database takes a couple of seconds.
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据写入关系数据库需要几秒钟时间。
 - en: 'One strength of relational databases is the ability to implement (out-of-memory)
     analytics tasks based on standardized SQL statements. As an example, consider
     a query that selects for column `No1` all those rows where the value in that row
     lies between 105 and 108:'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: 关系数据库的一个优势是能够基于标准化的SQL语句实现（非内存）分析任务。例如，考虑一个查询，选择`No1`列中值在105和108之间的所有行：
 - en: '[PRE31]'
+  id: totrans-304
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '[![1](assets/1.png)](#co_working_with_financial_data_CO25-1)'
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](assets/1.png)](#co_working_with_financial_data_CO25-1)'
 - en: The SQL query as a Python `str` object.
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: SQL查询作为Python的`str`对象。
 - en: '[![2](assets/2.png)](#co_working_with_financial_data_CO25-2)'
+  id: totrans-307
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](assets/2.png)](#co_working_with_financial_data_CO25-2)'
 - en: The query executed to retrieve all results rows.
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于检索所有结果行的查询。
 - en: '[![3](assets/3.png)](#co_working_with_financial_data_CO25-3)'
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](assets/3.png)](#co_working_with_financial_data_CO25-3)'
 - en: The first five results printed.
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
+  zh: 打印的前五个结果。
 - en: '[![4](assets/4.png)](#co_working_with_financial_data_CO25-4)'
+  id: totrans-311
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](assets/4.png)](#co_working_with_financial_data_CO25-4)'
 - en: The length of the results `list` object.
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果`list`对象的长度。
 - en: Admittedly, such simple queries are also possible with `pandas` if the data
     set fits into memory. However, the SQL query language has proven useful and powerful
     for decades now and should be in the algorithmic trader’s arsenal of data weapons.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: 诚然，如果数据集适合内存，`pandas`也可以执行这样简单的查询。然而，SQL查询语言已经被证明在几十年的时间里非常有用且强大，应该成为算法交易员数据武器库中的一部分。
 - en: '`pandas` also supports database connections via `SQLAlchemy`, a Python abstraction
     layer package for diverse relational databases (refer to the [`SQLAlchemy` home
     page](http://sqlalchemy.org)). This in turn allows for the use of, for example,
     [`MySQL`](https://mysql.com) as the relational database backend.'
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pandas`还支持通过`SQLAlchemy`进行数据库连接，`SQLAlchemy`是一个Python抽象层包，用于各种关系数据库（参见[`SQLAlchemy`首页](http://sqlalchemy.org)）。这反过来又允许使用，例如，[`MySQL`](https://mysql.com)作为关系数据库后端。'
 - en: Conclusions
+  id: totrans-315
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: This chapter covers the handling of financial time series data. It illustrates
     the reading of such data from different file-based sources, like CSV files. It
     also shows how to retrieve financial data from web services, such as that of Quandl,
     for end-of-day and options data. Open financial data sources are a valuable addition
     to the financial landscape. Quandl is a platform integrating thousands of open
     data sets under the umbrella of a unified API.
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖了金融时间序列数据的处理。它说明了如何从不同的基于文件的数据源（如CSV文件）读取此类数据。它还展示了如何从Web服务中检索金融数据，例如Quandl的端点数据和期权数据。开放的金融数据源是金融领域的宝贵补充。Quandl是一个平台，将成千上万个开放数据集集成到统一API的伞下。
 - en: Another important topic covered in this chapter is the efficient storage of
     complete `DataFrame` objects on disk, as well as of the data contained in such
     an in-memory object in databases. Database flavors used in this chapter include
@@ -1254,88 +1905,131 @@
     which addresses vectorized backtesting; [Chapter 5](ch05.html#machine_learning),
     which covers machine learning and deep learning for market prediction; and [Chapter 6](ch06.html#event_based_backtesting),
     which discusses event-based backtesting of trading strategies.
+  id: totrans-317
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章还涵盖了在磁盘上高效存储完整`DataFrame`对象以及在数据库中存储内存中数据的相关重要主题。本章使用的数据库类型包括HDF5数据库标准和轻量级关系数据库`SQLite3`。这章奠定了[第4章](ch04.html#vectorized_backtesting)的基础，该章涉及向量化回测；[第5章](ch05.html#machine_learning)，该章介绍市场预测的机器学习和深度学习；以及[第6章](ch06.html#event_based_backtesting)，该章讨论基于事件的交易策略回测。
 - en: References and Further Resources
+  id: totrans-318
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考资料和进一步资源
 - en: 'You can find more information about Quandl at the following link:'
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以在以下链接找到更多关于Quandl的信息：
 - en: '[*http://quandl.org*](http://quandl.org)'
+  id: totrans-320
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[*http://quandl.org*](http://quandl.org)'
 - en: 'Information about the package used to retrieve data from that source is found
     here:'
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 有关用于从该来源检索数据的软件包信息，请查阅此处：
 - en: '[Python wrapper page on Quandl](https://www.quandl.com/tools/python)'
+  id: totrans-322
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Quandl上Python包装器页面](https://www.quandl.com/tools/python)'
 - en: '[GitHub page of the Quandl Python wrapper](https://github.com/quandl/quandl-python)'
+  id: totrans-323
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Quandl Python包装器的 GitHub 页面](https://github.com/quandl/quandl-python)'
 - en: 'You should consult the official documentation pages for more information on
     the packages used in this chapter:'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: 您应该查阅官方文档页面以获取更多关于本章中使用的软件包的信息：
 - en: '[`pandas` home page](http://pandas.pydata.org)'
+  id: totrans-325
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[`pandas` 主页](http://pandas.pydata.org)'
 - en: '[`PyTables` home page](http://pytables.org)'
+  id: totrans-326
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[`PyTables` 主页](http://pytables.org)'
 - en: '[`TsTables` fork on GitHub](https://github.com/yhilpisch/tstables)'
+  id: totrans-327
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[`TsTables` 在 GitHub 上的分支](https://github.com/yhilpisch/tstables)'
 - en: '[`SQLite` home page](http://sqlite.org)'
+  id: totrans-328
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[`SQLite` 主页](http://sqlite.org)'
 - en: 'Books and articles cited in this chapter:'
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍和文章：
 - en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance*.
     2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-330
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Hilpisch, Yves. 2018\. *《Python 金融分析：掌握数据驱动的金融》*。第2版。Sebastopol：O’Reilly。
 - en: 'McKinney, Wes. 2017\. *Python for Data Analysis: Data Wrangling with Pandas,
     NumPy, and IPython*. 2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-331
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: McKinney, Wes. 2017\. *《Python 数据分析：使用Pandas、NumPy和IPython进行数据处理》*。第2版。Sebastopol：O’Reilly。
 - en: 'Thomas, Rob. “Bad Election Day Forecasts Deal Blow to Data Science: Prediction
     Models Suffered from Narrow Data, Faulty Algorithms and Human Foibles.” *Wall
     Street Journal*, November 9, 2016.'
+  id: totrans-332
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Thomas, Rob. “预测数据科学：坏的选举日预测给予打击：预测模型受限于狭窄的数据、错误的算法和人类缺陷。” *《华尔街日报》*，2016年11月9日。
 - en: Python Scripts
+  id: totrans-333
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Python脚本
 - en: 'The following Python script generates sample financial time series data based
     on a Monte Carlo simulation for a geometric Brownian motion; for more, see Hilpisch
     (2018, ch. 12):'
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python脚本基于蒙特卡洛模拟生成样本金融时间序列数据，详见Hilpisch（2018年，第12章）：
 - en: '[PRE32]'
+  id: totrans-335
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: ^([1](ch03.html#idm45785385472888-marker)) Of course, multiple `DataFrame` objects
     could also be stored in a single `HDFStore` object.
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch03.html#idm45785385472888-marker)) 当然，多个`DataFrame`对象也可以存储在单个`HDFStore`对象中。
 - en: ^([2](ch03.html#idm45785385469896-marker)) All values reported here are from
     the author’s MacMini with Intel i7 hexa core processor (12 threads), 32 GB of
     random access memory (DDR4 RAM), and a 512 GB solid state drive (SSD).
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch03.html#idm45785385469896-marker)) 所有报告的数值均来自作者使用的MacMini，配备Intel i7六核处理器（12个线程），32
+    GB随机存取内存（DDR4 RAM），以及512 GB固态驱动器（SSD）。

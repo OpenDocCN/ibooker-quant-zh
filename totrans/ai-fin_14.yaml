@@ -1,34 +1,46 @@
 - en: Chapter 10\. Vectorized Backtesting
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第10章 矢量化回测
 - en: Tesla’s chief executive and serial technology entrepreneur, Elon Musk, has said
     his company’s cars will be able to be summoned and drive autonomously across the
     US to pick up their owners within the next two years.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 特斯拉的首席执行官和连续技术企业家埃隆·马斯克表示，他的公司的汽车将能够在未来两年内被召唤并自主驾驶穿越美国，以接载他们的主人。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Samuel Gibbs (2016)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Samuel Gibbs（2016）
 - en: Big money is made in the stock market by being on the right side of the major
     moves.
+  id: totrans-4
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 赚取大笔资金是通过站在股市主要波动的正确一侧来实现的。
 - en: ''
+  id: totrans-5
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Martin Zweig
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Martin Zweig
 - en: The term *vectorized backtesting* refers to a technical approach to backtesting
     algorithmic trading strategies, such as those based on a dense neural network
     (DNN) for market prediction. The books by Hilpisch (2018, ch. 15; 2020, ch. 4)
@@ -41,8 +53,13 @@
     important scenarios. On the other hand, it might not be as flexible in backtesting
     trading strategies as, for example, event-based backtesting, which is introduced
     and used in [Chapter 11](ch11.xhtml#risk_management).
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '*矢量化回测* 这个术语指的是一种技术方法，用于回测基于密集神经网络（DNN）进行市场预测等算法交易策略。 Hilpisch 的书籍（2018年，第15章；2020年，第4章）涵盖了基于多个具体例子的矢量化回测。在这个上下文中，*矢量化*
+    指的是一种编程范式，严重依赖甚至完全依赖于矢量化代码（即在Python级别上没有任何循环的代码）。在一般情况下，使用 `Numpy` 或 `pandas`
+    等软件包的代码矢量化是良好的实践，并且在前几章中也已经广泛使用。矢量化代码的好处是更简洁、易于阅读的代码，以及在许多重要情况下更快的执行速度。另一方面，与基于事件的回测（例如在
+    [第11章](ch11.xhtml#risk_management) 中介绍和使用的方法）相比，矢量化代码在回测交易策略的灵活性上可能不足。'
 - en: Having a good AI-powered predictor available that beats a simple baseline predictor
     is important but is generally not enough to generate *alpha* (that is, above-market
     returns, possibly adjusted for risk). For example, it is also important for a
@@ -50,8 +67,10 @@
     and not just the majority of the (potentially pretty small) market movements.
     Vectorized backtesting is an easy and fast way of figuring out the economic potential
     of a trading strategy.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 拥有一个能够击败简单基准预测器的良好AI预测器是重要的，但通常不足以产生*alpha*（即超过市场回报，可能根据风险调整）。例如，对于基于预测的交易策略，重要的是正确预测大市场波动，而不仅仅是多数（可能相当小的）市场波动。矢量化回测是快速了解交易策略经济潜力的简便方法。
 - en: Compared to autonomous vehicles (AVs), vectorized backtesting is like testing
     the AI of AVs in virtual environments just to see how it performs “in general”
     in a risk-free environment. However, for the AI of an AV it is not only important
@@ -62,8 +81,11 @@
     chapter focuses on the pure performance of financial AI agents (trading bots),
     [Chapter 11](ch11.xhtml#risk_management) goes deeper into risk assessment and
     the backtesting of standard risk measures.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 与自动驾驶车辆（AV）相比，矢量化回测就像是在虚拟环境中测试AV的AI，只是为了看它在“一般情况下”表现如何，而不会有风险。然而，对于AV的AI来说，不仅在“平均情况下”表现良好是重要的，更重要的是看它如何掌握关键甚至极端情况。这样的AI应该平均造成“零伤亡”，而不是0.1或0.5。对于金融AI而言，同样重要（即使不完全相同）的是正确预测大市场波动。而本章重点讨论金融AI代理（交易机器人）的纯性能，
+    [第11章](ch11.xhtml#risk_management) 则深入探讨风险评估和标准风险度量的回测。
 - en: '[“Backtesting an SMA-Based Strategy”](#vb_sma_eod_exmple) introduces vectorized
     backtesting based on a simple example using simple moving averages as technical
     indicators and end-of-day (EOD) data. This allows for insightful visualizations
@@ -73,160 +95,253 @@
     [“Backtesting an Intraday DNN-Based Strategy”](#vb_dnn_id_example) then does the
     same with intraday data. In all examples, proportional transaction costs are included
     in the form of assumed bid-ask spreads.'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“基于 SMA 的回测策略”](#vb_sma_eod_exmple)介绍了基于简单移动平均线的向量化回测示例，使用每日收盘数据。这样可以进行深入的可视化和更轻松的理解初始方法。[“基于每日
+    DNN 的回测策略”](#vb_dnn_eod_example)在每日收盘数据上训练了一个 DNN，并对基于预测的策略进行了经济绩效的回测。[“基于日内 DNN
+    的回测策略”](#vb_dnn_id_example)然后使用日内数据进行相同的操作。在所有示例中，都包括了比例交易成本，以假定的买卖价差形式。'
 - en: Backtesting an SMA-Based Strategy
+  id: totrans-11
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于 SMA 的回测策略
 - en: 'This section introduces vectorized backtesting based on a classical trading
     strategy that uses simple moving averages (SMAs) as technical indicators. The
     following code realizes the necessary imports and configurations and retrieves
     EOD data for the EUR/USD currency pair:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍基于经典交易策略的向量化回测，该策略使用简单移动平均线（SMAs）作为技术指标。以下代码实现了必要的导入和配置，并获取了 EUR/USD 货币对的每日收盘数据：
 - en: '[PRE0]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO1-1)'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO1-1)'
 - en: Retrieves EOD data for EUR/USD
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 获取 EUR/USD 的每日收盘数据
 - en: The idea of the strategy is the following. Calculate a shorter `SMA1`, say for
     42 days, and a longer `SMA2`, say for 258 days. Whenever `SMA1` is above `SMA2`,
     go long on the financial instrument. Whenever `SMA1` is below `SMA2`, go short
     on the financial instrument. Because the example is based on EUR/USD, going long
     or short is easily accomplished.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 策略的思路如下。计算较短的 `SMA1`，例如42天，和较长的 `SMA2`，例如258天。每当 `SMA1` 大于 `SMA2` 时，在金融工具上建立多头头寸。每当
+    `SMA1` 小于 `SMA2` 时，在金融工具上建立空头头寸。由于本示例基于 EUR/USD，因此很容易实现多头或空头。
 - en: 'The following Python code calculates in vectorized fashion the SMA values and
     visualizes the resulting time series alongside the original time series (see [Figure 10-1](#figure_vb_01)):'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的 Python 代码以向量化方式计算 SMA 值，并将结果时间序列与原始时间序列一起进行可视化（参见 [图 10-1](#figure_vb_01)）：
 - en: '[PRE1]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO2-1)'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO2-1)'
 - en: Calculates the shorter `SMA1`
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算较短的 `SMA1`
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO2-2)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO2-2)'
 - en: Calculates the longer `SMA2`
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算较长的 `SMA2`
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO2-3)'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO2-3)'
 - en: Visualizes the three time series
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 可视化了三个时间序列
 - en: Equipped with the SMA time series data, the resulting positions can, again in
     vectorized fashion, be derived. Note the shift of the resulting position time
     series by one day to avoid foresight bias in the data. This shift is necessary
     since the calculation of the SMAs includes the closing values from the same day.
     Therefore, the position derived from the SMA values from one day needs to be applied
     to the next day for the whole time series.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用了 SMA 时间序列数据后，再次以向量化方式计算出了相应的仓位。请注意，由于数据中存在前瞻偏差，所以需要将得出的仓位时间序列向后推移一天。这种推移是必要的，因为计算
+    SMA 包括当天的收盘价。因此，从一天的 SMA 值推导出的仓位需要应用到下一天的整个时间序列中。
 - en: '![aiif 1001](Images/aiif_1001.png)'
+  id: totrans-26
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1001](Images/aiif_1001.png)'
 - en: Figure 10-1\. Time series data for EUR/USD and SMAs
+  id: totrans-27
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图10-1\. EUR/USD 和 SMAs 的时间序列数据
 - en: '[Figure 10-2](#figure_vb_02) visualizes the resulting positions as an overlay
     to the other time series:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 10-2](#figure_vb_02) 将得出的仓位作为其他时间序列的叠加显示：'
 - en: '[PRE2]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO3-1)'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO3-1)'
 - en: Deletes rows containing `NaN` values
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 删除包含 `NaN` 值的行
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO3-2)'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO3-2)'
 - en: Derives the position values based on same-day SMA values
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据同一日的 SMA 值推导出仓位值
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO3-3)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO3-3)'
 - en: Shifts the position values by one day to avoid foresight bias
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 将仓位值向后推移一天，以避免前瞻偏差
 - en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO3-5)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_vectorized_backtesting_CO3-5)'
 - en: Visualizes the position values as derived from the SMAs
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 可视化从 SMAs 得出的仓位值
 - en: '![aiif 1002](Images/aiif_1002.png)'
+  id: totrans-38
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1002](Images/aiif_1002.png)'
 - en: Figure 10-2\. Time series data for EUR/USD, SMAs, and resulting positions
+  id: totrans-39
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-2\. EUR/USD、SMAs 和生成的头寸的时间序列数据
 - en: 'One crucial step is missing: the combination of the positions with the returns
     of the financial instrument. Since positions are conveniently represented by a
     `+1` for a long position and a `-1` for a short position, this step boils down
     to multiplying two columns of the `DataFrame` object—in vectorized fashion again.
     The SMA-based trading strategy outperforms the passive benchmark investment by
     a considerable margin, as [Figure 10-3](#figure_vb_03) illustrates:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 还缺少一个关键步骤：将头寸与金融工具的收益结合起来。由于头寸可以方便地通过 `+1` 表示多头头寸，`-1` 表示空头头寸，因此这一步骤可以简化为再次向量化地将
+    `DataFrame` 对象的两列相乘。与被动基准投资相比，基于SMA的交易策略表现出色，如[图 10-3](#figure_vb_03)所示：
 - en: '[PRE3]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO4-1)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO4-1)'
 - en: Calculates the log returns
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算对数收益
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO4-2)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO4-2)'
 - en: Calculates the strategy returns
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算策略收益
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO4-3)'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO4-3)'
 - en: Calculates the gross performances
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算总体表现
 - en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO4-4)'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_vectorized_backtesting_CO4-4)'
 - en: Calculates the net performances
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算净表现
 - en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO4-5)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_vectorized_backtesting_CO4-5)'
 - en: Visualizes the gross performances over time
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 可视化随时间的总体表现
 - en: '![aiif 1003](Images/aiif_1003.png)'
+  id: totrans-52
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1003](Images/aiif_1003.png)'
 - en: Figure 10-3\. Gross performance of passive benchmark investment and SMA strategy
+  id: totrans-53
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-3\. 被动基准投资和SMA策略的总体表现
 - en: 'So far, the performance figures are not considering transaction costs. These
     are, of course, a crucial element when judging the economic potential of a trading
     strategy. In the current setup, proportional transaction costs can be easily included
@@ -238,377 +353,592 @@
     costs, they are assumed to be quite a bit higher than typically seen for EUR/USD.
     The net effect of subtracting transaction costs is a few percentage points under
     the given assumptions (see [Figure 10-4](#figure_vb_04)):'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，表现数据并未考虑交易成本。当然，在评估交易策略的经济潜力时，这些成本是至关重要的因素。在当前设置中，可以轻松地将比例交易成本纳入计算中。其核心思想是确定交易发生的时机，并通过减少交易策略的表现来考虑相关的买卖价差。正如接下来的计算所示，并且如[图 10-2](#figure_vb_02)所示，交易策略并不经常改变头寸。因此，为了有效考虑交易成本的影响，假设其比通常的
+    EUR/USD 更高。在给定假设下，减去交易成本的净效果是几个百分点（见[图 10-4](#figure_vb_04)）：
 - en: '[PRE4]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO5-1)'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO5-1)'
 - en: Calculates the number of trades, including entry and exit trade
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算交易次数，包括进入和退出交易
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO5-2)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO5-2)'
 - en: Fixes the proportional transaction costs (deliberately set quite high)
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 修正比例交易成本（故意设置得很高）
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO5-3)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO5-3)'
 - en: Adjusts the strategy performance for the transaction costs
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整交易成本对策略表现的影响
 - en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO5-4)'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_vectorized_backtesting_CO5-4)'
 - en: Adjusts the strategy performance for the *entry* trade
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整*进入*交易的策略表现
 - en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO5-5)'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_vectorized_backtesting_CO5-5)'
 - en: Adjusts the strategy performance for the *exit* trade
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整*退出*交易的策略表现
 - en: '[![6](Images/6.png)](#co_vectorized_backtesting_CO5-6)'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_vectorized_backtesting_CO5-6)'
 - en: Shows the adjusted performance values for the regular trades
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示常规交易的调整后表现数值
 - en: '![aiif 1004](Images/aiif_1004.png)'
+  id: totrans-68
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1004](Images/aiif_1004.png)'
 - en: Figure 10-4\. Gross performance of the SMA strategy before and after transaction
     costs
+  id: totrans-69
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-4\. SMA 策略在交易成本前后的总体表现
 - en: 'What about the resulting risk of the trading strategy? For a trading strategy
     that is based on directional predictions and that takes long or short positions
     only, the risk, expressed as the volatility (standard deviation of the log returns),
     is exactly the same as for the passive benchmark investment:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于交易策略的结果风险如何？对于基于方向预测且仅采取多头或空头头寸的交易策略，表达为波动率（对数收益标准差）的风险与被动基准投资完全相同：
 - en: '[PRE5]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO6-1)'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO6-1)'
 - en: Daily volatility
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 每日波动率
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO6-2)'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO6-2)'
 - en: Annualized volatility
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 年化波动率
 - en: Vectorized Backtesting
+  id: totrans-76
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 向量化回测
 - en: Vectorized backtesting is a powerful and efficient approach to backtesting the
     “pure” performance of a prediction-based trading strategy. It can also accommodate
     proportional transaction costs, for instance. However, it is not well suited to
     including typical risk management measures, such as (trailing) stop loss orders
     or take profit orders. This is addressed in [Chapter 11](ch11.xhtml#risk_management).
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化回测是回测基于预测的交易策略“纯”性能的强大高效方法。它还可以适应比例交易成本等。然而，它不适合包含典型的风险管理措施，如（追踪）止损订单或获利订单。这在[第11章](ch11.xhtml#risk_management)中有所涉及。
 - en: Backtesting a Daily DNN-Based Strategy
+  id: totrans-78
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 日常基于DNN的策略回测
 - en: 'The previous section lays out the blueprint for vectorized backtesting on the
     basis of a simple, easy-to-visualize trading strategy. The same blueprint can
     be applied, for example, to DNN-based trading strategies with minimal technical
     adjustments. The following trains a `Keras` DNN model, as discussed in [Chapter 7](ch07.xhtml#dense_networks).
     The data that is used is the same as in the previous example. However, as in [Chapter 7](ch07.xhtml#dense_networks),
     different features and lags thereof need to be added to the `DataFrame` object:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 前一节基于简单易于可视化的交易策略提出了向量化回测的蓝图。相同的蓝图可以应用于基于深度神经网络的交易策略，只需进行最少的技术调整。以下训练了一个`Keras`
+    DNN模型，如[第7章](ch07.xhtml#dense_networks)讨论的那样。使用的数据与前面的例子相同。然而，就像在[第7章](ch07.xhtml#dense_networks)中一样，需要向`DataFrame`对象添加不同的特征及其滞后值：
 - en: '[PRE6]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'The following Python code accomplishes additional imports and defines the `set_seeds()`
     and `create_model()` functions:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码完成了额外的导入并定义了`set_seeds()`和`create_model()`函数：
 - en: '[PRE7]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'Based on a sequential train-test split of the historical data, the following
     Python code first trains the DNN model based on normalized features data:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于历史数据的顺序训练测试分割，以下Python代码首先基于归一化的特征数据训练DNN模型：
 - en: '[PRE8]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO7-1)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO7-1)'
 - en: Splits the data into training and test data
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据分割为训练和测试数据
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO7-3)'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO7-3)'
 - en: Shows the frequency of the labels classes
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示标签类别的频率
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO7-4)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO7-4)'
 - en: Normalizes the training features data
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 规范化训练特征数据
 - en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO7-6)'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_vectorized_backtesting_CO7-6)'
 - en: Creates the DNN model
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建DNN模型
 - en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO7-7)'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_vectorized_backtesting_CO7-7)'
 - en: Trains the DNN model on the training data
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 在训练数据上训练DNN模型
 - en: '[![6](Images/6.png)](#co_vectorized_backtesting_CO7-8)'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_vectorized_backtesting_CO7-8)'
 - en: Evaluates the performance of the model on the training data
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 评估模型在训练数据上的表现
 - en: 'So far, this basically repeats the core approach of [Chapter 7](ch07.xhtml#dense_networks).
     Vectorized backtesting can now be applied to judge the economic performance of
     the DNN-based trading strategy *in-sample* based on the model’s predictions (see
     [Figure 10-5](#figure_vb_05)). In this context, an upward prediction is naturally
     interpreted as a long position and a downward prediction as a short position:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，这基本上重复了[第7章](ch07.xhtml#dense_networks)的核心方法。现在可以应用向量化回测来评估基于模型预测的DNN交易策略的经济表现（见[图10-5](#figure_vb_05)）。在这种情况下，向上的预测自然被解释为多头头寸，向下的预测则被解释为空头头寸：
 - en: '[PRE9]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO8-1)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO8-1)'
 - en: Generates the binary predictions
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成二元预测
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO8-2)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO8-2)'
 - en: Translates the predictions into position values
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 将预测转换为位置数值
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO8-3)'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO8-3)'
 - en: Shows the number of long and short positions
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 展示多头和空头头寸的数量
 - en: '[![4](Images/4.png)](#co_vectorized_backtesting_CO8-4)'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_vectorized_backtesting_CO8-4)'
 - en: Calculates the strategy performance values
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算策略的表现数值
 - en: '[![5](Images/5.png)](#co_vectorized_backtesting_CO8-5)'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_vectorized_backtesting_CO8-5)'
 - en: Calculates the gross and net performances (in-sample)
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算毛收益和净收益（样本内）
 - en: '[![6](Images/6.png)](#co_vectorized_backtesting_CO8-7)'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_vectorized_backtesting_CO8-7)'
 - en: Visualizes the gross performances over time (in-sample)
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 可视化时间内的毛收益表现（样本内）
 - en: '![aiif 1005](Images/aiif_1005.png)'
+  id: totrans-111
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1005](Images/aiif_1005.png)'
 - en: Figure 10-5\. Gross performance of the passive benchmark investment and the
     daily DNN strategy (in-sample)
+  id: totrans-112
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-5\. 被动基准投资和每日DNN策略的毛收益表现（样本内）
 - en: 'Next is the same sequence of calculations for the test data set. Whereas the
     out-performance in-sample is significant, the numbers out-of-sample are not as
     impressive but are still convincing (see [Figure 10-6](#figure_vb_06)):'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是针对测试数据集的同一计算序列。虽然样本内的超额表现显著，但样本外的数字并不那么令人印象深刻，但仍然令人信服（参见[图 10-6](#figure_vb_06))：
 - en: '[PRE10]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO9-1)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO9-1)'
 - en: Generates the test data sub-set
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成测试数据子集
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO9-2)'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO9-2)'
 - en: Normalizes the test data
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准化测试数据
 - en: '[![3](Images/3.png)](#co_vectorized_backtesting_CO9-3)'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_vectorized_backtesting_CO9-3)'
 - en: Evaluates the model performance on the test data
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在测试数据上评估模型的表现
 - en: The DNN-based trading strategy leads to a larger number of trades as compared
     to the SMA-based strategy. This makes the inclusion of transaction costs an even
     more important aspect when judging the economic performance.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于深度神经网络的交易策略导致交易次数比基于SMA的策略更多。这使得在评估经济表现时，包括交易成本变得更加重要。
 - en: '![aiif 1006](Images/aiif_1006.png)'
+  id: totrans-122
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1006](Images/aiif_1006.png)'
 - en: Figure 10-6\. Gross performance of the passive benchmark investment and the
     daily DNN strategy (out-of-sample)
+  id: totrans-123
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-6\. 被动基准投资和每日DNN策略的毛收益表现（样本外）
 - en: 'The following code assumes now realistic bid-ask spreads for EUR/USD on the
     level of 1.2 pips (that is, 0.00012 in terms of currency units).^([1](ch10.xhtml#idm45625271705592))
     To simplify the calculations, an average value for the proportional transaction
     costs `pc` is calculated based on the average closing price for EUR/USD (see [Figure 10-7](#figure_vb_07)):'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码现在假设EUR/USD的实际报价价差为1.2个点（即货币单位的0.00012）。^([1](ch10.xhtml#idm45625271705592))
+    为了简化计算，基于EUR/USD的平均收盘价计算比例交易成本`pc`的平均值（参见[图 10-7](#figure_vb_07))：
 - en: '[PRE11]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO10-1)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO10-1)'
 - en: Fixes the average bid-ask spread
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 修正平均买卖价差
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO10-2)'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO10-2)'
 - en: Calculates the average proportional transaction costs
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算平均比例交易成本
 - en: '![aiif 1007](Images/aiif_1007.png)'
+  id: totrans-130
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1007](Images/aiif_1007.png)'
 - en: Figure 10-7\. Gross performance of the daily DNN strategy before and after transaction
     costs (out-of-sample)
+  id: totrans-131
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-7\. 每日DNN策略在交易成本（样本外）前后的毛收益表现
 - en: The DNN-based trading strategy seems promising both before and after typical
     transaction costs. However, would a similar strategy be economically viable intraday
     as well, when even more trades are observed? The next section analyzes a DNN-based
     intraday strategy.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于深度神经网络的交易策略，无论是在典型的交易成本前后都显示出很大的潜力。然而，当观察到更多交易时，类似的策略在当天是否经济可行？接下来的部分将分析基于深度神经网络的当天交易策略。
 - en: Backtesting an Intraday DNN-Based Strategy
+  id: totrans-133
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 回测基于当天的深度神经网络策略
 - en: 'To train and backtest a DNN model on intraday data, another data set is required:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 要在当天数据上训练和回测DNN模型，需要另一个数据集：
 - en: '[PRE12]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO11-1)'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO11-1)'
 - en: Retrieves intraday data for EUR/USD and picks the closing prices
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索EUR/USD的当天数据并选择收盘价格
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO11-4)'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO11-4)'
 - en: Resamples the data to five-minute bars
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 将数据重采样为五分钟柱
 - en: 'The procedure of the previous section can now be repeated with the new data
     set. First, train the DNN model:'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 前一部分的过程现在可以使用新数据集重复。首先，训练深度神经网络模型：
 - en: '[PRE13]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'In-sample, the performance looks promising, as illustrated in [Figure 10-8](#figure_vb_08):'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本内，表现看起来很有前途，如[图 10-8](#figure_vb_08)所示：
 - en: '[PRE14]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '![aiif 1008](Images/aiif_1008.png)'
+  id: totrans-144
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1008](Images/aiif_1008.png)'
 - en: Figure 10-8\. Gross performance of the passive benchmark investment and the
     DNN intraday strategy (in-sample)
+  id: totrans-145
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-8\. 被动基准投资和DNN日内策略的总体表现（样本内）
 - en: 'Out-of-sample, the performance also looks promising before transaction costs.
     The strategy seems to systematically outperform the passive benchmark investment
     (see [Figure 10-9](#figure_vb_09)):'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 样本外，在未考虑交易成本的情况下，该策略看起来也是具有前景的。该策略似乎系统性地优于被动基准投资（见[图 10-9](#figure_vb_09)）：
 - en: '[PRE15]'
+  id: totrans-147
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: The final litmus test with regard to pure economic performance comes when adding
     transaction costs. The strategy leads to hundreds of trades over a relatively
     short period of time. As the following analysis suggests, based on standard retail
     bid-ask spreads, the DNN-based strategy is not viable.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 在纯经济表现方面的最终检验是加入交易成本后。该策略在相对较短的时间内进行了数百次交易。正如下文分析所示，基于标准零售买卖价差，基于DNN的策略是不可行的。
 - en: '![aiif 1009](Images/aiif_1009.png)'
+  id: totrans-149
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1009](Images/aiif_1009.png)'
 - en: Figure 10-9\. Gross performance of the passive benchmark investment and the
     DNN intraday strategy (out-of-sample)
+  id: totrans-150
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-9\. 被动基准投资和DNN日内策略的总体表现（样本外）
 - en: 'Reducing the spread to a level that professional, high-volume traders might
     achieve, the strategy still does not break even but rather loses a large proportion
     of the profits to the transaction costs (see [Figure 10-10](#figure_vb_10)):'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 将交易价差降低到专业高交易量交易者可能达到的水平，该策略仍然无法达到收支平衡，而是大部分利润都损失给了交易成本（见[图 10-10](#figure_vb_10)）：
 - en: '[PRE16]'
+  id: totrans-152
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](Images/1.png)](#co_vectorized_backtesting_CO12-1)'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_vectorized_backtesting_CO12-1)'
 - en: Assumes bid-ask spread on retail level
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设零售级别的买卖价差
 - en: '[![2](Images/2.png)](#co_vectorized_backtesting_CO12-3)'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_vectorized_backtesting_CO12-3)'
 - en: Assumes bid-ask spread on professional level
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设专业水平的买卖价差
 - en: '![aiif 1010](Images/aiif_1010.png)'
+  id: totrans-157
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1010](Images/aiif_1010.png)'
 - en: Figure 10-10\. Gross performance of the DNN intraday strategy before and after
     higher/lower transaction costs (out-of-sample)
+  id: totrans-158
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 10-10\. 高/低交易成本前后DNN日内策略的总体表现（样本外）
 - en: Intraday Trading
+  id: totrans-159
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 日内交易
 - en: Intraday algorithmic trading in the form discussed in this chapter often seems
     appealing from a statistical point of view. Both in-sample and out-of-sample,
     the DNN model reaches a high accuracy when predicting the market direction. Excluding
@@ -618,12 +948,16 @@
     performance of the DNN-based strategy considerably, making it unviable for typical
     retail bid-ask spreads and not really attractive for lower, high-volume bid-ask
     spreads.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章讨论的形式中的日内算法交易在统计学上常常看起来很有吸引力。在样本内和样本外，DNN模型在预测市场方向时达到了高准确率。不考虑交易成本的情况下，与被动基准投资相比，DNN策略在样本内和样本外表现显著优于被动基准投资。然而，一旦将交易成本考虑在内，DNN策略的表现显著下降，使其对于典型的零售买卖价差来说不可行，并且对于较低但高交易量买卖价差也不甚有吸引力。
 - en: Conclusions
+  id: totrans-161
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结论
 - en: Vectorized backtesting proves to be an efficient and valuable approach for backtesting
     the performance of AI-powered algorithmic trading strategies. This chapter first
     explains the basic idea behind the approach based on a simple example using two
@@ -639,31 +973,45 @@
     to the backtesting illustrates that these must be pretty low, on a level often
     not even achieved by big professional traders, to render the trading strategy
     economically viable.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化回测被证明是一种有效和有价值的方法，用于回测基于人工智能的算法交易策略的表现。本章首先基于使用两个简单的简单移动平均线（SMA）从信号中派生的简单示例来解释这种方法的基本思想。这允许对策略和结果位置进行简单可视化。然后，结合EOD数据，通过回测基于DNN的交易策略（详细讨论见[第7章](ch07.xhtml#dense_networks)），在交易成本之前和之后，都显示出在统计上发现的*统计效率*转化为*经济效率*，这意味着盈利的交易策略。当使用相同的向量化回测方法处理分钟数据时，与被动基准投资相比，DNN策略也显示出显著的内外样本超额表现。在回测中增加交易成本说明，这些成本必须非常低，通常甚至大型专业交易者也无法达到这一水平，才能使交易策略在经济上可行。
 - en: References
+  id: totrans-163
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 参考文献
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章引用的书籍和论文：
 - en: 'Gibbs Samuel. 2016\. “Elon Musk: Tesla Cars Will Be Able to Cross Us with No
     Driver in Two Years.” *The Guardian*. January 11, 2016\. [*https://oreil.ly/C508Q*](https://oreil.ly/C508Q).'
+  id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Gibbs Samuel. 2016\. “**伊隆·马斯克：特斯拉汽车将在两年内能够在美国无司机行驶**。” *卫报*。2016年1月11日。[*https://oreil.ly/C508Q*](https://oreil.ly/C508Q)。
 - en: 'Hilpisch, Yves. 2018\. *Python for Finance: Mastering Data-Driven Finance.*
     2nd ed. Sebastopol: O’Reilly.'
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Hilpisch, Yves. 2018\. *Python 金融分析：数据驱动金融的掌握.* 第2版。Sebastopol：O’Reilly。
 - en: '⸻. 2020\. *Python for Algorithmic Trading: From Idea to Cloud Deployment.*
     Sebastopol: O’Reilly.'
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ⸻。2020\. *Python 量化交易：从概念到云端部署.* Sebastopol：O’Reilly。
 - en: ^([1](ch10.xhtml#idm45625271705592-marker)) This, for example, is a typical
     spread that [Oanda](http://oanda.com) offers retail traders.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch10.xhtml#idm45625271705592-marker)) 例如，这是[Oanda](http://oanda.com)向零售交易者提供的典型点差。

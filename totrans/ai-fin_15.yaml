@@ -1,34 +1,46 @@
 - en: Chapter 11\. Risk Management
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第11章 风险管理
 - en: A significant barrier to deploying autonomous vehicles (AVs) on a massive scale
     is safety assurance.
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 在大规模部署自动驾驶车辆（AVs）方面，安全保障是一个重大障碍。
 - en: ''
+  id: totrans-2
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Majid Khonji et al. (2019)
+  id: totrans-3
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Majid Khonji等人（2019年）
 - en: Having better prediction raises the value of judgment. After all, it doesn’t
     help to know the likelihood of rain if you don’t know how much you like staying
     dry or how much you hate carrying an umbrella.
+  id: totrans-4
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 有了更好的预测，判断的价值也会提升。毕竟，如果不知道你有多喜欢保持干燥，或者有多讨厌带伞，知道下雨的可能性也没什么帮助。
 - en: ''
+  id: totrans-5
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Ajay Agrawal et al. (2018)
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: Ajay Agrawal等人（2018年）
 - en: Vectorized backtesting in general enables one to judge the economic potential
     of a prediction-based algorithmic trading strategy on an as-is basis (that is,
     in its pure form). Most AI agents applied in practice have more components than
@@ -36,8 +48,10 @@
     not standalone but rather with a large number of rules and heuristics that restrict
     what actions the AI takes or can take. In the context of AVs, this primarily relates
     to managing risks, such as those resulting from collisions or crashes.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，向量化回测能够就基于预测的算法交易策略的经济潜力进行评估（即在其纯粹形式下）。实际应用中的大多数AI代理不仅仅包括预测模型。例如，自动驾驶车辆（AVs）的AI不是独立存在的，而是带有大量规则和启发式方法，限制了AI能够采取或可以采取的行动。在AVs的背景下，这主要涉及管理风险，如因碰撞或坠毁而产生的风险。
 - en: 'In a financial context, AI agents or trading bots are also not deployed as-is
     in general. Rather, there are a number of standard risk measures that are typically
     used, such as *(trailing) stop loss orders* or *take profit orders*. The reasoning
@@ -48,8 +62,10 @@
     analysis of relevant data and statistics. Conceptually, this is a major point
     discussed in the book by Agrawal et al. (2018): AI provides improved predictions,
     but human judgment still plays a role in setting decision rules and action boundaries.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在财务背景下，AI代理或交易机器人通常也不是原样部署的。相反，通常会使用一些标准的风险措施，如（追踪）止损订单或盈利订单。其理由显而易见。在金融市场上放置方向性赌注时，要避免过大的损失。同样，一旦达到某个利润水平，就应通过提前平仓来保护成功。这类风险措施的处理方式往往取决于人类判断，可能会受到相关数据和统计分析的形式支持。在Agrawal等人（2018年）的书中概念上，这是一个重要的讨论点：AI提供了改进的预测，但人类判断仍然在设定决策规则和行动边界方面发挥作用。
 - en: This chapter has a threefold purpose. First, it backtests in both *vectorized*
     and *event-based* fashion algorithmic trading strategies that result from a trained
     deep Q-learning agent. Henceforth, such agents are called *trading bots*. Second,
@@ -60,8 +76,10 @@
     degree of flexibility in modeling and analyzing decision rules and risk management
     measures. In other words, it allows one to zoom in on details that are pushed
     toward the background when working with vectorized programming approaches.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章有三个主要目的。首先，它以训练过的深度Q学习代理产生的向量化和事件驱动方式回测算法交易策略。因此，这样的代理被称为*交易机器人*。其次，它评估了在实施这些策略的金融工具上相关的风险。第三，它使用本章介绍的事件驱动方法回测典型的风险措施，如止损订单。与向量化回测相比，事件驱动回测的主要优势是在建模和分析决策规则及风险管理措施方面具有更高的灵活性。换句话说，它允许我们关注那些在向量化编程方法中被推到背景中的细节。
 - en: '[“Trading Bot”](#rm_trading_bot) introduces and trains the trading bot based
     on the financial Q-learning agent from [Chapter 9](ch09.xhtml#reinforcement_learning).
     [“Vectorized Backtesting”](#rm_vec_back) uses vectorized backtesting from [Chapter 10](ch10.xhtml#vectorized_backtesting)
@@ -73,413 +91,651 @@
     important for setting risk management rules, such as *maximum drawdown* and *average
     true range* (ATR). [“Backtesting Risk Measures”](#rm_risk_measures) then backtests
     the impact of major risk measures on the performance of the trading bot.'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“交易机器人”](#rm_trading_bot)介绍并训练了基于金融 Q 学习代理的交易机器人，源自[第 9 章](ch09.xhtml#reinforcement_learning)。[“矢量化回测”](#rm_vec_back)使用来自[第
+    10 章](ch10.xhtml#vectorized_backtesting)的矢量化回测来评估交易机器人的（纯）经济表现。事件驱动的回测在[“基于事件的回测”](#rm_event_back)中进行介绍。首先讨论基类，然后基于基类实现和进行交易机器人的回测。在此背景下，还参考
+    Hilpisch（2020 年，第 6 章）。[“风险评估”](#rm_assessing_risk)分析了设置风险管理规则所需的选定统计指标，如 *最大回撤*
+    和 *平均真实波幅*（ATR）。[“回测风险指标”](#rm_risk_measures)然后回测主要风险指标对交易机器人表现的影响。'
 - en: Trading Bot
+  id: totrans-11
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 交易机器人
 - en: 'This section presents a trading bot based on the financial Q-learning agent,
     `FQLAgent`, from [Chapter 9](ch09.xhtml#reinforcement_learning). This is the trading
     bot that is analyzed in subsequent sections. As usual, our imports come first:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍基于金融 Q 学习代理 `FQLAgent` 的交易机器人，源自[第 9 章](ch09.xhtml#reinforcement_learning)。这是随后分析的交易机器人。一如既往，我们首先引入所需的库：
 - en: '[PRE0]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[“Finance Environment”](#rm_finance) presents a Python module with the `Finance`
     class used in the following. [“Trading Bot”](#rm_trading_bot) provides the Python
     module with the `TradingBot` class and some helper functions for plotting training
     and validation results. Both classes are pretty close to the ones introduced in
     [Chapter 9](ch09.xhtml#reinforcement_learning), which is why they are used here
     without further explanations.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“金融环境”](#rm_finance)展示了一个 Python 模块，其中包含用于接下来的 `Finance` 类。[“交易机器人”](#rm_trading_bot)提供了一个
+    Python 模块，其中包含用于绘制训练和验证结果的 `TradingBot` 类及其一些辅助函数。这两个类与[第 9 章](ch09.xhtml#reinforcement_learning)介绍的类非常接近，因此在此处使用它们而无需进一步解释。'
 - en: 'The following code trains the trading bot on historical end-of-day (EOD) data,
     including a sub-set of the data used for validation. [Figure 11-1](#figure_rm_01)
     shows average total rewards as achieved for the different training episodes:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码在历史每日收盘数据（EOD）上训练交易机器人，包括用于验证的数据子集。[图 11-1](#figure_rm_01)显示了不同训练周期的平均总奖励：
 - en: '[PRE1]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '![aiif 1101](Images/aiif_1101.png)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1101](Images/aiif_1101.png)'
 - en: Figure 11-1\. Average total reward per training episode
+  id: totrans-18
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-1\. 每个训练周期的平均总奖励
 - en: '[Figure 11-2](#figure_rm_02) compares the gross performance of the trading
     bot on the training data—exhibiting quite some variance due to alternating between
     exploitation and exploration—with the one on the validation data set making use
     of exploitation only:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-2](#figure_rm_02) 比较了交易机器人在训练数据集上的总体表现——由于在利用和探索之间交替而表现出相当大的差异——以及在仅利用开发数据集上的表现：'
 - en: '[PRE2]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '![aiif 1102](Images/aiif_1102.png)'
+  id: totrans-21
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1102](Images/aiif_1102.png)'
 - en: Figure 11-2\. Gross performance on training and validation data set
+  id: totrans-22
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-2\. 训练集和验证集的总体表现
 - en: This trained trading bot is used for backtesting in the following sections.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 训练后的交易机器人在接下来的部分中用于回测。
 - en: Vectorized Backtesting
+  id: totrans-24
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 矢量化回测
 - en: Vectorized backtesting cannot directly be applied to the trading bot. [Chapter 10](ch10.xhtml#vectorized_backtesting)
     uses dense neural networks (DNNs) to illustrate the approach. In this context,
     the data with the features and labels sub-sets is prepared first and then fed
     to the DNN to generate all predictions at once. In a reinforcement learning (RL)
     context, data is generated and collected by interacting with the environment action
     by action and step by step.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 矢量化回测不能直接应用于交易机器人。[第 10 章](ch10.xhtml#vectorized_backtesting)使用密集神经网络（DNNs）来说明该方法。在这种情况下，首先准备带有特征和标签子集的数据，然后将其一次性输入到
+    DNN 中以生成所有预测值。在强化学习（RL）的背景下，通过与环境的交互动作和逐步生成和收集数据。
 - en: 'To this end, the following Python code defines the `backtest` function, which
     takes as input a `TradingBot` instance and a `Finance` instance. It generates
     in the original `DataFrame` objects of the `Finance` environment columns with
     the positions the trading bot takes and the resulting strategy performance:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 为此，以下 Python 代码定义了 `backtest` 函数，该函数以 `TradingBot` 实例和 `Finance` 实例作为输入。它在原始
+    `DataFrame` 对象中生成了 `Finance` 环境列的交易机器人持有的仓位和相应的策略表现：
 - en: '[PRE3]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO1-1)'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO1-1)'
 - en: Reshapes a single feature-label combination
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 重塑单个特征-标签组合
 - en: '[![2](Images/2.png)](#co_risk_management_CO1-2)'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO1-2)'
 - en: Generates a column for the position values
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成一个用于持仓价值的列
 - en: '[![3](Images/3.png)](#co_risk_management_CO1-3)'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_risk_management_CO1-3)'
 - en: Derives the optimal action (prediction) given the trained DNN
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 推导出给定经过训练的 DNN 的最佳动作（预测）
 - en: '[![4](Images/4.png)](#co_risk_management_CO1-4)'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_risk_management_CO1-4)'
 - en: Derives the resulting position (`+1` for long/upwards, `–1` for short/downwards)…
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 推导出结果仓位（长/向上为 `+1`，空/向下为 `–1`）…
 - en: '[![5](Images/5.png)](#co_risk_management_CO1-5)'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_risk_management_CO1-5)'
 - en: …and stores in the corresponding column at the appropriate index position
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: …并将其存储在相应的索引位置的相应列中
 - en: '[![6](Images/6.png)](#co_risk_management_CO1-6)'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_risk_management_CO1-6)'
 - en: Calculates the strategy log returns given the position values
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据持仓价值计算策略对数收益率
 - en: Equipped with the `backtest` function, vectorized backtesting boils down to
     a few lines of Python code as in [Chapter 10](ch10.xhtml#vectorized_backtesting).
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 配备了 `backtest` 函数，向量化的回测归结为几行 Python 代码，就像[第 10 章](ch10.xhtml#vectorized_backtesting)中的那样。
 - en: '[Figure 11-3](#figure_rm_03) compares the passive benchmark investment’s gross
     performance with the strategy gross performance:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-3](#figure_rm_03) 比较了被动基准投资的总体表现与策略的总体表现：'
 - en: '[PRE4]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO2-1)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO2-1)'
 - en: Specifies the relevant environment
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定相关环境
 - en: '[![2](Images/2.png)](#co_risk_management_CO2-2)'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO2-2)'
 - en: Generates the additional data required
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成所需的额外数据
 - en: '[![3](Images/3.png)](#co_risk_management_CO2-3)'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_risk_management_CO2-3)'
 - en: Counts the number of long and short positions
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算多头和空头仓位的数量
 - en: '[![4](Images/4.png)](#co_risk_management_CO2-4)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_risk_management_CO2-4)'
 - en: Calculates the gross performances for the passive benchmark investment (`r`)
     and the strategy (`s`)…
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算被动基准投资（`r`）和策略（`s`）的总体表现…
 - en: '[![5](Images/5.png)](#co_risk_management_CO2-5)'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_risk_management_CO2-5)'
 - en: …as well as the corresponding net performances
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: …以及相应的净表现
 - en: '![aiif 1103](Images/aiif_1103.png)'
+  id: totrans-53
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1103](Images/aiif_1103.png)'
 - en: Figure 11-3\. Gross performance of the passive benchmark investment and the
     trading bot (in-sample)
+  id: totrans-54
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-3\. 被动基准投资和交易机器人的总体表现（样本内）
 - en: 'To get a more realistic picture of the performance of the trading bot, the
     following Python code creates a test environment with data that the trading bot
     has not yet seen. [Figure 11-4](#figure_rm_04) shows how the trading bot fares
     compared to the passive benchmark investment:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了更真实地了解交易机器人的表现，以下 Python 代码创建了一个测试环境，其中包含交易机器人尚未见过的数据。[图 11-4](#figure_rm_04)
+    显示了与被动基准投资相比，交易机器人的表现如何：
 - en: '[PRE5]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '![aiif 1104](Images/aiif_1104.png)'
+  id: totrans-57
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1104](Images/aiif_1104.png)'
 - en: Figure 11-4\. Gross performance of the passive benchmark investment and the
     trading bot (out-of-sample)
+  id: totrans-58
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-4\. 被动基准投资和交易机器人的总体表现（样本外）
 - en: The out-of-sample performance without any risk measures implemented seems already
     promising. However, to be able to properly judge the real performance of a trading
     strategy, risk measures should be included. This is where event-based backtesting
     comes into play.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有任何风险措施的样本外表现似乎已经很有希望。然而，为了能够正确地评估交易策略的实际表现，应该包括风险措施。这就是基于事件的回测发挥作用的地方。
 - en: Event-Based Backtesting
+  id: totrans-60
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 基于事件的回测
 - en: Given the results of the previous section, the out-of-sample performance without
     any risk measures seems already promising. However, to be able to properly analyze
     risk measures, such as trailing stop loss orders, *event-based backtesting* is
     required. This section introduces this alternative approach to judging the performance
     of algorithmic trading strategies.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于前一节的结果，没有任何风险措施的样本外表现似乎已经很有希望。然而，为了能够正确地分析风险措施，如移动止损订单，需要进行 *基于事件的回测*。本节介绍了这种替代方法来评估算法交易策略的表现。
 - en: '[“Backtesting Base Class”](#rm_base) presents the `BacktestingBase` class that
     can be flexibly used to test different types of directional trading strategies.
     The code has detailed comments on the important lines. This base class provides
     the following methods:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '[“Backtesting Base Class”](#rm_base)介绍了`BacktestingBase`类，可以灵活用于测试不同类型的定向交易策略。代码中对重要行进行了详细注释。该基础类提供以下方法：'
 - en: '`get_date_price()`'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '`get_date_price()`'
 - en: For a given `bar` (index value for the `DataFrame` object containing the financial
     data), it returns the relevant `date` and `price`.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于给定的`bar`（包含财务数据的`DataFrame`对象的索引值），返回相关的`date`和`price`。
 - en: '`print_balance()`'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: '`print_balance()`'
 - en: For a given `bar`, it prints the current (cash) balance of the trading bot.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于给定的`bar`，打印交易机器人当前（现金）余额。
 - en: '`calculate_net_wealth()`'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: '`calculate_net_wealth()`'
 - en: For a given `price`, it returns the net wealth composed of the current (cash)
     balance and the instrument position.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于给定的`price`，返回由当前（现金）余额和仪器持仓组成的净财富。
 - en: '`print_net_wealth()`'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '`print_net_wealth()`'
 - en: For a given `bar`, it prints the net wealth of the trading bot.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于给定的`bar`，打印交易机器人的净财富。
 - en: '`place_buy_order()`, `place_sell_order()`'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: '`place_buy_order()`，`place_sell_order()`'
 - en: For a given `bar` and a given number of `units` or a given `amount`, these methods
     place buy or sell orders and adjust relevant quantities accordingly (for example,
     accounting for transaction costs).
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于给定的`bar`和给定的`units`或给定的`amount`，这些方法会下买单或卖单，并相应调整相关数量（例如考虑交易成本）。
 - en: '`close_out()`'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '`close_out()`'
 - en: At a given `bar`, this method closes open positions and calculates and reports
     performance statistics.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 在给定的`bar`，此方法关闭开放头寸并计算和报告绩效统计数据。
 - en: 'The following Python code illustrates how an instance of the `BacktestingBase`
     class functions based on some simple steps:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码说明了`BacktestingBase`类的实例如何根据一些简单步骤运行：
 - en: '[PRE6]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO3-1)'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO3-1)'
 - en: Instantiates a `BacktestingBase` object
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 实例化`BacktestingBase`对象。
 - en: '[![2](Images/2.png)](#co_risk_management_CO3-2)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO3-2)'
 - en: Looks up the `initial_amount` attribute value
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 查找`initial_amount`属性值。
 - en: '[![3](Images/3.png)](#co_risk_management_CO3-3)'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_risk_management_CO3-3)'
 - en: Fixes a `bar` value
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 固定`bar`的值。
 - en: '[![4](Images/4.png)](#co_risk_management_CO3-4)'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_risk_management_CO3-4)'
 - en: Retrieves the `date` and `price` values for the `bar`
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索`bar`的`date`和`price`值。
 - en: '[![5](Images/5.png)](#co_risk_management_CO3-5)'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_risk_management_CO3-5)'
 - en: Retrieves the state of the `Finance` environment for the `bar`
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索`bar`的`Finance`环境状态。
 - en: '[![6](Images/6.png)](#co_risk_management_CO3-6)'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_risk_management_CO3-6)'
 - en: Places a buy order using the `amount` parameter
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`amount`参数下买单。
 - en: '[![7](Images/7.png)](#co_risk_management_CO3-7)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_risk_management_CO3-7)'
 - en: Prints the net wealth at a later point (`2 * bar`)
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 在稍后的时间点打印净财富（`2 * bar`）。
 - en: '[![8](Images/8.png)](#co_risk_management_CO3-8)'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_risk_management_CO3-8)'
 - en: Places a sell order at that later point using the `units` parameter
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`units`参数在稍后的时间点下卖单。
 - en: '[![9](Images/9.png)](#co_risk_management_CO3-9)'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_risk_management_CO3-9)'
 - en: Closes out the remaining long position even later (`3 * bar`)
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 更晚时候关闭剩余的多头头寸（`3 * bar`）。
 - en: 'Inheriting from the `BacktestingBase` class, the `TBBacktester` class implements
     the event-based backtesting for the trading bot:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 继承自`BacktestingBase`类，`TBBacktester`类为交易机器人实现了基于事件的回测：
 - en: '[PRE7]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO4-1)'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO4-1)'
 - en: Retrieves the state of the `Finance` environment
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 检索`Finance`环境的状态。
 - en: '[![2](Images/2.png)](#co_risk_management_CO4-2)'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO4-2)'
 - en: Generates the optimal action (prediction) given the state and the `model` object
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定状态和`model`对象，生成最佳操作（预测）。
 - en: '[![3](Images/3.png)](#co_risk_management_CO4-3)'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_risk_management_CO4-3)'
 - en: Derives the optimal position (long/short) given the optimal action (prediction)
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据最佳操作（预测）确定最佳位置（多头/空头）。
 - en: '[![4](Images/4.png)](#co_risk_management_CO4-4)'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_risk_management_CO4-4)'
 - en: Enters a *long* position if the conditions are met
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果满足条件，则进入*多头*头寸。
 - en: '[![5](Images/5.png)](#co_risk_management_CO4-5)'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_risk_management_CO4-5)'
 - en: Enters a *short* position if the conditions are met
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果满足条件，则进入*空头*头寸。
 - en: '[![6](Images/6.png)](#co_risk_management_CO4-6)'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_risk_management_CO4-6)'
 - en: Collects the net wealth values over time and transforms them into a `DataFrame`
     object
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 收集随时间变化的净财富值并转换为`DataFrame`对象。
 - en: 'The application of the `TBBacktester` class is straightforward, given that
     the `Finance` and `TradingBot` instances are already available. The following
     code backtests the trading bot first on the *learning environment* data—without
     and with transaction costs. [Figure 11-5](#figure_rm_05) compares the two cases
     visually over time:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 鉴于`Finance`和`TradingBot`实例已经准备好，`TBBacktester`类的应用非常简单。以下代码首先在*学习环境*数据上对交易机器人进行回测，分别在没有和有交易成本的情况下。[图 11-5](#figure_rm_05)
+    在时间上进行了视觉对比：
 - en: '[PRE8]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO5-1)'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO5-1)'
 - en: Event-based backtest in-sample *without* transaction costs
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于事件的样本内回测 *不带* 交易成本
 - en: '[![2](Images/2.png)](#co_risk_management_CO5-3)'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO5-3)'
 - en: Event-based backtest in-sample *with* transaction costs
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于事件的样本内回测 *带* 交易成本
 - en: '![aiif 1105](Images/aiif_1105.png)'
+  id: totrans-115
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1105](Images/aiif_1105.png)'
 - en: Figure 11-5\. Gross performance of the trading bot before and after transaction
     costs (in-sample)
+  id: totrans-116
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 11-5\. 交易机器人在样本内交易前后的总体表现（毛利）
 - en: '[Figure 11-6](#figure_rm_06) compares the gross performances of the trading
     bot for the *test environment* data over time—again, before and after transaction
     costs:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '[图 11-6](#figure_rm_06) 比较了测试环境数据中交易机器人的总体表现时间序列，再次在扣除交易成本前后进行比较：'
 - en: '[PRE9]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO6-1)'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO6-1)'
 - en: Event-based backtest out-of-sample *without* transaction costs
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于事件的样本外回测 *不带* 交易成本
 - en: '[![2](Images/2.png)](#co_risk_management_CO6-3)'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO6-3)'
 - en: Event-based backtest out-of-sample *with* transaction costs
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于事件的样本外回测 *带* 交易成本
 - en: '![aiif 1106](Images/aiif_1106.png)'
+  id: totrans-123
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1106](Images/aiif_1106.png)'
 - en: Figure 11-6\. Gross performance of the trading bot before and after transaction
     costs (out-of-sample)
+  id: totrans-124
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 11-6\. 交易机器人在样本外交易前后的总体表现（毛利）
 - en: 'How does the performance before transaction costs from the event-based backtesting
     compare to the performance from the vectorized backtesting? [Figure 11-7](#figure_rm_07)
     shows the normalized net wealth compared to the gross performance over time. Due
@@ -488,23 +744,33 @@
     by the fact that the event-based backtesting assumes the same amount for every
     position taken. Vectorized backtesting takes compound effects into account, leading
     to a slightly higher reported performance:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于事件的样本内回测与向量化回测在扣除交易成本前的表现有何不同？[图 11-7](#figure_rm_07) 显示了随时间推移归一化的净财富相对总体表现的对比情况。由于采用了不同的技术方法，两个时间序列并不完全相同，但非常相似。主要的性能差异主要可以通过基于事件的回测假设每个仓位的金额相同来解释。向量化回测考虑了复利效应，导致报告的性能略高：
 - en: '[PRE10]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '![aiif 1107](Images/aiif_1107.png)'
+  id: totrans-127
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1107](Images/aiif_1107.png)'
 - en: Figure 11-7\. Gross performance of the passive benchmark investment and the
     trading bot (vectorized and event-based backtesting)
+  id: totrans-128
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: Figure 11-7\. 被动基准投资和交易机器人的总体表现（向量化和基于事件的回测）
 - en: Performance Differences
+  id: totrans-129
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 性能差异
 - en: The performance numbers from the vectorized and the event-based backtesting
     are close but not exactly the same. In the first case, it is assumed that financial
     instruments are perfectly divisible. Compounding is also done continuously. In
@@ -515,12 +781,16 @@
     This is for sure a simplifying assumption, and buying on margin, for instance,
     may not always be possible. Code adjustments in this regard are easily added to
     the `BacktestingBase` class.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量化和基于事件的回测的表现数据相近但并非完全相同。在第一种情况下，假设金融工具是完全可分的。同时还进行了持续复利。而在后一种情况下，只接受完整单位的金融工具进行交易，这更接近实际情况。净财富计算基于价格差异。例如，基于事件的代码并不会检查当前余额是否足以通过现金支付来进行某项交易，这是一个简化的假设。例如，不一定总是可以买入保证金。在`BacktestingBase`类中很容易添加这方面的代码调整。
 - en: Assessing Risk
+  id: totrans-131
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 风险评估
 - en: The implementation of risk measures requires the understanding of the risks
     involved in trading the chosen financial instrument. Therefore, to properly set
     parameters for risk measures, such as stop loss orders, an assessment of the risk
@@ -528,8 +798,10 @@
     to measure the risk of a financial instrument. There are, for example, *nondirected
     risk measures*, such as volatility or average true range (ATR). There are also
     *directed measures*, such as maximum drawdown or value-at-risk (VaR).
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 实施风险措施需要理解交易所选择金融工具的风险。因此，正确设置风险措施参数（如止损订单）之前，需要对基础工具的风险进行评估。有许多方法可用于测量金融工具的风险。例如，有非定向风险度量，如波动率或平均真实范围（ATR）。还有定向度量，如最大回撤或风险值（VaR）。
 - en: 'A common practice when setting target levels for stop loss (SL), trailing stop
     loss (TSL), or take profit orders (TP) is to relate such levels to ATR values.^([1](ch11.xhtml#idm45625264808136))
     The following Python code calculates the ATR in absolute and relative terms for
@@ -537,101 +809,160 @@
     is, the EUR/USD exchange rate). The calculations rely on the data from the learning
     environment and use a typical window length of 14 days (bars). [Figure 11-8](#figure_rm_08)
     shows the calculated values, which vary significantly over time:'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置止损（SL）、移动止损（TSL）或止盈订单（TP）的目标水平时，常见做法是将这些水平与ATR值关联起来。^([1](ch11.xhtml#idm45625264808136))
+    以下Python代码计算了在训练和回测交易机器人的金融工具上的ATR绝对值和相对值（即EUR/USD汇率）。这些计算依赖于学习环境的数据，并使用典型的14天（柱）窗口长度。[图 11-8](#figure_rm_08)
+    显示了这些计算值，随时间显著变化：
 - en: '[PRE11]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO7-1)'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO7-1)'
 - en: The instrument price column from the original `DataFrame` object
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 原始`DataFrame`对象中的工具价格列
 - en: '[![2](Images/2.png)](#co_risk_management_CO7-3)'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO7-3)'
 - en: The window length to be used for the calculations
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于计算的窗口长度
 - en: '[![3](Images/3.png)](#co_risk_management_CO7-4)'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_risk_management_CO7-4)'
 - en: The rolling minimum
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最小值
 - en: '[![4](Images/4.png)](#co_risk_management_CO7-5)'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_risk_management_CO7-5)'
 - en: The rolling maximum
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最大值
 - en: '[![5](Images/5.png)](#co_risk_management_CO7-6)'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![5](Images/5.png)](#co_risk_management_CO7-6)'
 - en: The difference between rolling maximum and minimum
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最大值与最小值的差值
 - en: '[![6](Images/6.png)](#co_risk_management_CO7-7)'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![6](Images/6.png)](#co_risk_management_CO7-7)'
 - en: The absolute difference between rolling maximum and previous day’s price
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最大值与前一天价格的绝对差值
 - en: '[![7](Images/7.png)](#co_risk_management_CO7-8)'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![7](Images/7.png)](#co_risk_management_CO7-8)'
 - en: The absolute difference between rolling minimum and previous day’s price
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 滚动最小值与前一天价格的绝对差值
 - en: '[![8](Images/8.png)](#co_risk_management_CO7-9)'
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![8](Images/8.png)](#co_risk_management_CO7-9)'
 - en: The maximum of the max-min difference and the max-price difference
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 最大的最大-最小差值与最大-价格差值
 - en: '[![9](Images/9.png)](#co_risk_management_CO7-10)'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![9](Images/9.png)](#co_risk_management_CO7-10)'
 - en: The maximum between the previous maximum and the min-price difference (= ATR)
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 前一个最大值与最小价格差的最大值（= ATR）
 - en: '[![10](Images/10.png)](#co_risk_management_CO7-11)'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![10](Images/10.png)](#co_risk_management_CO7-11)'
 - en: The ATR value in percent from the absolute ATR value and the price
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 从ATR绝对值和价格计算的ATR值百分比
 - en: '![aiif 1108](Images/aiif_1108.png)'
+  id: totrans-155
   prefs: []
   type: TYPE_IMG
+  zh: '![aiif 1108](Images/aiif_1108.png)'
 - en: Figure 11-8\. Average true range (ATR) in absolute (price) and relative (%)
     terms
+  id: totrans-156
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 图 11-8\. 平均真实范围（ATR）的绝对（价格）和相对（%）值
 - en: 'The code that follows displays the final values for ATR in absolute and relative
     terms. A typical rule would be to set, for example, the SL level at the entry
     price minus *x* times ATR. Depending on the risk appetite of the trader or investor,
     *x* might be smaller than 1 or larger. This is where human judgment or formal
     risk policies come into play. If *x = 1*, then the SL level is set at about 2%
     below the entry level:'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码显示了ATR的最终数值，包括绝对值和相对值。一个典型的规则可能是设置止损（SL）水平为入场价格减去*x*倍的ATR。根据交易者或投资者的风险偏好，*x*可能小于1或大于1。这就是人类判断或正式风险策略发挥作用的地方。如果*x
+    = 1*，那么SL水平将设置在入场水平以下约2%处：
 - en: '[PRE12]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'However, *leverage* plays an important role in this context. If a leverage
     of, say, 10 is used, which is actually quite low for foreign exchange trading,
     then the ATR numbers need to be multiplied by the leverage. As a consequence,
     for an assumed ATR factor of 1, the same SL level from before now is to be set
     at about 20% instead of just 2%. Or, when taking the median value of the ATR from
     the whole data set, it is set to be at about 25%:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，在此背景下，*杠杆*扮演了重要角色。例如，如果使用杠杆为10，这在外汇交易中实际上是相当低的水平，那么ATR数值需要乘以杠杆。因此，对于假定的ATR因子为1，之前的SL水平现在应该设置为约20%而不仅仅是2%。或者，当从整个数据集中取中位数的ATR值时，应将其设置为约25%：
 - en: '[PRE13]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: The basic idea behind relating SL or TP levels to ATR is that one should avoid
     setting them either too low or too high. Consider a 10 times leveraged position
     for which the ATR is 20%. Setting an SL level of only 3% or 5% might reduce the
@@ -640,8 +971,10 @@
     Such “typical movements” within certain ranges are often called *noise*. The SL
     order should protect, in general, from unfavorable market movements that are larger
     than typical price movements (noise).
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 将SL或TP水平与ATR相关联的基本思想是，应避免将它们设置得太低或太高。考虑一个杠杆为10倍的头寸，ATR为20%的情况。将SL水平仅设置为3%或5%，可能会减少头寸的财务风险，但会引入过早触发的止损风险，这是由于金融工具的典型波动。在某些范围内的这些“典型波动”通常被称为*噪音*。一般来说，SL指令应保护免受大于典型价格波动（噪音）的不利市场波动影响。
 - en: The same holds true for a take profit level. If it is set too high, say at three
     times the ATR level, decent profits might not be secured and positions might remain
     open for too long until they give up previous profits. Even if formal analyses
@@ -651,12 +984,16 @@
     can come to the rescue. In other contexts, such as for AVs, this is different,
     as no human judgment is needed to instruct the AI to avoid any collisions with
     human beings.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于止盈水平也是如此。如果设置得太高，比如设为三倍的ATR水平，可能无法确保获得可观的利润，而头寸可能会保持开放太久，直到之前的利润被吞噬。即使在此背景下可以使用正式分析和数学公式，但设置这些目标水平涉及到更多的艺术而非科学。在金融背景下，设置这些目标水平有相当大的自由度，可以依靠人类判断来解决。在其他情况下，例如对自动驾驶车辆，情况就不同了，因为无需人类判断指导AI避免与人类碰撞。
 - en: NonNormality and NonLinearity
+  id: totrans-163
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 非正态性和非线性
 - en: A *margin stop out* closes a trading position in cases when the margin, or the
     invested equity, is used up. Assume a leveraged trading position with a margin
     stop out in place. For a leverage of 10, for example, the margin is 10% equity.
@@ -666,12 +1003,16 @@
     of 150%. Even if returns of the traded instrument are normally distributed, leverage
     and margin stop outs lead to nonnormally distributed returns and asymmetric, nonlinear
     relationships between the traded instrument and the trading position.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '*保证金止损*在投资者的资金或已投资的权益被用光时，会平仓。假设一个杠杆交易中有保证金止损的设定。例如，当杠杆为10倍时，保证金为10%的权益。交易工具出现*不利*的波动，如10%或更大，会消耗所有权益并触发平仓操作——损失100%的权益。而若交易工具出现*有利*的波动，如下涨25%，则会带来150%的权益回报。即使交易工具的回报通常服从正态分布，杠杆和保证金止损会导致回报非正态分布，以及交易工具与交易头寸之间的非对称、非线性关系。'
 - en: Backtesting Risk Measures
+  id: totrans-165
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 回测风险度量
 - en: 'Having an idea of the ATR of a financial instrument is often a good start for
     the implementation of risk measures. To be able to properly backtest the effect
     of the typical risk management orders, some adjustments to the `BacktestingBase`
@@ -680,46 +1021,70 @@
     the previous trade as well as the maximum and minimum prices since that trade.
     These values are used to calculate the relevant performance measures during the
     event-based backtesting to which SL, TSL, and TP orders relate:'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于金融工具的ATR有一个概念往往是实施风险措施的良好起点。为了能够正确地回测典型风险管理订单的效果，对`BacktestingBase`类进行了一些调整是有帮助的。以下Python代码展示了一个新的基类—`BacktestBaseRM`，它继承自`BacktestingBase`—用于跟踪前一次交易的入场价格以及自那次交易以来的最高和最低价格。这些数值用于计算事件驱动回测期间的相关绩效指标，与SL、TSL和TP订单相关：
 - en: '[PRE14]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO8-1)'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO8-1)'
 - en: Sets the *entry* price for the most recent trade
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置最近交易的*入场*价格
 - en: '[![2](Images/2.png)](#co_risk_management_CO8-2)'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO8-2)'
 - en: Sets the initial *minimum* price since the most ecent trade
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置自最近交易以来的*最低*价格
 - en: '[![3](Images/3.png)](#co_risk_management_CO8-3)'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![3](Images/3.png)](#co_risk_management_CO8-3)'
 - en: Sets the initial *maximum* price since the most recent trade
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置自最近交易以来的*最高*价格
 - en: '[![4](Images/4.png)](#co_risk_management_CO8-4)'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![4](Images/4.png)](#co_risk_management_CO8-4)'
 - en: Sets the relevant prices after a trade is executed
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 设置执行交易后的相关价格
 - en: Based on this new base class, [“Backtesting Class”](#rm_backtest) presents a
     new backtesting class, `TBBacktesterRM`, that allows the inclusion of SL, TSL,
     and TP orders. The relevant code parts are discussed in the following sub-sections.
     The parametrization of the backtesting examples orients itself roughly on an ATR
     level of about 2%, as calculated in the previous section.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于这个新的基类，[“回测类”](#rm_backtest) 提供了一个新的回测类，`TBBacktesterRM`，允许包含SL、TSL和TP订单。相关的代码部分将在以下子章节中讨论。在前一节中计算的大约为2%的ATR水平上，回测示例的参数设置大致为此。
 - en: EUT and Risk Measures
+  id: totrans-177
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: EUT和风险测量
 - en: EUT, MVP, and the CAPM (see Chapters [3](ch03.xhtml#normative_finance) and [4](ch04.xhtml#data_driven_finance))
     assume that financial agents know about the future distribution of the returns
     of a financial instrument. MPT and the CAPM assume furthermore that returns are
@@ -729,112 +1094,153 @@
     combination with margin stop out—to a “guaranteed nonnormal” distribution and
     to highly asymmetric, nonlinear payoffs of a trading position in relation to the
     traded instrument.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: EUT、MVP和CAPM（见第[3](ch03.xhtml#normative_finance)章和第[4](ch04.xhtml#data_driven_finance)章）假设金融代理人了解金融工具收益的未来分布。MPT和CAPM进一步假设收益呈正态分布，并且市场组合的收益与交易金融工具的收益之间存在线性关系。使用SL、TSL和TP订单以及与保证金止损组合使用的杠杆会导致“保证非正态”分布，并且导致与交易工具相关的非对称、非线性收益。
 - en: Stop Loss
+  id: totrans-179
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 止损
 - en: The first risk measure is the SL order. It fixes a certain price level or, more
     often, a fixed percent value that triggers the closing of a position. For example,
     if the entry price for an unleveraged position is 100 and the SL level is set
     to 5%, then a long position is closed out at 95 while a short position is closed
     out at 105.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个风险测量是SL订单。它固定了一个特定的价格水平或者更常见的是一个固定百分比值，当未杠杆头寸的入场价格为100时，SL水平设置为5%，那么长头寸在95时关闭，而短头寸在105时关闭。
 - en: 'The following Python code is the relevant part of the `TBBacktesterRM` class
     that handles an SL order. For the SL order, the class allows one to specify whether
     the price level for the order is guaranteed or not.^([2](ch11.xhtml#idm45625263710744))
     Working with guaranteed SL price levels might lead to too-optimistic performance
     results:'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下Python代码是`TBBacktesterRM`类的相关部分，处理SL订单。对于SL订单，该类允许指定订单的价格水平是否保证。使用保证的SL价格水平可能导致过于乐观的绩效结果：^([2](ch11.xhtml#idm45625263710744))
 - en: '[PRE15]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO9-1)'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![1](Images/1.png)](#co_risk_management_CO9-1)'
 - en: Checks whether an SL is defined and whether the position is not neutral
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查是否定义了SL以及仓位是否非中性
 - en: '[![2](Images/2.png)](#co_risk_management_CO9-2)'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![2](Images/2.png)](#co_risk_management_CO9-2)'
 - en: Calculates the performance based on the entry price for the last trade
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_risk_management_CO9-3)'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: Checks whether an SL event is given for a *long* position
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_risk_management_CO9-4)'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: Closes the *long* position, at either the current price or the guaranteed price
     level
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_risk_management_CO9-5)'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: Sets the number of bars to wait before the next trade happens to `wait`
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_risk_management_CO9-6)'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: Sets the position to neutral
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](Images/7.png)](#co_risk_management_CO9-7)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: Checks whether an SL event is given for a *short* position
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: '[![8](Images/8.png)](#co_risk_management_CO9-8)'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: Closes the *short* position, at either the current price or the guaranteed price
     level
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following Python code backtests the trading strategy of the trading bot
     without and with an SL order. For the given parametrization, the SL order has
     a negative impact on the strategy performance:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO10-1)'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: Instantiates the backtesting class for risk management
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_risk_management_CO10-2)'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance without any risk measure
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_risk_management_CO10-3)'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with an SL order (*no* guarantee)
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_risk_management_CO10-4)'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with an SL order (*with* guarantee)
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: Trailing Stop Loss
+  id: totrans-209
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -844,6 +1250,7 @@
     the instrument price reaches 100 and falls back to 95, this implies a TSL event,
     and the position is closed at the entry price level. If the price reaches 110
     and falls back to 104.5, this would imply another TSL event.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following Python code is the relevant part of the `TBBacktesterRM` class
@@ -851,62 +1258,83 @@
     (highs) and the minimum prices (lows) need to be tracked. The maximum price is
     relevant for a long position, whereas the minimum price is relevant for a short
     position:'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE17]'
+  id: totrans-212
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO11-1)'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
 - en: Updates the *maximum* price if necessary
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_risk_management_CO11-2)'
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
 - en: Updates the *minimum* price if necessary
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_risk_management_CO11-3)'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the relevant performance for a *long* position
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_risk_management_CO11-4)'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
 - en: Calculates the relevant performance for a *short* position
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_risk_management_CO11-5)'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
 - en: Checks whether a TSL event is given for a *long* position
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_risk_management_CO11-6)'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: Checks whether a TSL event is given for a *short* position
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
 - en: 'As the backtesting results that follow show, using a TSL order with the given
     parametrization reduces the gross performance compared to a strategy without a
     TSL order in place:'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE18]'
+  id: totrans-226
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO12-1)'
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with a TSL order
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
 - en: Take Profit
+  id: totrans-229
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -914,6 +1342,7 @@
     a certain profit level. Say an unleveraged long position is opened at a price
     of 100 and the TP order is set to a level of 5%. If the price reaches 105, the
     position is closed.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
 - en: The following code from the `TBBacktesterRM` class finally shows the part that
@@ -921,55 +1350,73 @@
     of the SL and TSL order codes. For the TP order, there is also the option to backtest
     with a guaranteed price level as compared to the relevant high/low price levels,
     which would most probably lead to performance values that are too optimistic:^([3](ch11.xhtml#idm45625261444776))
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE19]'
+  id: totrans-232
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 'For the given parametrization, adding a TP order—without guarantee—improves
     the trading bot performance noticeably compared to the passive benchmark investment.
     This result might be too optimistic given the considerations from before. Therefore,
     the TP order with guarantee leads to a more realistic performance value in this
     case:'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE20]'
+  id: totrans-234
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO13-1)'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with a TP order (*no* guarantee)
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_risk_management_CO13-2)'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with a TP order (*with* guarantee)
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
 - en: 'Of course, SL/TSL orders can also be combined with TP orders. The backtest
     results of the Python code that follows are in both cases worse than those for
     the strategy without the risk measures in place. In managing risk, there is hardly
     any free lunch:'
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE21]'
+  id: totrans-240
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO14-1)'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with an SL and TP order
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_risk_management_CO14-2)'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
 - en: Backtests the trading bot performance with a TSL and TP order
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
 - en: Performance Impact
+  id: totrans-245
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -979,9 +1426,11 @@
     by the fact that, given the ATR of a financial instrument, a certain profit level
     can be considered good enough to realize the profit. Any hope to see even higher
     profits typically is smashed by the market turning around again.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
 - en: Conclusions
+  id: totrans-247
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
@@ -992,6 +1441,7 @@
     financial instrument of interest. Finally, the chapter discusses and backtests
     event-based typical risk measures in the form of stop loss (SL), trailing stop
     loss (TSL), and take profit (TP) orders.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
 - en: 'Similar to autonomous vehicles (AVs), trading bots are hardly ever deployed
@@ -1006,212 +1456,299 @@
     the performance might be lower when compared to the pure strategy without any
     risk measures. However, when finely tuned, the results also show that TP orders,
     for example, can also have a positive effect on the performance.'
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
 - en: References
+  id: totrans-250
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 'Books and papers cited in this chapter:'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
 - en: 'Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018\. *Prediction Machines:
     The Simple Economics of Artificial Intelligence.* Boston: Harvard Business Review
     Press.'
+  id: totrans-252
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Hilpisch, Yves. 2020\. *Python for Algorithmic Trading: From Idea to Cloud
     Deployment.* Sebastopol: O’Reilly.'
+  id: totrans-253
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Khonji, Majid, Jorge Dias, and Lakmal Seneviratne. 2019\. “Risk-Aware Reasoning
     for Autonomous Vehicles.” arXiv. October 6, 2019\. [*https://oreil.ly/2Z6WR*](https://oreil.ly/2Z6WR).
+  id: totrans-254
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Python Code
+  id: totrans-255
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: Finance Environment
+  id: totrans-256
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'The following is the Python module with the `Finance` environment class:'
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE22]'
+  id: totrans-258
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: Trading Bot
+  id: totrans-259
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'The following is the Python module with the `TradingBot` class, based on a
     financial Q-learning agent:'
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE23]'
+  id: totrans-261
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: Backtesting Base Class
+  id: totrans-262
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'The following is the Python module with the `BacktestingBase` class for event-based
     backtesting:'
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE24]'
+  id: totrans-264
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '[![1](Images/1.png)](#co_risk_management_CO15-1)'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
 - en: The relevant `Finance` environment
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
 - en: '[![2](Images/2.png)](#co_risk_management_CO15-2)'
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
 - en: The relevant DNN model (from the trading bot)
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
 - en: '[![3](Images/3.png)](#co_risk_management_CO15-3)'
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
 - en: The initial/current balance
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
 - en: '[![4](Images/4.png)](#co_risk_management_CO15-5)'
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
 - en: Proportional transaction costs
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
 - en: '[![5](Images/5.png)](#co_risk_management_CO15-6)'
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
 - en: Fixed transaction costs
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
 - en: '[![6](Images/6.png)](#co_risk_management_CO15-7)'
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
 - en: Whether the prints are verbose or not
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
 - en: '[![7](Images/7.png)](#co_risk_management_CO15-8)'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
 - en: The initial number of units of the financial instrument traded
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
 - en: '[![8](Images/8.png)](#co_risk_management_CO15-9)'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
 - en: The initial number of trades implemented
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
 - en: '[![9](Images/9.png)](#co_risk_management_CO15-10)'
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
 - en: The relevant *date* given a certain bar
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
 - en: '[![10](Images/10.png)](#co_risk_management_CO15-11)'
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
 - en: The relevant *instrument price* at a certain bar
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
 - en: '[![11](Images/11.png)](#co_risk_management_CO15-12)'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
 - en: The output of the *date* and *current balance* for a certain bar
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
 - en: '[![12](Images/12.png)](#co_risk_management_CO15-13)'
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
 - en: The calculation of the *net wealth* from the current balance and the instrument
     position
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
 - en: '[![13](Images/13.png)](#co_risk_management_CO15-14)'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
 - en: The output of the *date* and the *net wealth* at a certain bar
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 在某个条的*日期*和*净财富*的输出
 - en: '[![14](Images/14.png)](#co_risk_management_CO15-15)'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![14](Images/14.png)](#co_risk_management_CO15-15)'
 - en: The number of units to be traded given the trade amount
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定交易金额的交易单位数
 - en: '[![15](Images/15.png)](#co_risk_management_CO15-17)'
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![15](Images/15.png)](#co_risk_management_CO15-17)'
 - en: The impact of the trade and the associated costs on the current balance
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 交易对当前余额的影响及相关成本
 - en: '[![16](Images/16.png)](#co_risk_management_CO15-18)'
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![16](Images/16.png)](#co_risk_management_CO15-18)'
 - en: The adjustment of the number of units held
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整持有单位的数量
 - en: '[![17](Images/17.png)](#co_risk_management_CO15-19)'
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![17](Images/17.png)](#co_risk_management_CO15-19)'
 - en: The adjustment of the number of trades implemented
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整已实施的交易数量
 - en: '[![18](Images/18.png)](#co_risk_management_CO15-25)'
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![18](Images/18.png)](#co_risk_management_CO15-25)'
 - en: The closing of a *short* position…
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: '*空头*头寸的平仓…'
 - en: '[![19](Images/19.png)](#co_risk_management_CO15-26)'
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![19](Images/19.png)](#co_risk_management_CO15-26)'
 - en: …or of a *long* position
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: …或*多头*头寸
 - en: '[![20](Images/20.png)](#co_risk_management_CO15-27)'
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![20](Images/20.png)](#co_risk_management_CO15-27)'
 - en: The net performance given the initial amount and the final current balance
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑到初始金额和最终当前余额的净表现
 - en: Backtesting Class
+  id: totrans-305
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 回测类
 - en: 'The following is the Python module with the `TBBacktesterRM` class for event-based
     backtesting including risk measures (stop loss, trailing stop loss, take profit
     orders):'
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是带有`TBBacktesterRM`类的Python模块，用于基于事件的回测，包括风险度量（止损、移动止损、止盈订单）：
 - en: '[PRE25]'
+  id: totrans-307
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: ^([1](ch11.xhtml#idm45625264808136-marker)) For more details on the ATR measure,
     see [ATR (1) Investopedia](https://oreil.ly/2sUsg) or [ATR (2) Investopedia](https://oreil.ly/zwrnO).
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([1](ch11.xhtml#idm45625264808136-marker)) 要了解更多关于 ATR 指标的详细信息，请参阅[ATR (1)
+    Investopedia](https://oreil.ly/2sUsg)或[ATR (2) Investopedia](https://oreil.ly/zwrnO)。
 - en: ^([2](ch11.xhtml#idm45625263710744-marker)) A *guaranteed* stop loss order might
     only be available in certain jurisdictions for certain groups of broker clients,
     such as retail investors/traders.
+  id: totrans-309
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([2](ch11.xhtml#idm45625263710744-marker)) *保证的*止损订单可能仅适用于某些司法管辖区的某些经纪客户群体，例如零售投资者/交易者。
 - en: ^([3](ch11.xhtml#idm45625261444776-marker)) A take profit order has a fixed
     target price level. Therefore, it is unrealistic to use the high price of a time
     interval for a long position or the low price of the interval for a short position
     to calculate the realized profit.
+  id: totrans-310
   prefs: []
   type: TYPE_NORMAL
+  zh: ^([3](ch11.xhtml#idm45625261444776-marker)) 止盈订单有一个固定的目标价格水平。因此，使用一个时间间隔的高价计算多头头寸的实现利润或使用低价计算空头头寸的实现利润是不现实的。

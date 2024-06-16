@@ -1,0 +1,886 @@
+<html><head></head><body>
+<div id="sbo-rt-content"><section data-pdf-bookmark="Chapter 7. Modern Contrarian Patterns" data-type="chapter" epub:type="chapter"><div class="chapter" id="chapter7">
+<h1><span class="label">Chapter 7. </span>Modern Contrarian Patterns</h1>
+<p>Continuing<a contenteditable="false" data-primary="modern contrarian patterns" data-type="indexterm" id="ix_mod_contra_ch7"/> in the spirit of contrarian trading, this chapter discusses the modern contrarian patterns, which are candlestick formations that I have noticed over the years and can be an addition to the already known patterns.</p>
+<p>The purpose of this chapter is, as usual, to describe the patterns’ objective conditions and back-test them so that you form an opinion about their frequency and  <span class="keep-together">predictability</span>.</p>
+<section data-pdf-bookmark="The Doppelgänger Pattern" data-type="sect1"><div class="sect1" id="idm46762859719936">
+<h1>The Doppelgänger Pattern</h1>
+<p>In German<a contenteditable="false" data-primary="Doppelgänger pattern" data-type="indexterm" id="ix_doppel_patt_ch7"/><a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Doppelgänger pattern" data-type="indexterm" id="ix_mod_contra_doppel_ch7"/><a contenteditable="false" data-primary="contrarian patterns" data-secondary="Doppelgänger pattern" data-type="indexterm" id="ix_contra_doppel_ch7"/>, the word <em>Doppelgänger</em> means “double goer” or “double walker” and is generally used to refer to people who look exactly the same but are biologically unrelated. The Doppelgänger candlestick pattern is a three-candlestick reversal configuration that I like to use to confirm intermediate reversals.</p>
+<p><a data-type="xref" href="#figure7-1">Figure 7-1</a> illustrates a bullish Doppelgänger. The pattern is composed of a bearish candle followed by two numerically similar candlesticks (same highs and lows, and either they must have the same close and open prices or the close price must equal the open price) with flexibility on their type (bullish or bearish).</p>
+<figure><div class="figure" id="figure7-1"><img alt="" height="461" src="assets/mfpr_0701.png" width="600"/>
+<h6><span class="label">Figure 7-1. </span>A bullish Doppelgänger</h6>
+</div></figure>
+<p>In comparison, <a data-type="xref" href="#figure7-2">Figure 7-2</a> shows the theoretical bearish Doppelgänger pattern. The pattern is composed of a bullish candle followed by two numerically similar candlesticks with flexibility on their type (bullish or bearish). Note that these are theoretical conditions; in real life, some flexibility may be added (as you will see in this chapter).</p>
+<figure><div class="figure" id="figure7-2"><img alt="" height="461" src="assets/mfpr_0702.png" width="600"/>
+<h6><span class="label">Figure 7-2. </span>A bearish Doppelgänger</h6>
+</div></figure>
+<p>Ideally, the bullish reversal is confirmed when the next candle surpasses the similar highs. Similarly, the bearish reversal is confirmed when the next candle breaks the similar lows. This is an optional condition that transforms the pattern into a four-candlestick configuration.</p>
+<p class="pagebreak-before">The rationale<a contenteditable="false" data-primary="power balance" data-type="indexterm" id="idm46762858790864"/> behind the Doppelgänger pattern lies within the concept of power balance. With similar candles, hesitation looms around the current aggregate direction, which may cause a complete shift of regime. Also, the equality of the lows (in a bullish Doppelgänger) and the highs (in a bearish Doppelgänger) is equivalent to the concept of support and resistance levels, respectively.</p>
+<p>To increase<a contenteditable="false" data-primary="rounding numbers" data-secondary="Doppelgänger pattern" data-type="indexterm" id="idm46762860198752"/> the frequency of the signals, you must round the values as you have seen in previous chapters. With FX data, you need four decimals, and with the rest of the back-tested assets, you need zero decimals.</p>
+<p>Algorithmically, the real conditions are as follows:</p>
+<ul>
+<li>If the current high equals the previous high, the current low equals the previous low, and the candlestick from two periods ago is bullish, then print 1 in the next row as a representation of a buy signal on the open price.</li>
+<li>If the current high equals the previous high, the current low equals the previous low, and the candlestick from two periods ago is bearish, then print −1 in the next row as a representation of a sell signal on the open price.</li>
+</ul>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Try coding the optional condition that adds a fourth candlestick. As a reminder, this condition seeks to filter false signals, but it may end up filtering too much.</p>
+</div>
+<p>You can code the signal function for the Doppelgänger pattern through the following code snippet:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code><code> </code><code class="nf">signal</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">,</code><code> </code><code>
+</code><code>           </code><code class="n">buy_column</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">add_column</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">)</code><code>  </code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">rounding</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">4</code><code class="p">)</code><code> </code><strong><code class="c1"># Put 0 instead of 4 as of pair 4</code></strong><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="k">for</code><code> </code><code class="n">i</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">data</code><code class="p">)</code><code class="p">)</code><code class="p">:</code><code>  </code><code>
+</code><code>        </code><code>
+</code><code>       </code><code class="k">try</code><code class="p">:</code><code>
+</code><code>           </code><code>
+</code><code>   </code><strong><code>        </code><code class="c1"># Bullish pattern</code></strong><code>
+</code><code>           </code><code class="k">if</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code class="p">:</code><code> </code><code>
+</code><code>                  </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><strong><code>           </code><code class="c1"># Bearish pattern</code></strong><code>
+</code><code>           </code><code class="k">elif</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code class="p">:</code><code>
+</code><code>                 </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="o">-</code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><code class="k">except</code><code> </code><code class="ne">IndexError</code><code class="p">:</code><code>
+</code><code>            </code><code>
+</code><code>            </code><code class="k">pass</code><code>
+</code><code>        </code><code>
+</code><code>    </code><code class="k">return</code><code> </code><code class="n">data</code><code>
+</code></pre>
+<p><a data-type="xref" href="#figure7-3">Figure 7-3</a> shows a signal chart on GBPUSD.</p>
+<figure><div class="figure" id="figure7-3"><img alt="" height="291" src="assets/mfpr_0703.png" width="600"/>
+<h6><span class="label">Figure 7-3. </span>Signal chart on GBPUSD</h6>
+</div></figure>
+<p>The Doppelgänger pattern is uncommon. <a data-type="xref" href="#figure7-4">Figure 7-4</a> shows another signal chart, this one on USDCHF.</p>
+<figure><div class="figure" id="figure7-4"><img alt="" height="294" src="assets/mfpr_0704.png" width="600"/>
+<h6><span class="label">Figure 7-4. </span>Signal chart on USDCHF</h6>
+</div></figure>
+<p><a data-type="xref" href="#table7-1">Table 7-1</a> summarizes the performance of the Doppelgänger pattern.</p>
+<table id="table7-1">
+<caption><span class="label">Table 7-1. </span>Doppelgänger pattern: performance summary table</caption>
+<colgroup>
+<col/>
+<col/>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Hit Ratio</th>
+<th>Profit Factor</th>
+<th>Risk-Reward Ratio</th>
+<th>Signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EURUSD</td>
+<td>46.42%</td>
+<td>0.97</td>
+<td>1.12</td>
+<td>448</td>
+</tr>
+<tr>
+<td>USDCHF</td>
+<td>50.00%</td>
+<td>0.89</td>
+<td>0.89</td>
+<td>558</td>
+</tr>
+<tr>
+<td>GBPUSD</td>
+<td>48.05%</td>
+<td>1.07</td>
+<td>1.16</td>
+<td>283</td>
+</tr>
+<tr>
+<td>USDCAD</td>
+<td>45.52%</td>
+<td>0.76</td>
+<td>0.91</td>
+<td>380</td>
+</tr>
+<tr>
+<td>BTCUSD</td>
+<td>45.45%</td>
+<td>1.78</td>
+<td>2.13</td>
+<td>99</td>
+</tr>
+<tr>
+<td>ETHUSD</td>
+<td>50.87%</td>
+<td>0.92</td>
+<td>0.88</td>
+<td>1201</td>
+</tr>
+<tr>
+<td>GOLD</td>
+<td>49.74%</td>
+<td>0.85</td>
+<td>0.85</td>
+<td>2738</td>
+</tr>
+<tr>
+<td>S&amp;P500</td>
+<td>50.90%</td>
+<td>0.98</td>
+<td>0.95</td>
+<td>110</td>
+</tr>
+<tr>
+<td>FTSE100</td>
+<td>48.27%</td>
+<td>1.27</td>
+<td>1.36</td>
+<td>29</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize, the pattern shows mixed signals and mixed frequency across asset classes. This may be because of the exit technique, which is unsuited to the pattern as it is mostly concerned with intermediate reversal moves, but to harmonize the back-tests across all patterns in the book, the exit condition is the same.</p>
+<p>As a reminder, the exit condition is encountering a bullish or bearish signal; otherwise, the trade keeps going<a contenteditable="false" data-primary="" data-startref="ix_doppel_patt_ch7" data-type="indexterm" id="idm46762858646928"/><a contenteditable="false" data-primary="" data-startref="ix_contra_doppel_ch7" data-type="indexterm" id="idm46762858645664"/><a contenteditable="false" data-primary="" data-startref="ix_mod_contra_doppel_ch7" data-type="indexterm" id="idm46762858644288"/>.​</p>
+</div></section>
+<section data-pdf-bookmark="The Blockade Pattern" data-type="sect1"><div class="sect1" id="idm46762859718960">
+<h1>The Blockade Pattern</h1>
+<p>This pattern<a contenteditable="false" data-primary="contrarian patterns" data-secondary="Blockade pattern" data-type="indexterm" id="ix_contra_blockade_ch7"/><a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Blockade pattern" data-type="indexterm" id="ix_mod_contra_blockade_ch7"/><a contenteditable="false" data-primary="Blockade pattern" data-type="indexterm" id="ix_blockade_patt_ch7"/> resembles the concept of a market that has found support or resistance and is showing signs of a reversal. The <em>Blockade </em>pattern is a four-candlestick configuration with a few conditions that are visually difficult to detect.</p>
+<p><a data-type="xref" href="#figure7-5">Figure 7-5</a> illustrates a bullish Blockade. The first candlestick must be bearish and followed by three candlesticks with a low equal to or higher than the first candlestick’s low but lower than its close price. Finally, the fourth candlestick must be bullish and must have a close price higher than the high price of the first candlestick. These conditions validate the Blockade pattern and generate a bullish signal.</p>
+<figure><div class="figure" id="figure7-5"><img alt="" height="178" src="assets/mfpr_0705.png" width="600"/>
+<h6><span class="label">Figure 7-5. </span>A bullish Blockade</h6>
+</div></figure>
+<p><a data-type="xref" href="#figure7-6">Figure 7-6</a> illustrates a bearish Blockade. The first candlestick must be bullish and followed by three candlesticks with a high price equal to or lower than the first candlestick’s low price but lower than its close price. Finally, the fourth candlestick must be bearish and must have a close price lower than the low price of the first candlestick. These conditions validate the Blockade pattern and generate a bearish signal.</p>
+<figure><div class="figure" id="figure7-6"><img alt="" height="178" src="assets/mfpr_0706.png" width="600"/>
+<h6><span class="label">Figure 7-6. </span>A bearish Blockade</h6>
+</div></figure>
+<p>The rationale of the Blockade pattern is that the stabilization phase around a support or resistance zone may offer the chance of a reversal confirmed by a directional (fourth) candlestick.</p>
+<p class="pagebreak-before">The following code snippet shows how to code the signal function for the Blockade pattern:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code><code> </code><code class="nf">signal</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">,</code><code> </code><code>
+</code><code>           </code><code class="n">buy_column</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">add_column</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">)</code><code>    </code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="k">for</code><code> </code><code class="n">i</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">data</code><code class="p">)</code><code class="p">)</code><code class="p">:</code><code>  </code><code>
+</code><code>        </code><code>
+</code><code>       </code><code class="k">try</code><code class="p">:</code><code>
+</code><code>           </code><code>
+</code><code>       </code><strong><code>    </code><code class="c1"># Bullish pattern</code></strong><code>
+</code><code>           </code><code class="k">if</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code class="p">:</code><code>        </code><code>
+</code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>          </code><strong><code> </code><code class="c1"># Bearish pattern</code></strong><code>
+</code><code>           </code><code class="k">elif</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code class="o">=</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code class="p">:</code><code>  </code><code>
+</code><code>                 </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="o">-</code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><code class="k">except</code><code> </code><code class="ne">IndexError</code><code class="p">:</code><code>
+</code><code>            </code><code>
+</code><code>            </code><code class="k">pass</code><code>
+</code><code>        </code><code>
+</code><code>    </code><code class="k">return</code><code> </code><code class="n">data</code><code>
+</code></pre>
+<p><a data-type="xref" href="#figure7-7">Figure 7-7</a> shows a signal chart on GBPUSD. The first thing to notice is the rarity of signals due to the multiple conditions imposed on the algorithm.</p>
+<figure><div class="figure" id="figure7-7"><img alt="" height="297" src="assets/mfpr_0707.png" width="600"/>
+<h6><span class="label">Figure 7-7. </span>Signal chart on GBPUSD</h6>
+</div></figure>
+<p>Rare patterns exist everywhere, whether classical or modern, and they are not much different from common patterns results-wise. The important thing is to confirm patterns with other signals and indicators.</p>
+<p><a data-type="xref" href="#figure7-8">Figure 7-8</a> shows a signal chart on AUDNZD. Notice that, generally, patterns are not identical to their perfect theoretical form as that would make them extremely rare or even impossible to find; therefore, a certain kind of flexibility can be applied from time to time.</p>
+<figure><div class="figure" id="figure7-8"><img alt="" height="291" src="assets/mfpr_0708.png" width="600"/>
+<h6><span class="label">Figure 7-8. </span>Signal chart on AUDNZD</h6>
+</div></figure>
+<p>For example, the flexibility measure I have applied here is that I have removed the need for the lows to be exactly the same in the case of a bullish Blockade and for the highs to be exactly the same in the case of a bearish Blockade. Remember, the aim is to detect some patterns and back-test them so as to have an idea on their predictive power, which would then integrate more sophisticated strategies.</p>
+<p><a data-type="xref" href="#table7-2">Table 7-2</a> summarizes the performance of the Blockade pattern.</p>
+<table id="table7-2">
+<caption><span class="label">Table 7-2. </span>Blockade pattern: performance summary table</caption>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Hit Ratio</th>
+<th>Profit Factor</th>
+<th>Risk-Reward Ratio</th>
+<th>Signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EURUSD</td>
+<td>40.77%</td>
+<td>0.63</td>
+<td>0.92</td>
+<td>233</td>
+</tr>
+<tr>
+<td>USDCHF</td>
+<td>47.00%</td>
+<td>1.1</td>
+<td>1.24</td>
+<td>234</td>
+</tr>
+<tr>
+<td>GBPUSD</td>
+<td>50.19%</td>
+<td>1.06</td>
+<td>1.06</td>
+<td>263</td>
+</tr>
+<tr>
+<td>USDCAD</td>
+<td>46.15%</td>
+<td>0.92</td>
+<td>1.07</td>
+<td>260</td>
+</tr>
+<tr>
+<td>BTCUSD</td>
+<td>51.64%</td>
+<td>1.79</td>
+<td>1.68</td>
+<td>182</td>
+</tr>
+<tr>
+<td>ETHUSD</td>
+<td>45.40%</td>
+<td>1.64</td>
+<td>1.96</td>
+<td>174</td>
+</tr>
+<tr>
+<td>GOLD</td>
+<td>51.25%</td>
+<td>1.13</td>
+<td>1.08</td>
+<td>240</td>
+</tr>
+<tr>
+<td>S&amp;P500</td>
+<td>46.66%</td>
+<td>0.86</td>
+<td>0.98</td>
+<td>240</td>
+</tr>
+<tr>
+<td>FTSE100</td>
+<td>35.71%</td>
+<td>1.1</td>
+<td>1.98</td>
+<td>28</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize, the Blockade pattern is a complex formation that can be rare in some markets. It is based<a contenteditable="false" data-primary="resistance and support levels, charting analysis" data-type="indexterm" id="idm46762857197968"/><a contenteditable="false" data-primary="support and resistance levels, charting analysis" data-type="indexterm" id="idm46762857196896"/> on the concept of a market that has found a support or resistance zone and has shown a reversal intention through a bullish or bearish candlestick<a contenteditable="false" data-startref="ix_mod_contra_blockade_ch7" data-type="indexterm" id="idm46762857195536"/><a contenteditable="false" data-startref="ix_contra_blockade_ch7" data-type="indexterm" id="idm46762857063296"/><a contenteditable="false" data-startref="ix_blockade_patt_ch7" data-type="indexterm" id="idm46762857062192"/>.</p>
+</div></section>
+<section data-pdf-bookmark="The Euphoria Pattern" data-type="sect1"><div class="sect1" id="idm46762858642560">
+<h1>The Euphoria Pattern</h1>
+<p>At first glance, the <em>Euphoria</em> pattern<a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Euphoria pattern" data-type="indexterm" id="ix_mod_contra_euphoria_ch7"/><a contenteditable="false" data-primary="Euphoria pattern" data-type="indexterm" id="ix_euphoria_patt_ch7"/><a contenteditable="false" data-primary="contrarian patterns" data-secondary="Euphoria pattern" data-type="indexterm" id="ix_contra_euphoria_ch7"/><a contenteditable="false" data-primary="Three Candles pattern" data-type="indexterm" id="idm46762857068352"/><a contenteditable="false" data-primary="trend-following patterns" data-secondary="Three Candles pattern" data-type="indexterm" id="idm46762857467632"/><a contenteditable="false" data-primary="classic trend-following patterns" data-secondary="Three Candles pattern" data-type="indexterm" id="idm46762857466288"/> is basically the same as the Three-Candle pattern discussed in the classical trend-following patterns. However, I have found that adding one condition to the Three-Candle pattern is enough to make it into a contrarian configuration. Of course, the conflict remains visually the same, as the extra condition is more easily detected by an algorithm than by a trader.</p>
+<p>The extra condition is the obligation that every candlestick must be bigger than the preceding one. The word <em>bigger</em> refers to the real range, which is, as mentioned earlier in the book, the difference between the close price and the open price in absolute terms.</p>
+<p><a data-type="xref" href="#figure7-9">Figure 7-9</a> illustrates a bullish Euphoria pattern. The pattern is composed of three successive bearish candlesticks where each one is bigger than the one before.</p>
+<figure><div class="figure" id="figure7-9"><img alt="" height="636" src="assets/mfpr_0709.png" width="600"/>
+<h6><span class="label">Figure 7-9. </span>A bullish Euphoria pattern</h6>
+</div></figure>
+<p><a data-type="xref" href="#figure7-10">Figure 7-10</a> illustrates a bearish Euphoria pattern. The pattern is composed of three successive bullish candlesticks where each one is bigger than the one before.</p>
+<figure><div class="figure" id="figure7-10"><img alt="" height="636" src="assets/mfpr_0710.png" width="600"/>
+<h6><span class="label">Figure 7-10. </span>A bearish Euphoria pattern</h6>
+</div></figure>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>The Three-Candle pattern and the Euphoria pattern closely resemble each other, but the increasing size of the candlesticks is what makes the difference. In the original literature, the Three-Candle pattern does not have a size limit, which can cause a conflict between these two patterns.</p>
+<p>Intuitively, you must follow the pattern that makes you more comfortable, and you must also confirm with other techniques and indicators to help you decide whether the market will continue trending in the same direction (Three Candle pattern) or will reverse (Euphoria pattern).</p>
+</div>
+<p>The following code snippet shows how to code the signal function for the Euphoria pattern. You also need to round the values:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code><code> </code><code class="nf">signal</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">add_column</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">)</code><code>  </code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">rounding</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">4</code><code class="p">)</code><code> </code><code class="c1"># Put 0 instead of 4 as of pair 4</code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="k">for</code><code> </code><code class="n">i</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">data</code><code class="p">)</code><code class="p">)</code><code class="p">:</code><code>  </code><code>
+</code><code>        </code><code>
+</code><code>       </code><code class="k">try</code><code class="p">:</code><code>
+</code><code>           </code><code>
+</code><code> </code><strong><code>          </code><code class="c1"># Bullish pattern</code></strong><code>
+</code><code>           </code><code class="k">if</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&gt;</code><code> </code><code>\
+</code><code>              </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="ow">and</code><code>\
+</code><code>              </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&gt;</code><code> </code><code>\
+</code><code>              </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code class="p">:</code><code> </code><code>
+</code><code>                  </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><strong><code>           </code><code class="c1"># Bearish pattern</code></strong><code>
+</code><code>           </code><code class="k">elif</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code>\
+</code><code>                </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&gt;</code><code> </code><code>\
+</code><code>                </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="ow">and</code><code>\
+</code><code>                </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&gt;</code><code> </code><code>\
+</code><code>                </code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>                 </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="o">-</code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><code class="k">except</code><code> </code><code class="ne">IndexError</code><code class="p">:</code><code>
+</code><code>            </code><code>
+</code><code>            </code><code class="k">pass</code><code>
+</code><code>        </code><code>
+</code><code>    </code><code class="k">return</code><code> </code><code class="n">data</code><code>
+</code></pre>
+<p><a data-type="xref" href="#figure7-11">Figure 7-11</a> shows a signal chart on USDCAD. Visually, the Euphoria pattern is more abundant than the Blockade pattern, which may give you more signals but that says nothing about the quality, which I present at the end of the section as usual with the performance summary <a data-type="link" href="#table7-3">table</a>.</p>
+<figure><div class="figure" id="figure7-11"><img alt="" height="297" src="assets/mfpr_0711.png" width="600"/>
+<h6><span class="label">Figure 7-11. </span>Signal chart on USDCAD</h6>
+</div></figure>
+<p>The risk with the Euphoria pattern is that it tries to time the end of a greedy phase, which is extremely risky. However, for short moves based on short-term events, the Euphoria pattern outperforms its average performance. For example, during an established bullish trend, the Euphoria pattern has a smaller hit ratio than during sideways markets.</p>
+<p><a data-type="xref" href="#figure7-12">Figure 7-12</a> shows a signal chart on AUDNZD. Notice that in the congestion period, the pattern was common and had a relatively good quality.</p>
+<figure><div class="figure" id="figure7-12"><img alt="" height="291" src="assets/mfpr_0712.png" width="600"/>
+<h6><span class="label">Figure 7-12. </span>Signal chart on AUDNZD</h6>
+</div></figure>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Make<a contenteditable="false" data-primary="Double Trouble pattern" data-type="indexterm" id="idm46762856514528"/><a contenteditable="false" data-primary="modern trend-following patterns" data-secondary="Double Trouble pattern" data-type="indexterm" id="idm46762856529472"/><a contenteditable="false" data-primary="trend-following patterns" data-secondary="Double Trouble pattern" data-type="indexterm" id="idm46762856528080"/> sure to also distinguish between the Euphoria pattern and the Double Trouble pattern, as the latter uses a volatility measure that includes highs and lows to account for the continued move. Some candlestick patterns are bound to resemble each other, with a few subtle differences that could change the expected reaction and even the expected targets.</p>
+</div>
+<p><a data-type="xref" href="#table7-3">Table 7-3</a> summarizes the performance of the Euphoria pattern. Note that the usual exit condition is not the optimal exit technique on the Euphoria pattern.</p>
+<table id="table7-3">
+<caption><span class="label">Table 7-3. </span>Euphoria pattern: performance summary table</caption>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Hit Ratio</th>
+<th>Profit Factor</th>
+<th>Risk-Reward Ratio</th>
+<th>Signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EURUSD</td>
+<td>49.17%</td>
+<td>1.17</td>
+<td>1.21</td>
+<td>1513</td>
+</tr>
+<tr>
+<td>USDCHF</td>
+<td>45.17%</td>
+<td>0.99</td>
+<td>1.21</td>
+<td>1523</td>
+</tr>
+<tr>
+<td>GBPUSD</td>
+<td>46.69%</td>
+<td>1.08</td>
+<td>1.24</td>
+<td>1741</td>
+</tr>
+<tr>
+<td>USDCAD</td>
+<td>46.96%</td>
+<td>1.00</td>
+<td>1.12</td>
+<td>1584</td>
+</tr>
+<tr>
+<td>BTCUSD</td>
+<td>47.24%</td>
+<td>1.12</td>
+<td>1.24</td>
+<td>1327</td>
+</tr>
+<tr>
+<td>ETHUSD</td>
+<td>45.71%</td>
+<td>0.98</td>
+<td>1.16</td>
+<td>1155</td>
+</tr>
+<tr>
+<td>GOLD</td>
+<td>44.48%</td>
+<td>0.94</td>
+<td>1.17</td>
+<td>2039</td>
+</tr>
+<tr>
+<td>S&amp;P500</td>
+<td>46.17%</td>
+<td>1.16</td>
+<td>1.35</td>
+<td>379</td>
+</tr>
+<tr>
+<td>FTSE100</td>
+<td>46.34%</td>
+<td>1.05</td>
+<td>1.21</td>
+<td>369</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize, the Euphoria pattern acts like a brake on an initial acceleration phase based on the outstretched optimism of market participants. Basically, bigger candles mean bigger risks, as fear is more powerful than greed and traders may start unwinding their positions after strong moves<a contenteditable="false" data-primary="" data-startref="ix_euphoria_patt_ch7" data-type="indexterm" id="idm46762856882400"/><a contenteditable="false" data-primary="" data-startref="ix_contra_euphoria_ch7" data-type="indexterm" id="idm46762856881136"/><a contenteditable="false" data-primary="" data-startref="ix_mod_contra_euphoria_ch7" data-type="indexterm" id="idm46762856879760"/>.</p>
+<p>It is important to distinguish between the Euphoria pattern and the Three-Candle pattern discussed in <a data-type="xref" href="ch04.xhtml#chapter4">Chapter 4</a>.</p>
+</div></section>
+<section data-pdf-bookmark="The Barrier Pattern" data-type="sect1"><div class="sect1" id="idm46762857472096">
+<h1>The Barrier Pattern</h1>
+<p>Basic and very intuitive<a contenteditable="false" data-primary="contrarian patterns" data-secondary="Barrier pattern" data-type="indexterm" id="ix_contra_barrier_ch7"/><a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Barrier pattern" data-type="indexterm" id="ix_mod_contra_barrier_ch7"/><a contenteditable="false" data-primary="Blockade pattern" data-type="indexterm" id="idm46762857762640"/><a contenteditable="false" data-primary="contrarian patterns" data-secondary="Blockade pattern" data-type="indexterm" id="idm46762857761536"/><a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Blockade pattern" data-type="indexterm" id="idm46762857760160"/><a contenteditable="false" data-primary="Barrier pattern" data-type="indexterm" id="ix_barrier_patt_ch7"/>, the <em>Barrier</em> pattern can be considered a simplified version of the Blockade pattern. It is composed of three candles and also borrows from the concept of support and resistance levels. This pattern also uses rounding to stabilize the frequency of signals.</p>
+<p><a data-type="xref" href="#figure7-13">Figure 7-13</a> illustrates a bullish Barrier. The first two candles must be bearish, and the last candle must be bullish. At the same time, the lows of the three candles must be the same, which implies a support zone. The bullish reversal confirmation comes from the last bullish candle.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>A bullish candle implies that there is more demand than supply and thus can act as a confirmation factor after a bearish phase.</p>
+</div>
+<figure><div class="figure" id="figure7-13"><img alt="" height="369" src="assets/mfpr_0713.png" width="600"/>
+<h6><span class="label">Figure 7-13. </span>A bullish Barrier</h6>
+</div></figure>
+<p><a data-type="xref" href="#figure7-14">Figure 7-14</a> illustrates a bearish Barrier. The first two candles must be bullish, and the last candle must be bearish. At the same time, the highs of the three candles must be the same, which implies a resistance zone. The bearish reversal confirmation comes from the last bearish candle.</p>
+<figure><div class="figure" id="figure7-14"><img alt="" height="369" src="assets/mfpr_0714.png" width="600"/>
+<h6><span class="label">Figure 7-14. </span>A bearish Barrier</h6>
+</div></figure>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Optionally, an extra condition may be imposed. In the case of a bullish Barrier pattern, the last bullish candlestick must have a close price higher than the high price of the middle candlestick. Similarly, in the case of a bearish Barrier pattern, the last bearish candlestick must have a close price lower than the low price of the middle candlestick.</p>
+</div>
+<p>The following code snippet shows how to code the signal function for the Barrier pattern. Notice<a contenteditable="false" data-primary="rounding() function" data-type="indexterm" id="idm46762856545056"/><a contenteditable="false" data-primary="rounding numbers" data-secondary="Barrier pattern" data-type="indexterm" id="idm46762856543952"/> that I have added the <code>rounding()</code> function to maximize the signals. For example, if EURUSD is quoting with five decimals (e.g., 1.05623), then it would be harder to find three candlesticks with the same low/high value than it would be if it is quoting with four decimals (e.g., 1.0562):</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code><code> </code><code class="nf">signal</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">,</code><code> </code><code>
+</code><code>           </code><code class="n">buy_column</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">add_column</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">)</code><code>  </code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">rounding</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">4</code><code class="p">)</code><code> </code><strong><code class="c1"># Put 0 instead of 4 as of pair 4</code><code>
+</code><code>    </code></strong><code>
+</code><code>    </code><code class="k">for</code><code> </code><code class="n">i</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">data</code><code class="p">)</code><code class="p">)</code><code class="p">:</code><code>  </code><code>
+</code><code>        </code><code>
+</code><code>       </code><code class="k">try</code><code class="p">:</code><code>
+</code><code>           </code><code>
+</code><strong><code>           </code><code class="c1"># Bullish pattern</code></strong><code>
+</code><code>           </code><code class="k">if</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code class="p">:</code><code>
+</code><code>                  </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>   </code><strong><code>        </code><code class="c1"># Bearish pattern</code></strong><code>
+</code><code>           </code><code class="k">elif</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code class="p">:</code><code>
+</code><code>                 </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="o">-</code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><code class="k">except</code><code> </code><code class="ne">IndexError</code><code class="p">:</code><code>
+</code><code>            </code><code>
+</code><code>            </code><code class="k">pass</code><code>
+</code><code>        </code><code>
+</code><code>    </code><code class="k">return</code><code> </code><code class="n">data</code><code>
+</code></pre>
+<p><a data-type="xref" href="#figure7-15">Figure 7-15</a> shows a signal chart on USDCHF. The frequency of signals seems to be acceptable. This can be seen in the performance summary <a data-type="link" href="#table7-4">table</a>. </p>
+<figure><div class="figure" id="figure7-15"><img alt="" height="294" src="assets/mfpr_0715.png" width="600"/>
+<h6><span class="label">Figure 7-15. </span>Signal chart on USDCHF</h6>
+</div></figure>
+<p><a data-type="xref" href="#figure7-16">Figure 7-16</a> shows a signal chart on the AUDNZD. In some markets, the signals may be rarer than others. This is a phenomenon seen on most candlestick patterns, and understanding signal frequency allows you to know which patterns to use on which market.</p>
+<figure><div class="figure" id="figure7-16"><img alt="" height="294" src="assets/mfpr_0716.png" width="600"/>
+<h6><span class="label">Figure 7-16. </span>Signal chart on the AUDNZD</h6>
+</div></figure>
+<p><a data-type="xref" href="#table7-4">Table 7-4</a> summarizes the performance of the Barrier pattern.</p>
+<table id="table7-4">
+<caption><span class="label">Table 7-4. </span>Barrier pattern: performance summary table</caption>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Hit Ratio</th>
+<th>Profit Factor</th>
+<th>Risk-Reward Ratio</th>
+<th>Signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EURUSD</td>
+<td>46.78%</td>
+<td>1.05</td>
+<td>1.19</td>
+<td>109</td>
+</tr>
+<tr>
+<td>USDCHF</td>
+<td>54.67%</td>
+<td>2.26</td>
+<td>1.87</td>
+<td>139</td>
+</tr>
+<tr>
+<td>GBPUSD</td>
+<td>43.24%</td>
+<td>0.85</td>
+<td>1.11</td>
+<td>74</td>
+</tr>
+<tr>
+<td>USDCAD</td>
+<td>52.74%</td>
+<td>1.13</td>
+<td>1.01</td>
+<td>91</td>
+</tr>
+<tr>
+<td>BTCUSD</td>
+<td>34.61%</td>
+<td>0.59</td>
+<td>1.12</td>
+<td>26</td>
+</tr>
+<tr>
+<td>ETHUSD</td>
+<td>50.92%</td>
+<td>1.11</td>
+<td>1.07</td>
+<td>163</td>
+</tr>
+<tr>
+<td>GOLD</td>
+<td>48.39%</td>
+<td>1.06</td>
+<td>1.13</td>
+<td>405</td>
+</tr>
+<tr>
+<td>S&amp;P500</td>
+<td>53.57%</td>
+<td>0.9</td>
+<td>0.78</td>
+<td>28</td>
+</tr>
+<tr>
+<td>FTSE100</td>
+<td>37.50%</td>
+<td>0.38</td>
+<td>0.63</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize, the Barrier pattern is a simple three-candle configuration that uses rounding to increase its signal frequency due to a severe condition that forces either lows or highs to be equal<a contenteditable="false" data-primary="" data-startref="ix_mod_contra_barrier_ch7" data-type="indexterm" id="idm46762858161536"/><a contenteditable="false" data-primary="" data-startref="ix_barrier_patt_ch7" data-type="indexterm" id="idm46762858195392"/><a contenteditable="false" data-primary="" data-startref="ix_contra_barrier_ch7" data-type="indexterm" id="idm46762858194016"/>.</p>
+</div></section>
+<section class="pagebreak-before" data-pdf-bookmark="The Mirror Pattern" data-type="sect1"><div class="sect1" id="idm46762857777104">
+<h1 class="less_space">The Mirror Pattern</h1>
+<p>As the name<a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Mirror pattern" data-type="indexterm" id="ix_mod_contra_mirror_ch7"/><a contenteditable="false" data-primary="Mirror pattern" data-type="indexterm" id="ix_mirror_patt_ch7"/><a contenteditable="false" data-primary="contrarian patterns" data-secondary="Mirror pattern" data-type="indexterm" id="ix_contra_mirror_ch7"/> implies, the <em>Mirror </em>pattern is reflection of the past price action with flexible conditions. The idea is that the market is forming a U-turn and should change course.</p>
+<p><a data-type="xref" href="#figure7-17">Figure 7-17</a> illustrates a bullish Mirror. The first candlestick must be bearish and followed by two candlesticks that have the same highs and lows. Finally, the last candlestick must be bullish and must have a high price equal to the high price of the first candlestick. In the coding part, you will see that there is some flexibility as the theoretical conditions are hard to find.</p>
+<figure><div class="figure" id="figure7-17"><img alt="" height="372" src="assets/mfpr_0717.png" width="600"/>
+<h6><span class="label">Figure 7-17. </span>A bullish Mirror</h6>
+</div></figure>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>The reason there are differences between the theory and the real application of candlestick patterns is that the theory deals with the intuition but does not guarantee the minimum required frequency of patterns detected. In real life, you have to adapt some conditions while retaining the intuition of the pattern.</p>
+</div>
+<p><a data-type="xref" href="#figure7-18">Figure 7-18</a> illustrates a bearish Mirror. The first candlestick must be bullish and followed by two candlesticks that have the same highs and lows. Finally, the last candlestick must be bearish and must have a low price equal to the low price of the first candlestick.</p>
+<figure><div class="figure" id="figure7-18"><img alt="" height="372" src="assets/mfpr_0718.png" width="600"/>
+<h6><span class="label">Figure 7-18. </span>A bearish Mirror</h6>
+</div></figure>
+<p>The following code snippet shows how to code the signal function for the Mirror pattern. The code assumes flexibility with the highs and lows of the middle candlesticks and creates the condition that equal close prices suffice to validate the pattern (if the close prices of the two middle candlesticks are equal, then the pattern is not <span class="keep-together">invalidated</span>):</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code><code> </code><code class="nf">signal</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">,</code><code> </code><code>
+</code><code>           </code><code class="n">buy_column</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">add_column</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">)</code><code>  </code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">rounding</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">)</code><code> </code><code class="c1"># Put 0 instead of 4 as of pair 4</code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="k">for</code><code> </code><code class="n">i</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">data</code><code class="p">)</code><code class="p">)</code><code class="p">:</code><code>  </code><code>
+</code><code>        </code><code>
+</code><code>       </code><code class="k">try</code><code class="p">:</code><code>
+</code><code>           </code><code>
+</code><code>      </code><strong><code>     </code><code class="c1"># Bullish pattern</code></strong><code>
+</code><code>           </code><code class="k">if</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">:</code><code>
+</code><code>              </code><code>
+</code><code>                  </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>     </code><strong><code>      </code><code class="c1"># Bearish pattern</code></strong><code>
+</code><code>           </code><code class="k">elif</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">==</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code class="p">:</code><code>
+</code><code>                 </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="o">-</code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><code class="k">except</code><code> </code><code class="ne">IndexError</code><code class="p">:</code><code>
+</code><code>            </code><code>
+</code><code>            </code><code class="k">pass</code><code>
+</code><code>        </code><code>
+</code><code>    </code><code class="k">return</code><code> </code><code class="n">data</code><code>
+</code></pre>
+<p><a data-type="xref" href="#figure7-19">Figure 7-19</a> shows a signal chart on EURCHF.</p>
+<figure><div class="figure" id="figure7-19"><img alt="" height="294" src="assets/mfpr_0719.png" width="600"/>
+<h6><span class="label">Figure 7-19. </span>Signal chart on EURCHF</h6>
+</div></figure>
+<p><a data-type="xref" href="#figure7-20">Figure 7-20</a> shows a signal chart on USDCHF. Even with the flexible conditions, it may be hard to find the Mirror pattern.</p>
+<figure><div class="figure" id="figure7-20"><img alt="" height="294" src="assets/mfpr_0720.png" width="600"/>
+<h6><span class="label">Figure 7-20. </span>Signal chart on USDCHF</h6>
+</div></figure>
+<p><a data-type="xref" href="#table7-5">Table 7-5</a> summarizes the performance of the Mirror pattern.</p>
+<table id="table7-5">
+<caption><span class="label">Table 7-5. </span>Mirror pattern: performance summary table</caption>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Hit Ratio</th>
+<th>Profit Factor</th>
+<th>Risk-Reward Ratio</th>
+<th>Signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EURUSD</td>
+<td>45.23%</td>
+<td>1.02</td>
+<td>1.23</td>
+<td>42</td>
+</tr>
+<tr>
+<td>USDCHF</td>
+<td>41.37%</td>
+<td>0.69</td>
+<td>0.98</td>
+<td>58</td>
+</tr>
+<tr>
+<td>GBPUSD</td>
+<td>37.50%</td>
+<td>0.78</td>
+<td>1.3</td>
+<td>32</td>
+</tr>
+<tr>
+<td>USDCAD</td>
+<td>34.21%</td>
+<td>0.78</td>
+<td>1.5</td>
+<td>38</td>
+</tr>
+<tr>
+<td>BTCUSD</td>
+<td>70.00%</td>
+<td>3.02</td>
+<td>1.29</td>
+<td>10</td>
+</tr>
+<tr>
+<td>ETHUSD</td>
+<td>44.30%</td>
+<td>0.83</td>
+<td>1.04</td>
+<td>237</td>
+</tr>
+<tr>
+<td>GOLD</td>
+<td>49.00%</td>
+<td>1.14</td>
+<td>1.18</td>
+<td>500</td>
+</tr>
+<tr>
+<td>S&amp;P500</td>
+<td>80.00%</td>
+<td>5.38</td>
+<td>1.34</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize<a contenteditable="false" data-primary="contrarian patterns" data-secondary="Doppelgänger pattern" data-type="indexterm" id="idm46762856293392"/><a contenteditable="false" data-primary="Doppelgänger pattern" data-type="indexterm" id="idm46762856309568"/><a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Doppelgänger pattern" data-type="indexterm" id="idm46762856308464"/>, the Mirror pattern assumes a U-turn movement where market participants gradually change course. It is a rare pattern, as the conditions to achieve it may be tedious, but the intuition of the pattern is clear. The Mirror pattern can also be considered a continuation of the Doppelgänger pattern<a contenteditable="false" data-primary="" data-startref="ix_mirror_patt_ch7" data-type="indexterm" id="idm46762856306672"/><a contenteditable="false" data-primary="" data-startref="ix_contra_mirror_ch7" data-type="indexterm" id="idm46762856922032"/><a contenteditable="false" data-primary="" data-startref="ix_mod_contra_mirror_ch7" data-type="indexterm" id="idm46762856920656"/>.</p>
+</div></section>
+<section data-pdf-bookmark="The Shrinking Pattern" data-type="sect1"><div class="sect1" id="idm46762858192016">
+<h1>The Shrinking Pattern</h1>
+<p>The <em>Shrinking </em>pattern<a contenteditable="false" data-primary="modern contrarian patterns" data-secondary="Shrinking pattern" data-type="indexterm" id="ix_mod_contra_shrink_ch7"/><a contenteditable="false" data-primary="Shrinking pattern" data-type="indexterm" id="ix_shrink_patt_ch7"/><a contenteditable="false" data-primary="contrarian patterns" data-secondary="Shrinking pattern" data-type="indexterm" id="ix_contra_shrink_ch7"/> is based on the concept of a breakout after a phase of congestion. It is a multicandlestick configuration with the last candlestick confirming the move.</p>
+<p><a data-type="xref" href="#figure7-21">Figure 7-21</a> illustrates a bullish Shrinking pattern. The first candlestick must be bearish to reflect the proxy of a bearish pressure, and the following three candlesticks may have any color but must be Shrinking in size every time. Finally, the last (fifth) candlestick must be bullish and must surpass the high of the second candlestick.</p>
+<figure><div class="figure" id="figure7-21"><img alt="" height="309" src="assets/mfpr_0721.png" width="600"/>
+<h6><span class="label">Figure 7-21. </span>A bullish Shrinking pattern</h6>
+</div></figure>
+<p><a data-type="xref" href="#figure7-22">Figure 7-22</a> illustrates a bearish Shrinking pattern. The first candlestick must be bullish to reflect the proxy of a bullish pressure, and the following three candlesticks may have any color but must be Shrinking in size every time. Finally, the last (fifth) candlestick must be bearish and must break the low of the second candlestick.</p>
+<figure><div class="figure" id="figure7-22"><img alt="" height="308" src="assets/mfpr_0722.png" width="600"/>
+<h6><span class="label">Figure 7-22. </span>A bearish Shrinking pattern</h6>
+</div></figure>
+<p>The following code snippet shows how to code the signal function for the Shrinking pattern. I have added some flexibility, which omits the theoretical condition that assumes similar lows for the three middle candles (bullish configuration) and similar highs (bearish configuration), as shown in Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#figure7-21">7-21</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="#figure7-22">7-22</a> through the dotted horizontal line.</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code><code> </code><code class="nf">signal</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">,</code><code> </code><code>
+</code><code>           </code><code class="n">buy_column</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">)</code><code class="p">:</code><code>
+</code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">add_column</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">5</code><code class="p">)</code><code>  </code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="n">data</code><code> </code><code class="o">=</code><code> </code><code class="n">rounding</code><code class="p">(</code><code class="n">data</code><code class="p">,</code><code> </code><code class="mi">4</code><code class="p">)</code><code>
+</code><code>    </code><code>
+</code><code>    </code><code class="k">for</code><code> </code><code class="n">i</code><code> </code><code class="ow">in</code><code> </code><code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">data</code><code class="p">)</code><code class="p">)</code><code class="p">:</code><code>  </code><code>
+</code><code>        </code><code>
+</code><code>       </code><code class="k">try</code><code class="p">:</code><code>
+</code><code>           </code><code>
+</code><code>    </code><strong><code>       </code><code class="c1"># Bullish pattern</code></strong><code>
+</code><code>           </code><code class="k">if</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>              </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&lt;</code><code> </code><code>\
+</code><code>              </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code>\
+</code><code>              </code><code class="ow">and</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code>\
+</code><code>              </code><code class="o">&lt;</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code>\
+</code><code>              </code><code class="ow">and</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code>\
+</code><code>              </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&lt;</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code>\
+</code><code>              </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="ow">and</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code>\
+</code><code>              </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">high_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code>\
+</code><code>              </code><code class="n">high_column</code><code class="p">]</code><code class="p">:</code><code>
+</code><code>                  </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">buy_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><strong><code>    </code><code class="c1"># Bearish pattern</code></strong><code>
+</code><code>           </code><code class="k">elif</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">&lt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code>\
+</code><code>                </code><code class="o">&lt;</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">4</code><code class="p">,</code><code> </code><code>\
+</code><code>                </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="ow">and</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&lt;</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code>\
+</code><code>                </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="ow">and</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code>\
+</code><code>                </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="o">&lt;</code><code> </code><code class="nb">abs</code><code class="p">(</code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code>\
+</code><code>                </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">close_column</code><code class="p">]</code><code> </code><code class="o">-</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">open_column</code><code class="p">]</code><code class="p">)</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="ow">and</code><code> </code><code>\
+</code><code>                </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">2</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code> </code><code class="o">&gt;</code><code> </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">-</code><code> </code><code class="mi">3</code><code class="p">,</code><code> </code><code class="n">low_column</code><code class="p">]</code><code class="p">:</code><code>             </code><code>
+</code><code>                 </code><code>
+</code><code>                    </code><code class="n">data</code><code class="p">[</code><code class="n">i</code><code> </code><code class="o">+</code><code> </code><code class="mi">1</code><code class="p">,</code><code> </code><code class="n">sell_column</code><code class="p">]</code><code> </code><code class="o">=</code><code> </code><code class="o">-</code><code class="mi">1</code><code> </code><code>
+</code><code>                    </code><code>
+</code><code>       </code><code class="k">except</code><code> </code><code class="ne">IndexError</code><code class="p">:</code><code>
+</code><code>            </code><code>
+</code><code>            </code><code class="k">pass</code><code>
+</code><code>        </code><code>
+</code><code>    </code><code class="k">return</code><code> </code><code class="n">data</code><code>
+</code></pre>
+<p class="pagebreak-before"><a data-type="xref" href="#figure7-23">Figure 7-23</a> shows a signal chart on GBPAUD.</p>
+<figure><div class="figure" id="figure7-23"><img alt="" height="297" src="assets/mfpr_0723.png" width="600"/>
+<h6><span class="label">Figure 7-23. </span>Signal chart on GBPAUD</h6>
+</div></figure>
+<p><a data-type="xref" href="#table7-6">Table 7-6</a> summarizes the performance of the Shrinking pattern.</p>
+<table id="table7-6">
+<caption><span class="label">Table 7-6. </span>Shrinking pattern: performance summary table</caption>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Hit Ratio</th>
+<th>Profit Factor</th>
+<th>Risk-Reward Ratio</th>
+<th>Signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EURUSD</td>
+<td>37.77%</td>
+<td>0.52</td>
+<td>0.86</td>
+<td>45</td>
+</tr>
+<tr>
+<td>USDCHF</td>
+<td>37.14%</td>
+<td>0.39</td>
+<td>0.66</td>
+<td>35</td>
+</tr>
+<tr>
+<td>GBPUSD</td>
+<td>41.37%</td>
+<td>0.66</td>
+<td>0.94</td>
+<td>29</td>
+</tr>
+<tr>
+<td>USDCAD</td>
+<td>43.47%</td>
+<td>1.44</td>
+<td>1.87</td>
+<td>46</td>
+</tr>
+<tr>
+<td>BTCUSD</td>
+<td>58.62%</td>
+<td>1.24</td>
+<td>0.88</td>
+<td>29</td>
+</tr>
+<tr>
+<td>ETHUSD</td>
+<td>55.55%</td>
+<td>2.16</td>
+<td>1.73</td>
+<td>27</td>
+</tr>
+<tr>
+<td>GOLD</td>
+<td>61.53%</td>
+<td>0.73</td>
+<td>0.46</td>
+<td>26</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize, the Shrinking pattern is intuitive and relies on the concept of carefulness, which is manifested through the Shrinking candlesticks before a big candlestick breaks out of the congestion and confirms a new direction<a contenteditable="false" data-primary="" data-startref="ix_shrink_patt_ch7" data-type="indexterm" id="idm46762854516608"/><a contenteditable="false" data-primary="" data-startref="ix_contra_shrink_ch7" data-type="indexterm" id="idm46762854103408"/><a contenteditable="false" data-primary="" data-startref="ix_mod_contra_shrink_ch7" data-type="indexterm" id="idm46762854102032"/><a contenteditable="false" data-primary="" data-startref="ix_mod_contra_ch7" data-type="indexterm" id="idm46762854100688"/><a contenteditable="false" data-primary="" data-startref="ix_contra_patt_ch6_7" data-type="indexterm" id="idm46762854304784"/>.</p>
+<p>You are now done learning about the different candlesticks and how to code them in Python. The following chapters deal with how to use these candlesticks and combine them in more sophisticated strategies.</p>
+</div></section>
+</div></section></div></body></html>

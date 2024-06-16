@@ -1,0 +1,232 @@
+<html><head></head><body>
+<div id="sbo-rt-content"><section class="pagenumrestart" data-pdf-bookmark="Chapter 1. Importing and Processing Financial Data in Python" data-type="chapter" epub:type="chapter"><div class="chapter" id="chapter1">
+<h1><span class="label">Chapter 1. </span>Importing and Processing <span class="keep-together">Financial Data in Python</span></h1>
+<p>This chapter<a contenteditable="false" data-primary="Python, importing and processing financial data" data-type="indexterm" id="ix_python_import_ch1"/> is dedicated to laying the foundation needed to analyze financial data through coding. This requires some preparation, such as downloading the right software and creating an algorithm that fetches historical data automatically.</p>
+<p>By the end<a contenteditable="false" data-primary="candlestick pattern charting" data-secondary="contrarian" data-see="contrarian patterns; contrarian strategies" data-type="indexterm" id="idm46762872875808"/><a contenteditable="false" data-primary="performance evaluation" data-secondary="hit ratio" data-see="hit ratio" data-type="indexterm" id="idm46762872940352"/><a contenteditable="false" data-primary="RSI indicator" data-see="relative strength (RSI) indicator" data-type="indexterm" id="idm46762881787936"/><a contenteditable="false" data-primary="candlestick pattern charting" data-secondary="trend-following" data-see="trend-following patterns; trend-following strategies" data-type="indexterm" id="idm46762872994432"/> of the chapter, you should know how to automatically import historical financial data using Python, a skill that should save you time. So let’s get started.</p>
+<section data-pdf-bookmark="Installing the Environment" data-type="sect1"><div class="sect1" id="idm46762873376816">
+<h1>Installing the Environment</h1>
+<p>The first<a contenteditable="false" data-primary="Python, importing and processing financial data" data-secondary="installing environment" data-type="indexterm" id="ix_python_install"/> step is to prepare the environment and everything else necessary for the success of the algorithms. For this, you need two programs:</p>
+<ul>
+<li>A Python interpreter that you use to write and execute code</li>
+<li>Charting and financial software that you use as a database</li>
+</ul>
+<p>Let’s start with the Python interpreter. I use a software called SPYDER<a contenteditable="false" data-primary="SPYDER" data-type="indexterm" id="ix_spyder_install"/>. Some people may be more familiar with other software such as Jupyter and PyCharm, but the process is the same. You can download SPYDER from the <a href="https://www.spyder-ide.org">official website</a> or, even better, download it as part of a bigger package called <a href="https://oreil.ly/nI8Ed">Anaconda</a>, which facilitates installation and offers more tools. Note that it is open source, free-to-use software.</p>
+<p>SPYDER’s interface is split into three windows, as you can see in <a data-type="xref" href="#figure1-1">Figure 1-1</a>. The window on the left is used to write the code that is later executed (the algorithm is told to run and apply the code). Typically, you will see multiple lines of code in that area.</p>
+<p>The window on the upper right is the variable explorer. Every time a variable is stored, you can see it there. The window on the lower right is the console that shows the result of the code, whether it is an error or an output.</p>
+<figure><div class="figure" id="figure1-1"><img alt="" height="382" src="assets/mfpr_0101.png" width="600"/>
+<h6><span class="label">Figure 1-1. </span>SPYDER’s interface</h6>
+</div></figure>
+<p>The types<a contenteditable="false" data-primary="data types, SPYDER" data-type="indexterm" id="idm46762872714592"/> of data that you can define and use in the code are classified into several categories:</p>
+<dl>
+<dt>Integers</dt>
+<dd>These are whole<a contenteditable="false" data-primary="integer data type" data-type="indexterm" id="idm46762879157664"/> numbers, which can be either positive or negative. Examples are −8 and 745. They are, however, limited to between −2147483648 and 2147483647. Any number falling outside this range is considered a different data type called a <em>long</em>. The difference between data types has to do with memory. Integers are 32 bits in width, whereas longs are 64 bits in width.</dd>
+<dt>Floats</dt>
+<dd>These are<a contenteditable="false" data-primary="float data type" data-type="indexterm" id="idm46762873237152"/> real numbers with decimal points such as 18.54 and 311.52.</dd>
+<dt>Strings</dt>
+<dd>These are words<a contenteditable="false" data-primary="strings data type" data-type="indexterm" id="idm46762874172944"/> stored in a variable. More scientifically, they are a set of structured characters (text). In Python, you write strings between single or double quotes.</dd>
+</dl>
+<p class="pagebreak-before">In line 1 of the code in <a data-type="xref" href="#figure1-1">Figure 1-1</a>, I have defined a variable called <code>age</code> and set it to 13. When you run this code, you should see the creation of <code>age</code> in the variable explorer with type <code>int</code> (integer) and a value of 13. In line 3, I have executed the code that defines the <code>height</code> variable set to 184.50 (therefore, a float data type).</p>
+<p>Notice that next to the definition of the variable, I have written the phrase <code>in centimeters</code>, preceded by a hashmark. This is called a <em>comment</em>. Comments<a contenteditable="false" data-primary="comments in code" data-type="indexterm" id="idm46762879112080"/> are very important in Python for explaining the code. Therefore, anything preceded by <code>#</code> will not be executed. In the variable explorer, you can see the <code>height</code> variable with the <code>float</code> type. Line 5 defines a string, which in the variable explorer is shown as <code>str</code> type (string). In the console, you can see that the code has been successfully executed because there are no errors, which would be shown in red.</p>
+<p>The next step in preparing the environment is to install the charting software that allows you to import historical data into SPYDER. Throughout the book, I use MetaTrader 5, a benchmark charting program used by many traders around the globe. Follow these steps:</p>
+<ol>
+<li>Download SPYDER and familiarize yourself with how it works.</li>
+<li>Download the MetaTrader 5 software.</li>
+<li>Use SPYDER to import historical prices from MetaTrader 5.</li>
+</ol>
+<p>From the <a href="https://www.metatrader5.com/en">official website</a>, download and install MetaTrader 5<a contenteditable="false" data-primary="MetaTrader 5" data-type="indexterm" id="ix_metatrader5"/>. You need to create a demo account, which is simply a virtual account with imaginary money. The word <em>demo</em> does not refer to a limited duration of use but to the fact that it is not using real money.</p>
+<p>To open an account, select File &gt; Open an Account, choose MetaQuotes Software Corp, and then click Next. Next, choose the first option to open a demo account; this will let you trade virtual money. Finally, enter some basic information such as name, email, and account type. You will not receive a verification request or any type of confirmation as the demo should launch directly, allowing you to see the charts<a contenteditable="false" data-primary="" data-startref="ix_python_install" data-type="indexterm" id="idm46762873964144"/><a contenteditable="false" data-primary="" data-startref="ix_spyder_install" data-type="indexterm" id="idm46762872848720"/>.</p>
+<p><a data-type="xref" href="#figure1-2">Figure 1-2</a> shows the platform’s interface. By default, MetaTrader 5 does not show all the markets it covers, so you need to make them accessible for import and visualization if necessary. Click View, click Market Watch, and then right-click any of the symbols shown in the new tab and choose Show All. This way you can see the extended list with more markets.</p>
+<figure><div class="figure" id="figure1-2"><img alt="" height="461" src="assets/mfpr_0102.png" width="600"/>
+<h6><span class="label">Figure 1-2. </span>MetaTrader 5’s interface</h6>
+</div></figure>
+</div></section>
+<section data-pdf-bookmark="Creating the Importing Algorithm " data-type="sect1"><div class="sect1" id="idm46762873010192">
+<h1>Creating the Importing Algorithm </h1>
+<p>Being<a contenteditable="false" data-primary="Python, importing and processing financial data" data-secondary="creating importing algorithm" data-type="indexterm" id="ix_python_import_alg"/> able to automatically summon historical data of any time frame is a wonderful time-saver as it allows you to focus on research and analysis instead of wasting valuable time acquiring and cleaning the data. Let’s create a set of functions that import the historical data of a selected asset almost instantaneously.</p>
+<p>Before proceeding to the coding part, you need to install the MetaTrader 5 Python integration library so you can use it later in SPYDER. This is easy and requires one step. Open the Anaconda prompt and type in <code>pip install Metatrader5</code>, as shown in <a data-type="xref" href="#figure1-3">Figure 1-3</a>.</p>
+<figure><div class="figure" id="figure1-3"><img alt="" height="86" src="assets/mfpr_0103.png" width="600"/>
+<h6><span class="label">Figure 1-3. </span>Anaconda prompt showing the command to install the MetaTrader 5 library</h6>
+</div></figure>
+<p>Installation is the bridge that allows you to use Python libraries<a contenteditable="false" data-primary="libraries, importing Python" data-type="indexterm" id="idm46762872967584"/> designed for MetaTrader 5 in the interpreter.</p>
+<p>The following code block uses the <code>import</code> built-in statement, which calls for internal (self-created) or external (created by third parties) libraries. A library is a store of functions, and thus, you need to import the libraries that are pertinent to what you want to do. For demonstration purposes, import the following modules, packages, and libraries:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="kn">import</code> <code class="nn">datetime</code>
+<code class="kn">import</code> <code class="nn">pytz</code>
+<code class="kn">import</code> <code class="nn">pandas</code> <code class="k">as</code> <code class="nn">pd</code>
+<code class="kn">import</code> <code class="nn">MetaTrader5</code> <code class="k">as</code> <code class="nn">mt5</code>
+<code class="kn">import</code> <code class="nn">numpy</code> <code class="k">as</code> <code class="nn">np</code> </pre>
+<p>The <code>datetime</code> module<a contenteditable="false" data-primary="datetime module" data-type="indexterm" id="idm46762873647408"/> gives tools for manipulating the dates and times, the <code>pytz</code> library offers cross-platform time zone calculations that are needed for the import, and the <code>pandas</code> and <code>numpy</code> libraries<a contenteditable="false" data-primary="pytz library" data-type="indexterm" id="idm46762873145040"/><a contenteditable="false" data-primary="pandas library" data-type="indexterm" id="idm46762872736320"/><a contenteditable="false" data-primary="numpy library" data-type="indexterm" id="idm46762874134176"/> are used for data manipulation and analysis.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>You mainly use <code>numpy</code> for most calculations and data manipulation.</p>
+</div>
+<p>The MetaTrader 5 library<a contenteditable="false" data-primary="Python, importing and processing financial data" data-secondary="importing libraries" data-type="indexterm" id="idm46762877419408"/> imports the functions relating to the software’s module and is the key library that will allow you to import the financial historical data.</p>
+<p>Note that the three last lines of code contain the <code>as</code> statement<a contenteditable="false" data-primary="as statement" data-type="indexterm" id="idm46762875432112"/>. This is used to give a custom name to the library when you want to use it frequently and save writing space. In other words, Python recognizes the MetaTrader 5 library as mt5 from now on<a contenteditable="false" data-primary="" data-startref="ix_metatrader5" data-type="indexterm" id="idm46762872866096"/>.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p><em>Modules</em> are files<a contenteditable="false" data-primary="modules" data-type="indexterm" id="idm46762873001584"/> that contain functions and variables. A <em>package</em><a contenteditable="false" data-primary="package" data-type="indexterm" id="idm46762872840688"/> is a collection of modules; it needs to have an <em>init.py</em> file. A library<a contenteditable="false" data-primary="library" data-type="indexterm" id="idm46762879159360"/> is simply a collection of packages.</p>
+</div>
+<p>Executing the <code>import</code> statements means that Python now recognizes the functions inside them and will allow you to use them in future code if you decide to call them. You must run them every time you open a new session, which is why the <code>import</code> statements are usually found at the beginning of the code.</p>
+<p class="pagebreak-before">The next step is to create the universe of the time frames that you will be able to import. Even though I will be showing you how to analyze and back-test hourly data, you can define a wider universe, as shown in the following code snippet:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="n">frame_M15</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_M15</code><code> </code><strong><code class="c1"># 15-minute time</code></strong><code>
+</code><code class="n">frameframe_M30</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_M30</code><code> </code><strong><code class="c1"># 30-minute time frame</code></strong><code>
+</code><code class="n">frame_H1</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_H1</code><code> </code><strong><code class="c1"># Hourly time frame</code></strong><code>
+</code><code class="n">frame_H4</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_H4</code><strong><code> </code><code class="c1"># 4-hour time frame</code></strong><code>
+</code><code class="n">frame_D1</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_D1</code><code> </code><strong><code class="c1"># Daily time frame</code></strong><code>
+</code><code class="n">frame_W1</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_W1</code><code> </code><strong><code class="c1"># Weekly time frame</code></strong><code>
+</code><code class="n">frame_M1</code><code> </code><code class="o">=</code><code> </code><code class="n">mt5</code><code class="o">.</code><code class="n">TIMEFRAME_MN1</code><code> </code><strong><code class="c1"># Monthly time frame</code></strong><code>
+</code></pre>
+<p>A <em>time frame</em> is the frequency<a contenteditable="false" data-primary="time frames" data-secondary="creating to import" data-type="indexterm" id="idm46762873297296"/> with which you record the prices. With hourly data, you will record the last price printed every hour. This means that in a day, you can have up to 24 hourly prices. This allows you to see the intraday evolution of the price. However, the close price<a contenteditable="false" data-primary="close price" data-type="indexterm" id="idm46762872733696"/> is just one of the things that you want to import. During a time period (whether hourly or daily), you will see the following:</p>
+<ul>
+<li>The first price of the time period, which is called<a contenteditable="false" data-primary="open price" data-type="indexterm" id="idm46762872987504"/> the <em>open price</em>.</li>
+<li>The highest price printed during the time period, which is called<a contenteditable="false" data-primary="high price" data-type="indexterm" id="idm46762873972800"/> the <em>high price</em>. </li>
+<li>The lowest price printed during the time period, which is called<a contenteditable="false" data-primary="low price" data-type="indexterm" id="idm46762873174064"/> the <em>low price</em>.</li>
+<li>The last price seen before starting a new time period, which is referred to as the <em>close price</em>.</li>
+</ul>
+<p>Altogether these are called the OHLC<sup><a data-type="noteref" href="ch01.xhtml#idm46762873126720" id="idm46762873126720-marker">1</a></sup> data<a contenteditable="false" data-primary="OHLC data" data-type="indexterm" id="idm46762872822816"/>, which are generally ordered as written.</p>
+<p>The following code defines the current<a contenteditable="false" data-primary="current time, defining with datetime" data-type="indexterm" id="idm46762873514832"/> time, which is used so that the algorithm has a reference point when importing the data. Basically, you are creating a variable that stores the current time and date<a contenteditable="false" data-primary="datetime.datetime.now()" data-type="indexterm" id="idm46762873513632"/>:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="n">now</code> <code class="o">=</code> <code class="n">datetime</code><code class="o">.</code><code class="n">datetime</code><code class="o">.</code><code class="n">now</code><code class="p">()</code></pre>
+<p>Let’s now proceed to defining the universe of the assets<a contenteditable="false" data-primary="assets, defining test" data-type="indexterm" id="idm46762873573536"/> you want to back-test. I do a mix of four asset classes: currencies, cryptocurrencies, commodities, and equity <span class="keep-together">indices</span>:</p>
+<ul>
+<li><em>Currencies </em>(also known as <em>forex</em>, an abbreviation<a contenteditable="false" data-primary="forex (foreign exchange market)" data-type="indexterm" id="idm46762873391888"/> for foreign exchange market) form the biggest financial market in terms of daily volume. Currencies are quoted in pairs, meaning that you cannot just buy USD in absolute terms; you have to buy it using another currency. Therefore, the EURUSD pair refers to the price of 1 EUR in terms of USD. The back-testing universe comprises EURUSD, USDCHF, GBPUSD, and USDCAD.</li>
+</ul>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>USD is an abbreviation<a contenteditable="false" data-primary="currency abbreviations" data-type="indexterm" id="idm46762873358720"/> for the United States dollar, EUR is an abbreviation for the euro currency, CHF is an abbreviation for the Swiss franc, GBP is an abbreviation for Great Britain’s pound, and CAD is an abbreviation for the Canadian dollar.</p>
+</div>
+<ul>
+<li><em>Cryptocurrencies </em>(also known as <em>cryptos</em>) are a new, disruptive asset class characterized by severe volatility. The most well-known cryptocurrency<a contenteditable="false" data-primary="cryptocurrencies (cryptos)" data-type="indexterm" id="idm46762873156384"/><a contenteditable="false" data-primary="Bitcoin (BTC)" data-type="indexterm" id="idm46762873155312"/> is Bitcoin, followed<a contenteditable="false" data-primary="Ethereum (ETH)" data-type="indexterm" id="idm46762872745664"/> by Ethereum. Note that both are expressed in terms of USD; this is why they are labeled as BTCUSD and ETHUSD.</li>
+</ul>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Notice that Bitcoin (BTC) and Ethereum (ETH) are quoted versus USD. They are generally considered the most liquid cryptocurrency pairs.</p>
+</div>
+<ul>
+<li><em>Commodities </em>are physical<a contenteditable="false" data-primary="commodities" data-type="indexterm" id="idm46762873659776"/> assets such as gold, silver, and copper. They are divided into many categories such as energy (crude oil, Brent oil, etc.) and industrial metals (copper, zinc, etc.). In the universe of assets, I stick to gold and silver.</li>
+<li><em>Equity indices</em> are weighted<a contenteditable="false" data-primary="equity indices" data-type="indexterm" id="idm46762873007616"/> calculations of a select basket of a country’s stocks. They are used to analyze the overall stock market health of a nation. In this book, I cover the S&amp;P 500, a proxy for US stocks, and the FTSE 100, a proxy for UK stocks:</li>
+</ul>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="n">assets</code> <code class="o">=</code> <code class="p">[</code><code class="s1">'EURUSD'</code><code class="p">,</code> <code class="s1">'USDCHF'</code><code class="p">,</code> <code class="s1">'GBPUSD'</code><code class="p">,</code> <code class="s1">'USDCAD'</code><code class="p">,</code> <code class="s1">'BTCUSD'</code><code class="p">,</code> 
+          <code class="s1">'ETHUSD'</code><code class="p">,</code> <code class="s1">'XAUUSD'</code><code class="p">,</code> <code class="s1">'XAGUSD'</code><code class="p">,</code> <code class="s1">'SP500m'</code><code class="p">,</code> <code class="s1">'UK100'</code><code class="p">]</code></pre>
+<p>Now that you have your time and asset variables ready, all you need is to create the structure of the importing algorithm. The <code>get_quotes()</code> function<a contenteditable="false" data-primary="get_quotes() function" data-type="indexterm" id="idm46762873223520"/> does this:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code> <code class="nf">get_quotes</code><code class="p">(</code><code class="n">time_frame</code><code class="p">,</code> <code class="n">year</code> <code class="o">=</code> <code class="mi">2005</code><code class="p">,</code> <code class="n">month</code> <code class="o">=</code> <code class="mi">1</code><code class="p">,</code> <code class="n">day</code> <code class="o">=</code> <code class="mi">1</code><code class="p">,</code> 
+               <code class="n">asset</code> <code class="o">=</code> <code class="s2">"EURUSD"</code><code class="p">):</code>
+        
+    <code class="k">if</code> <code class="ow">not</code> <code class="n">mt5</code><code class="o">.</code><code class="n">initialize</code><code class="p">():</code>
+        
+        <code class="nb">print</code><code class="p">(</code><code class="s2">"initialize() failed, error code ="</code><code class="p">,</code> <code class="n">mt5</code><code class="o">.</code><code class="n">last_error</code><code class="p">())</code>
+        
+        <code class="n">quit</code><code class="p">()</code>
+    
+    <code class="n">timezone</code> <code class="o">=</code> <code class="n">pytz</code><code class="o">.</code><code class="n">timezone</code><code class="p">(</code><code class="s2">"Europe/Paris"</code><code class="p">)</code>
+    
+    <code class="n">time_from</code> <code class="o">=</code> <code class="n">datetime</code><code class="o">.</code><code class="n">datetime</code><code class="p">(</code><code class="n">year</code><code class="p">,</code> <code class="n">month</code><code class="p">,</code> <code class="n">day</code><code class="p">,</code> <code class="n">tzinfo</code> <code class="o">=</code> <code class="n">timezone</code><code class="p">)</code>
+    
+    <code class="n">time_to</code> <code class="o">=</code> <code class="n">datetime</code><code class="o">.</code><code class="n">datetime</code><code class="o">.</code><code class="n">now</code><code class="p">(</code><code class="n">timezone</code><code class="p">)</code> <code class="o">+</code> <code class="n">datetime</code><code class="o">.</code><code class="n">timedelta</code><code class="p">(</code><code class="n">days</code><code class="o">=</code><code class="mi">1</code><code class="p">)</code>
+    
+    <code class="n">rates</code> <code class="o">=</code> <code class="n">mt5</code><code class="o">.</code><code class="n">copy_rates_range</code><code class="p">(</code><code class="n">asset</code><code class="p">,</code> <code class="n">time_frame</code><code class="p">,</code> <code class="n">time_from</code><code class="p">,</code> <code class="n">time_to</code><code class="p">)</code>
+    
+    <code class="n">rates_frame</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">rates</code><code class="p">)</code>
+
+    <code class="k">return</code> <code class="n">rates_frame</code>
+</pre>
+<p>Notice that in the <code>get_quotes()</code> function, you finally<a contenteditable="false" data-primary="pytz library" data-type="indexterm" id="idm46762873367664"/> use the <code>pytz</code> and <code>pandas</code> libraries. The function starts by defining the Olson time zone, which you can set yourself. Here is a brief, nonexhaustive list of what you can enter depending on your time zone:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="n">America</code><code class="o">/</code><code class="n">New_York</code>
+<code class="n">Europe</code><code class="o">/</code><code class="n">London</code>
+<code class="n">Europe</code><code class="o">/</code><code class="n">Paris</code>
+<code class="n">Asia</code><code class="o">/</code><code class="n">Tokyo</code>
+<code class="n">Australia</code><code class="o">/</code><code class="n">Sydney</code>
+</pre>
+<p>Afterward, I define two variables called <code>time_from</code> and <code>time_to</code>:</p>
+<ul>
+<li>The <code>time_from</code> variable<a contenteditable="false" data-primary="time_from variable" data-type="indexterm" id="idm46762874260976"/> contains the datetime referring to the beginning of the import date (e.g., 01-01-2020).</li>
+<li>The <code>time_to</code> variable<a contenteditable="false" data-primary="time_to variable" data-type="indexterm" id="idm46762872882864"/> contains the datetime referring to the end of the import date (e.g., 12-31-2020).</li>
+</ul>
+<p>The next step is to create a variable that imports the financial data using the time periods you have specified. This is done<a contenteditable="false" data-primary="mt5.copy_rates_range() function" data-type="indexterm" id="idm46762872880832"/><a contenteditable="false" data-primary="rates variable" data-type="indexterm" id="idm46762873124672"/><a contenteditable="false" data-primary="pandas library" data-type="indexterm" id="idm46762873123568"/> through the <code>rates</code> variable using the <code>mt5.copy_rates_range()</code> function. Finally, using <code>pandas</code>, transform the data into a data frame.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Throughout the book you will be dealing with arrays<a contenteditable="false" data-primary="arrays" data-secondary="versus data frames" data-secondary-sortas="data frames" data-type="indexterm" id="idm46762878215248"/><a contenteditable="false" data-primary="data frames" data-type="indexterm" id="idm46762878213600"/> and not data frames; however<a contenteditable="false" data-primary="get_quotes() function" data-type="indexterm" id="idm46762873580976"/>, the function <code>get_quotes()</code> first imports the values as a data frame due to compatibility, and then you will transform it into an array. At any rate, the main difference between a data frame and an array is the type of data you can keep inside and the structure of the axes.</p>
+</div>
+<p>The final function required for the importing process<a contenteditable="false" data-primary="mass_import() function" data-type="indexterm" id="idm46762873578752"/> is the <code>mass_import()</code> function. It lets you choose the time frame using the variable and then uses the <code>get_quotes()</code> function to import the data and format it to an array. The following code snippet defines the <code>mass_import()</code> function:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="k">def</code> <code class="nf">mass_import</code><code class="p">(</code><code class="n">asset</code><code class="p">,</code> <code class="n">time_frame</code><code class="p">):</code>
+                
+    <code class="k">if</code> <code class="n">time_frame</code> <code class="o">==</code> <code class="s1">'H1'</code><code class="p">:</code>
+        <code class="n">data</code> <code class="o">=</code> <code class="n">get_quotes</code><code class="p">(</code><code class="n">frame_H1</code><code class="p">,</code> <code class="mi">2013</code><code class="p">,</code> <code class="mi">1</code><code class="p">,</code> <code class="mi">1</code><code class="p">,</code> <code class="n">asset</code> <code class="o">=</code> <code class="n">assets</code><code class="p">[</code><code class="n">asset</code><code class="p">])</code>
+        <code class="n">data</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code> <code class="mi">1</code><code class="p">:</code><code class="mi">5</code><code class="p">]</code><code class="o">.</code><code class="n">values</code>
+        <code class="n">data</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">round</code><code class="p">(</code><code class="n">decimals</code> <code class="o">=</code> <code class="mi">5</code><code class="p">)</code>        
+        
+    <code class="k">if</code> <code class="n">time_frame</code> <code class="o">==</code> <code class="s1">'D1'</code><code class="p">:</code>
+        <code class="n">data</code> <code class="o">=</code> <code class="n">get_quotes</code><code class="p">(</code><code class="n">frame_D1</code><code class="p">,</code> <code class="mi">2000</code><code class="p">,</code> <code class="mi">1</code><code class="p">,</code> <code class="mi">1</code><code class="p">,</code> <code class="n">asset</code> <code class="o">=</code> <code class="n">assets</code><code class="p">[</code><code class="n">asset</code><code class="p">])</code>
+        <code class="n">data</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code> <code class="mi">1</code><code class="p">:</code><code class="mi">5</code><code class="p">]</code><code class="o">.</code><code class="n">values</code>
+        <code class="n">data</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">round</code><code class="p">(</code><code class="n">decimals</code> <code class="o">=</code> <code class="mi">5</code><code class="p">)</code>        
+          
+    <code class="k">return</code> <code class="n">data</code> 
+</pre>
+<p>The <code>mass_import()</code> function automatically converts the data frame into an array, so you do not have to worry about conversion when using the automatic<a contenteditable="false" data-startref="ix_python_import_alg" data-type="indexterm" id="idm46762872912592"/> import.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>The algorithm imports a number of historical data limited by <span class="keep-together">MetaTrader</span> 5. Although that number is high, in time you may need to adjust the year argument higher in order to get the data. For instance, if you get an empty array using the <code>mass_import()</code> function, try putting a more recent year in the <code>get_quotes()</code> function (“2014” instead of “2013,” as shown in the preceding example).</p>
+</div>
+<p>Even though there is a MAC version of MetaTrader 5, the Python library only works on Windows. It requires an emulator on a Mac. For Mac users, you may also try the manual import method shown later in the chapter.
+</p>
+</div></section>
+<section data-pdf-bookmark="Putting It All Together" data-type="sect1"><div class="sect1" id="idm46762873510320">
+<h1>Putting It All Together</h1>
+<p>Let’s now see a full example of data import. Remember that the full importing code can be found in the GitHub repository of the book. Normally I am dealing only with hourly data in the book because traders use it heavily, which creates interesting signals; however, let’s try applying a couple of examples of importing after having defined the functions seen in this chapter:</p>
+<ul>
+<li>To import<a contenteditable="false" data-primary="ETHUSD data, importing" data-type="indexterm" id="idm46762873398368"/> the daily ETHUSD data, type the following code:</li>
+</ul>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="n">my_data</code> <code class="o">=</code> <code class="n">mass_import</code><code class="p">(</code><code class="mi">5</code><code class="p">,</code> <code class="s1">'D1'</code><code class="p">)</code></pre>
+<ul>
+<li>To import the hourly<a contenteditable="false" data-primary="GBPUSD data, importing" data-type="indexterm" id="idm46762872783648"/> GBPUSD data, type the following code:</li>
+</ul>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<code class="n">my_data</code> <code class="o">=</code> <code class="n">mass_import</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="s1">'H1'</code><code class="p">)</code></pre>
+<p>There are many ways to import data into Python; some are automatic, and some are manual. You have just seen the first way of using code to communicate with a charting platform and to download the data. The manual way is to have an Excel file with OHLC data that you have downloaded from a third party. In this case, you can use the <code>pandas</code> library to import it and transform it into an array.</p>
+<p class="pagebreak-before">Suppose that the Excel filename is <em>my_data</em> and the file is stored on your desktop. You have to make sure that the SPYDER directory<a contenteditable="false" data-primary="directory setup, SPYDER" data-type="indexterm" id="idm46762879049728"/><a contenteditable="false" data-primary="SPYDER" data-type="indexterm" id="idm46762876662544"/> is in the same place as the file. In layperson’s terms, SPYDER must search the desktop for the Excel file. To choose the right directory, you must click the folder button next to the arrow, as shown in <a data-type="xref" href="#figure1-4">Figure 1-4</a>.</p>
+<figure><div class="figure" id="figure1-4"><img alt="" height="26" src="assets/mfpr_0104.png" width="600"/>
+<h6><span class="label">Figure 1-4. </span>Directory tab</h6>
+</div></figure>
+<p>You should get a separate window where you can choose the desktop location and then validate the choice. Having done this, the tab should look like <a data-type="xref" href="#figure1-5">Figure 1-5</a>.</p>
+<figure><div class="figure" id="figure1-5"><img alt="" height="27" src="assets/mfpr_0105.png" width="600"/>
+<h6><span class="label">Figure 1-5. </span>Directory tab</h6>
+</div></figure>
+<p>You must use the <code>read_excel()</code> function to get the values inside the Excel file. Follow this syntax:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<strong><code class="c1"># Importing the excel file into the Python interpreter</code></strong><code>
+</code><code class="n">my_data</code><code> </code><code class="o">=</code><code> </code><code class="n">pd</code><code class="o">.</code><code class="n">read_excel</code><code class="p">(</code><code class="s1">'</code><code class="s1">my_data.xlsx</code><code class="s1">'</code><code class="p">)</code><code>
+</code></pre>
+<p>Right about now, you have a data frame called <code>my_data</code> with four different columns representing open, high, low, and close prices. You generally have to enter the library’s name before using a function that belongs<a contenteditable="false" data-primary="read_excel() function" data-type="indexterm" id="idm46762874147072"/> to it; this is why <code>read_excel()</code> is preceded by <code>pd</code>.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Remember<a contenteditable="false" data-primary="pd (pandas shortcut)" data-type="indexterm" id="idm46762874143760"/> that <code>pd</code> is the shortcut used<a contenteditable="false" data-primary="pandas library" data-type="indexterm" id="idm46762884171920"/> to refer to <code>pandas</code>. In parallel, <code>np</code> is the shortcut used to refer to <code>numpy</code>.</p>
+</div>
+<p>The following syntax<a contenteditable="false" data-primary="arrays" data-secondary="converting from data frames to" data-type="indexterm" id="idm46762884168896"/> shows how to convert structured elements from a data frame to an array to facilitate manipulation. The array library<a contenteditable="false" data-primary="numpy library" data-type="indexterm" id="idm46762884167264"/> I use is called <code>numpy</code>, which is the main library used in this book.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>I recommend using the automatic way for Windows users and the manual way for macOS users due to compatibility issues.</p>
+</div>
+<p>In your opinion, what should you do before using the functions of <code>numpy</code>? If your answer is import the library, then you are correct. The following code snippet imports <code>numpy</code> and converts <code>my_data</code> into an array so that it is ready for analysis:</p>
+<pre data-code-language="python" data-executable="true" data-type="programlisting">
+<strong><code class="c1"># Importing the library</code></strong><code>
+</code><code class="kn">import</code><code> </code><code class="nn">numpy</code><code> </code><code class="k">as</code><code> </code><code class="nn">np</code><code>
+</code><code>
+</code><strong><code class="c1"># Converting from data frame to array</code></strong><code>
+</code><code class="n">my_data</code><code> </code><code class="o">=</code><code> </code><code class="n">np</code><code class="o">.</code><code class="n">array</code><code class="p">(</code><code class="n">my_data</code><code class="p">)</code><code>
+</code></pre>
+<p>Alternatively, you can do all of this in one line by just adding <code>.values</code> to <code>pd.​read_excel('my_data.xlsx')</code>, thus becoming <code>pd.read_excel('my_data.xlsx').​values</code> and resulting in an array instead of a data frame.</p>
+</div></section>
+<section data-pdf-bookmark="Summary" data-type="sect1"><div class="sect1" id="idm46762873399792">
+<h1>Summary</h1>
+<p>The research and trading framework is composed of four different algorithms that are discussed in detail in the next chapter. They can be summarized as follows:</p>
+<dl>
+<dt>Import algorithm</dt>
+<dd>This is the algorithm<a contenteditable="false" data-primary="import algorithm" data-type="indexterm" id="idm46762879030304"/> shown in this chapter that deals with importing and preparing the historical OHLC data to be analyzed or back-tested. I believe that at this stage you can easily do this automatically and manually.</dd>
+<dt>Signal algorithm</dt>
+<dd>This algorithm<a contenteditable="false" data-primary="signal algorithm" data-type="indexterm" id="idm46762879028176"/>, which you will see in <a data-type="xref" href="ch02.xhtml#chapter2">Chapter 2</a>, will be responsible for generating the buy and sell orders. In essence, it is the set of conditions that gives the green light that a pattern has appeared and a trade can take place.<a contenteditable="false" data-primary="" data-startref="ix_python_import_ch1" data-type="indexterm" id="idm46762879196064"/></dd>
+<dt>Charting algorithm</dt>
+<dd>This is the simplest<a contenteditable="false" data-primary="charting algorithm" data-type="indexterm" id="idm46762879193824"/> algorithm. You will use it to chart the signals on the price chart. Its purpose is to visually analyze the buy and sell signals on the chart. You will also learn about this in <a data-type="xref" href="ch02.xhtml#chapter2">Chapter 2</a>.</dd>
+<dt>Performance algorithm</dt>
+<dd>This algorithm<a contenteditable="false" data-primary="performance evaluation" data-type="indexterm" id="idm46762879190704"/> is used to calculate and analyze the results acquired from the signal algorithm. Basically, it calculates performance metrics on the signals generated following the patterns’ conditions. You will also learn about this in <a data-type="xref" href="ch02.xhtml#chapter2">Chapter 2</a>.</dd>
+</dl>
+<p>It is important that you know how to automatically import and prepare financial data that you will later analyze. Python offers strong and rapid tools to do so; hence, make sure you master this technique so that you supersize your research capabilities.</p>
+</div></section>
+<div data-type="footnotes"><p data-type="footnote" id="idm46762873126720"><sup><a href="ch01.xhtml#idm46762873126720-marker">1</a></sup> An abbreviation for <em>open</em>, <em>high</em>, <em>low</em>, <em>and</em> <em>close</em>.</p></div></div></section></div></body></html>

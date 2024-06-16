@@ -1,0 +1,2521 @@
+<html><head></head><body><div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 8. Unsupervised Learning: Clustering"><div class="chapter" id="Chapter8">
+<h1><span class="label">Chapter 8. </span>Unsupervised Learning: Clustering</h1>
+
+
+<p><a data-type="indexterm" data-primary="clustering" id="ix_Chapter8-asciidoc0"/>In the previous chapter, we explored dimensionality reduction, which is one type of unsupervised learning. In this chapter, we will explore <em>clustering</em>, a category of unsupervised learning techniques that allows us to discover hidden structures in data.</p>
+
+<p><a data-type="indexterm" data-primary="clustering" data-secondary="dimensionality reduction versus" id="idm45174913251880"/><a data-type="indexterm" data-primary="dimensionality reduction" data-secondary="clustering versus" id="idm45174913250936"/>Both clustering and dimensionality reduction summarize the data. Dimensionality reduction compresses the data by representing it using new, fewer features while still capturing the most relevant information. Similarly, clustering is a way to reduce the volume of data and find patterns. However, it does so by categorizing the original data and not by creating new variables. Clustering algorithms assign observations to subgroups that consist of similar data points. The goal of clustering is to find a natural grouping in data so that items in a given cluster are more similar to each other than to those of different clusters. Clustering serves to better understand the data through the lens of several categories or groups created. It also permits the automatic categorization of new objects according to the learned criteria.</p>
+
+<p>In the field of finance, clustering has been used by traders and investment managers to find homogeneous groups of assets, classes, sectors, and countries based on similar characteristics. Clustering analysis augments trading strategies by providing insights into categories of trading signals. The technique has been used to segment customers or investors into a number of groups to better understand their behavior and to perform additional analysis.</p>
+
+<p>In this chapter, we will discuss fundamental clustering techniques and introduce three case studies in the areas of portfolio management and trading strategy 
+<span class="keep-together">development</span>.</p>
+
+<p>In <a data-type="xref" href="#CaseStudy1CL">“Case Study 1: Clustering for Pairs Trading”</a>, we use clustering 
+<span class="keep-together">methods to</span> select pairs of stocks for a trading strategy. <a data-type="indexterm" data-primary="pairs trading" data-secondary="defined" id="idm45174913244920"/>A <em>pairs trading strategy</em> involves matching a long position with a short position in two financial instruments that are closely related. Finding appropriate pairs can be a challenge when the number of instruments is high. In this case study, we demonstrate how clustering can be a useful technique in trading strategy development and other similar situations.</p>
+
+<p>In <a data-type="xref" href="#CaseStudy2CL">“Case Study 2: Portfolio Management: Clustering Investors”</a>, we 
+<span class="keep-together">identify clusters</span> of investors with similar abilities and willingness to take risks. We show how clustering techniques can be used for effective asset allocation and portfolio rebalancing. This illustrates how part of the portfolio management process can be automated, which is immensely useful for investment managers and robo-advisors alike.</p>
+
+<p>In <a data-type="xref" href="#CaseStudy3CL">“Case Study 3: Hierarchical Risk Parity”</a>, we use a clustering-based 
+<span class="keep-together">algorithm to</span> allocate capital into different asset classes and compare the results against other portfolio allocation techniques.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm45174913166600">
+<h5/>
+<p>In this chapter, we will learn about the following concepts related to clustering 
+<span class="keep-together">techniques</span>:</p>
+
+<ul>
+<li>
+<p>Basic concepts of models and techniques used for clustering.</p>
+</li>
+<li>
+<p>How to implement different clustering techniques in Python.</p>
+</li>
+<li>
+<p>How to effectively perform visualizations of clustering outcomes.</p>
+</li>
+<li>
+<p>Understanding the intuitive meaning of clustering results.</p>
+</li>
+<li>
+<p>How to choose the right clustering techniques for a problem.</p>
+</li>
+<li>
+<p>Selecting the appropriate number of clusters in different clustering algorithms.</p>
+</li>
+<li>
+<p>Building hierarchical clustering trees using Python.</p>
+</li>
+</ul>
+</div></aside>
+<div data-type="note" epub:type="note"><h1>This Chapter’s Code Repository</h1>
+<p>A Python-based master template for clustering, along with the Jupyter notebook for the case studies presented in this chapter are in <a href="https://oreil.ly/uzbaH">Chapter 8 - Unsup. Learning - Clustering</a> in the code repository for this book. To work through any machine learning problems in Python involving the models for clustering (such as <em>k</em>-means, hierarchical clustering, etc.) presented in this chapter, readers simply need to modify the template to align with their problem statement. Similar to the previous chapters, the case studies presented in this chapter use the standard Python master template with the standardized model development steps presented in <a data-type="xref" href="ch02.xhtml#Chapter2">Chapter 2</a>. For the clustering case studies, steps 6 (Model Tuning and Grid Search) and 7 (Finalizing the Model) have merged with step 5 (Evaluate Algorithms and Models).</p>
+</div>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Clustering Techniques"><div class="sect1" id="idm45174913153528">
+<h1>Clustering Techniques</h1>
+
+<p><a data-type="indexterm" data-primary="clustering" data-secondary="techniques" id="ix_Chapter8-asciidoc1"/>There are many types of clustering techniques, and they differ with respect to their strategy of identifying groupings. Choosing which technique to apply depends on the nature and structure of the data. In this chapter, we will cover the following three clustering techniques:</p>
+
+<ul>
+<li>
+<p><em>k</em>-means clustering</p>
+</li>
+<li>
+<p>Hierarchical clustering</p>
+</li>
+<li>
+<p>Affinity propagation clustering</p>
+</li>
+</ul>
+
+<p>The following section summarizes these clustering techniques, including their strengths and weaknesses. Additional details for each of the clustering methods are provided in the case studies.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="k-means Clustering"><div class="sect2" id="idm45174913146312">
+<h2>k-means Clustering</h2>
+
+<p><a data-type="indexterm" data-primary="clustering" data-secondary="k-means" id="idm45174913144936"/><a data-type="indexterm" data-primary="k-means clustering" id="idm45174913143960"/><em>k</em>-means is the most well-known clustering technique. The algorithm of <em>k</em>-means aims to find and group data points into classes that have high similarity between them. This similarity is understood as the opposite of the distance between data points. The closer the data points are, the more likely they are to belong to the same cluster.</p>
+
+<p><a data-type="indexterm" data-primary="inertia" id="idm45174913141912"/>The algorithm finds <em>k</em> centroids and assigns each data point to exactly one cluster with the goal of minimizing the within-cluster variance (called <em>inertia</em>). It typically uses the Euclidean distance (ordinary distance between two points), but other distance metrics can be used. The <em>k</em>-means algorithm delivers a local optimum for a given <em>k</em> and proceeds as follows:</p>
+<ol>
+<li>
+<p>This algorithm specifies the number of clusters.</p>
+</li>
+<li>
+<p>Data points are randomly selected as cluster centers.</p>
+</li>
+<li>
+<p>Each data point is assigned to the cluster center it is nearest to.</p>
+</li>
+<li>
+<p>Cluster centers are updated to the mean of the assigned points.</p>
+</li>
+<li>
+<p>Steps 3–4 are repeated until all cluster centers remain unchanged.</p>
+</li>
+
+</ol>
+
+<p>In simple terms, we randomly move around the specified number of centroids in each iteration, assigning each data point to the closest centroid. Once we have done that, we calculate the mean distance of all points in each centroid. Then, once we can no longer reduce the minimum distance from data points to their respective centroids, we have found our clusters.</p>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="k-means hyperparameters"><div class="sect3" id="idm45174913133016">
+<h3>k-means hyperparameters</h3>
+
+<p><a data-type="indexterm" data-primary="k-means clustering" data-secondary="hyperparameters" id="idm45174913131608"/>The <em>k</em>-means hyperparameters include:</p>
+<dl>
+<dt>Number of clusters</dt>
+<dd>
+<p>The number of clusters and centroids to generate.</p>
+</dd>
+<dt>Maximum iterations</dt>
+<dd>
+<p>Maximum iterations of the algorithm for a single run.</p>
+</dd>
+<dt>Number initial</dt>
+<dd>
+<p>The number of times the algorithm will be run with different centroid seeds. The final result will be the best output of the defined number of consecutive runs, in terms of inertia.</p>
+</dd>
+</dl>
+
+<p>With <em>k</em>-means, different random starting points for the cluster centers often result in very different clustering solutions. Therefore, the <em>k</em>-means algorithm is run in sklearn with at least 10 different random initializations, and the solution occurring the greatest number of times is chosen.</p>
+
+<p>The strengths of <em>k</em>-means include its simplicity, wide range of applicability, fast convergence, and linear scalability to large data while producing clusters of an even size. It is most useful when we know the exact number of clusters, <em>k</em>, beforehand. In fact, a main weakness of <em>k</em>-means is having to tune this hyperparameter. Additional drawbacks include the lack of a guarantee to find a global optimum and its sensitivity to outliers.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Implementation in Python"><div class="sect3" id="idm45174913121384">
+<h3>Implementation in Python</h3>
+
+<p><a data-type="indexterm" data-primary="k-means clustering" data-secondary="implementation in Python" id="idm45174913120216"/>Python’s sklearn library offers a powerful implementation of <em>k</em>-means. The following code snippet illustrates how to apply <em>k</em>-means clustering on a dataset:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn.cluster</code> <code class="k">import</code> <code class="n">KMeans</code>
+<code class="c">#Fit with k-means</code>
+<code class="n">k_means</code> <code class="o">=</code> <code class="n">KMeans</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="n">nclust</code><code class="p">)</code>
+<code class="n">k_means</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+
+<p>The number of clusters is the key hyperparameter to be tuned. We will look at the <em>k</em>-means clustering technique in case studies 1 and 2 of this chapter, in which further details on choosing the right number of clusters and detailed visualizations are 
+<span class="keep-together">provided</span>.</p>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Hierarchical Clustering"><div class="sect2" id="idm45174913097704">
+<h2>Hierarchical Clustering</h2>
+
+<p><em>Hierarchical clustering</em> <a data-type="indexterm" data-primary="clustering" data-secondary="hierarchical" id="ix_Chapter8-asciidoc2"/><a data-type="indexterm" data-primary="hierarchical clustering" id="ix_Chapter8-asciidoc3"/>involves creating clusters that have a predominant ordering from top to bottom. The main advantage of hierarchical clustering is that we do not need to specify the number of clusters; the model determines that by itself. This 
+<span class="keep-together">clustering</span> technique is divided into two types: agglomerative hierarchical clustering and divisive hierarchical clustering.</p>
+
+<p><a data-type="indexterm" data-primary="agglomerative hierarchical clustering" data-seealso="hierarchical clustering" id="idm45174913092056"/><em>Agglomerative hierarchical clustering</em> is the most common type of hierarchical clustering and is used to group objects based on their similarity. It is a “bottom-up” approach where each observation starts in its own cluster, and pairs of clusters are merged as one moves up the hierarchy. The agglomerative hierarchical clustering algorithm delivers a <em>local optimum</em> and proceeds as follows:</p>
+<ol>
+<li>
+<p>Make each data point a single-point cluster and form <em>N</em> clusters.</p>
+</li>
+<li>
+<p>Take the two closest data points and combine them, leaving <em>N-1</em> clusters.</p>
+</li>
+<li>
+<p>Take the two closest clusters and combine them, forming <em>N-2</em> clusters.</p>
+</li>
+<li>
+<p>Repeat step 3 until left with only one cluster.</p>
+</li>
+
+</ol>
+
+<p><a data-type="indexterm" data-primary="divisive hierarchical clustering" id="idm45174913084472"/><em>Divisive hierarchical clustering</em> works “top-down” and sequentially splits the remaining clusters to produce the most distinct subgroups.</p>
+
+<p>Both produce <em>N-1</em> hierarchical levels and facilitate the clustering creation at the level that best partitions data into homogeneous groups. We will focus on the more common agglomerative clustering approach.</p>
+
+<p><a data-type="indexterm" data-primary="dendrograms" id="idm45174913081960"/>Hierarchical clustering enables the plotting of <em>dendrograms</em>, which are visualizations of a binary hierarchical clustering. A dendrogram is a type of tree diagram showing hierarchical relationships between different sets of data. They provide an interesting and informative visualization of hierarchical clustering results. A dendrogram contains the memory of the hierarchical clustering algorithm, so you can tell how the cluster is formed simply by inspecting the chart.</p>
+
+<p><a data-type="xref" href="#HC">Figure 8-1</a> shows an example of dendrograms based on hierarchical clustering. The distance between data points represents dissimilarities, and the height of the blocks represents the distance between clusters.</p>
+
+<p>Observations that fuse at the bottom are similar, while those at the top are quite different. With dendrograms, conclusions are made based on the location of the vertical axis rather than on the horizontal one.</p>
+
+<p>The advantages of hierarchical clustering are that it is easy to implement it, does not require one to specify the number of clusters, and it produces dendrograms that are very useful in understanding the data. However, the time complexity for hierarchical clustering can result in long computation times relative to other algorithms, such as <em>k</em>-means. If we have a large dataset, it can be difficult to determine the correct number of clusters by looking at the dendrogram. Hierarchical clustering is very sensitive to outliers, and in their presence, model performance decreases significantly.</p>
+
+<figure><div id="HC" class="figure">
+<img src="Images/mlbf_0801.png" alt="mlbf 0801" width="1432" height="933"/>
+<h6><span class="label">Figure 8-1. </span>Hierarchical clustering</h6>
+</div></figure>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Implementation in Python"><div class="sect3" id="idm45174913074760">
+<h3>Implementation in Python</h3>
+
+<p>The following code snippet illustrates how to apply agglomerative hierarchical clustering with four clusters on a dataset:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn.cluster</code> <code class="k">import</code> <code class="n">AgglomerativeClustering</code>
+<code class="n">model</code> <code class="o">=</code> <code class="n">AgglomerativeClustering</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="mi">4</code><code class="p">,</code> <code class="n">affinity</code><code class="o">=</code><code class="s">'euclidean'</code><code class="p">,</code>\
+  <code class="n">linkage</code><code class="o">=</code><code class="s">'ward'</code><code class="p">)</code>
+<code class="n">clust_labels1</code> <code class="o">=</code> <code class="n">model</code><code class="o">.</code><code class="n">fit_predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+
+<p>More details regarding the hyperparameters of agglomerative hierarchical clustering can be found on the <a href="https://scikit-learn.org">sklearn website</a>. We will look at the hierarchical clustering technique in case studies 1 and 3 in this chapter.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc3" id="idm45174913020424"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc2" id="idm45174913019816"/></p>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Affinity Propagation Clustering"><div class="sect2" id="idm45174913097112">
+<h2>Affinity Propagation Clustering</h2>
+
+<p><a data-type="indexterm" data-primary="affinity propagation clustering" id="idm45174913017672"/><a data-type="indexterm" data-primary="clustering" data-secondary="affinity propagation" id="idm45174913016808"/><em>Affinity propagation</em> creates clusters by sending messages between data points until convergence. Unlike clustering algorithms such as <em>k</em>-means, affinity propagation does not require the number of clusters to be determined or estimated before running the algorithm. Two important parameters are used in affinity propagation to determine the number of clusters: the <em>preference</em>, which controls how many <em>exemplars</em> (or prototypes) are used; and the <em>damping factor</em>, which dampens the responsibility and availability of messages to avoid numerical oscillations when updating these messages.</p>
+
+<p>A dataset is described using a small number of exemplars. These are members of the input set that are representative of clusters. The affinity propagation algorithm takes in a set of pairwise similarities between data points and finds clusters by maximizing the total similarity between data points and their exemplars. The messages sent between pairs represent the suitability of one sample to be the exemplar of the other, which is updated in response to the values from other pairs. This updating happens iteratively until convergence, at which point the final exemplars are chosen, and we obtain the final clustering.</p>
+
+<p>In terms of strengths, affinity propagation does not require the number of clusters to be determined before running the algorithm. The algorithm is fast and can be applied to large similarity matrices. However, the algorithm often converges to suboptimal solutions, and at times it can fail to converge.</p>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Implementation in Python"><div class="sect3" id="idm45174913011480">
+<h3>Implementation in Python</h3>
+
+<p>The following code snippet illustrates how to implement the affinity propagation algorithm for a dataset:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn.cluster</code> <code class="k">import</code> <code class="n">AffinityPropagation</code>
+<code class="c"># Initialize the algorithm and set the number of PC's</code>
+<code class="n">ap</code> <code class="o">=</code> <code class="n">AffinityPropagation</code><code class="p">()</code>
+<code class="n">ap</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+
+<p>More details regarding the hyperparameters of affinity propagation clustering can be found on the <a href="https://scikit-learn.org">sklearn website</a>. We will look at the affinity propagation technique in case studies 1 and 2 in this chapter.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc1" id="idm45174912998104"/></p>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Case Study 1: Clustering for Pairs Trading"><div class="sect1" id="CaseStudy1CL">
+<h1>Case Study 1: Clustering for Pairs Trading</h1>
+
+<p><a data-type="indexterm" data-primary="pairs trading" id="ix_Chapter8-asciidoc4"/>A pairs trading strategy constructs a portfolio of correlated assets with similar market risk factor exposure. Temporary price discrepancies in these assets can create opportunities to profit through a long position in one instrument and a short position in another. A pairs trading strategy is designed to eliminate market risk and exploit these temporary discrepancies in the relative returns of stocks.</p>
+
+<p><a data-type="indexterm" data-primary="mean reversion" id="idm45174912958552"/>The fundamental premise in pairs trading is that <em>mean reversion</em> is an expected dynamic of the assets. This mean reversion should lead to a long-run equilibrium relationship, which we try to approximate through statistical methods. When moments of (presumably temporary) divergence from this long-term trend arise, one can possibly profit. The key to successful pairs trading is the ability to select the right pairs of assets to be used.</p>
+
+<p>Traditionally, trial and error was used for pairs selection. Stocks or instruments that were merely in the same sector or industry were grouped together. The idea was that if these stocks were for companies in similar industries, their stocks should move similarly as well. However, this was and is not necessarily the case. Additionally, with a large universe of stocks, finding a suitable pair is a difficult task, given that there are a total of <em>n(n–1)/2</em> possible pairs, where <em>n</em> is the number of instruments. Clustering can be a useful technique here.</p>
+
+<p>In this case study, we will use clustering algorithms to select pairs of stocks for a pairs trading strategy.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm45174912954472">
+<h5/>
+<p>This case study will focus on:</p>
+
+<ul>
+<li>
+<p>Evaluating three main clustering methods: <em>k</em>-means, hierarchical clustering, and affinity propagation clustering.</p>
+</li>
+<li>
+<p>Understanding approaches to finding the right number of clusters in <em>k</em>-means and hierarchical clustering.</p>
+</li>
+<li>
+<p>Visualizing data in the clusters, including viewing dendrograms.</p>
+</li>
+<li>
+<p>Selecting the right clustering algorithm.</p>
+</li>
+</ul>
+</div></aside>
+<img class="blueprint top" src="Images/bracket_top.png" width="1625" height="32"/>
+
+
+
+
+
+
+
+
+<section data-type="sect2" class="blueprint" data-pdf-bookmark="Blueprint for Using Clustering to Select Pairs"><div class="sect2" id="idm45174912947352">
+<h2>Blueprint for Using Clustering to Select Pairs</h2>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="1. Problem definition"><div class="sect3" id="idm45174912945832">
+<h3>1. Problem definition</h3>
+
+<p>Our goal in this case study is to perform clustering analysis on the stocks in the S&amp;P 500 to come up with pairs for a pairs trading strategy. S&amp;P 500 stock data was obtained using <code>pandas_datareader</code> from Yahoo Finance. It includes price data from 2018 onwards.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="2. Getting started—loading the data and Python packages"><div class="sect3" id="idm45174912943640">
+<h3>2. Getting started—loading the data and Python packages</h3>
+
+<p><a data-type="indexterm" data-primary="pairs trading" data-secondary="loading data and Python packages" id="idm45174912942472"/>The list of the libraries used for data loading, data analysis, data preparation, and model evaluation are shown below.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="2.1. Loading the Python packages"><div class="sect4" id="idm45174912941144">
+<h4>2.1. Loading the Python packages</h4>
+
+<p>The details of most of these packages and functions have been provided in Chapters <a href="ch02.xhtml#Chapter2">2</a> and <a href="ch04.xhtml#Chapter4">4</a>. The use of these packages will be demonstrated in different steps of the model development process.</p>
+
+<p><code>Packages for clustering</code></p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn.cluster</code> <code class="k">import</code> <code class="n">KMeans</code><code class="p">,</code> <code class="n">AgglomerativeClustering</code><code class="p">,</code> <code class="n">AffinityPropagation</code>
+<code class="kn">from</code> <code class="nn">scipy.cluster.hierarchy</code> <code class="k">import</code> <code class="n">fcluster</code>
+<code class="kn">from</code> <code class="nn">scipy.cluster.hierarchy</code> <code class="k">import</code> <code class="n">dendrogram</code><code class="p">,</code> <code class="n">linkage</code><code class="p">,</code> <code class="n">cophenet</code>
+<code class="kn">from</code> <code class="nn">scipy.spatial.distance</code> <code class="k">import</code> <code class="n">pdist</code>
+<code class="kn">from</code> <code class="nn">sklearn.metrics</code> <code class="k">import</code> <code class="n">adjusted_mutual_info_score</code>
+<code class="kn">from</code> <code class="nn">sklearn</code> <code class="k">import</code> <code class="n">cluster</code><code class="p">,</code> <code class="n">covariance</code><code class="p">,</code> <code class="n">manifold</code></pre>
+
+<p><code>Packages for data processing and visualization</code></p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># Load libraries</code>
+<code class="kn">import</code> <code class="nn">numpy</code> <code class="k">as</code> <code class="nn">np</code>
+<code class="kn">import</code> <code class="nn">pandas</code> <code class="k">as</code> <code class="nn">pd</code>
+<code class="kn">import</code> <code class="nn">matplotlib.pyplot</code> <code class="k">as</code> <code class="nn">plt</code>
+<code class="kn">from</code> <code class="nn">pandas</code> <code class="k">import</code> <code class="n">read_csv</code><code class="p">,</code> <code class="n">set_option</code>
+<code class="kn">from</code> <code class="nn">pandas.plotting</code> <code class="k">import</code> <code class="n">scatter_matrix</code>
+<code class="kn">import</code> <code class="nn">seaborn</code> <code class="k">as</code> <code class="nn">sns</code>
+<code class="kn">from</code> <code class="nn">sklearn.preprocessing</code> <code class="k">import</code> <code class="n">StandardScaler</code>
+<code class="kn">import</code> <code class="nn">datetime</code>
+<code class="kn">import</code> <code class="nn">pandas_datareader</code> <code class="k">as</code> <code class="nn">dr</code>
+<code class="kn">import</code> <code class="nn">matplotlib.ticker</code> <code class="k">as</code> <code class="nn">ticker</code>
+<code class="kn">from</code> <code class="nn">itertools</code> <code class="k">import</code> <code class="n">cycle</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="2.2. Loading the data"><div class="sect4" id="idm45174912845432">
+<h4>2.2. Loading the data</h4>
+
+<p>The stock data is loaded below.<sup><a data-type="noteref" id="idm45174912844296-marker" href="ch08.xhtml#idm45174912844296">1</a></sup></p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">dataset</code> <code class="o">=</code> <code class="n">read_csv</code><code class="p">(</code><code class="s">'SP500Data.csv'</code><code class="p">,</code> <code class="n">index_col</code><code class="o">=</code><code class="mi">0</code><code class="p">)</code></pre>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="3. Exploratory data analysis"><div class="sect3" id="idm45174912786648">
+<h3>3. Exploratory data analysis</h3>
+
+<p><a data-type="indexterm" data-primary="pairs trading" data-secondary="exploratory data analysis" id="idm45174912785752"/>We take a quick look at the data in this section.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="3.1. Descriptive statistics"><div class="sect4" id="idm45174912784584">
+<h4>3.1. Descriptive statistics</h4>
+
+<p>Let us look at the shape of the data:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># shape</code>
+<code class="n">dataset</code><code class="o">.</code><code class="n">shape</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">(448, 502)</pre>
+
+<p>The data contains 502 columns and 448 observations.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="3.2. Data visualization"><div class="sect4" id="idm45174912763384">
+<h4>3.2. Data visualization</h4>
+
+<p>We will take a detailed look into the visualization postclustering.</p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="4. Data preparation"><div class="sect3" id="idm45174912774936">
+<h3>4. Data preparation</h3>
+
+<p><a data-type="indexterm" data-primary="pairs trading" data-secondary="data preparation" id="idm45174912773736"/>We prepare the data for modeling in the following sections.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" class="pagebreak-before" data-pdf-bookmark="4.1. Data cleaning"><div class="sect4" id="idm45174912771848">
+<h4>4.1. Data cleaning</h4>
+
+<p>In this step, we check for NAs in the rows and either drop them or fill them with the mean of the column:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Checking for any null values and removing the null values'''</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">'Null Values ='</code><code class="p">,</code><code class="n">dataset</code><code class="o">.</code><code class="n">isnull</code><code class="p">()</code><code class="o">.</code><code class="n">values</code><code class="o">.</code><code class="n">any</code><code class="p">())</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">Null Values = True</pre>
+
+<p>Let us get rid of the columns with more than 30% missing values:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">missing_fractions</code> <code class="o">=</code> <code class="n">dataset</code><code class="o">.</code><code class="n">isnull</code><code class="p">()</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code><code class="o">.</code><code class="n">sort_values</code><code class="p">(</code><code class="n">ascending</code><code class="o">=</code><code class="k">False</code><code class="p">)</code>
+<code class="n">missing_fractions</code><code class="o">.</code><code class="n">head</code><code class="p">(</code><code class="mi">10</code><code class="p">)</code>
+<code class="n">drop_list</code> <code class="o">=</code> <code class="nb">sorted</code><code class="p">(</code><code class="nb">list</code><code class="p">(</code><code class="n">missing_fractions</code><code class="p">[</code><code class="n">missing_fractions</code> <code class="o">&gt;</code> <code class="mf">0.3</code><code class="p">]</code><code class="o">.</code><code class="n">index</code><code class="p">))</code>
+<code class="n">dataset</code><code class="o">.</code><code class="n">drop</code><code class="p">(</code><code class="n">labels</code><code class="o">=</code><code class="n">drop_list</code><code class="p">,</code> <code class="n">axis</code><code class="o">=</code><code class="mi">1</code><code class="p">,</code> <code class="n">inplace</code><code class="o">=</code><code class="k">True</code><code class="p">)</code>
+<code class="n">dataset</code><code class="o">.</code><code class="n">shape</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">(448, 498)</pre>
+
+<p>Given that there are null values, we drop some rows:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># Fill the missing values with the last value available in the dataset.</code>
+<code class="n">dataset</code><code class="o">=</code><code class="n">dataset</code><code class="o">.</code><code class="n">fillna</code><code class="p">(</code><code class="n">method</code><code class="o">=</code><code class="s">'ffill'</code><code class="p">)</code></pre>
+
+<p>The data cleaning steps identified those with missing values and populated them. This step is important for creating a meaningful, reliable, and clean dataset that can be used without any errors in the clustering.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="4.2. Data transformation"><div class="sect4" id="idm45174912771256">
+<h4>4.2. Data transformation</h4>
+
+<p>For the purpose of clustering, we will be using <em>annual returns</em> and <em>variance</em> as the variables, as they are primary indicators of stock performance and volatility. The following code prepares these variables:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Calculate average annual percentage return and volatilities</code>
+<code class="n">returns</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">dataset</code><code class="o">.</code><code class="n">pct_change</code><code class="p">()</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code> <code class="o">*</code> <code class="mi">252</code><code class="p">)</code>
+<code class="n">returns</code><code class="o">.</code><code class="n">columns</code> <code class="o">=</code> <code class="p">[</code><code class="s">'Returns'</code><code class="p">]</code>
+<code class="n">returns</code><code class="p">[</code><code class="s">'Volatility'</code><code class="p">]</code> <code class="o">=</code> <code class="n">dataset</code><code class="o">.</code><code class="n">pct_change</code><code class="p">()</code><code class="o">.</code><code class="n">std</code><code class="p">()</code> <code class="o">*</code> <code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="mi">252</code><code class="p">)</code>
+<code class="n">data</code> <code class="o">=</code> <code class="n">returns</code></pre>
+
+<p>All the variables should be on the same scale before applying clustering; otherwise, a feature with large values will dominate the result. We use <code>StandardScaler</code> in sklearn to standardize the dataset features onto unit scale (mean = 0 and variance = 1):</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn.preprocessing</code> <code class="k">import</code> <code class="n">StandardScaler</code>
+<code class="n">scaler</code> <code class="o">=</code> <code class="n">StandardScaler</code><code class="p">()</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">data</code><code class="p">)</code>
+<code class="n">rescaledDataset</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">scaler</code><code class="o">.</code><code class="n">fit_transform</code><code class="p">(</code><code class="n">data</code><code class="p">),</code>\
+  <code class="n">columns</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">columns</code><code class="p">,</code> <code class="n">index</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+<code class="c"># summarize transformed data</code>
+<code class="n">rescaledDataset</code><code class="o">.</code><code class="n">head</code><code class="p">(</code><code class="mi">2</code><code class="p">)</code></pre>
+
+<p class="pagebreak-before"><code>Output</code></p>
+<table>
+
+<thead>
+<tr>
+<th/>
+<th>Returns</th>
+<th>Volatility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>ABT</p></td>
+<td><p>0.794067 –0.702741</p></td>
+<td><p>ABBV</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>With the data prepared, we can now explore the clustering algorithms.</p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="5. Evaluate algorithms and models"><div class="sect3" id="idm45174912398136">
+<h3>5. Evaluate algorithms and models</h3>
+
+<p><a data-type="indexterm" data-primary="pairs trading" data-secondary="evaluation of algorithms and models" id="ix_Chapter8-asciidoc5"/>We will look at the following models:</p>
+
+<ul>
+<li>
+<p><em>k</em>-means</p>
+</li>
+<li>
+<p>Hierarchical clustering (agglomerative clustering)</p>
+</li>
+<li>
+<p>Affinity propagation</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1. k-means clustering"><div class="sect4" id="idm45174912391768">
+<h4>5.1. k-means clustering</h4>
+
+<p><a data-type="indexterm" data-primary="k-means clustering" data-secondary="for pairs trading" id="ix_Chapter8-asciidoc6"/><a data-type="indexterm" data-primary="pairs trading" data-secondary="k-means clustering" id="ix_Chapter8-asciidoc7"/>Here, we model using <em>k</em>-means and evaluate two ways to find the optimal number of clusters.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1.1. Finding the optimal number of clusters"><div class="sect4" id="idm45174912387272">
+<h4>5.1.1. Finding the optimal number of clusters</h4>
+
+<p>We know that <em>k</em>-means initially assigns data points to clusters randomly and then calculates centroids or mean values. Further, it calculates the distances within each cluster, squares these, and sums them to get the sum of squared errors.</p>
+
+<p>The basic idea is to define <em>k</em> clusters so that the total within-cluster variation (or error) is minimized. The following two methods are useful in finding the number of clusters in <em>k</em>-means:</p>
+<dl>
+<dt>Elbow method</dt>
+<dd>
+<p>Based on the sum of squared errors (SSE) within clusters</p>
+</dd>
+<dt>Silhouette method</dt>
+<dd>
+<p>Based on the silhouette score</p>
+</dd>
+</dl>
+
+<p><a data-type="indexterm" data-primary="elbow method (k-means clustering)" id="idm45174912380072"/>First, let’s examine the elbow method. The SSE for each point is the square of the distance of the point from its representation (i.e., its predicted cluster center). The sum of squared errors is plotted for a range of values for the number of clusters. The first cluster will add much information (explain a lot of variance), but eventually the marginal gain will drop, giving an angle in the graph. The number of clusters is chosen at this point; hence it is referred to as the “elbow criterion.”</p>
+
+<p>Let us implement this in Python using the sklearn library and plot the SSE for a range of values for <em>k</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">distortions</code> <code class="o">=</code> <code class="p">[]</code>
+<code class="n">max_loop</code><code class="o">=</code><code class="mi">20</code>
+<code class="k">for</code> <code class="n">k</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="n">max_loop</code><code class="p">):</code>
+    <code class="n">kmeans</code> <code class="o">=</code> <code class="n">KMeans</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="n">k</code><code class="p">)</code>
+    <code class="n">kmeans</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+    <code class="n">distortions</code><code class="o">.</code><code class="n">append</code><code class="p">(</code><code class="n">kmeans</code><code class="o">.</code><code class="n">inertia_</code><code class="p">)</code>
+<code class="n">fig</code> <code class="o">=</code> <code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">15</code><code class="p">,</code> <code class="mi">5</code><code class="p">))</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="nb">range</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="n">max_loop</code><code class="p">),</code> <code class="n">distortions</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">xticks</code><code class="p">([</code><code class="n">i</code> <code class="k">for</code> <code class="n">i</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="n">max_loop</code><code class="p">)],</code> <code class="n">rotation</code><code class="o">=</code><code class="mi">75</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">grid</code><code class="p">(</code><code class="k">True</code><code class="p">)</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in01.png" alt="mlbf 08in01" width="600" height="306"/>
+<h6/>
+</div></figure>
+
+<p>Inspecting the sum of squared errors chart, it appears the elbow kink occurs around five or six clusters for this data. Certainly we can see that as the number of clusters increases past six, the SSE within clusters begins to plateau.</p>
+
+<p><a data-type="indexterm" data-primary="silhouette method (k-means clustering)" id="idm45174912249976"/>Now let’s look at the silhouette method. The silhouette score measures how similar a point is to its own cluster (<em>cohesion</em>) compared to other clusters (<em>separation</em>). The range of the silhouette value is between 1 and –1. A high value is desirable and indicates that the point is placed in the correct cluster. If many points have a negative silhouette value, that may indicate that we have created too many or too few clusters.</p>
+
+<p>Let us implement this in Python using the sklearn library and plot the silhouette score for a range of values for <em>k</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn</code> <code class="k">import</code> <code class="n">metrics</code>
+
+<code class="n">silhouette_score</code> <code class="o">=</code> <code class="p">[]</code>
+<code class="k">for</code> <code class="n">k</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="n">max_loop</code><code class="p">):</code>
+        <code class="n">kmeans</code> <code class="o">=</code> <code class="n">KMeans</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="n">k</code><code class="p">,</code>  <code class="n">random_state</code><code class="o">=</code><code class="mi">10</code><code class="p">,</code> <code class="n">n_init</code><code class="o">=</code><code class="mi">10</code><code class="p">,</code> <code class="n">n_jobs</code><code class="o">=-</code><code class="mi">1</code><code class="p">)</code>
+        <code class="n">kmeans</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+        <code class="n">silhouette_score</code><code class="o">.</code><code class="n">append</code><code class="p">(</code><code class="n">metrics</code><code class="o">.</code><code class="n">silhouette_score</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">kmeans</code><code class="o">.</code><code class="n">labels_</code><code class="p">,</code> \
+          <code class="n">random_state</code><code class="o">=</code><code class="mi">10</code><code class="p">))</code>
+<code class="n">fig</code> <code class="o">=</code> <code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">15</code><code class="p">,</code> <code class="mi">5</code><code class="p">))</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="nb">range</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="n">max_loop</code><code class="p">),</code> <code class="n">silhouette_score</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">xticks</code><code class="p">([</code><code class="n">i</code> <code class="k">for</code> <code class="n">i</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">2</code><code class="p">,</code> <code class="n">max_loop</code><code class="p">)],</code> <code class="n">rotation</code><code class="o">=</code><code class="mi">75</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">grid</code><code class="p">(</code><code class="k">True</code><code class="p">)</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in02.png" alt="mlbf 08in02" width="603" height="306"/>
+<h6/>
+</div></figure>
+
+<p>Looking at the silhouette score chart, we can see that there are various parts of the graph at which a kink can be seen. Since there is not much of a difference in the SSE after six clusters, it implies that six clusters is a preferred choice in this <em>k</em>-means model.</p>
+
+<p>Combining information from both methods, we infer the optimum number of clusters to be six.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1.2. Clustering and visualization"><div class="sect4" id="idm45174912386648">
+<h4>5.1.2. Clustering and visualization</h4>
+
+<p>Let us build the <em>k</em>-means model with six clusters and visualize the results:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">nclust</code><code class="o">=</code><code class="mi">6</code>
+<code class="c">#Fit with k-means</code>
+<code class="n">k_means</code> <code class="o">=</code> <code class="n">cluster</code><code class="o">.</code><code class="n">KMeans</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="n">nclust</code><code class="p">)</code>
+<code class="n">k_means</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+<code class="c">#Extracting labels</code>
+<code class="n">target_labels</code> <code class="o">=</code> <code class="n">k_means</code><code class="o">.</code><code class="n">predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+
+<p>Visualizing how clusters are formed is no easy task when the number of variables in the dataset is very large. A basic scatterplot is one method for visualizing a cluster in a two-dimensional space. We create one below to identify the relationships inherent in our data:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">centroids</code> <code class="o">=</code> <code class="n">k_means</code><code class="o">.</code><code class="n">cluster_centers_</code>
+<code class="n">fig</code> <code class="o">=</code> <code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">16</code><code class="p">,</code><code class="mi">10</code><code class="p">))</code>
+<code class="n">ax</code> <code class="o">=</code> <code class="n">fig</code><code class="o">.</code><code class="n">add_subplot</code><code class="p">(</code><code class="mi">111</code><code class="p">)</code>
+<code class="n">scatter</code> <code class="o">=</code> <code class="n">ax</code><code class="o">.</code><code class="n">scatter</code><code class="p">(</code><code class="n">X</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code><code class="mi">0</code><code class="p">],</code><code class="n">X</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code><code class="mi">1</code><code class="p">],</code> <code class="n">c</code><code class="o">=</code><code class="n">k_means</code><code class="o">.</code><code class="n">labels_</code><code class="p">,</code> \
+  <code class="n">cmap</code><code class="o">=</code><code class="s">"rainbow"</code><code class="p">,</code> <code class="n">label</code> <code class="o">=</code> <code class="n">X</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_title</code><code class="p">(</code><code class="s">'k-means results'</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_xlabel</code><code class="p">(</code><code class="s">'Mean Return'</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_ylabel</code><code class="p">(</code><code class="s">'Volatility'</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">colorbar</code><code class="p">(</code><code class="n">scatter</code><code class="p">)</code>
+
+<code class="n">plt</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">centroids</code><code class="p">[:,</code><code class="mi">0</code><code class="p">],</code><code class="n">centroids</code><code class="p">[:,</code><code class="mi">1</code><code class="p">],</code><code class="s">'sg'</code><code class="p">,</code><code class="n">markersize</code><code class="o">=</code><code class="mi">11</code><code class="p">)</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in03.png" alt="mlbf 08in03" width="837" height="589"/>
+<h6/>
+</div></figure>
+
+<p>In the preceding plot, we can somewhat see that there are distinct clusters separated by different colors (full-color version available on <a href="https://oreil.ly/8RvSp">GitHub</a>). The grouping of data in the plot seems to be separated quite well. There is also a degree of separation in the centroids of the clusters, represented by square dots.</p>
+
+<p>Let us look at the number of stocks in each of the clusters:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># show number of stocks in each cluster</code>
+<code class="n">clustered_series</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="n">index</code><code class="o">=</code><code class="n">X</code><code class="o">.</code><code class="n">index</code><code class="p">,</code> <code class="n">data</code><code class="o">=</code><code class="n">k_means</code><code class="o">.</code><code class="n">labels_</code><code class="o">.</code><code class="n">flatten</code><code class="p">())</code>
+<code class="c"># clustered stock with its cluster label</code>
+<code class="n">clustered_series_all</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="n">index</code><code class="o">=</code><code class="n">X</code><code class="o">.</code><code class="n">index</code><code class="p">,</code> <code class="n">data</code><code class="o">=</code><code class="n">k_means</code><code class="o">.</code><code class="n">labels_</code><code class="o">.</code><code class="n">flatten</code><code class="p">())</code>
+<code class="n">clustered_series</code> <code class="o">=</code> <code class="n">clustered_series</code><code class="p">[</code><code class="n">clustered_series</code> <code class="o">!=</code> <code class="o">-</code><code class="mi">1</code><code class="p">]</code>
+
+<code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">12</code><code class="p">,</code><code class="mi">7</code><code class="p">))</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">barh</code><code class="p">(</code>
+    <code class="nb">range</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">clustered_series</code><code class="o">.</code><code class="n">value_counts</code><code class="p">())),</code> <code class="c"># cluster labels, y axis</code>
+    <code class="n">clustered_series</code><code class="o">.</code><code class="n">value_counts</code><code class="p">()</code>
+<code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">title</code><code class="p">(</code><code class="s">'Cluster Member Counts'</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">xlabel</code><code class="p">(</code><code class="s">'Stocks in Cluster'</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">ylabel</code><code class="p">(</code><code class="s">'Cluster Number'</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">show</code><code class="p">()</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in04.png" alt="mlbf 08in04" width="699" height="426"/>
+<h6/>
+</div></figure>
+
+<p>The number of stocks per cluster ranges from around 40 to 120. Although the distribution is not equal, we have a significant number of stocks in each cluster.</p>
+
+<p>Let’s look at the hierarchical clustering.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc7" id="idm45174911751800"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc6" id="idm45174911751096"/></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2. Hierarchical clustering (agglomerative clustering)"><div class="sect4" id="idm45174912120584">
+<h4>5.2. Hierarchical clustering (agglomerative clustering)</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical clustering" id="ix_Chapter8-asciidoc8"/><a data-type="indexterm" data-primary="pairs trading" data-secondary="hierarchical clustering" id="ix_Chapter8-asciidoc9"/>In the first step, we look at the hierarchy graph and check for the number of clusters.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2.1. Building hierarchy graph/dendrogram"><div class="sect4" id="idm45174911746648">
+<h4>5.2.1. Building hierarchy graph/dendrogram</h4>
+
+<p>The hierarchy class has a dendrogram method that takes the value returned by the <em>linkage method</em> of the same class. <a data-type="indexterm" data-primary="linkage method" id="idm45174911744792"/>The linkage method takes the dataset and the method to minimize distances as parameters. We use <em>ward</em> as the method since it minimizes the variance of distances between the clusters:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3" class="pagebreak-before"><code class="kn">from</code> <code class="nn">scipy.cluster.hierarchy</code> <code class="k">import</code> <code class="n">dendrogram</code><code class="p">,</code> <code class="n">linkage</code><code class="p">,</code> <code class="n">ward</code>
+
+<code class="c">#Calculate linkage</code>
+<code class="n">Z</code><code class="o">=</code> <code class="n">linkage</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">method</code><code class="o">=</code><code class="s">'ward'</code><code class="p">)</code>
+<code class="n">Z</code><code class="p">[</code><code class="mi">0</code><code class="p">]</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">array([3.30000000e+01, 3.14000000e+02, 3.62580431e-03, 2.00000000e+00])</pre>
+
+<p>The best way to visualize an agglomerative clustering algorithm is through a dendrogram, which displays a cluster tree, the leaves being the individual stocks and the root being the final single cluster. The distance between each cluster is shown on the y-axis. The longer the branches are, the less correlated the two clusters are:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Plot Dendrogram</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">10</code><code class="p">,</code> <code class="mi">7</code><code class="p">))</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">title</code><code class="p">(</code><code class="s">"Stocks Dendrograms"</code><code class="p">)</code>
+<code class="n">dendrogram</code><code class="p">(</code><code class="n">Z</code><code class="p">,</code><code class="n">labels</code> <code class="o">=</code> <code class="n">X</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">show</code><code class="p">()</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in05.png" alt="mlbf 08in05" width="1058" height="774"/>
+<h6/>
+</div></figure>
+
+<p class="pagebreak-before">This chart can be used to visually inspect the number of clusters that would be created for a selected distance threshold (although the names of the stocks on the horizontal axis are not very clear, we can see that they are grouped into several clusters). The number of vertical lines a hypothetical straight, horizontal line will pass through is the number of clusters created for that distance threshold value. For example, at a value of 20, the horizontal line would pass through two vertical branches of the dendrogram, implying two clusters at that distance threshold. All data points (leaves) from that branch would be labeled as that cluster that the horizontal line passed through.</p>
+
+<p>Choosing a threshold cut at 13 yields four clusters, as confirmed in the following Python code:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">distance_threshold</code> <code class="o">=</code> <code class="mi">13</code>
+<code class="n">clusters</code> <code class="o">=</code> <code class="n">fcluster</code><code class="p">(</code><code class="n">Z</code><code class="p">,</code> <code class="n">distance_threshold</code><code class="p">,</code> <code class="n">criterion</code><code class="o">=</code><code class="s">'distance'</code><code class="p">)</code>
+<code class="n">chosen_clusters</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">data</code><code class="o">=</code><code class="n">clusters</code><code class="p">,</code> <code class="n">columns</code><code class="o">=</code><code class="p">[</code><code class="s">'cluster'</code><code class="p">])</code>
+<code class="n">chosen_clusters</code><code class="p">[</code><code class="s">'cluster'</code><code class="p">]</code><code class="o">.</code><code class="n">unique</code><code class="p">()</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">array([1, 4, 3, 2], dtype=int64)</pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2.2. Clustering and visualization"><div class="sect4" id="idm45174911746056">
+<h4>5.2.2. Clustering and visualization</h4>
+
+<p>Let us build the hierarchical clustering model with four clusters and visualize the results:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">nclust</code> <code class="o">=</code> <code class="mi">4</code>
+<code class="n">hc</code> <code class="o">=</code> <code class="n">AgglomerativeClustering</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="n">nclust</code><code class="p">,</code> <code class="n">affinity</code><code class="o">=</code><code class="s">'euclidean'</code><code class="p">,</code> \
+<code class="n">linkage</code><code class="o">=</code><code class="s">'ward'</code><code class="p">)</code>
+<code class="n">clust_labels1</code> <code class="o">=</code> <code class="n">hc</code><code class="o">.</code><code class="n">fit_predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">fig</code> <code class="o">=</code> <code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">16</code><code class="p">,</code><code class="mi">10</code><code class="p">))</code>
+<code class="n">ax</code> <code class="o">=</code> <code class="n">fig</code><code class="o">.</code><code class="n">add_subplot</code><code class="p">(</code><code class="mi">111</code><code class="p">)</code>
+<code class="n">scatter</code> <code class="o">=</code> <code class="n">ax</code><code class="o">.</code><code class="n">scatter</code><code class="p">(</code><code class="n">X</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code><code class="mi">0</code><code class="p">],</code><code class="n">X</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code><code class="mi">1</code><code class="p">],</code> <code class="n">c</code><code class="o">=</code><code class="n">clust_labels1</code><code class="p">,</code> <code class="n">cmap</code><code class="o">=</code><code class="s">"rainbow"</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_title</code><code class="p">(</code><code class="s">'Hierarchical Clustering'</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_xlabel</code><code class="p">(</code><code class="s">'Mean Return'</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_ylabel</code><code class="p">(</code><code class="s">'Volatility'</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">colorbar</code><code class="p">(</code><code class="n">scatter</code><code class="p">)</code></pre>
+
+<p>Similar to the plot of <em>k</em>-means clustering, we see that there are some distinct clusters separated by different colors (full-size version available on <a href="https://oreil.ly/8RvSp">GitHub</a>).</p>
+
+<p class="pagebreak-before"><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in06.png" alt="mlbf 08in06" width="1164" height="808"/>
+<h6/>
+</div></figure>
+
+<p>Now let us look at affinity propagation clustering.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc9" id="idm45174911393080"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc8" id="idm45174911392376"/></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.3. Affinity propagation"><div class="sect4" id="idm45174911391576">
+<h4>5.3. Affinity propagation</h4>
+
+<p><a data-type="indexterm" data-primary="affinity propagation clustering" data-secondary="pairs trading" id="idm45174911390200"/><a data-type="indexterm" data-primary="pairs trading" data-secondary="affinity propagation" id="idm45174911389256"/>Let us build the affinity propagation model and visualize the results:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">ap</code> <code class="o">=</code> <code class="n">AffinityPropagation</code><code class="p">()</code>
+<code class="n">ap</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+<code class="n">clust_labels2</code> <code class="o">=</code> <code class="n">ap</code><code class="o">.</code><code class="n">predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+
+<code class="n">fig</code> <code class="o">=</code> <code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">10</code><code class="p">,</code><code class="mi">8</code><code class="p">))</code>
+<code class="n">ax</code> <code class="o">=</code> <code class="n">fig</code><code class="o">.</code><code class="n">add_subplot</code><code class="p">(</code><code class="mi">111</code><code class="p">)</code>
+<code class="n">scatter</code> <code class="o">=</code> <code class="n">ax</code><code class="o">.</code><code class="n">scatter</code><code class="p">(</code><code class="n">X</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code><code class="mi">0</code><code class="p">],</code><code class="n">X</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code><code class="mi">1</code><code class="p">],</code> <code class="n">c</code><code class="o">=</code><code class="n">clust_labels2</code><code class="p">,</code> <code class="n">cmap</code><code class="o">=</code><code class="s">"rainbow"</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_title</code><code class="p">(</code><code class="s">'Affinity'</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_xlabel</code><code class="p">(</code><code class="s">'Mean Return'</code><code class="p">)</code>
+<code class="n">ax</code><code class="o">.</code><code class="n">set_ylabel</code><code class="p">(</code><code class="s">'Volatility'</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">colorbar</code><code class="p">(</code><code class="n">scatter</code><code class="p">)</code></pre>
+
+<p class="pagebreak-before"><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in07.png" alt="mlbf 08in07" width="552" height="480"/>
+<h6/>
+</div></figure>
+
+<p>The affinity propagation model with the chosen hyperparameters produced many more clusters than <em>k</em>-means and hierarchical clustering. There is some clear grouping, but also more overlap due to the larger number of clusters (full-size version available on <a href="https://oreil.ly/8RvSp">GitHub</a>). In the next step, we will evaluate the clustering techniques.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.4. Cluster evaluation"><div class="sect4" id="idm45174911262376">
+<h4>5.4. Cluster evaluation</h4>
+
+<p><a data-type="indexterm" data-primary="pairs trading" data-secondary="cluster evaluation" id="ix_Chapter8-asciidoc10"/>If the ground truth labels are not known, evaluation must be performed using the model itself. The silhouette coefficient (<code>sklearn.metrics.silhouette_score</code>) is one example we can use. A higher silhouette coefficient score implies a model with better defined clusters. The silhouette coefficient is computed for each of the clustering methods defined above:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn</code> <code class="k">import</code> <code class="n">metrics</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">"km"</code><code class="p">,</code> <code class="n">metrics</code><code class="o">.</code><code class="n">silhouette_score</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">k_means</code><code class="o">.</code><code class="n">labels_</code><code class="p">,</code> <code class="n">metric</code><code class="o">=</code><code class="s">'euclidean'</code><code class="p">))</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">"hc"</code><code class="p">,</code> <code class="n">metrics</code><code class="o">.</code><code class="n">silhouette_score</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">hc</code><code class="o">.</code><code class="n">fit_predict</code><code class="p">(</code><code class="n">X</code><code class="p">),</code> <code class="n">metric</code><code class="o">=</code><code class="s">'euclidean'</code><code class="p">))</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">"ap"</code><code class="p">,</code> <code class="n">metrics</code><code class="o">.</code><code class="n">silhouette_score</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">ap</code><code class="o">.</code><code class="n">labels_</code><code class="p">,</code> <code class="n">metric</code><code class="o">=</code><code class="s">'euclidean'</code><code class="p">))</code></pre>
+
+<p class="pagebreak-before"><code>Output</code></p>
+
+<pre data-type="programlisting">km 0.3350720873411941
+hc 0.3432149515640865
+ap 0.3450647315156527</pre>
+
+<p>Given that affinity propagation performs the best, we proceed with affinity propagation and use 27 clusters as specified by this clustering method.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="Visualizing the return within a cluster"><div class="sect4" id="idm45174911200776">
+<h4>Visualizing the return within a cluster</h4>
+
+<p>We have the clustering technique and the number of clusters finalized, but we need to check whether the clustering leads to a sensible output. To do this, we visualize the historical behavior of the stocks in a few clusters:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># all stock with its cluster label (including -1)</code>
+<code class="n">clustered_series</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="n">index</code><code class="o">=</code><code class="n">X</code><code class="o">.</code><code class="n">index</code><code class="p">,</code> <code class="n">data</code><code class="o">=</code><code class="n">ap</code><code class="o">.</code><code class="n">fit_predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code><code class="o">.</code><code class="n">flatten</code><code class="p">())</code>
+<code class="c"># clustered stock with its cluster label</code>
+<code class="n">clustered_series_all</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="n">index</code><code class="o">=</code><code class="n">X</code><code class="o">.</code><code class="n">index</code><code class="p">,</code> <code class="n">data</code><code class="o">=</code><code class="n">ap</code><code class="o">.</code><code class="n">fit_predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code><code class="o">.</code><code class="n">flatten</code><code class="p">())</code>
+<code class="n">clustered_series</code> <code class="o">=</code> <code class="n">clustered_series</code><code class="p">[</code><code class="n">clustered_series</code> <code class="o">!=</code> <code class="o">-</code><code class="mi">1</code><code class="p">]</code>
+<code class="c"># get the number of stocks in each cluster</code>
+<code class="n">counts</code> <code class="o">=</code> <code class="n">clustered_series_ap</code><code class="o">.</code><code class="n">value_counts</code><code class="p">()</code>
+<code class="c"># let's visualize some clusters</code>
+<code class="n">cluster_vis_list</code> <code class="o">=</code> <code class="nb">list</code><code class="p">(</code><code class="n">counts</code><code class="p">[(</code><code class="n">counts</code><code class="o">&lt;</code><code class="mi">25</code><code class="p">)</code> <code class="o">&amp;</code> <code class="p">(</code><code class="n">counts</code><code class="o">&gt;</code><code class="mi">1</code><code class="p">)]</code><code class="o">.</code><code class="n">index</code><code class="p">)[::</code><code class="o">-</code><code class="mi">1</code><code class="p">]</code>
+<code class="n">cluster_vis_list</code>
+<code class="c"># plot a handful of the smallest clusters</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">12</code><code class="p">,</code> <code class="mi">7</code><code class="p">))</code>
+<code class="n">cluster_vis_list</code><code class="p">[</code><code class="mi">0</code><code class="p">:</code><code class="nb">min</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">cluster_vis_list</code><code class="p">),</code> <code class="mi">4</code><code class="p">)]</code>
+
+<code class="k">for</code> <code class="n">clust</code> <code class="ow">in</code> <code class="n">cluster_vis_list</code><code class="p">[</code><code class="mi">0</code><code class="p">:</code><code class="nb">min</code><code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">cluster_vis_list</code><code class="p">),</code> <code class="mi">4</code><code class="p">)]:</code>
+    <code class="n">tickers</code> <code class="o">=</code> <code class="nb">list</code><code class="p">(</code><code class="n">clustered_series</code><code class="p">[</code><code class="n">clustered_series</code><code class="o">==</code><code class="n">clust</code><code class="p">]</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+    <code class="c"># calculate the return (lognormal) of the stocks</code>
+    <code class="n">means</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">log</code><code class="p">(</code><code class="n">dataset</code><code class="o">.</code><code class="n">loc</code><code class="p">[:</code><code class="s">"2018-02-01"</code><code class="p">,</code> <code class="n">tickers</code><code class="p">]</code><code class="o">.</code><code class="n">mean</code><code class="p">())</code>
+    <code class="n">data</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">log</code><code class="p">(</code><code class="n">dataset</code><code class="o">.</code><code class="n">loc</code><code class="p">[:</code><code class="s">"2018-02-01"</code><code class="p">,</code> <code class="n">tickers</code><code class="p">])</code><code class="o">.</code><code class="n">sub</code><code class="p">(</code><code class="n">means</code><code class="p">)</code>
+    <code class="n">data</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">title</code><code class="o">=</code><code class="s">'Stock Time Series for Cluster %d'</code> <code class="o">%</code> <code class="n">clust</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">show</code><code class="p">()</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in08.png" alt="mlbf 08in08" width="940" height="314"/>
+<h6/>
+</div></figure>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in09.png" alt="mlbf 08in09" width="969" height="312"/>
+<h6/>
+</div></figure>
+
+<p>Looking at the charts above, across all the clusters with small number of stocks, we see similar movement of the stocks under different clusters, which corroborates the effectiveness of the clustering technique<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc10" id="idm45174910889464"/>.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc5" id="idm45174910888632"/></p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="6. Pairs selection"><div class="sect3" id="idm45174912397512">
+<h3>6. Pairs selection</h3>
+
+<p><a data-type="indexterm" data-primary="cointegration" id="ix_Chapter8-asciidoc11"/><a data-type="indexterm" data-primary="pairs trading" data-secondary="pairs selection" id="ix_Chapter8-asciidoc12"/>Once the clusters are created, several cointegration-based statistical techniques can be applied on the stocks within a cluster to create the pairs. Two or more time series are considered to be cointegrated if they are nonstationary and tend to move together.<sup><a data-type="noteref" id="idm45174910884168-marker" href="ch08.xhtml#idm45174910884168">2</a></sup> The presence of cointegration between time series can be validated through several statistical techniques, including the <a href="https://oreil.ly/5xKZy">Augmented Dickey-Fuller test</a> and the <a href="https://oreil.ly/9zbnC">Johansen test</a>.</p>
+
+<p>In this step, we scan through a list of securities within a cluster and test for cointegration between the pairs. First, we write a function that returns a cointegration test score matrix, a p-value matrix, and any pairs for which the p-value was less than 0.05.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="Cointegration and pair selection function"><div class="sect4" id="idm45174910880312">
+<h4>Cointegration and pair selection function</h4>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">find_cointegrated_pairs</code><code class="p">(</code><code class="n">data</code><code class="p">,</code> <code class="n">significance</code><code class="o">=</code><code class="mf">0.05</code><code class="p">):</code>
+    <code class="c"># This function is from https://www.quantopian.com</code>
+    <code class="n">n</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">shape</code><code class="p">[</code><code class="mi">1</code><code class="p">]</code>
+    <code class="n">score_matrix</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">zeros</code><code class="p">((</code><code class="n">n</code><code class="p">,</code> <code class="n">n</code><code class="p">))</code>
+    <code class="n">pvalue_matrix</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">ones</code><code class="p">((</code><code class="n">n</code><code class="p">,</code> <code class="n">n</code><code class="p">))</code>
+    <code class="n">keys</code> <code class="o">=</code> <code class="n">data</code><code class="o">.</code><code class="n">keys</code><code class="p">()</code>
+    <code class="n">pairs</code> <code class="o">=</code> <code class="p">[]</code>
+    <code class="k">for</code> <code class="n">i</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">1</code><code class="p">):</code>
+        <code class="k">for</code> <code class="n">j</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="n">i</code><code class="o">+</code><code class="mi">1</code><code class="p">,</code> <code class="n">n</code><code class="p">):</code>
+            <code class="n">S1</code> <code class="o">=</code> <code class="n">data</code><code class="p">[</code><code class="n">keys</code><code class="p">[</code><code class="n">i</code><code class="p">]]</code>
+            <code class="n">S2</code> <code class="o">=</code> <code class="n">data</code><code class="p">[</code><code class="n">keys</code><code class="p">[</code><code class="n">j</code><code class="p">]]</code>
+            <code class="n">result</code> <code class="o">=</code> <code class="n">coint</code><code class="p">(</code><code class="n">S1</code><code class="p">,</code> <code class="n">S2</code><code class="p">)</code>
+            <code class="n">score</code> <code class="o">=</code> <code class="n">result</code><code class="p">[</code><code class="mi">0</code><code class="p">]</code>
+            <code class="n">pvalue</code> <code class="o">=</code> <code class="n">result</code><code class="p">[</code><code class="mi">1</code><code class="p">]</code>
+            <code class="n">score_matrix</code><code class="p">[</code><code class="n">i</code><code class="p">,</code> <code class="n">j</code><code class="p">]</code> <code class="o">=</code> <code class="n">score</code>
+            <code class="n">pvalue_matrix</code><code class="p">[</code><code class="n">i</code><code class="p">,</code> <code class="n">j</code><code class="p">]</code> <code class="o">=</code> <code class="n">pvalue</code>
+            <code class="k">if</code> <code class="n">pvalue</code> <code class="o">&lt;</code> <code class="n">significance</code><code class="p">:</code>
+                <code class="n">pairs</code><code class="o">.</code><code class="n">append</code><code class="p">((</code><code class="n">keys</code><code class="p">[</code><code class="n">i</code><code class="p">],</code> <code class="n">keys</code><code class="p">[</code><code class="n">j</code><code class="p">]))</code>
+    <code class="k">return</code> <code class="n">score_matrix</code><code class="p">,</code> <code class="n">pvalue_matrix</code><code class="p">,</code> <code class="n">pairs</code></pre>
+
+<p>Next, we check the cointegration of different pairs within several clusters using the function created above and return the pairs found:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">statsmodels.tsa.stattools</code> <code class="k">import</code> <code class="n">coint</code>
+<code class="n">cluster_dict</code> <code class="o">=</code> <code class="p">{}</code>
+<code class="k">for</code> <code class="n">i</code><code class="p">,</code> <code class="n">which_clust</code> <code class="ow">in</code> <code class="nb">enumerate</code><code class="p">(</code><code class="n">ticker_count_reduced</code><code class="o">.</code><code class="n">index</code><code class="p">):</code>
+    <code class="n">tickers</code> <code class="o">=</code> <code class="n">clustered_series</code><code class="p">[</code><code class="n">clustered_series</code> <code class="o">==</code> <code class="n">which_clust</code><code class="p">]</code><code class="o">.</code><code class="n">index</code>
+    <code class="n">score_matrix</code><code class="p">,</code> <code class="n">pvalue_matrix</code><code class="p">,</code> <code class="n">pairs</code> <code class="o">=</code> <code class="n">find_cointegrated_pairs</code><code class="p">(</code>
+        <code class="n">dataset</code><code class="p">[</code><code class="n">tickers</code><code class="p">]</code>
+    <code class="p">)</code>
+    <code class="n">cluster_dict</code><code class="p">[</code><code class="n">which_clust</code><code class="p">]</code> <code class="o">=</code> <code class="p">{}</code>
+    <code class="n">cluster_dict</code><code class="p">[</code><code class="n">which_clust</code><code class="p">][</code><code class="s">'score_matrix'</code><code class="p">]</code> <code class="o">=</code> <code class="n">score_matrix</code>
+    <code class="n">cluster_dict</code><code class="p">[</code><code class="n">which_clust</code><code class="p">][</code><code class="s">'pvalue_matrix'</code><code class="p">]</code> <code class="o">=</code> <code class="n">pvalue_matrix</code>
+    <code class="n">cluster_dict</code><code class="p">[</code><code class="n">which_clust</code><code class="p">][</code><code class="s">'pairs'</code><code class="p">]</code> <code class="o">=</code> <code class="n">pairs</code>
+
+<code class="n">pairs</code> <code class="o">=</code> <code class="p">[]</code>
+<code class="k">for</code> <code class="n">clust</code> <code class="ow">in</code> <code class="n">cluster_dict</code><code class="o">.</code><code class="n">keys</code><code class="p">():</code>
+    <code class="n">pairs</code><code class="o">.</code><code class="n">extend</code><code class="p">(</code><code class="n">cluster_dict</code><code class="p">[</code><code class="n">clust</code><code class="p">][</code><code class="s">'pairs'</code><code class="p">])</code>
+
+<code class="nb">print</code> <code class="p">(</code><code class="s">"Number of pairs found : %d"</code> <code class="o">%</code> <code class="nb">len</code><code class="p">(</code><code class="n">pairs</code><code class="p">))</code>
+<code class="nb">print</code> <code class="p">(</code><code class="s">"In those pairs, there are %d unique tickers."</code> <code class="o">%</code> <code class="nb">len</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">unique</code><code class="p">(</code><code class="n">pairs</code><code class="p">)))</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">Number of pairs found : 32
+In those pairs, there are 47 unique tickers.</pre>
+
+<p>Let us visualize the results of the pair selection process now. Refer to the Jupyter notebook of this case study for the details of the steps related to the pair visualization using the t-SNE technique.</p>
+
+<p>The following chart shows the strength of <em>k</em>-means for finding nontraditional pairs (pointed out with an arrow in the visualization). DXC is the ticker symbol for DXC Technology, and XEC is the ticker symbol for Cimarex Energy. These two stocks are from different sectors and appear to have nothing in common on the surface, but they are identified as pairs using <em>k</em>-means clustering and cointegration testing. This implies that a long-run stable relationship exists between their stock price movements.</p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in10.png" alt="mlbf 08in10" width="1440" height="765"/>
+<h6/>
+</div></figure>
+
+<p>Once the pairs are created, they can be used in a pairs trading strategy. When the share prices of the pair deviate from the identified long-run relationship, an investor would seek to take a long position in the underperforming security and sell short the outperforming security. If the securities return to their historical relationship, a profit is made from the convergence of the prices.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc12" id="idm45174910510200"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc11" id="idm45174910509496"/></p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Conclusion"><div class="sect3" id="idm45174910508696">
+<h3>Conclusion</h3>
+
+<p>In this case study, we demonstrated the efficiency of clustering techniques by finding small pools of stocks in which to identify pairs to be used in a pairs trading strategy. A next step beyond this case study would be to explore and backtest various long/short trading strategies with pairs of stocks from the groupings of stocks.</p>
+
+<p>Clustering can be used for dividing stocks and other types of assets into groups with similar characteristics for several other kinds of trading strategies. It can also be effective in portfolio construction, helping to ensure we choose a pool of assets with sufficient diversification between them.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc4" id="idm45174910506312"/></p>
+<img class="blueprint bottom" src="Images/bracket_bottom.png" width="1625" height="32"/>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Case Study 2: Portfolio Management: Clustering Investors"><div class="sect1" id="CaseStudy2CL">
+<h1>Case Study 2: Portfolio Management: Clustering Investors</h1>
+
+<p><a data-type="indexterm" data-primary="clustering investors" id="ix_Chapter8-asciidoc13"/>Asset management and investment allocation is a tedious and time-consuming process in which investment managers often must design customized approaches for each client or investor.</p>
+
+<p>What if we were able to organize these clients into particular investor profiles, or clusters, wherein each group is indicative of investors with similar characteristics?</p>
+
+<p>Clustering investors based on similar characteristics can lead to simplicity and standardization in the investment management process. These algorithms can group investors based on different factors, such as age, income, and risk tolerance. It can help investment managers identify distinct groups within their investors base. Additionally, by using these techniques, managers can avoid introducing any biases that otherwise could adversely impact decision making. The factors analyzed through clustering can have a big impact on asset allocation and rebalancing, making it an invaluable tool for faster and effective investment management.</p>
+
+<p>In this case study, we will use clustering methods to identify different types of 
+<span class="keep-together">investors</span>.</p>
+
+<p>The data used for this case study is from the Survey of Consumer Finances, which is conducted by the Federal Reserve Board. The same dataset was used in <a data-type="xref" href="ch05.xhtml#CaseStudy3SR">“Case Study 3: Investor Risk Tolerance and Robo-Advisors”</a> in <a data-type="xref" href="ch05.xhtml#Chapter5">Chapter 5</a>.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm45174910496552">
+<h5/>
+<p>In this case study, we focus on:</p>
+
+<ul>
+<li>
+<p>Understanding the intuitive meaning of the groupings coming out of clustering.</p>
+</li>
+<li>
+<p>Choosing the right clustering techniques.</p>
+</li>
+<li>
+<p>Visualization of the clustering outcome and selecting the correct number of clusters in <em>k</em>-means.</p>
+</li>
+</ul>
+</div></aside>
+<img class="blueprint top" src="Images/bracket_top.png" width="1625" height="32"/>
+
+
+
+
+
+
+
+
+<section data-type="sect2" class="blueprint" data-pdf-bookmark="Blueprint for Using Clustering for Grouping Investors"><div class="sect2" id="idm45174910490408">
+<h2>Blueprint for Using Clustering for Grouping Investors</h2>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="1. Problem definition"><div class="sect3" id="idm45174910488888">
+<h3>1. Problem definition</h3>
+
+<p>The goal of this case study is to build a clustering model to group individuals or investors based on parameters related to the ability and willingness to take risk. We will focus on using common demographic and financial characteristics to accomplish this.</p>
+
+<p>The survey data we’re using includes responses from 10,000+ individuals in 2007 (precrisis) and 2009 (postcrisis). There are over 500 features. Since the data has many variables, we will first reduce the number of variables and select the most intuitive features directly linked to an investor’s ability and willingness to take risk.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="2. Getting started—loading the data and Python packages"><div class="sect3" id="idm45174910486264">
+<h3>2. Getting started—loading the data and Python packages</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="2.1. Loading the Python packages"><div class="sect4" id="idm45174910485256">
+<h4>2.1. Loading the Python packages</h4>
+
+<p><a data-type="indexterm" data-primary="clustering investors" data-secondary="loading data and Python packages" id="idm45174910484088"/>The packages loaded for this case study are similar to those loaded in the case study presented in <a data-type="xref" href="ch05.xhtml#Chapter5">Chapter 5</a>. However, some additional packages related to the clustering techniques are shown in the following code snippet:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Import packages for clustering techniques</code>
+<code class="kn">from</code> <code class="nn">sklearn.cluster</code> <code class="k">import</code> <code class="n">KMeans</code><code class="p">,</code> <code class="n">AgglomerativeClustering</code><code class="p">,</code><code class="n">AffinityPropagation</code>
+<code class="kn">from</code> <code class="nn">sklearn.metrics</code> <code class="k">import</code> <code class="n">adjusted_mutual_info_score</code>
+<code class="kn">from</code> <code class="nn">sklearn</code> <code class="k">import</code> <code class="n">cluster</code><code class="p">,</code> <code class="n">covariance</code><code class="p">,</code> <code class="n">manifold</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="2.2. Loading the data"><div class="sect4" id="idm45174910480424">
+<h4>2.2. Loading the data</h4>
+
+<p>The data (again, previously used in <a data-type="xref" href="ch05.xhtml#Chapter5">Chapter 5</a>) is further processed to give the following attributes that represent an individual’s ability and willingness to take risk. This preprocessed data is for the 2007 survey and is loaded below:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># load dataset</code>
+<code class="n">dataset</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">read_excel</code><code class="p">(</code><code class="s">'ProcessedData.xlsx'</code><code class="p">)</code></pre>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="3. Exploratory data analysis"><div class="sect3" id="idm45174910458584">
+<h3>3. Exploratory data analysis</h3>
+
+<p><a data-type="indexterm" data-primary="clustering investors" data-secondary="exploratory data analysis" id="idm45174910457688"/>Next, we take a closer look at the different columns and features found in the data.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="3.1. Descriptive statistics"><div class="sect4" id="idm45174910443528">
+<h4>3.1. Descriptive statistics</h4>
+
+<p>First, looking at the shape of the data:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">dataset</code><code class="o">.</code><code class="n">shape</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">(3866, 13)</pre>
+
+<p>The data has information for 3,886 individuals across 13 columns:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c"># peek at data</code>
+<code class="n">set_option</code><code class="p">(</code><code class="s">'display.width'</code><code class="p">,</code> <code class="mi">100</code><code class="p">)</code>
+<code class="n">dataset</code><code class="o">.</code><code class="n">head</code><code class="p">(</code><code class="mi">5</code><code class="p">)</code></pre>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in11.png" alt="mlbf 08in11" width="798" height="155"/>
+<h6/>
+</div></figure>
+
+<p>As we can see in the table above, there are 12 attributes for each of the individuals. These attributes can be categorized as demographic, financial, and behavioral attributes. They are summarized in <a data-type="xref" href="#AttrCluster">Figure 8-2</a>.</p>
+
+<figure><div id="AttrCluster" class="figure">
+<img src="Images/mlbf_0802.png" alt="mlbf 0802" width="1029" height="354"/>
+<h6><span class="label">Figure 8-2. </span>Attributes for clustering individuals</h6>
+</div></figure>
+
+<p>Many of these were previously used and defined in the <a data-type="xref" href="ch05.xhtml#Chapter5">Chapter 5</a> case study. A few additional attributes (LIFECYCL, HHOUSES, and SPENDMOR) are used in this case study and are defined below:</p>
+<dl>
+<dt>LIFECYCL</dt>
+<dd>
+<p>This is a lifecycle variable, used to approximate a person’s ability to take on risk. There are six categories in increasing level of ability to take risk. A value of 1 represents “age under 55, not married, and no kids,” and a value of 6 represents “age over 55 and not working.”</p>
+</dd>
+<dt>HHOUSES</dt>
+<dd>
+<p>This is a flag indicating whether the individual is a homeowner. A value of 1 (0) implies the individual does (does not) own a home.</p>
+</dd>
+<dt>SPENDMOR</dt>
+<dd>
+<p>This represents higher spending preference if assets appreciated on a scale of 1 to 5.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="3.2. Data visualization"><div class="sect4" id="idm45174910442936">
+<h4>3.2. Data visualization</h4>
+
+<p>We will take a detailed look into the visualization 
+<span class="keep-together">postclustering</span>.</p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="4. Data preparation"><div class="sect3" id="idm45174910313672">
+<h3>4. Data preparation</h3>
+
+<p><a data-type="indexterm" data-primary="clustering investors" data-secondary="data preparation" id="idm45174910312440"/>Here, we perform any necessary changes to the data in preparation for modeling.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="4.1. Data cleaning"><div class="sect4" id="idm45174910311208">
+<h4>4.1. Data cleaning</h4>
+
+<p>In this step, we check for NAs in the rows and either drop them or fill them with the mean of the column:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="nb">print</code><code class="p">(</code><code class="s">'Null Values ='</code><code class="p">,</code> <code class="n">dataset</code><code class="o">.</code><code class="n">isnull</code><code class="p">()</code><code class="o">.</code><code class="n">values</code><code class="o">.</code><code class="n">any</code><code class="p">())</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">Null Values = False</pre>
+
+<p class="pagebreak-before">Given that there is not any missing data, and the data is already in categorical format, no further data cleaning was performed. The <em>ID</em> column is unnecessary and is 
+<span class="keep-together">dropped</span>:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">X</code><code class="o">=</code><code class="n">X</code><code class="o">.</code><code class="n">drop</code><code class="p">([</code><code class="s">'ID'</code><code class="p">],</code> <code class="n">axis</code><code class="o">=</code><code class="mi">1</code><code class="p">)</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="4.2. Data transformation"><div class="sect4" id="idm45174910310904">
+<h4>4.2. Data transformation</h4>
+
+<p>As we saw in Section 3.1, all the columns represent categorical data with similar numeric scale, with no outliers. Hence, no data transformation will be required for clustering.</p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="5. Evaluate algorithms and models"><div class="sect3" id="idm45174910264040">
+<h3>5. Evaluate algorithms and models</h3>
+
+<p><a data-type="indexterm" data-primary="clustering investors" data-secondary="evaluation of algorithms and models" id="ix_Chapter8-asciidoc14"/>We will analyze the performance of <em>k</em>-means and affinity propagation.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1. k-means clustering"><div class="sect4" id="idm45174910260808">
+<h4>5.1. k-means clustering</h4>
+
+<p><a data-type="indexterm" data-primary="clustering investors" data-secondary="k-means clustering" id="ix_Chapter8-asciidoc15"/><a data-type="indexterm" data-primary="k-means clustering" data-secondary="grouping investors" id="ix_Chapter8-asciidoc16"/>We look at the details of the <em>k</em>-means clustering in this step. First, we find the optimal number of clusters, followed by the creation of a model.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1.1. Finding the optimal number of clusters"><div class="sect4" id="idm45174910226968">
+<h4>5.1.1. Finding the optimal number of clusters</h4>
+
+<p>We look at the following two metrics to evaluate the number of clusters in the <em>k</em>-means model. The Python code to get these two metrics is the same as in case study 1:</p>
+<ol>
+<li>
+<p>Sum of squared errors (SSE)</p>
+</li>
+<li>
+<p>Silhouette score</p>
+</li>
+
+</ol>
+
+<p><code>Sum of squared errors (SSE) within clusters</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in12.png" alt="mlbf 08in12" width="613" height="306"/>
+<h6/>
+</div></figure>
+
+<p class="pagebreak-before"><code>Silhouette score</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in13.png" alt="mlbf 08in13" width="603" height="308"/>
+<h6/>
+</div></figure>
+
+<p>Looking at both of the preceding charts, the optimum number of clusters seems to be around 7. We can see that as the number of clusters increases past 6, the SSE within clusters begins to plateau. From the second graph, we can see that there are various parts of the graph where a kink can be seen. Since there is not much of a difference in the SSE after 7 clusters, we proceed with using 7 clusters in the <em>k</em>-means model below.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1.2. Clustering and visualization"><div class="sect4" id="idm45174910216888">
+<h4>5.1.2. Clustering and visualization</h4>
+
+<p>Let us create a <em>k</em>-means model with 7 clusters:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">nclust</code><code class="o">=</code><code class="mi">7</code>
+
+<code class="c">#Fit with k-means</code>
+<code class="n">k_means</code> <code class="o">=</code> <code class="n">cluster</code><code class="o">.</code><code class="n">KMeans</code><code class="p">(</code><code class="n">n_clusters</code><code class="o">=</code><code class="n">nclust</code><code class="p">)</code>
+<code class="n">k_means</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+
+<p>Let us assign a target cluster to each individual in the dataset. This assignment is used further for exploratory data analysis to understand the behavior of each cluster:<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc16" id="idm45174910182520"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc15" id="idm45174910181912"/></p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Extracting labels</code>
+<code class="n">target_labels</code> <code class="o">=</code> <code class="n">k_means</code><code class="o">.</code><code class="n">predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2. Affinity propagation"><div class="sect4" id="idm45174910216520">
+<h4>5.2. Affinity propagation</h4>
+
+<p><a data-type="indexterm" data-primary="affinity propagation clustering" data-secondary="grouping investors" id="idm45174910174888"/><a data-type="indexterm" data-primary="clustering investors" data-secondary="affinity propagation" id="idm45174910173976"/>Here, we build an affinity propagation model and look at the number of clusters:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">ap</code> <code class="o">=</code> <code class="n">AffinityPropagation</code><code class="p">()</code>
+<code class="n">ap</code><code class="o">.</code><code class="n">fit</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+<code class="n">clust_labels2</code> <code class="o">=</code> <code class="n">ap</code><code class="o">.</code><code class="n">predict</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+
+<code class="n">cluster_centers_indices</code> <code class="o">=</code> <code class="n">ap</code><code class="o">.</code><code class="n">cluster_centers_indices_</code>
+<code class="n">labels</code> <code class="o">=</code> <code class="n">ap</code><code class="o">.</code><code class="n">labels_</code>
+<code class="n">n_clusters_</code> <code class="o">=</code> <code class="nb">len</code><code class="p">(</code><code class="n">cluster_centers_indices</code><code class="p">)</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">'Estimated number of clusters: %d'</code> <code class="o">%</code> <code class="n">n_clusters_</code><code class="p">)</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">Estimated number of clusters: 161</pre>
+
+<p>The affinity propagation resulted in over 150 clusters. Such a large number will likely make it difficult to ascertain proper differentiation between them.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.3. Cluster evaluation"><div class="sect4" id="idm45174910061704">
+<h4>5.3. Cluster evaluation</h4>
+
+<p>In this step, we check the performance of the clusters using silhouette coefficient (<em>sklearn.metrics.silhouette_score</em>). Recall that a higher silhouette coefficient score relates to a model with better defined clusters:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="kn">from</code> <code class="nn">sklearn</code> <code class="k">import</code> <code class="n">metrics</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">"km"</code><code class="p">,</code> <code class="n">metrics</code><code class="o">.</code><code class="n">silhouette_score</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">k_means</code><code class="o">.</code><code class="n">labels_</code><code class="p">))</code>
+<code class="nb">print</code><code class="p">(</code><code class="s">"ap"</code><code class="p">,</code> <code class="n">metrics</code><code class="o">.</code><code class="n">silhouette_score</code><code class="p">(</code><code class="n">X</code><code class="p">,</code> <code class="n">ap</code><code class="o">.</code><code class="n">labels_</code><code class="p">))</code></pre>
+
+<p><code>Output</code></p>
+
+<pre data-type="programlisting">km 0.170585217843582
+ap 0.09736878398868973</pre>
+
+<p>The <em>k</em>-means model has a much higher silhouette coefficient compared to the affinity propagation. Additionally, the large number of clusters resulting from the affinity propagation is untenable. In the context of the problem at hand, having fewer clusters, or categorizations of investors, helps build simplicity and standardization in the investment management process. It gives the users of this information (e.g., financial advisors) some manageable intuition around the representation of the clusters. Comprehending and being able to speak to six to eight investor types is much more practical than maintaining a meaningful understanding of over 100 different profiles. With this in mind, we proceed with <em>k</em>-means as the preferred clustering technique.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc14" id="idm45174909999992"/></p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="6. Cluster intuition"><div class="sect3" id="idm45174909999160">
+<h3>6. Cluster intuition</h3>
+
+<p><a data-type="indexterm" data-primary="clustering investors" data-secondary="cluster intuition" id="idm45174909997592"/>In the next step, we will analyze the clusters and attempt to draw conclusions from them. We do that by plotting the average of each variable of the cluster and summarizing the findings:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">cluster_output</code><code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">concat</code><code class="p">([</code><code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">X</code><code class="p">),</code>  <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">k_means</code><code class="o">.</code><code class="n">labels_</code><code class="p">,</code> \
+  <code class="n">columns</code> <code class="o">=</code> <code class="p">[</code><code class="s">'cluster'</code><code class="p">])],</code><code class="n">axis</code><code class="o">=</code><code class="mi">1</code><code class="p">)</code>
+<code class="n">output</code><code class="o">=</code><code class="n">cluster_output</code><code class="o">.</code><code class="n">groupby</code><code class="p">(</code><code class="s">'cluster'</code><code class="p">)</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code></pre>
+
+<p><code>Demographics Features: Plot for each of the clusters</code></p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">output</code><code class="p">[[</code><code class="s">'AGE'</code><code class="p">,</code><code class="s">'EDUC'</code><code class="p">,</code><code class="s">'MARRIED'</code><code class="p">,</code><code class="s">'KIDS'</code><code class="p">,</code><code class="s">'LIFECL'</code><code class="p">,</code><code class="s">'OCCAT'</code><code class="p">]]</code><code class="o">.</code>\
+<code class="n">plot</code><code class="o">.</code><code class="n">bar</code><code class="p">(</code><code class="n">rot</code><code class="o">=</code><code class="mi">0</code><code class="p">,</code> <code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">18</code><code class="p">,</code><code class="mi">5</code><code class="p">));</code></pre>
+
+<p class="pagebreak-before"><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in14.png" alt="mlbf 08in14" width="1018" height="302"/>
+<h6/>
+</div></figure>
+
+<p>The plot here shows the average values of the attributes for each of the clusters (full size version available on <a href="https://oreil.ly/61d9_">GitHub</a>). For example, in comparing clusters 0 and 1, cluster 0 has <em>lower</em> average age, yet <em>higher</em> average education. However, these two clusters are more similar in marital status and number of children. So, based on the demographic attributes, the individuals in cluster 0 will, on average, have higher risk tolerance compared to those in cluster 1.</p>
+
+<p><code>Financial and Behavioral Attributes: Plot for each of the clusters</code></p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">output</code><code class="p">[[</code><code class="s">'HHOUSES'</code><code class="p">,</code><code class="s">'NWCAT'</code><code class="p">,</code><code class="s">'INCCL'</code><code class="p">,</code><code class="s">'WSAVED'</code><code class="p">,</code><code class="s">'SPENDMOR'</code><code class="p">,</code><code class="s">'RISK'</code><code class="p">]]</code><code class="o">.</code>\
+<code class="n">plot</code><code class="o">.</code><code class="n">bar</code><code class="p">(</code><code class="n">rot</code><code class="o">=</code><code class="mi">0</code><code class="p">,</code> <code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">18</code><code class="p">,</code><code class="mi">5</code><code class="p">));</code></pre>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in15.png" alt="mlbf 08in15" width="1018" height="302"/>
+<h6/>
+</div></figure>
+
+<p>The plot here shows the average values of the financial and behavior attributes for each of the clusters (full size version available on <a href="https://oreil.ly/61d9_">GitHub</a>). Again, comparing clusters 0 and 1, the former has higher average house ownership, higher average net worth and income, and a lower willingness to take risk compared to the latter. In terms of saving versus income comparison and willingness to save, the two clusters are comparable. Therefore, we can posit that the individuals in cluster 0 will, on average, have a higher ability and yet a lower willingness to take risks compared to the individuals in cluster 1.</p>
+
+<p>Combining the information from the demographics, financial, and behavioral attributes for these two clusters, the overall ability to take risks for an individual in cluster 0 is higher than someone in cluster 1. Performing similar analyses across all other clusters, we summarize the results in the table below. The risk tolerance column represents the subjective assessment of the risk tolerance of each cluster.</p>
+<table>
+
+<thead>
+<tr>
+<th>Cluster</th>
+<th>Features</th>
+<th>Risk capacity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Cluster 0</p></td>
+<td><p>Low age, high net worth and income, less risky life category,
+willingness to spend more</p></td>
+<td><p>High</p></td>
+</tr>
+<tr>
+<td><p>Cluster 1</p></td>
+<td><p>High age, low net worth and income, highly risky life
+category, willingness to take risk, low education</p></td>
+<td><p>Low</p></td>
+</tr>
+<tr>
+<td><p>Cluster 2</p></td>
+<td><p>High age, high net worth and income, highly risky life
+category, willingness to take risk, owns home</p></td>
+<td><p>Medium</p></td>
+</tr>
+<tr>
+<td><p>Cluster 3</p></td>
+<td><p>Low age, very low income and net worth, high willingness to
+take risk, many kids</p></td>
+<td><p>Low</p></td>
+</tr>
+<tr>
+<td><p>Cluster 4</p></td>
+<td><p>Medium age, very high income and net worth, high willingness
+to take risk, many kids, owns home</p></td>
+<td><p>High</p></td>
+</tr>
+<tr>
+<td><p>Cluster 5</p></td>
+<td><p>Low age, very low income and net worth, high willingness to
+take risk, no kids</p></td>
+<td><p>Medium</p></td>
+</tr>
+<tr>
+<td><p>Cluster 6</p></td>
+<td><p>Low age, medium income and net worth, high willingness to
+take risk, many kids, owns home</p></td>
+<td><p>Low</p></td>
+</tr>
+</tbody>
+</table>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Conclusion"><div class="sect3" id="idm45174909998568">
+<h3>Conclusion</h3>
+
+<p>One of the key takeaways from this case study is the approach to understanding the cluster intuition. We used visualization techniques to understand the expected behavior of a cluster member by qualitatively interpreting mean values of the variables in each cluster. We demonstrated the efficiency of clustering in discovering the natural groups of different investors based on their risk tolerance.</p>
+
+<p>Given that clustering algorithms can successfully group investors based on different factors (such as age, income, and risk tolerance), they can be further used by portfolio managers to standardize portfolio allocation and rebalance strategies across the clusters, making the investment management process faster and more effective.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc13" id="idm45174909799624"/></p>
+<img class="blueprint bottom" src="Images/bracket_bottom.png" width="1625" height="32"/>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Case Study 3: Hierarchical Risk Parity"><div class="sect1" id="CaseStudy3CL">
+<h1>Case Study 3: Hierarchical Risk Parity</h1>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" id="ix_Chapter8-asciidoc17"/><a data-type="indexterm" data-primary="mean-variance portfolio (MVP) optimization" data-secondary="hierarchical risk parity versus" id="ix_Chapter8-asciidoc18"/>Markowitz’s <em>mean-variance portfolio optimization</em> is the most commonly used technique for portfolio construction and asset allocation. In this technique, we need to estimate the covariance matrix and expected returns of assets to be used as inputs. As discussed in <a data-type="xref" href="ch07.xhtml#CaseStudy1DR">“Case Study 1: Portfolio Management: Finding an Eigen Portfolio”</a> in <a data-type="xref" href="ch07.xhtml#Chapter7">Chapter 7</a>, the erratic nature of financial returns causes estimation errors in the expected returns and the covariance matrix, especially when the number of assets is large compared to the sample size. These errors greatly jeopardize the optimality of the resulting portfolios, which leads to erroneous and unstable results. Additionally, small changes in the assumed asset returns, volatilities, or covariances can lead to large effects on the output of the optimization procedure. In this sense, the Markowitz mean-variance optimization is an ill-posed (or ill-conditioned) inverse problem.</p>
+
+<p>In <a href="https://oreil.ly/2BmW5">“Building Diversified Portfolios That Outperform Out-of-Sample”</a> by Marcos López de Prado (2016), the author proposes a portfolio allocation method based on clustering called <em>hierarchical risk parity</em>. The main idea of hierarchical risk parity is to run hierarchical clustering on the covariance matrix of stock returns and then find a diversified weighting by distributing capital equally to each cluster hierarchy (so that many correlated strategies will receive the same total allocation as a single uncorrelated one). This alleviates some of the issues (highlighted above) found in Markowitz’s mean-variance optimization and improves numerical stability.</p>
+
+<p>In this case study, we will implement hierarchical risk parity based on clustering methods and compare it against Markowitz’s mean-variance optimization method.</p>
+
+<p>The dataset used for this case study is price data for stocks in the S&amp;P 500 from 2018 onwards. The dataset can be downloaded from Yahoo Finance. It is the same dataset as was used in case study 1.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm45174909760280">
+<h5/>
+<p>In this case study, we will focus on:</p>
+
+<ul>
+<li>
+<p>Application of clustering-based techniques for portfolio allocation.</p>
+</li>
+<li>
+<p>Developing a framework for comparing portfolio allocation methods.</p>
+</li>
+</ul>
+</div></aside>
+<img class="blueprint top" src="Images/bracket_top.png" width="1625" height="32"/>
+
+
+
+
+
+
+
+
+<section data-type="sect2" class="blueprint" data-pdf-bookmark="Blueprint for Using Clustering to Implement Hierarchical Risk Parity"><div class="sect2" id="idm45174909755944">
+<h2>Blueprint for Using Clustering to Implement Hierarchical Risk Parity</h2>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="1. Problem definition"><div class="sect3" id="idm45174909754488">
+<h3>1. Problem definition</h3>
+
+<p>Our goal in this case study is to use a clustering-based algorithm on a dataset of stocks to allocate capital into different asset classes. In order to backtest and compare the portfolio allocation against the traditional Markowitz mean-variance optimization, we will perform visualization and use performance metrics, such as the Sharpe ratio.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="2. Getting started—loading the data and Python packages"><div class="sect3" id="idm45174909752536">
+<h3>2. Getting started—loading the data and Python packages</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="2.1. Loading the Python packages"><div class="sect4" id="idm45174909751528">
+<h4>2.1. Loading the Python packages</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="loading data and Python packages" id="idm45174909750360"/>The packages loaded for this case study are similar to those loaded in the previous case study. However, some additional packages related to the clustering techniques are shown in the following code snippet:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Import Model Packages</code>
+<code class="kn">import</code> <code class="nn">scipy.cluster.hierarchy</code> <code class="k">as</code> <code class="nn">sch</code>
+<code class="kn">from</code> <code class="nn">sklearn.cluster</code> <code class="k">import</code> <code class="n">AgglomerativeClustering</code>
+<code class="kn">from</code> <code class="nn">scipy.cluster.hierarchy</code> <code class="k">import</code> <code class="n">fcluster</code>
+<code class="kn">from</code> <code class="nn">scipy.cluster.hierarchy</code> <code class="k">import</code> <code class="n">dendrogram</code><code class="p">,</code> <code class="n">linkage</code><code class="p">,</code> <code class="n">cophenet</code>
+<code class="kn">from</code> <code class="nn">sklearn.metrics</code> <code class="k">import</code> <code class="n">adjusted_mutual_info_score</code>
+<code class="kn">from</code> <code class="nn">sklearn</code> <code class="k">import</code> <code class="n">cluster</code><code class="p">,</code> <code class="n">covariance</code><code class="p">,</code> <code class="n">manifold</code>
+<code class="kn">import</code> <code class="nn">ffn</code>
+
+<code class="c">#Package for optimization of mean variance optimization</code>
+<code class="kn">import</code> <code class="nn">cvxopt</code> <code class="k">as</code> <code class="nn">opt</code>
+<code class="kn">from</code> <code class="nn">cvxopt</code> <code class="k">import</code> <code class="n">blas</code><code class="p">,</code> <code class="n">solvers</code></pre>
+
+<p>Since this case study uses the same data as case study 1, some of the next steps (i.e., loading the data) have been skipped to avoid repetition. As a reminder, the data contains around 500 stocks and 448 observations.</p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="3. Exploratory data analysis"><div class="sect3" id="idm45174909746328">
+<h3>3. Exploratory data analysis</h3>
+
+<p>We will take a detailed look into the visualization postclustering later in this case study.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="4. Data preparation"><div class="sect3" id="idm45174909697224">
+<h3>4. Data preparation</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="4.1. Data cleaning"><div class="sect4" id="idm45174909696216">
+<h4>4.1. Data cleaning</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="data preparation" id="idm45174909694984"/> Refer to case study 1 for data cleaning steps.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="4.2. Data transformation"><div class="sect4" id="idm45174909693592">
+<h4>4.2. Data transformation</h4>
+
+<p>We will be using annual returns for clustering. Additionally, we will train the data and then test the data. Here, we prepare the dataset for training and testing by separating 20% of the dataset for testing, and we generate the return series:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">X</code><code class="o">=</code> <code class="n">dataset</code><code class="o">.</code><code class="n">copy</code><code class="p">(</code><code class="s">'deep'</code><code class="p">)</code>
+<code class="n">row</code><code class="o">=</code> <code class="nb">len</code><code class="p">(</code><code class="n">X</code><code class="p">)</code>
+<code class="n">train_len</code> <code class="o">=</code> <code class="nb">int</code><code class="p">(</code><code class="n">row</code><code class="o">*.</code><code class="mi">8</code><code class="p">)</code>
+
+<code class="n">X_train</code> <code class="o">=</code> <code class="n">X</code><code class="o">.</code><code class="n">head</code><code class="p">(</code><code class="n">train_len</code><code class="p">)</code>
+<code class="n">X_test</code> <code class="o">=</code> <code class="n">X</code><code class="o">.</code><code class="n">tail</code><code class="p">(</code><code class="n">row</code><code class="o">-</code><code class="n">train_len</code><code class="p">)</code>
+
+<code class="c">#Calculate percentage return</code>
+<code class="n">returns</code> <code class="o">=</code> <code class="n">X_train</code><code class="o">.</code><code class="n">to_returns</code><code class="p">()</code><code class="o">.</code><code class="n">dropna</code><code class="p">()</code>
+<code class="n">returns_test</code><code class="o">=</code><code class="n">X_test</code><code class="o">.</code><code class="n">to_returns</code><code class="p">()</code><code class="o">.</code><code class="n">dropna</code><code class="p">()</code></pre>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" class="pagebreak-before less_space" data-pdf-bookmark="5. Evaluate algorithms and models"><div class="sect3" id="idm45174909670776">
+<h3>5. Evaluate algorithms and models</h3>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="evaluation of algorithms and models" id="ix_Chapter8-asciidoc19"/>In this step, we will look at hierarchical clustering and perform further analysis and visualization.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.1. Building a hierarchy graph/dendrogram"><div class="sect4" id="idm45174909602632">
+<h4>5.1. Building a hierarchy graph/dendrogram</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="building hierarchy graph/dendrogram" id="idm45174909601096"/>The first step is to look for clusters of correlations using the agglomerative hierarchical clustering technique. The hierarchy class has a dendrogram method that takes the value returned by the linkage method of the same class. The linkage method takes the dataset and the method to minimize distances as parameters. There are different options for measurement of the distance. The option we will choose is ward, since it minimizes the variance of distances between the clusters. Other possible measures of distance include single and centroid.</p>
+
+<p>Linkage does the actual clustering in one line of code and returns a list of the clusters joined in the format:</p>
+
+<pre data-type="programlisting">Z= [stock_1, stock_2, distance, sample_count]</pre>
+
+<p>As a precursor, we define a function to convert correlation into distances:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">correlDist</code><code class="p">(</code><code class="n">corr</code><code class="p">):</code>
+    <code class="c"># A distance matrix based on correlation, where 0&lt;=d[i,j]&lt;=1</code>
+    <code class="c"># This is a proper distance metric</code>
+    <code class="n">dist</code> <code class="o">=</code> <code class="p">((</code><code class="mi">1</code> <code class="o">-</code> <code class="n">corr</code><code class="p">)</code> <code class="o">/</code> <code class="mf">2.</code><code class="p">)</code> <code class="o">**</code> <code class="o">.</code><code class="mi">5</code>  <code class="c"># distance matrix</code>
+    <code class="k">return</code> <code class="n">dist</code></pre>
+
+<p>Now we convert the correlation of the returns of the stocks into distances, followed by the computation of linkages in the step below. Computation of linkages is followed by the visualization of the clusters through a dendrogram. Again, the leaves are the individual stocks, and the root is the final single cluster. The distance between each cluster is shown on the y-axis; the longer the branches are, the less correlated two clusters are.</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#Calculate linkage</code>
+<code class="n">dist</code> <code class="o">=</code> <code class="n">correlDist</code><code class="p">(</code><code class="n">returns</code><code class="o">.</code><code class="n">corr</code><code class="p">())</code>
+<code class="n">link</code> <code class="o">=</code> <code class="n">linkage</code><code class="p">(</code><code class="n">dist</code><code class="p">,</code> <code class="s">'ward'</code><code class="p">)</code>
+
+<code class="c">#Plot Dendrogram</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">figure</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">20</code><code class="p">,</code> <code class="mi">7</code><code class="p">))</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">title</code><code class="p">(</code><code class="s">"Dendrograms"</code><code class="p">)</code>
+<code class="n">dendrogram</code><code class="p">(</code><code class="n">link</code><code class="p">,</code><code class="n">labels</code> <code class="o">=</code> <code class="n">X</code><code class="o">.</code><code class="n">columns</code><code class="p">)</code>
+<code class="n">plt</code><code class="o">.</code><code class="n">show</code><code class="p">()</code></pre>
+
+<p>In the following chart, the horizontal axis represents the clusters. Although the names of the stocks on the horizontal axis are not very clear (not surprising, given that there are 500 stocks), we can see that they are grouped into several clusters. The appropriate number of clusters appears to be 2, 3, or 6, depending on the desired distance threshold level. Next, we will leverage the linkages computed from this step to compute the asset allocation based on hierarchical risk parity.</p>
+
+<p class="pagebreak-before"><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in16.png" alt="mlbf 08in16" width="1306" height="494"/>
+<h6/>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2. Steps for hierarchical risk parity"><div class="sect4" id="idm45174909602040">
+<h4>5.2. Steps for hierarchical risk parity</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="stages of HRP algorithm" id="ix_Chapter8-asciidoc20"/>The hierarchical risk parity (HRP) algorithm works in three stages, as outlined in Prado’s paper:</p>
+<dl>
+<dt>Tree clustering</dt>
+<dd>
+<p>Grouping similar investments into clusters based on their correlation matrix. Having a hierarchical structure helps us improve stability issues of quadratic optimizers when inverting the covariance matrix.</p>
+</dd>
+<dt>Quasi-diagonalization</dt>
+<dd>
+<p>Reorganizing the covariance matrix so similar investments will be placed together. This matrix diagonalization allows us to distribute weights optimally following an inverse-variance allocation.</p>
+</dd>
+<dt>Recursive bisection</dt>
+<dd>
+<p>Distributing the allocation through recursive bisection based on cluster 
+<span class="keep-together">covariance</span>.</p>
+</dd>
+</dl>
+
+<p>Having performed the first stage in the previous section, where we identified clusters based on the distance metrics, we proceed to quasi-diagonalization.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2.1. Quasi-diagonalization"><div class="sect4" id="idm45174909446808">
+<h4>5.2.1. Quasi-diagonalization</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="quasi-diagonalization" id="idm45174909445640"/><a data-type="indexterm" data-primary="matrix seriation" id="idm45174909444696"/><a data-type="indexterm" data-primary="quasi-diagonalization" id="idm45174909444024"/>Quasi-diagonalization is a process known as <em>matrix seriation</em>, which reorganizes the rows and columns of a covariance matrix so that the largest values lie along the diagonal. As shown in the following code, the process reorganizes the covariance matrix so similar investments are placed together. This matrix diagonalization allows us to distribute weights optimally following an inverse-variance allocation:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">getQuasiDiag</code><code class="p">(</code><code class="n">link</code><code class="p">):</code>
+    <code class="c"># Sort clustered items by distance</code>
+    <code class="n">link</code> <code class="o">=</code> <code class="n">link</code><code class="o">.</code><code class="n">astype</code><code class="p">(</code><code class="nb">int</code><code class="p">)</code>
+    <code class="n">sortIx</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">([</code><code class="n">link</code><code class="p">[</code><code class="o">-</code><code class="mi">1</code><code class="p">,</code> <code class="mi">0</code><code class="p">],</code> <code class="n">link</code><code class="p">[</code><code class="o">-</code><code class="mi">1</code><code class="p">,</code> <code class="mi">1</code><code class="p">]])</code>
+    <code class="n">numItems</code> <code class="o">=</code> <code class="n">link</code><code class="p">[</code><code class="o">-</code><code class="mi">1</code><code class="p">,</code> <code class="mi">3</code><code class="p">]</code>  <code class="c"># number of original items</code>
+    <code class="k">while</code> <code class="n">sortIx</code><code class="o">.</code><code class="n">max</code><code class="p">()</code> <code class="o">&gt;=</code> <code class="n">numItems</code><code class="p">:</code>
+        <code class="n">sortIx</code><code class="o">.</code><code class="n">index</code> <code class="o">=</code> <code class="nb">range</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="n">sortIx</code><code class="o">.</code><code class="n">shape</code><code class="p">[</code><code class="mi">0</code><code class="p">]</code> <code class="o">*</code> <code class="mi">2</code><code class="p">,</code> <code class="mi">2</code><code class="p">)</code>  <code class="c"># make space</code>
+        <code class="n">df0</code> <code class="o">=</code> <code class="n">sortIx</code><code class="p">[</code><code class="n">sortIx</code> <code class="o">&gt;=</code> <code class="n">numItems</code><code class="p">]</code>  <code class="c"># find clusters</code>
+        <code class="n">i</code> <code class="o">=</code> <code class="n">df0</code><code class="o">.</code><code class="n">index</code>
+        <code class="n">j</code> <code class="o">=</code> <code class="n">df0</code><code class="o">.</code><code class="n">values</code> <code class="o">-</code> <code class="n">numItems</code>
+        <code class="n">sortIx</code><code class="p">[</code><code class="n">i</code><code class="p">]</code> <code class="o">=</code> <code class="n">link</code><code class="p">[</code><code class="n">j</code><code class="p">,</code> <code class="mi">0</code><code class="p">]</code>  <code class="c"># item 1</code>
+        <code class="n">df0</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="n">link</code><code class="p">[</code><code class="n">j</code><code class="p">,</code> <code class="mi">1</code><code class="p">],</code> <code class="n">index</code><code class="o">=</code><code class="n">i</code> <code class="o">+</code> <code class="mi">1</code><code class="p">)</code>
+        <code class="n">sortIx</code> <code class="o">=</code> <code class="n">sortIx</code><code class="o">.</code><code class="n">append</code><code class="p">(</code><code class="n">df0</code><code class="p">)</code>  <code class="c"># item 2</code>
+        <code class="n">sortIx</code> <code class="o">=</code> <code class="n">sortIx</code><code class="o">.</code><code class="n">sort_index</code><code class="p">()</code>  <code class="c"># re-sort</code>
+        <code class="n">sortIx</code><code class="o">.</code><code class="n">index</code> <code class="o">=</code> <code class="nb">range</code><code class="p">(</code><code class="n">sortIx</code><code class="o">.</code><code class="n">shape</code><code class="p">[</code><code class="mi">0</code><code class="p">])</code>  <code class="c"># re-index</code>
+    <code class="k">return</code> <code class="n">sortIx</code><code class="o">.</code><code class="n">tolist</code><code class="p">()</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.2.2. Recursive bisection"><div class="sect4" id="idm45174909440264">
+<h4>5.2.2. Recursive bisection</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="recursive bisection" id="idm45174909439016"/><a data-type="indexterm" data-primary="recursive bisection" id="idm45174909213464"/>In the next step, we perform recursive bisection, which is a top-down approach to splitting portfolio weights between subsets based on the inverse proportion to their aggregated variances. The function <code>getClusterVar</code> computes the cluster variance, and in this process, it requires the inverse-variance portfolio from the function <code>getIVP</code>. The output of the function <code>getClusterVar</code> is used by the function <code>getRecBipart</code> to compute the final allocation through recursive bisection based on cluster covariance:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">getIVP</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="o">**</code><code class="n">kargs</code><code class="p">):</code>
+<code class="c"># Compute the inverse-variance portfolio</code>
+<code class="n">ivp</code> <code class="o">=</code> <code class="mf">1.</code> <code class="o">/</code> <code class="n">np</code><code class="o">.</code><code class="n">diag</code><code class="p">(</code><code class="n">cov</code><code class="p">)</code>
+<code class="n">ivp</code> <code class="o">/=</code> <code class="n">ivp</code><code class="o">.</code><code class="n">sum</code><code class="p">()</code>
+<code class="k">return</code> <code class="n">ivp</code>
+
+<code class="k">def</code> <code class="nf">getClusterVar</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code><code class="n">cItems</code><code class="p">):</code>
+    <code class="c"># Compute variance per cluster</code>
+    <code class="n">cov_</code><code class="o">=</code><code class="n">cov</code><code class="o">.</code><code class="n">loc</code><code class="p">[</code><code class="n">cItems</code><code class="p">,</code><code class="n">cItems</code><code class="p">]</code> <code class="c"># matrix slice</code>
+    <code class="n">w_</code><code class="o">=</code><code class="n">getIVP</code><code class="p">(</code><code class="n">cov_</code><code class="p">)</code><code class="o">.</code><code class="n">reshape</code><code class="p">(</code><code class="o">-</code><code class="mi">1</code><code class="p">,</code> <code class="mi">1</code><code class="p">)</code>
+    <code class="n">cVar</code><code class="o">=</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">w_</code><code class="o">.</code><code class="n">T</code><code class="p">,</code><code class="n">cov_</code><code class="p">),</code><code class="n">w_</code><code class="p">)[</code><code class="mi">0</code><code class="p">,</code> <code class="mi">0</code><code class="p">]</code>
+    <code class="k">return</code> <code class="n">cVar</code>
+
+<code class="k">def</code> <code class="nf">getRecBipart</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="n">sortIx</code><code class="p">):</code>
+    <code class="c"># Compute HRP alloc</code>
+    <code class="n">w</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="mi">1</code><code class="p">,</code> <code class="n">index</code><code class="o">=</code><code class="n">sortIx</code><code class="p">)</code>
+    <code class="n">cItems</code> <code class="o">=</code> <code class="p">[</code><code class="n">sortIx</code><code class="p">]</code>  <code class="c"># initialize all items in one cluster</code>
+    <code class="k">while</code> <code class="nb">len</code><code class="p">(</code><code class="n">cItems</code><code class="p">)</code> <code class="o">&gt;</code> <code class="mi">0</code><code class="p">:</code>
+        <code class="n">cItems</code> <code class="o">=</code> <code class="p">[</code><code class="n">i</code><code class="p">[</code><code class="n">j</code><code class="p">:</code><code class="n">k</code><code class="p">]</code> <code class="k">for</code> <code class="n">i</code> <code class="ow">in</code> <code class="n">cItems</code> <code class="k">for</code> <code class="n">j</code><code class="p">,</code> <code class="n">k</code> <code class="ow">in</code> <code class="p">((</code><code class="mi">0</code><code class="p">,</code>\
+           <code class="nb">len</code><code class="p">(</code><code class="n">i</code><code class="p">)</code> <code class="o">//</code> <code class="mi">2</code><code class="p">),</code> <code class="p">(</code><code class="nb">len</code><code class="p">(</code><code class="n">i</code><code class="p">)</code> <code class="o">//</code> <code class="mi">2</code><code class="p">,</code> <code class="nb">len</code><code class="p">(</code><code class="n">i</code><code class="p">)))</code> <code class="k">if</code> <code class="nb">len</code><code class="p">(</code><code class="n">i</code><code class="p">)</code> <code class="o">&gt;</code> <code class="mi">1</code><code class="p">]</code>  <code class="c"># bi-section</code>
+        <code class="k">for</code> <code class="n">i</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="nb">len</code><code class="p">(</code><code class="n">cItems</code><code class="p">),</code> <code class="mi">2</code><code class="p">):</code>  <code class="c"># parse in pairs</code>
+            <code class="n">cItems0</code> <code class="o">=</code> <code class="n">cItems</code><code class="p">[</code><code class="n">i</code><code class="p">]</code>  <code class="c"># cluster 1</code>
+            <code class="n">cItems1</code> <code class="o">=</code> <code class="n">cItems</code><code class="p">[</code><code class="n">i</code> <code class="o">+</code> <code class="mi">1</code><code class="p">]</code>  <code class="c"># cluster 2</code>
+            <code class="n">cVar0</code> <code class="o">=</code> <code class="n">getClusterVar</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="n">cItems0</code><code class="p">)</code>
+            <code class="n">cVar1</code> <code class="o">=</code> <code class="n">getClusterVar</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="n">cItems1</code><code class="p">)</code>
+            <code class="n">alpha</code> <code class="o">=</code> <code class="mi">1</code> <code class="o">-</code> <code class="n">cVar0</code> <code class="o">/</code> <code class="p">(</code><code class="n">cVar0</code> <code class="o">+</code> <code class="n">cVar1</code><code class="p">)</code>
+            <code class="n">w</code><code class="p">[</code><code class="n">cItems0</code><code class="p">]</code> <code class="o">*=</code> <code class="n">alpha</code>  <code class="c"># weight 1</code>
+            <code class="n">w</code><code class="p">[</code><code class="n">cItems1</code><code class="p">]</code> <code class="o">*=</code> <code class="mi">1</code> <code class="o">-</code> <code class="n">alpha</code>  <code class="c"># weight 2</code>
+    <code class="k">return</code> <code class="n">w</code></pre>
+
+<p>The following function <code>getHRP</code> combines the three stages—clustering, quasi-diagonalization, and recursive bisection—to produce the final weights:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">getHRP</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="n">corr</code><code class="p">):</code>
+    <code class="c"># Construct a hierarchical portfolio</code>
+    <code class="n">dist</code> <code class="o">=</code> <code class="n">correlDist</code><code class="p">(</code><code class="n">corr</code><code class="p">)</code>
+    <code class="n">link</code> <code class="o">=</code> <code class="n">sch</code><code class="o">.</code><code class="n">linkage</code><code class="p">(</code><code class="n">dist</code><code class="p">,</code> <code class="s">'single'</code><code class="p">)</code>
+    <code class="c">#plt.figure(figsize=(20, 10))</code>
+    <code class="c">#dn = sch.dendrogram(link, labels=cov.index.values)</code>
+    <code class="c">#plt.show()</code>
+    <code class="n">sortIx</code> <code class="o">=</code> <code class="n">getQuasiDiag</code><code class="p">(</code><code class="n">link</code><code class="p">)</code>
+    <code class="n">sortIx</code> <code class="o">=</code> <code class="n">corr</code><code class="o">.</code><code class="n">index</code><code class="p">[</code><code class="n">sortIx</code><code class="p">]</code><code class="o">.</code><code class="n">tolist</code><code class="p">()</code>
+    <code class="n">hrp</code> <code class="o">=</code> <code class="n">getRecBipart</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="n">sortIx</code><code class="p">)</code>
+    <code class="k">return</code> <code class="n">hrp</code><code class="o">.</code><code class="n">sort_index</code><code class="p">()</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.3. Comparison against other asset allocation methods"><div class="sect4" id="idm45174908799144">
+<h4>5.3. Comparison against other asset allocation methods</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="comparison against other asset allocation methods" id="idm45174909202536"/>A main focus of this case study is to develop an alternative to Markowitz’s mean-variance portfolio optimization using clustering. In this step, we define a function to compute the allocation of a portfolio based on Markowitz’s mean-variance technique. This function (<code>getMVP</code>) takes the covariance matrix of the assets as an input, performs the mean-variance optimization, and produces the portfolio allocations:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">getMVP</code><code class="p">(</code><code class="n">cov</code><code class="p">):</code>
+    <code class="n">cov</code> <code class="o">=</code> <code class="n">cov</code><code class="o">.</code><code class="n">T</code><code class="o">.</code><code class="n">values</code>
+    <code class="n">n</code> <code class="o">=</code> <code class="nb">len</code><code class="p">(</code><code class="n">cov</code><code class="p">)</code>
+    <code class="n">N</code> <code class="o">=</code> <code class="mi">100</code>
+    <code class="n">mus</code> <code class="o">=</code> <code class="p">[</code><code class="mi">10</code> <code class="o">**</code> <code class="p">(</code><code class="mf">5.0</code> <code class="o">*</code> <code class="n">t</code> <code class="o">/</code> <code class="n">N</code> <code class="o">-</code> <code class="mf">1.0</code><code class="p">)</code> <code class="k">for</code> <code class="n">t</code> <code class="ow">in</code> <code class="nb">range</code><code class="p">(</code><code class="n">N</code><code class="p">)]</code>
+
+    <code class="c"># Convert to cvxopt matrices</code>
+    <code class="n">S</code> <code class="o">=</code> <code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="n">cov</code><code class="p">)</code>
+    <code class="c">#pbar = opt.matrix(np.mean(returns, axis=1))</code>
+    <code class="n">pbar</code> <code class="o">=</code> <code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">ones</code><code class="p">(</code><code class="n">cov</code><code class="o">.</code><code class="n">shape</code><code class="p">[</code><code class="mi">0</code><code class="p">]))</code>
+
+    <code class="c"># Create constraint matrices</code>
+    <code class="n">G</code> <code class="o">=</code> <code class="o">-</code><code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">eye</code><code class="p">(</code><code class="n">n</code><code class="p">))</code>  <code class="c"># negative n x n identity matrix</code>
+    <code class="n">h</code> <code class="o">=</code> <code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="mf">0.0</code><code class="p">,</code> <code class="p">(</code><code class="n">n</code><code class="p">,</code> <code class="mi">1</code><code class="p">))</code>
+    <code class="n">A</code> <code class="o">=</code> <code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="mf">1.0</code><code class="p">,</code> <code class="p">(</code><code class="mi">1</code><code class="p">,</code> <code class="n">n</code><code class="p">))</code>
+    <code class="n">b</code> <code class="o">=</code> <code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="mf">1.0</code><code class="p">)</code>
+
+    <code class="c"># Calculate efficient frontier weights using quadratic programming</code>
+    <code class="n">solvers</code><code class="o">.</code><code class="n">options</code><code class="p">[</code><code class="s">'show_progress'</code><code class="p">]</code> <code class="o">=</code> <code class="k">False</code>
+    <code class="n">portfolios</code> <code class="o">=</code> <code class="p">[</code><code class="n">solvers</code><code class="o">.</code><code class="n">qp</code><code class="p">(</code><code class="n">mu</code> <code class="o">*</code> <code class="n">S</code><code class="p">,</code> <code class="o">-</code><code class="n">pbar</code><code class="p">,</code> <code class="n">G</code><code class="p">,</code> <code class="n">h</code><code class="p">,</code> <code class="n">A</code><code class="p">,</code> <code class="n">b</code><code class="p">)[</code><code class="s">'x'</code><code class="p">]</code>
+                  <code class="k">for</code> <code class="n">mu</code> <code class="ow">in</code> <code class="n">mus</code><code class="p">]</code>
+    <code class="c">## Calculate risk and return of the frontier</code>
+    <code class="n">returns</code> <code class="o">=</code> <code class="p">[</code><code class="n">blas</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">pbar</code><code class="p">,</code> <code class="n">x</code><code class="p">)</code> <code class="k">for</code> <code class="n">x</code> <code class="ow">in</code> <code class="n">portfolios</code><code class="p">]</code>
+    <code class="n">risks</code> <code class="o">=</code> <code class="p">[</code><code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="n">blas</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">x</code><code class="p">,</code> <code class="n">S</code> <code class="o">*</code> <code class="n">x</code><code class="p">))</code> <code class="k">for</code> <code class="n">x</code> <code class="ow">in</code> <code class="n">portfolios</code><code class="p">]</code>
+    <code class="c">## Calculate the 2nd degree polynomial of the frontier curve.</code>
+    <code class="n">m1</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">polyfit</code><code class="p">(</code><code class="n">returns</code><code class="p">,</code> <code class="n">risks</code><code class="p">,</code> <code class="mi">2</code><code class="p">)</code>
+    <code class="n">x1</code> <code class="o">=</code> <code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="n">m1</code><code class="p">[</code><code class="mi">2</code><code class="p">]</code> <code class="o">/</code> <code class="n">m1</code><code class="p">[</code><code class="mi">0</code><code class="p">])</code>
+    <code class="c"># CALCULATE THE OPTIMAL PORTFOLIO</code>
+    <code class="n">wt</code> <code class="o">=</code> <code class="n">solvers</code><code class="o">.</code><code class="n">qp</code><code class="p">(</code><code class="n">opt</code><code class="o">.</code><code class="n">matrix</code><code class="p">(</code><code class="n">x1</code> <code class="o">*</code> <code class="n">S</code><code class="p">),</code> <code class="o">-</code><code class="n">pbar</code><code class="p">,</code> <code class="n">G</code><code class="p">,</code> <code class="n">h</code><code class="p">,</code> <code class="n">A</code><code class="p">,</code> <code class="n">b</code><code class="p">)[</code><code class="s">'x'</code><code class="p">]</code>
+
+    <code class="k">return</code> <code class="nb">list</code><code class="p">(</code><code class="n">wt</code><code class="p">)</code></pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="5.4. Getting the portfolio weights for all types of asset allocation"><div class="sect4" id="idm45174908931384">
+<h4>5.4. Getting the portfolio weights for all types of asset allocation</h4>
+
+<p><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="getting portfolio weights for all types of asset allocation" id="idm45174908930136"/>In this step, we use the functions above to compute the asset allocation using the two asset allocation methods. We then visualize the asset allocation results:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="k">def</code> <code class="nf">get_all_portfolios</code><code class="p">(</code><code class="n">returns</code><code class="p">):</code>
+
+    <code class="n">cov</code><code class="p">,</code> <code class="n">corr</code> <code class="o">=</code> <code class="n">returns</code><code class="o">.</code><code class="n">cov</code><code class="p">(),</code> <code class="n">returns</code><code class="o">.</code><code class="n">corr</code><code class="p">()</code>
+    <code class="n">hrp</code> <code class="o">=</code> <code class="n">getHRP</code><code class="p">(</code><code class="n">cov</code><code class="p">,</code> <code class="n">corr</code><code class="p">)</code>
+    <code class="n">mvp</code> <code class="o">=</code> <code class="n">getMVP</code><code class="p">(</code><code class="n">cov</code><code class="p">)</code>
+    <code class="n">mvp</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">Series</code><code class="p">(</code><code class="n">mvp</code><code class="p">,</code> <code class="n">index</code><code class="o">=</code><code class="n">cov</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+    <code class="n">portfolios</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">([</code><code class="n">mvp</code><code class="p">,</code> <code class="n">hrp</code><code class="p">],</code> <code class="n">index</code><code class="o">=</code><code class="p">[</code><code class="s">'MVP'</code><code class="p">,</code> <code class="s">'HRP'</code><code class="p">])</code><code class="o">.</code><code class="n">T</code>
+    <code class="k">return</code> <code class="n">portfolios</code>
+
+<code class="c">#Now getting the portfolios and plotting the pie chart</code>
+<code class="n">portfolios</code> <code class="o">=</code> <code class="n">get_all_portfolios</code><code class="p">(</code><code class="n">returns</code><code class="p">)</code>
+
+<code class="n">portfolios</code><code class="o">.</code><code class="n">plot</code><code class="o">.</code><code class="n">pie</code><code class="p">(</code><code class="n">subplots</code><code class="o">=</code><code class="k">True</code><code class="p">,</code> <code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">20</code><code class="p">,</code> <code class="mi">10</code><code class="p">),</code><code class="n">legend</code> <code class="o">=</code> <code class="k">False</code><code class="p">);</code>
+<code class="n">fig</code><code class="p">,</code> <code class="p">(</code><code class="n">ax1</code><code class="p">,</code> <code class="n">ax2</code><code class="p">)</code> <code class="o">=</code> <code class="n">plt</code><code class="o">.</code><code class="n">subplots</code><code class="p">(</code><code class="mi">1</code><code class="p">,</code> <code class="mi">2</code><code class="p">,</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">30</code><code class="p">,</code><code class="mi">20</code><code class="p">))</code>
+<code class="n">ax1</code><code class="o">.</code><code class="n">pie</code><code class="p">(</code><code class="n">portfolios</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code> <code class="mi">0</code><code class="p">],</code> <code class="p">);</code>
+<code class="n">ax1</code><code class="o">.</code><code class="n">set_title</code><code class="p">(</code><code class="s">'MVP'</code><code class="p">,</code><code class="n">fontsize</code><code class="o">=</code><code class="mi">30</code><code class="p">)</code>
+<code class="n">ax2</code><code class="o">.</code><code class="n">pie</code><code class="p">(</code><code class="n">portfolios</code><code class="o">.</code><code class="n">iloc</code><code class="p">[:,</code> <code class="mi">1</code><code class="p">]);</code>
+<code class="n">ax2</code><code class="o">.</code><code class="n">set_title</code><code class="p">(</code><code class="s">'HRP'</code><code class="p">,</code><code class="n">fontsize</code><code class="o">=</code><code class="mi">30</code><code class="p">)</code></pre>
+
+<p>The following pie charts show the asset allocation of MVP versus HRP. We clearly see more diversification in HRP.  Now let us look at the backtesting results<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc20" id="idm45174908437416"/>.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc19" id="idm45174908436680"/></p>
+
+<p><code>Output</code></p>
+
+<figure><div class="figure">
+<img src="Images/mlbf_08in17.png" alt="mlbf 08in17" width="1327" height="713"/>
+<h6/>
+</div></figure>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="6. Backtesting"><div class="sect3" id="idm45174908370568">
+<h3>6. Backtesting</h3>
+
+<p><a data-type="indexterm" data-primary="backtesting" data-secondary="hierarchical risk parity" id="ix_Chapter8-asciidoc21"/><a data-type="indexterm" data-primary="hierarchical risk parity (HRP)" data-secondary="backtesting" id="ix_Chapter8-asciidoc22"/>We will now backtest the performance of portfolios produced by the algorithms, looking at both in-sample and out-of-sample results:</p>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="n">Insample_Result</code><code class="o">=</code><code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">returns</code><code class="p">,</code><code class="n">np</code><code class="o">.</code><code class="n">array</code><code class="p">(</code><code class="n">portfolios</code><code class="p">)),</code> \
+<code class="s">'MVP'</code><code class="p">,</code><code class="s">'HRP'</code><code class="p">],</code> <code class="n">index</code> <code class="o">=</code> <code class="n">returns</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+<code class="n">OutOfSample_Result</code><code class="o">=</code><code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="n">np</code><code class="o">.</code><code class="n">dot</code><code class="p">(</code><code class="n">returns_test</code><code class="p">,</code><code class="n">np</code><code class="o">.</code><code class="n">array</code><code class="p">(</code><code class="n">portfolios</code><code class="p">)),</code> \
+<code class="n">columns</code><code class="o">=</code><code class="p">[</code><code class="s">'MVP'</code><code class="p">,</code> <code class="s">'HRP'</code><code class="p">],</code> <code class="n">index</code> <code class="o">=</code> <code class="n">returns_test</code><code class="o">.</code><code class="n">index</code><code class="p">)</code>
+
+<code class="n">Insample_Result</code><code class="o">.</code><code class="n">cumsum</code><code class="p">()</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">10</code><code class="p">,</code> <code class="mi">5</code><code class="p">),</code> <code class="n">title</code> <code class="o">=</code><code class="s">"In-Sample Results"</code><code class="p">,</code>\
+                              <code class="n">style</code><code class="o">=</code><code class="p">[</code><code class="s">'--'</code><code class="p">,</code><code class="s">'-'</code><code class="p">])</code>
+<code class="n">OutOfSample_Result</code><code class="o">.</code><code class="n">cumsum</code><code class="p">()</code><code class="o">.</code><code class="n">plot</code><code class="p">(</code><code class="n">figsize</code><code class="o">=</code><code class="p">(</code><code class="mi">10</code><code class="p">,</code> <code class="mi">5</code><code class="p">),</code> <code class="n">title</code> <code class="o">=</code><code class="s">"Out Of Sample Results"</code><code class="p">,</code>\
+                                 <code class="n">style</code><code class="o">=</code><code class="p">[</code><code class="s">'--'</code><code class="p">,</code><code class="s">'-'</code><code class="p">])</code></pre>
+
+<p><code>Output</code></p>
+
+<figure class="width-90"><div class="figure">
+<img src="Images/mlbf_08in18.png" alt="mlbf 08in18" width="614" height="317"/>
+<h6/>
+</div></figure>
+
+<figure class="width-90"><div class="figure">
+<img src="Images/mlbf_08in19.png" alt="mlbf 08in19" width="596" height="317"/>
+<h6/>
+</div></figure>
+
+<p>Looking at the charts, MVP underperforms for a significant amount of time in the in-sample test. In the out-of-sample test, MVP performed better than HRP for a brief period of time from August 2019 to mid-September 2019. In the next step, we examine the Sharpe ratio for the two allocation methods:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="In-sample results"><div class="sect4" id="idm45174908315224">
+<h4>In-sample results</h4>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#In_sample Results</code>
+<code class="n">stddev</code> <code class="o">=</code> <code class="n">Insample_Result</code><code class="o">.</code><code class="n">std</code><code class="p">()</code> <code class="o">*</code> <code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="mi">252</code><code class="p">)</code>
+<code class="n">sharp_ratio</code> <code class="o">=</code> <code class="p">(</code><code class="n">Insample_Result</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code><code class="o">*</code><code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="mi">252</code><code class="p">))</code><code class="o">/</code><code class="p">(</code><code class="n">Insample_Result</code><code class="p">)</code><code class="o">.</code><code class="n">std</code><code class="p">()</code>
+<code class="n">Results</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="nb">dict</code><code class="p">(</code><code class="n">stdev</code><code class="o">=</code><code class="n">stddev</code><code class="p">,</code> <code class="n">sharp_ratio</code> <code class="o">=</code> <code class="n">sharp_ratio</code><code class="p">))</code>
+<code class="n">Results</code></pre>
+
+<p><code>Output</code></p>
+<table>
+
+<thead>
+<tr>
+<th/>
+<th>stdev</th>
+<th>sharp_ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>MVP</p></td>
+<td><p>0.086</p></td>
+<td><p>0.785</p></td>
+</tr>
+<tr>
+<td><p>HRP</p></td>
+<td><p>0.127</p></td>
+<td><p>0.524</p></td>
+</tr>
+</tbody>
+</table>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect4" data-pdf-bookmark="Out-of-sample results"><div class="sect4" id="idm45174908003928">
+<h4>Out-of-sample results</h4>
+
+<pre data-type="programlisting" data-code-language="ipython3"><code class="c">#OutOf_sample Results</code>
+<code class="n">stddev_oos</code> <code class="o">=</code> <code class="n">OutOfSample_Result</code><code class="o">.</code><code class="n">std</code><code class="p">()</code> <code class="o">*</code> <code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="mi">252</code><code class="p">)</code>
+<code class="n">sharp_ratio_oos</code> <code class="o">=</code> <code class="p">(</code><code class="n">OutOfSample_Result</code><code class="o">.</code><code class="n">mean</code><code class="p">()</code><code class="o">*</code><code class="n">np</code><code class="o">.</code><code class="n">sqrt</code><code class="p">(</code><code class="mi">252</code><code class="p">))</code><code class="o">/</code><code class="p">(</code><code class="n">OutOfSample_Result</code><code class="p">)</code><code class="o">.</code>\
+<code class="n">std</code><code class="p">()</code>
+<code class="n">Results_oos</code> <code class="o">=</code> <code class="n">pd</code><code class="o">.</code><code class="n">DataFrame</code><code class="p">(</code><code class="nb">dict</code><code class="p">(</code><code class="n">stdev_oos</code><code class="o">=</code><code class="n">stddev_oos</code><code class="p">,</code> <code class="n">sharp_ratio_oos</code> <code class="o">=</code> \
+  <code class="n">sharp_ratio_oos</code><code class="p">))</code>
+<code class="n">Results_oos</code></pre>
+
+<p><code>Output</code></p>
+<table>
+
+<thead>
+<tr>
+<th/>
+<th>stdev_oos</th>
+<th>sharp_ratio_oos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>MVP</p></td>
+<td><p>0.103</p></td>
+<td><p>0.787</p></td>
+</tr>
+<tr>
+<td><p>HRP</p></td>
+<td><p>0.126</p></td>
+<td><p>0.836</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Although the in-sample results of MVP look promising, the out-of-sample Sharpe ratio and overall return of the portfolio constructed using the hierarchical clustering approach are better. The diversification that HRP achieves across uncorrelated assets makes the methodology more robust against shocks.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc22" id="idm45174907871000"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc21" id="idm45174907870296"/></p>
+</div></section>
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Conclusion"><div class="sect3" id="idm45174907869496">
+<h3>Conclusion</h3>
+
+<p>In this case study, we saw that portfolio allocation based on hierarchical clustering offers better separation of assets into clusters with similar characteristics without relying on classical correlation analysis used in Markowitz’s mean-variance portfolio optimization.</p>
+
+<p>Using Markowitz’s technique yields a less diverse portfolio, concentrated in a few stocks. The HRP approach, leveraging hierarchical clustering–based allocation, results in a more diverse and distributed portfolio. This approach presented the best out-of-sample performance and offers better tail risk management due to the 
+<span class="keep-together">diversification</span>.</p>
+
+<p>Indeed, the corresponding hierarchical risk parity strategies address the shortcomings of minimum-variance-based portfolio allocation. It is visual and flexible, and it seems to offer a robust methodology for portfolio allocation and portfolio 
+<span class="keep-together">management</span>.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc18" id="idm45174907864824"/><a data-type="indexterm" data-startref="ix_Chapter8-asciidoc17" id="idm45174907864088"/></p>
+<img class="blueprint bottom" src="Images/bracket_bottom.png" width="1625" height="32"/>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Chapter Summary"><div class="sect1" id="idm45174907862520">
+<h1>Chapter Summary</h1>
+
+<p>In this chapter, we learned about different clustering techniques and used them to capture the natural structure of data to enhance decision making across several areas of finance. Through the case studies, we demonstrated that clustering techniques can be useful in enhancing trading strategies and portfolio management.</p>
+
+<p>In addition to offering an approach to different finance problems, the case studies focused on understanding the concepts of clustering models, developing intuition, and visualizing clusters. Overall, the concepts in Python, machine learning, and finance presented in this chapter through the case studies can used as a blueprint for any other clustering-based problem in finance.</p>
+
+<p>Having covered supervised and unsupervised learning, we will explore another type of machine learning, reinforcement learning, in the next chapter.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercises"><div class="sect1" id="idm45174907859320">
+<h1>Exercises</h1>
+
+<ul>
+<li>
+<p>Use hierarchical clustering to form clusters of investments in a different asset class, such as forex or commodities.</p>
+</li>
+<li>
+<p>Apply clustering analysis for pairs trading in the interest rate market on the universe of bonds.<a data-type="indexterm" data-startref="ix_Chapter8-asciidoc0" id="idm45174907856248"/></p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm45174912844296"><sup><a href="ch08.xhtml#idm45174912844296-marker">1</a></sup> Refer to the Jupyter notebook to understand fetching price data using <code>pandas_datareader</code>.</p><p data-type="footnote" id="idm45174910884168"><sup><a href="ch08.xhtml#idm45174910884168-marker">2</a></sup> Refer to <a data-type="xref" href="ch05.xhtml#Chapter5">Chapter 5</a> for more details.</p></div></div></section></div>
+
+
+
+  </body></html>

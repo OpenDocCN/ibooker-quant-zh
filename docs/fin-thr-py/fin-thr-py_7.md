@@ -1,4 +1,4 @@
-# 第七章：Chapter 7\. Where to Go from Here?
+# 第七章：Where to Go from Here?
 
 > An investment in knowledge pays the best interest.
 > 

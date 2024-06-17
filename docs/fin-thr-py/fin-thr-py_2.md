@@ -8,7 +8,7 @@
 > 
 > 德尔班和沙赫迈尔（2006 年）
 
-本章的分析基于最简单的*模型经济*，它足够丰富，可以引入金融的许多重要概念和思想：一个只有两个相关时间点和两个不确定未来状态的经济。它还允许我们呈现该领域的一些重要结果，如*资产定价基本定理*，这些结果在本章中进行了讨论。^(1)
+本章的分析基于最简单的*模型经济*，它足够丰富，可以引入金融的许多重要概念和思想：一个只有两个相关时间点和两个不确定未来状态的经济。它还允许我们呈现该领域的一些重要结果，如*资产定价基本定理*，这些结果在本章中进行了讨论。¹
 
 所选的简单模型是为了简化正式引入有时相当抽象的数学概念和金融思想，尽可能避免技术性问题。一旦这些思想被详细阐述和深入理解，转移到更现实的金融模型通常是无缝的。
 
@@ -34,7 +34,7 @@
 
 # 经济
 
-金融模型的第一个要素是*经济*的概念。经济是一个抽象概念，涵盖了金融模型的其他元素，如资产（实际、金融）、代理人（个人、机构）或货币。就像现实世界一样，经济不能被看到或触摸。也不能直接进行形式化建模——但是拥有这样一个概括性术语可以简化沟通。单一的模型元素共同形成经济。^(2)
+金融模型的第一个要素是*经济*的概念。经济是一个抽象概念，涵盖了金融模型的其他元素，如资产（实际、金融）、代理人（个人、机构）或货币。就像现实世界一样，经济不能被看到或触摸。也不能直接进行形式化建模——但是拥有这样一个概括性术语可以简化沟通。单一的模型元素共同形成经济。²
 
 ## 实际资产
 
@@ -48,7 +48,7 @@
 
 经济活动，如交易实际资产，仅在离散的时间点发生。形式上，这适用于时间点 <math alttext="t element-of 0 comma 1 comma 2 comma 3 comma period period period"><mrow><mi>t</mi> <mo>∈</mo> <mrow><mn>0</mn> <mo>,</mo> <mn>1</mn> <mo>,</mo> <mn>2</mn> <mo>,</mo> <mn>3</mn> <mo>,</mo> <mo>.</mo> <mo>.</mo> <mo>.</mo></mrow></mrow></math> 或 <math alttext="t element-of double-struck upper N 0"><mrow><mi>t</mi> <mo>∈</mo> <msub><mi>ℕ</mi> <mn>0</mn></msub></mrow></math> 。在接下来的内容中，只有两个时间点 <math alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math> 和 <math alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math> 是相关的。它们最好被理解为*今天*和*一年后*，尽管这不一定是相关时间间隔的唯一解释。在许多背景下，也可以将其视为*今天*和*明天*。无论如何，如果只有两个时间点相关，金融理论则谈论*静态经济*。
 
-用于模拟自然数 <math alttext="double-struck upper N"><mi>ℕ</mi></math> 的 Python 数据类型是`int`，代表*整数*。^(3) 可对整数进行典型的算术运算，如加法、减法、乘法等：
+用于模拟自然数 <math alttext="double-struck upper N"><mi>ℕ</mi></math> 的 Python 数据类型是`int`，代表*整数*。³ 可对整数进行典型的算术运算，如加法、减法、乘法等：
 
 ```py
 In [1]: 1 + 3  ![1](img/1.png)
@@ -751,7 +751,7 @@ Out[75]: 0.7348469228349535
 
 股票的*看涨期权*在一年后的偿付为 <math alttext="upper C 1 left-parenthesis upper S 1 left-parenthesis omega right-parenthesis right-parenthesis equals max left-parenthesis upper S 1 left-parenthesis omega right-parenthesis minus upper K comma 0 right-parenthesis"><mrow><msub><mi>C</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow> <mo>)</mo></mrow> <mo>=</mo> <mo movablelimits="true" form="prefix">max</mo> <mrow><mo>(</mo> <msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo> <mi>ω</mi> <mo>)</mo></mrow> <mo>-</mo> <mi>K</mi> <mo>,</mo> <mn>0</mn> <mo>)</mo></mrow></mrow></math>，其中 <math alttext="omega element-of normal upper Omega"><mrow><mi>ω</mi> <mo>∈</mo> <mi>Ω</mi></mrow></math> 。 <math><mrow><mi>K</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math> 被称为期权的*行权价格*。
 
-在概率论中，有条件索赔通常称为*随机变量*，其定义特征是将状态空间的元素映射到实数——可能通过其他随机变量，如衍生资产的情况。从这个意义上说，股票一年后的价格 <math><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>:</mo><mi>Ω</mi><mo>→</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub> <mo>,</mo><mi>ω</mi><mo>↦</mo><msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo><mi>ω</mi><mo>)</mo></mrow></mrow></math> 也是一个随机变量。^(4)
+在概率论中，有条件索赔通常称为*随机变量*，其定义特征是将状态空间的元素映射到实数——可能通过其他随机变量，如衍生资产的情况。从这个意义上说，股票一年后的价格 <math><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>:</mo><mi>Ω</mi><mo>→</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub> <mo>,</mo><mi>ω</mi><mo>↦</mo><msub><mi>S</mi> <mn>1</mn></msub> <mrow><mo>(</mo><mi>ω</mi><mo>)</mo></mrow></mrow></math> 也是一个随机变量。⁴
 
 为了说明，以下 Python 代码在实线段上可视化期权的支付。在经济中，当然只有两个状态——因此只有两个相关的值。图 2-1 图形地显示了支付函数：
 
@@ -1432,7 +1432,7 @@ In [138]: plt.figure(figsize=(10, 6))
 
 ###### 图 2-5。不同分配的预期投资组合回报和波动率
 
-注意，在前面的列表推导式`sigma = [s * R[:, 1].std() for s in values]`中，`^(5)`是以下代码的缩写。
+注意，在前面的列表推导式`sigma = [s * R[:, 1].std() for s in values]`中，`⁵`是以下代码的缩写。
 
 ```py
 sigma = list()

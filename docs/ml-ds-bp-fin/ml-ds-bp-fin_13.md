@@ -1,6 +1,6 @@
 # 第九章 强化学习
 
-激励驱动着几乎所有事物，金融也不例外。人类不是从数百万个标记示例中学习，而是经常从我们与行动相关联的积极或消极经验中学习。从经验和相关奖励或惩罚中学习是强化学习（RL）的核心思想。^(1)
+激励驱动着几乎所有事物，金融也不例外。人类不是从数百万个标记示例中学习，而是经常从我们与行动相关联的积极或消极经验中学习。从经验和相关奖励或惩罚中学习是强化学习（RL）的核心思想。¹
 
 强化学习是一种通过最大化奖励和最小化惩罚的最优策略来训练机器找到最佳行动的方法。
 
@@ -24,7 +24,7 @@
 
 # 强化学习——理论与概念
 
-强化学习是一个广泛涵盖各种概念和术语的主题。本章理论部分涵盖了图 9-1 中列出的项目和主题。^(2)
+强化学习是一个广泛涵盖各种概念和术语的主题。本章理论部分涵盖了图 9-1 中列出的项目和主题。²
 
 ![mlbf 0901](img/mlbf_0901.png)
 
@@ -108,7 +108,7 @@ RL 系统的主要组件包括代理、动作、环境、状态和奖励。
 
 模型是环境的描述符。有了模型，我们可以学习或推断环境将如何与代理人交互并提供反馈。模型被用于*规划*，这意味着通过考虑可能的未来情况来决定行动方式的任何方式。例如，股票市场的模型负责预测未来价格走势。模型有两个主要部分：*转移概率函数*（*P*）和*奖励函数*。我们已经讨论了奖励函数。转移函数（*P*）记录了在采取行动后从一个状态转移到另一个状态的概率。
 
-总体而言，强化学习代理人可能直接或间接地尝试学习在图 9-3 中显示的策略或值函数。学习策略的方法因强化学习模型类型而异。当我们完全了解环境时，我们可以通过使用*基于模型的方法*找到最优解。^(3) 当我们不了解环境时，我们遵循*无模型方法*并尝试在算法的一部分明确学习模型。
+总体而言，强化学习代理人可能直接或间接地尝试学习在图 9-3 中显示的策略或值函数。学习策略的方法因强化学习模型类型而异。当我们完全了解环境时，我们可以通过使用*基于模型的方法*找到最优解。³ 当我们不了解环境时，我们遵循*无模型方法*并尝试在算法的一部分明确学习模型。
 
 ![mlbf 0903](img/mlbf_0903.png)
 
@@ -128,7 +128,7 @@ RL 系统的主要组件包括代理、动作、环境、状态和奖励。
 
 奖励函数
 
-一个明显的奖励函数可能是*实现的盈亏（Profit and Loss，PnL）*。其他奖励函数可以是*夏普比率*或*最大回撤*。^(4) 可能存在许多复杂的奖励函数，这些函数在利润和风险之间提供权衡。
+一个明显的奖励函数可能是*实现的盈亏（Profit and Loss，PnL）*。其他奖励函数可以是*夏普比率*或*最大回撤*。⁴ 可能存在许多复杂的奖励函数，这些函数在利润和风险之间提供权衡。
 
 环境
 
@@ -280,7 +280,7 @@ TD 学习中的关键思想是向估计的回报更新值函数 V(*S[t]*)，接�
 
 ### 基于模型的算法
 
-基于模型的算法试图理解环境并创建一个代表它的模型。当 RL 问题包括明确定义的转移概率以及有限数量的状态和动作时，可以将其框架化为一个*有限 MDP*，动态规划（DP）可以计算出一个精确解，类似于前面的例子。^(5)
+基于模型的算法试图理解环境并创建一个代表它的模型。当 RL 问题包括明确定义的转移概率以及有限数量的状态和动作时，可以将其框架化为一个*有限 MDP*，动态规划（DP）可以计算出一个精确解，类似于前面的例子。⁵
 
 ### 无模型算法
 
@@ -308,7 +308,7 @@ Q-learning 的步骤如下：
 
 1.  在时间步*t*，我们从状态*s[t]*开始，并根据 Q 值选择动作，<math alttext="a Subscript t Baseline equals m a x Subscript a Baseline upper Q left-parenthesis s Subscript t Baseline comma a right-parenthesis"><mrow><msub><mi>a</mi> <mi>t</mi></msub> <mo>=</mo> <mi>m</mi> <mi>a</mi> <msub><mi>x</mi> <mi>a</mi></msub> <mi>Q</mi> <mrow><mo>(</mo> <msub><mi>s</mi> <mi>t</mi></msub> <mo>,</mo> <mi>a</mi> <mo>)</mo></mrow></mrow></math> 。
 
-1.  我们应用一个*ε-贪心*方法，根据*ε*的概率随机选择动作，或者根据 Q 值函数选择最佳动作。这确保了在给定状态下探索新动作，同时利用学习经验。^(8)
+1.  我们应用一个*ε-贪心*方法，根据*ε*的概率随机选择动作，或者根据 Q 值函数选择最佳动作。这确保了在给定状态下探索新动作，同时利用学习经验。⁸
 
 1.  通过动作*a[t]*，我们观察奖励*R[t+1]*并进入下一个状态*S[t+1]*。
 
@@ -426,7 +426,7 @@ SARSA 也是基于 TD 学习的算法。它指的是通过遵循一系列<math a
 
 状态
 
-在给定时间窗口内过去股票价格的差异的 sigmoid 函数^(10)被用作状态。状态 *S[t]* 被描述为 <math alttext="left-parenthesis d Subscript t minus tau plus 1 Baseline comma d Subscript t minus 1 Baseline comma d Subscript t Baseline right-parenthesis"><mrow><mo>(</mo> <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mi>τ</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>d</mi> <mi>t</mi></msub> <mo>)</mo></mrow></math> ，其中 <math display="inline"><mrow><msub><mi>d</mi> <mi>T</mi></msub> <mo>=</mo> <mi>s</mi> <mi>i</mi> <mi>g</mi> <mi>m</mi> <mi>o</mi> <mi>i</mi> <mi>d</mi> <mrow><mo>(</mo> <msub><mi>p</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>p</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow></mrow></math> ，<math alttext="p Subscript t"><msub><mi>p</mi> <mi>t</mi></msub></math> 是时间 *t* 的价格，<math alttext="tau"><mi>τ</mi></math> 是时间窗口大小。sigmoid 函数将过去股票价格的差异转换为介于零和一之间的数字，有助于将值标准化为概率，并使状态更易于解释。
+在给定时间窗口内过去股票价格的差异的 sigmoid 函数¹⁰被用作状态。状态 *S[t]* 被描述为 <math alttext="left-parenthesis d Subscript t minus tau plus 1 Baseline comma d Subscript t minus 1 Baseline comma d Subscript t Baseline right-parenthesis"><mrow><mo>(</mo> <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mi>τ</mi><mo>+</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>d</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>,</mo> <msub><mi>d</mi> <mi>t</mi></msub> <mo>)</mo></mrow></math> ，其中 <math display="inline"><mrow><msub><mi>d</mi> <mi>T</mi></msub> <mo>=</mo> <mi>s</mi> <mi>i</mi> <mi>g</mi> <mi>m</mi> <mi>o</mi> <mi>i</mi> <mi>d</mi> <mrow><mo>(</mo> <msub><mi>p</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>p</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow></mrow></math> ，<math alttext="p Subscript t"><msub><mi>p</mi> <mi>t</mi></msub></math> 是时间 *t* 的价格，<math alttext="tau"><mi>τ</mi></math> 是时间窗口大小。sigmoid 函数将过去股票价格的差异转换为介于零和一之间的数字，有助于将值标准化为概率，并使状态更易于解释。
 
 环境
 
@@ -623,13 +623,13 @@ class Agent:
          else self._model()
 ```
 
-函数 `model` 是一个深度学习模型，将环境的状态映射到动作。此函数接受环境状态并返回一个 *Q-value* 表或指代动作的策略，该策略指代动作的概率分布。此函数是使用 Python 的 Keras 库构建的。^(11) 所使用的深度学习模型的架构是：
+函数 `model` 是一个深度学习模型，将环境的状态映射到动作。此函数接受环境状态并返回一个 *Q-value* 表或指代动作的策略，该策略指代动作的概率分布。此函数是使用 Python 的 Keras 库构建的。¹¹ 所使用的深度学习模型的架构是：
 
 +   模型预期数据行数与输入的 *state size* 相等，作为输入。
 
 +   第一、第二和第三隐藏层分别具有 *64*、*32* 和 *8* 个节点，所有这些层都使用 ReLU 激活函数。
 
-+   输出层的节点数等于动作大小（即三个），节点使用线性激活函数。^(12)
++   输出层的节点数等于动作大小（即三个），节点使用线性激活函数。¹²
 
 ```py
     def _model(self):
@@ -991,7 +991,7 @@ Total Profit: $1280.40
 
 +   <math alttext="upper C Subscript t"><msub><mi>C</mi> <mi>t</mi></msub></math> 是第<math alttext="t"><mi>t</mi></math>时间点的交易成本，可能是常数或与对冲规模成比例。
 
-方程中的各个组成部分是现金流的组成部分。然而，在设计奖励函数时，最好考虑到任何头寸带来的风险。我们使用 CVaR 作为风险评估度量。CVaR 量化了尾部风险的数量，并且是对置信水平<math alttext="alpha"><mi>α</mi></math> 的`expected shortfall`（风险厌恶参数）^(13)。现在奖励函数修改如下：
+方程中的各个组成部分是现金流的组成部分。然而，在设计奖励函数时，最好考虑到任何头寸带来的风险。我们使用 CVaR 作为风险评估度量。CVaR 量化了尾部风险的数量，并且是对置信水平<math alttext="alpha"><mi>α</mi></math> 的`expected shortfall`（风险厌恶参数）¹³。现在奖励函数修改如下：
 
 <math display="block"><mrow><msub><mi>V</mi> <mi>T</mi></msub> <mo>=</mo> <mi>f</mi> <mo>(</mo> <mo>–</mo> <msub><mi>Z</mi> <mi>T</mi></msub> <mo>+</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>δ</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mrow><mo>(</mo> <msub><mi>S</mi> <mi>t</mi></msub> <mo>–</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>–</mo><mn>1</mn></mrow></msub> <mo>)</mo></mrow> <mo>–</mo> <munderover><mo>∑</mo> <mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow> <mi>T</mi></munderover> <msub><mi>C</mi> <mi>t</mi></msub> <mrow><mo>)</mo></mrow></mrow></math>
 
@@ -1829,28 +1829,28 @@ RL AGENT [0.0004, 0.0231, 0.4445, 0.0002, -0.1202]
 
 +   基于第三个案例研究中提出的想法，在股票、外汇或固定收益工具组合上实施基于 Q-learning 的投资组合配置策略。
 
-^(1) 本章中也将统称强化学习为 RL。
+¹ 本章中也将统称强化学习为 RL。
 
-^(2) 欲知更多详情，请查阅理查德·萨顿（Richard Sutton）和安德鲁·巴托（Andrew Barto）的《强化学习导论》（MIT 出版社），或是戴维·银（David Silver）在伦敦大学学院的免费在线[RL 课程](https://oreil.ly/niRu-)。
+² 欲知更多详情，请查阅理查德·萨顿（Richard Sutton）和安德鲁·巴托（Andrew Barto）的《强化学习导论》（MIT 出版社），或是戴维·银（David Silver）在伦敦大学学院的免费在线[RL 课程](https://oreil.ly/niRu-)。
 
-^(3) 查看“强化学习模型”以获取关于基于模型和无模型方法的更多详细信息。
+³ 查看“强化学习模型”以获取关于基于模型和无模型方法的更多详细信息。
 
-^(4) 最大回撤是在达到新高之前投资组合从峰值到谷底的最大观察损失；它是指定时间段内下行风险的指标。
+⁴ 最大回撤是在达到新高之前投资组合从峰值到谷底的最大观察损失；它是指定时间段内下行风险的指标。
 
-^(5) 如果 MDP 的状态和动作空间是有限的，则称为有限马尔可夫决策过程。
+⁵ 如果 MDP 的状态和动作空间是有限的，则称为有限马尔可夫决策过程。
 
-^(6) 前一节讨论的基于动态规划的 MDP 示例是模型基础算法的一个示例。正如在那里看到的那样，这些算法需要示例奖励和转移概率。
+⁶ 前一节讨论的基于动态规划的 MDP 示例是模型基础算法的一个示例。正如在那里看到的那样，这些算法需要示例奖励和转移概率。
 
-^(7) 有一些模型，如演员-评论家模型，同时利用基于策略和基于价值的方法。
+⁷ 有一些模型，如演员-评论家模型，同时利用基于策略和基于价值的方法。
 
-^(8) *离策略*、*ε-贪婪*、*探索*和*开发* 是 RL 中常用的术语，将在其他章节和案例研究中使用。
+⁸ *离策略*、*ε-贪婪*、*探索*和*开发* 是 RL 中常用的术语，将在其他章节和案例研究中使用。
 
-^(9) 参考第三章以获取更多关于梯度下降的详细信息。
+⁹ 参考第三章以获取更多关于梯度下降的详细信息。
 
-^(10) 参考第三章以获取关于 Sigmoid 函数的更多详细信息。
+¹⁰ 参考第三章以获取关于 Sigmoid 函数的更多详细信息。
 
-^(11) Keras-based 深度学习模型的详细实现细节显示在第三章中。
+¹¹ Keras-based 深度学习模型的详细实现细节显示在第三章中。
 
-^(12) 参考第三章以获取关于线性和 ReLU 激活函数的更多详细信息。
+¹² 参考第三章以获取关于线性和 ReLU 激活函数的更多详细信息。
 
-^(13) 预期损失是在尾部情景中投资的预期价值。
+¹³ 预期损失是在尾部情景中投资的预期价值。

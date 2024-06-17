@@ -1228,4 +1228,4 @@ Result with dimensionality Reduction: 0.887500 (0.012698)
 
 1.  获取不同货币对或不同商品价格的主要成分。确定主要主成分的驱动因素，并将其与一些直观的宏观经济变量联系起来。
 
-^(1) [特征向量和特征值](https://oreil.ly/fDaLg) 是线性代数的概念。
+¹ [特征向量和特征值](https://oreil.ly/fDaLg) 是线性代数的概念。

@@ -1,4 +1,4 @@
-# Chapter 7\. Where to Go from Here?
+# 第七章：Chapter 7\. Where to Go from Here?
 
 > An investment in knowledge pays the best interest.
 > 
@@ -126,7 +126,7 @@ The following list provides references for several standard textbooks that can b
 
 # Python for Finance
 
-这本书是我关于 Python 应用于金融的第六本书。您可能会想：“为什么最基础的入门教材要排在其他五本更高级的教材之后？” 对此可能没有一个简短而简单的答案。然而，编写这本书《Python 金融理论》的动机来自于读者对其他书籍以及我们的在线培训项目的请求。许多人都在寻找一个既介绍金融又介绍 Python 编程的入门教材，这样就可以补充其他书籍。^(1) 因此，《Python 金融理论》从零开始介绍了这两个主题，从而弥补了最初的差距，例如开始使用书籍《Python 金融理论》，读者预期在金融和编程方面有一些背景。
+这本书是我关于 Python 应用于金融的第六本书。您可能会想：“为什么最基础的入门教材要排在其他五本更高级的教材之后？” 对此可能没有一个简短而简单的答案。然而，编写这本书《Python 金融理论》的动机来自于读者对其他书籍以及我们的在线培训项目的请求。许多人都在寻找一个既介绍金融又介绍 Python 编程的入门教材，这样就可以补充其他书籍。¹ 因此，《Python 金融理论》从零开始介绍了这两个主题，从而弥补了最初的差距，例如开始使用书籍《Python 金融理论》，读者预期在金融和编程方面有一些背景。
 
 我的其他五本书是：
 
@@ -190,4 +190,4 @@ The following list provides references for several standard textbooks that can b
 
 祝贺再次。通过 *Python 金融理论*，您已经为在金融领域使用 Python 迈出了下一个激动人心的步伐奠定了基础。本章为您提供了丰富的资源以供探索。如果您将 Python 金融视为一项需要定期、认真和系统训练的技能，您很可能很快就会达到黑带水平。这样的成就不仅在个人上有所回报，而且还会保证您在未来的成功，因为 Python 金融毫无疑问已成为金融行业的关键技能。愿 Python 之力与您同在。
 
-^(1) 我喜欢将这本书比作 J.R.R. 托尔金的 *霍比特人* 对其 *指环王* 三部曲的关系。当然，这里并没有文学上的比较意味。
+¹ 我喜欢将这本书比作 J.R.R. 托尔金的 *霍比特人* 对其 *指环王* 三部曲的关系。当然，这里并没有文学上的比较意味。

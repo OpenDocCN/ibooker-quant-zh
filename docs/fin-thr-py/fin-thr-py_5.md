@@ -440,7 +440,7 @@ Out[44]: array([10.,  8.,  6.,  4.,  2.])
 
 # 资产定价的基本定理
 
-考虑一般的静态模型经济<math alttext="script upper E equals left-parenthesis StartSet normal upper Omega comma script upper F comma upper P EndSet comma script upper S right-parenthesis"><mrow><mi>ℰ</mi> <mo>=</mo> <mo>(</mo> <mo>{</mo> <mi>Ω</mi> <mo>,</mo> <mi>ℱ</mi> <mo>,</mo> <mi>P</mi> <mo>}</mo> <mo>,</mo> <mi>𝒮</mi> <mo>)</mo></mrow></math> ，其中<math alttext="upper I"><mi>I</mi></math>个可能的状态和<math alttext="upper K"><mi>K</mi></math>个交易金融资产。假设经济中的无风险短期借贷利率为<math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math> 。^(1)
+考虑一般的静态模型经济<math alttext="script upper E equals left-parenthesis StartSet normal upper Omega comma script upper F comma upper P EndSet comma script upper S right-parenthesis"><mrow><mi>ℰ</mi> <mo>=</mo> <mo>(</mo> <mo>{</mo> <mi>Ω</mi> <mo>,</mo> <mi>ℱ</mi> <mo>,</mo> <mi>P</mi> <mo>}</mo> <mo>,</mo> <mi>𝒮</mi> <mo>)</mo></mrow></math> ，其中<math alttext="upper I"><mi>I</mi></math>个可能的状态和<math alttext="upper K"><mi>K</mi></math>个交易金融资产。假设经济中的无风险短期借贷利率为<math><mrow><mi>r</mi><mo>∈</mo><msub><mi>ℝ</mi> <mrow><mn>≥0</mn></mrow></msub></mrow></math> 。¹
 
 *套利机会*是一种交易金融资产<math alttext="phi element-of double-struck upper R Superscript upper K"><mrow><mi>ϕ</mi> <mo>∈</mo> <msup><mi>ℝ</mi> <mi>K</mi></msup></mrow></math> 的投资组合，其组合价格为零
 
@@ -1051,4 +1051,4 @@ Python 与 `NumPy` 结合，对比以前看到的规模更大的市场回报矩�
 
 +   Pliska, Stanley. 1997\. *数学金融导论.* Malden 和 Oxford: Blackwell Publishers.
 
-^(1) 这里的符号从 <math alttext="i"><mi>i</mi></math> 变为 <math alttext="r"><mi>r</mi></math>，以强调*短期利率*。
+¹ 这里的符号从 <math alttext="i"><mi>i</mi></math> 变为 <math alttext="r"><mi>r</mi></math>，以强调*短期利率*。

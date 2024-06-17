@@ -18,7 +18,7 @@
 
 历史会重演。
 
-在趋势和范围内，你可能会看到簇集。此外，某些配置和模式大多数时候可能会产生相似的结果。^(1)
+在趋势和范围内，你可能会看到簇集。此外，某些配置和模式大多数时候可能会产生相似的结果。¹
 
 市场会消化一切。
 
@@ -260,7 +260,7 @@ def ohlc_plot_candles(data, window):
 
 <math alttext="Moving average Subscript i Baseline equals StartFraction upper P r i c e Subscript i Baseline plus upper P r i c e Subscript i minus 1 Baseline plus period period period plus upper P r i c e Subscript i minus n Baseline Over n EndFraction"><mrow><mtext>Moving</mtext> <msub><mtext>average</mtext> <mi>i</mi></msub> <mo>=</mo> <mfrac><mrow><mi>P</mi><mi>r</mi><mi>i</mi><mi>c</mi><msub><mi>e</mi> <mi>i</mi></msub> <mo>+</mo><mi>P</mi><mi>r</mi><mi>i</mi><mi>c</mi><msub><mi>e</mi> <mrow><mi>i</mi><mo>-</mo><mn>1</mn></mrow></msub> <mo>+</mo><mo lspace="0%" rspace="0%">.</mo><mo lspace="0%" rspace="0%">.</mo><mo lspace="0%" rspace="0%">.</mo><mo>+</mo><mi>P</mi><mi>r</mi><mi>i</mi><mi>c</mi><msub><mi>e</mi> <mrow><mi>i</mi><mo>-</mo><mi>n</mi></mrow></msub></mrow> <mi>n</mi></mfrac></mrow></math>
 
-这是你在统计学和生活中几乎任何其他部分使用的简单均值。它只是观察值的总和除以观察值的数量。^(2)
+这是你在统计学和生活中几乎任何其他部分使用的简单均值。它只是观察值的总和除以观察值的数量。²
 
 图 3-10 显示了应用于美元/加元的 30 小时简单移动平均线。*30 小时* 表示我在每小时 K 线的情况下计算最近 30 个周期的移动平均值。
 
@@ -555,8 +555,8 @@ def rsi(data, lookback, close, position):
 
 交易中的关键点是确保其他参与者也能看到你看到的配置，这样你就能最大化赢利的机会。这并不意味着你必须完全使用其他人相同的技术，但有时不要对指标进行过多调整也是有帮助的。
 
-^(1) 这假设长期内显示出非随机概率，表现出确定性特征。
+¹ 这假设长期内显示出非随机概率，表现出确定性特征。
 
-^(2) 你也可以把均值看作是总和除以数量。
+² 你也可以把均值看作是总和除以数量。
 
-^(3) 参见 J. Welles Wilder Jr.（1978）的*技术交易系统中的新概念*，由 Trend Research 出版。
+³ 参见 J. Welles Wilder Jr.（1978）的*技术交易系统中的新概念*，由 Trend Research 出版。

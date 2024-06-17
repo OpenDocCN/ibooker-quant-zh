@@ -6,9 +6,9 @@
 
 回顾来自第一章中，所有金融模型都受到三重错误的影响，即：模型规范错误；模型参数估计错误；以及模型未能适应其环境中结构性变化而产生的错误。因为这些错误，我们需要能够量化我们金融推断和预测中固有不确定性的动态模型。
 
-一种称为零假设显著性检验（NHST）的统计推断方法几乎完全主导了社会和经济科学的研究和实践。在本章中，我们将探讨 NHST 及其 p 值统计如何用于测试假设和量化模型参数的不确定性。NHST 方法的深层逻辑缺陷主要是社会和经济科学中再现性危机的罪魁祸首，这里大多数发表的研究结果都是虚假的。^(1) 在接下来的几节中，我们揭露 NHST 及其 p 值统计的统计诡计，并展示它如何犯有检察官谬误。这种谬误是逆谬误的另一种形式，其中条件语句错误地等同于其逆，从而违反了逆概率规则。
+一种称为零假设显著性检验（NHST）的统计推断方法几乎完全主导了社会和经济科学的研究和实践。在本章中，我们将探讨 NHST 及其 p 值统计如何用于测试假设和量化模型参数的不确定性。NHST 方法的深层逻辑缺陷主要是社会和经济科学中再现性危机的罪魁祸首，这里大多数发表的研究结果都是虚假的。¹ 在接下来的几节中，我们揭露 NHST 及其 p 值统计的统计诡计，并展示它如何犯有检察官谬误。这种谬误是逆谬误的另一种形式，其中条件语句错误地等同于其逆，从而违反了逆概率规则。
 
-鉴于 p 值在量化参数不确定性方面存在深刻缺陷和滥用，^(2) 另一种称为置信区间（CIs）的方法被正统统计学家誉为其数学严谨的替代品。不幸的是，CIs 在数据分析中也是错误的工具，因为它们并非设计用于从单一实验中进行统计推断。^(3) 更重要的是，在金融中应用 CIs 经常违反中心极限定理（CLT）的假设，使得 CIs 无效。在本章中，我们探讨在金融研究和实践中常见的三种应用 CIs 的错误。我们使用 Python 统计包 Statsmodels 开发了一个普通最小二乘（OLS）线性回归模型来说明这三种错误类型。我们使用回归模型的诊断测试结果来支持我们的理由，说明为什么一般情况下及特别是在金融领域不应使用 CIs 进行数据分析。
+鉴于 p 值在量化参数不确定性方面存在深刻缺陷和滥用，² 另一种称为置信区间（CIs）的方法被正统统计学家誉为其数学严谨的替代品。不幸的是，CIs 在数据分析中也是错误的工具，因为它们并非设计用于从单一实验中进行统计推断。³ 更重要的是，在金融中应用 CIs 经常违反中心极限定理（CLT）的假设，使得 CIs 无效。在本章中，我们探讨在金融研究和实践中常见的三种应用 CIs 的错误。我们使用 Python 统计包 Statsmodels 开发了一个普通最小二乘（OLS）线性回归模型来说明这三种错误类型。我们使用回归模型的诊断测试结果来支持我们的理由，说明为什么一般情况下及特别是在金融领域不应使用 CIs 进行数据分析。
 
 # 逆谬误
 
@@ -34,7 +34,7 @@
 
 +   (B) 假设某人是分析型的，很可能他们是程序员。
 
-但是 P(分析型 | 程序员) ≠ P(程序员 | 分析型)。你知道，有许多许多分析型的人不是程序员，用这种方式框定的推理显得荒谬。然而，你将看到，人类通常并不擅长处理条件陈述及其逆向，尤其是在复杂情况下。事实上，检察官使用这种错误逻辑伪装在论证中已经毁了人们的生活，导致法官和陪审团做出了可怕的推理和决定。^(4) 检察官谬误的一个常见例子大致如下：
+但是 P(分析型 | 程序员) ≠ P(程序员 | 分析型)。你知道，有许多许多分析型的人不是程序员，用这种方式框定的推理显得荒谬。然而，你将看到，人类通常并不擅长处理条件陈述及其逆向，尤其是在复杂情况下。事实上，检察官使用这种错误逻辑伪装在论证中已经毁了人们的生活，导致法官和陪审团做出了可怕的推理和决定。⁴ 检察官谬误的一个常见例子大致如下：
 
 +   (A) 假设你们城市的 10 万名成年人中约有 0.1%具有与你相同的血型。
 
@@ -84,7 +84,7 @@
 
 ![你专有的经济衰退指标的混淆矩阵](img/pmlf_0401.png)
 
-###### 图 4-1\. 你专有的经济衰退指标的混淆矩阵^(5)
+###### 图 4-1\. 你专有的经济衰退指标的混淆矩阵⁵
 
 你的具体数据集并不知道美国经济衰退的普遍或罕见程度。为什么这个问题很重要？因为你不知道你的假阳性率相对于美国经济衰退发生率是否太高或太低，以至于你的指标是否有用，尽管其真阳性率为 99%。
 
@@ -132,7 +132,7 @@ round(recession['USREC'].sum()/recession['USREC'].count()*100, 2)
 
 现代统计学的主要创始人罗纳德·费舍尔在 1920 年代引入了 NHST。 他还将卡尔·皮尔逊的 p 值引入了他的方法中，用于量化不确定性。 这是一种后数据的方法，旨在使研究人员能够根据一个与他们试图证明的假设相反的零假设对单个实验进行统计推断。
 
-在 1925 年，费舍尔发表了荒谬而毫无根据的言论：“逆概率理论建立在错误之上，必须完全被拒绝。”^(6) 当然，费舍尔没有也不能为这一言论提供任何证据。 他怎么能呢？ 那就相当于证明了除法规则是错误的。 正如前一章所述，我怀疑通过将该规则改名为业余数学家托马斯·贝叶斯后，他可以对该规则进行诋毁。 通过拒绝逆概率规则，费舍尔能够利用检察官谬误来推广他错误的歧视性观念，假装客观和“让数据自说自话。”^(7) 费舍尔在工业界的谄媚同伙和学术界的盲目信徒仅仅重复了关于逆概率理论的谎言，并将其从他们的实践和课程中驱逐出去——这个问题直到今天仍然存在。
+在 1925 年，费舍尔发表了荒谬而毫无根据的言论：“逆概率理论建立在错误之上，必须完全被拒绝。”⁶ 当然，费舍尔没有也不能为这一言论提供任何证据。 他怎么能呢？ 那就相当于证明了除法规则是错误的。 正如前一章所述，我怀疑通过将该规则改名为业余数学家托马斯·贝叶斯后，他可以对该规则进行诋毁。 通过拒绝逆概率规则，费舍尔能够利用检察官谬误来推广他错误的歧视性观念，假装客观和“让数据自说自话。”⁷ 费舍尔在工业界的谄媚同伙和学术界的盲目信徒仅仅重复了关于逆概率理论的谎言，并将其从他们的实践和课程中驱逐出去——这个问题直到今天仍然存在。
 
 NHST 是建立在一个称为反证法的有效命题逻辑的外观后面的。 逻辑如下：假设我们有两个命题 H 和 D，使得如果 H 为真，则 D 为真。 现在如果我们可以证明 D 为假，则我们可以合理地得出结论 H 必须为假。
 
@@ -154,7 +154,7 @@ NHST 是建立在一个称为反证法的有效命题逻辑的外观后面的。
 
 ![如何在 NHST 中使用 p 值](img/pmlf_0402.png)
 
-###### 图 4-2\. 如何在 NHST 中使用 p 值^(8)
+###### 图 4-2\. 如何在 NHST 中使用 p 值⁸
 
 NHST 还做了更荒谬的逻辑跳跃。NHST 通过允许研究人员接受未指定的备择研究假设来犯下检察官的谬误，而这些数据在最初并未建模。回到上一节，重新了解我们如何解开检察官的谬误。
 
@@ -174,9 +174,9 @@ NHST 还做了更荒谬的逻辑跳跃。NHST 通过允许研究人员接受未�
 
 +   **P(H[1]|D) = 1 – [P(D|H[0])P(H[0]) / (P(D|H[0])P(H[0]) + P(D|H[1])P(H[1]))]**
 
-正如我所推导的这个方程所示，研究者需要估计 P(D|H[1])，即在研究假设 H[1] 成立的情况下观察到数据的概率。更重要的是，研究者需要估计至少一种补充假设的先验概率或基本比率，即 P(H[0]) 或 P(H[1])。因为没有基本比率，你就无法计算证据或观察到数据的无条件概率。这种谬误的逻辑正是使得关于零假设或替代研究假设的统计推断无效的原因。杰兹·奈曼，一位杰出的统计学家和费希尔的同行，称费希尔在统计推断上的工作“比无用还要糟糕”。^(9)
+正如我所推导的这个方程所示，研究者需要估计 P(D|H[1])，即在研究假设 H[1] 成立的情况下观察到数据的概率。更重要的是，研究者需要估计至少一种补充假设的先验概率或基本比率，即 P(H[0]) 或 P(H[1])。因为没有基本比率，你就无法计算证据或观察到数据的无条件概率。这种谬误的逻辑正是使得关于零假设或替代研究假设的统计推断无效的原因。杰兹·奈曼，一位杰出的统计学家和费希尔的同行，称费希尔在统计推断上的工作“比无用还要糟糕”。⁹
 
-显而易见，假设检验（NHST）——社会和经济科学教育、研究和实践的基石——犯了检察官谬误。难怪大多数使用 NHST 发表的研究发现都是错误的。NHST 浪费了数十亿的研究经费，败坏了科学的声誉，并通过其错误的阳性研究结果严重损害了人类利益。尽管多次失败地试图废除或改革它超过半个世纪，但 NHST 仍然在社会和经济科学领域造成严重破坏，产生了太多错误的研究主张至今仍然存在。^(10) 现在是时候拒绝 NHST，因为它“是建立在错误之上的，必须完全拒绝。”^(11)
+显而易见，假设检验（NHST）——社会和经济科学教育、研究和实践的基石——犯了检察官谬误。难怪大多数使用 NHST 发表的研究发现都是错误的。NHST 浪费了数十亿的研究经费，败坏了科学的声誉，并通过其错误的阳性研究结果严重损害了人类利益。尽管多次失败地试图废除或改革它超过半个世纪，但 NHST 仍然在社会和经济科学领域造成严重破坏，产生了太多错误的研究主张至今仍然存在。¹⁰ 现在是时候拒绝 NHST，因为它“是建立在错误之上的，必须完全拒绝。”¹¹
 
 许多社会和经济科学家建议用置信区间理论替代 p 值，后者被吹捧为一种更数学严谨的量化不确定性的方式。因此，让我们研究置信区间理论，看看它是否有用。
 
@@ -190,7 +190,7 @@ NHST 还做了更荒谬的逻辑跳跃。NHST 通过允许研究人员接受未�
 
 ![区间 [–a, a] 被称为 90% 置信区间。](assets/pmlf_0403.png)
 
-###### 图 4-3\. 区间 [–a, a] 被称为 90% 置信区间^(13)
+###### 图 4-3\. 区间 [–a, a] 被称为 90% 置信区间¹³
 
 费歇尔批评尼曼的置信区间理论，称其不符合科学家的需求，可能会导致从数据中得出互相矛盾的推断。费歇尔对置信区间理论的批评已被证明是有道理的，但并非因为尼曼的置信区间理论在逻辑或数学上存在缺陷，正如费歇尔所说的那样。
 
@@ -396,7 +396,7 @@ Statsmodels 计算的诊断测试在图 4-4 中告诉我们，股票市场已�
 
 ![比较柯西/洛伦兹分布与正态分布。](img/pmlf_0405.png)
 
-###### 图 4-5\. 比较柯西分布与正态分布^(14)
+###### 图 4-5\. 比较柯西分布与正态分布¹⁴
 
 增大样本量会使残差分布更加正态吗？这是否符合金融理论的说法？让我们使用 25 年的苹果每日收盘价格数据来运行我们的 MM。以下是结果：
 
@@ -431,7 +431,7 @@ is correctly specified.
 
 所有诊断测试结果清楚地表明，股票市场已经摧毁了“诺贝尔奖获得者”CAPM（以及相关的 MM）理论。即使包含了四分之一世纪的每日收盘价格样本量，我们模型的残差分布也比以前更加非正态。现在它非常负偏斜，峰度非常高—几乎是标准正态分布的 18 倍。尤其值得注意的是，我们 25 年贝塔的置信区间是[1.075, 1.166]，这超出了我们 5 年贝塔的置信区间[1.185,1.292]。事实上，AAPL 的贝塔似乎正在趋向于 1，即标准普尔 500 的贝塔值。
 
-调用某些 CLT 版本并声称我们回归模型的残差或系数的抽样分布具有渐近正态性似乎是徒劳无益，如果不是无效的话。有大量经济研究表明，所有金融资产价格回报的底层分布都没有有限的方差。金融分析师不应如此确信他们可以召唤 CLT 的力量并在其置信区间计算中断言渐近正态性。此外，他们需要确保渐近正态性的收敛速度是相当快的，因为正如著名经济学家梅纳德·凯恩斯通过他的个人股权投资艰难地发现的，“市场可以在你破产之前保持不理性很长时间。”^(15) 对于一笔股票交易来说，一个季度已经是一个永恒了。
+调用某些 CLT 版本并声称我们回归模型的残差或系数的抽样分布具有渐近正态性似乎是徒劳无益，如果不是无效的话。有大量经济研究表明，所有金融资产价格回报的底层分布都没有有限的方差。金融分析师不应如此确信他们可以召唤 CLT 的力量并在其置信区间计算中断言渐近正态性。此外，他们需要确保渐近正态性的收敛速度是相当快的，因为正如著名经济学家梅纳德·凯恩斯通过他的个人股权投资艰难地发现的，“市场可以在你破产之前保持不理性很长时间。”¹⁵ 对于一笔股票交易来说，一个季度已经是一个永恒了。
 
 # 摘要
 
@@ -441,7 +441,7 @@ is correctly specified.
 
 置信区间并不适用于从单一实验中进行人口参数的后数据推断。将置信区间作为后数据理论使用在认识论上是有缺陷的。它公然违反了频率学概率的脆弱哲学基础，而频率学概率正是其基础。然而，正统统计学家们为此创造了一种扭曲的、伪科学的理由来做这件事。如果 CLT 适用于您的数据分析——即底层人口分布具有有限均值和方差，从而导致其抽样分布渐近正态性，那么您可能可以滥用 Neyman 的置信区间理论而逃脱处罚。
 
-However, it is common knowledge among academics and practitioners that price returns of all financial assets are not normally distributed. It is likely that these fat tails are a consequence of infinite variances of their underlying population distributions. So the theoretical powers of the CLT cannot be utilized by analysts to rescue CIs from the non-normal, fat-tailed, ugly realities of financial markets. Even if asymptotic normality is theoretically possible in some situations, the desired convergence may not be quick enough for it to be of any practical value for trading and investing. Financial analysts should heed another of Keynes’s warnings when hoping for asymptotic normality of their sampling distributions: “In the long run we are all dead.”^(16) And almost surely broke.
+However, it is common knowledge among academics and practitioners that price returns of all financial assets are not normally distributed. It is likely that these fat tails are a consequence of infinite variances of their underlying population distributions. So the theoretical powers of the CLT cannot be utilized by analysts to rescue CIs from the non-normal, fat-tailed, ugly realities of financial markets. Even if asymptotic normality is theoretically possible in some situations, the desired convergence may not be quick enough for it to be of any practical value for trading and investing. Financial analysts should heed another of Keynes’s warnings when hoping for asymptotic normality of their sampling distributions: “In the long run we are all dead.”¹⁶ And almost surely broke.
 
 Regardless, financial data analysts using CIs as a postdata theory are making invalid inferences and grossly misestimating the uncertainties in their point estimates. Unorthodox statistical thinking, ground-breaking numerical algorithms, and modern computing technology make the use of “worse than useless” NHST, p-values, and CI theory in financial data analysis unnecessary. The second half of this book is dedicated to exploring and applying epistemic inference and probabilistic machine learning to finance and investing.
 
@@ -477,34 +477,34 @@ McElreath, Richard. *统计重新思考：贝叶斯方法与 R 和 Stan 实例*.
 
 Leamer, Edward E. “让计量经济学摆脱空洞”，*The American Economic Review* 73, No. 1 (1983 年 3 月): 31-43。
 
-^(1) John P. A. Ioannidis，“为什么大多数发表的研究结果是错误的”，*PLOS Medicine* 2, no. 8 (2005), e124，[*https://doi.org/10.1371/journal.pmed.0020124*](https://doi.org/10.1371/journal.pmed.0020124)；Campbell R. Harvey, Yan Liu, and Heqing Zhu，“……及预期回报的横截面”，*The Review of Financial Studies* 29, no. 1 (January 2016): 5–68，[*https://www.jstor.org/stable/43866011*](https://www.jstor.org/stable/43866011)。
+¹ John P. A. Ioannidis，“为什么大多数发表的研究结果是错误的”，*PLOS Medicine* 2, no. 8 (2005), e124，[*https://doi.org/10.1371/journal.pmed.0020124*](https://doi.org/10.1371/journal.pmed.0020124)；Campbell R. Harvey, Yan Liu, and Heqing Zhu，“……及预期回报的横截面”，*The Review of Financial Studies* 29, no. 1 (January 2016): 5–68，[*https://www.jstor.org/stable/43866011*](https://www.jstor.org/stable/43866011)。
 
-^(2) David Colquhoun，“假阳性发现率及 p 值误解的调查”，*Royal Society Open Science* (2014 年 11 月)，[*http://doi.org/10.1098/rsos.140216*](http://doi.org/10.1098/rsos.140216)；Charles Lambdin，“显著性检验如何成为巫术：科学是经验主义的，显著性检验却不是”，*Theory & Psychology* 22, no. 1 (2012): 67–90，[*https://doi.org/10.1177/0959354311429854*](https://doi.org/10.1177/0959354311429854)。
+² David Colquhoun，“假阳性发现率及 p 值误解的调查”，*Royal Society Open Science* (2014 年 11 月)，[*http://doi.org/10.1098/rsos.140216*](http://doi.org/10.1098/rsos.140216)；Charles Lambdin，“显著性检验如何成为巫术：科学是经验主义的，显著性检验却不是”，*Theory & Psychology* 22, no. 1 (2012): 67–90，[*https://doi.org/10.1177/0959354311429854*](https://doi.org/10.1177/0959354311429854)。
 
-^(3) R. D. Morey, R. Hoekstra, J. N. Rouder, M. D. Lee, and E. J. Wagenmakers，“对置信区间放置信任的谬误”，*Psychonomic Bulletin & Review* 23, no. 1 (2016): 103–123，[*https://doi.org/10.3758/s13423-015-0947-8*](https://doi.org/10.3758/s13423-015-0947-8)。
+³ R. D. Morey, R. Hoekstra, J. N. Rouder, M. D. Lee, and E. J. Wagenmakers，“对置信区间放置信任的谬误”，*Psychonomic Bulletin & Review* 23, no. 1 (2016): 103–123，[*https://doi.org/10.3758/s13423-015-0947-8*](https://doi.org/10.3758/s13423-015-0947-8)。
 
-^(4) W. C. Thompson 和 E. L. Schumann，“在刑事审判中对统计证据的解释：检察官谬误和辩护律师谬误，” *法律与人类行为* 11, no. 3 (1987): 167–187, [*http://www.jstor.org/stable/1393631*](http://www.jstor.org/stable/1393631)。
+⁴ W. C. Thompson 和 E. L. Schumann，“在刑事审判中对统计证据的解释：检察官谬误和辩护律师谬误，” *法律与人类行为* 11, no. 3 (1987): 167–187, [*http://www.jstor.org/stable/1393631*](http://www.jstor.org/stable/1393631)。
 
-^(5) 改编自维基共享资源上的一张图片。
+⁵ 改编自维基共享资源上的一张图片。
 
-^(6) 引自约翰·奥尔德里奇（John Aldrich）的文章，“R. A. Fisher on Bayes and Bayes’ Theorem,” *国际贝叶斯分析学会* 3, no. 1 (2008): 163。
+⁶ 引自约翰·奥尔德里奇（John Aldrich）的文章，“R. A. Fisher on Bayes and Bayes’ Theorem,” *国际贝叶斯分析学会* 3, no. 1 (2008): 163。
 
-^(7) Francisco Louçã，“通过互动实现解放——优生学和统计学的交汇与分歧，” *生物学史杂志* 42, no. 4 (2009): 649–684, [*http://www.jstor.org/stable/25650625*](http://www.jstor.org/stable/25650625)。
+⁷ Francisco Louçã，“通过互动实现解放——优生学和统计学的交汇与分歧，” *生物学史杂志* 42, no. 4 (2009): 649–684, [*http://www.jstor.org/stable/25650625*](http://www.jstor.org/stable/25650625)。
 
-^(8) 改编自维基共享资源上的一张图片。
+⁸ 改编自维基共享资源上的一张图片。
 
-^(9) 约翰内斯·伦哈德（Johannes Lenhard），“模型和统计推断：费舍尔和内曼-皮尔逊之间的争议，” *英国科学哲学杂志* 57, no. 1 (2006): 69–91, [*http://www.jstor.org/stable/3541653*](http://www.jstor.org/stable/3541653)。
+⁹ 约翰内斯·伦哈德（Johannes Lenhard），“模型和统计推断：费舍尔和内曼-皮尔逊之间的争议，” *英国科学哲学杂志* 57, no. 1 (2006): 69–91, [*http://www.jstor.org/stable/3541653*](http://www.jstor.org/stable/3541653)。
 
-^(10) Dénes Szucs 和 John P. A. Ioannidis，“当零假设显著性检验不适用于研究时：重新评估，” *人类神经科学前沿* 11, no. 390 (2017 年 8 月), doi: 10.3389/fnhum.2017.00390。
+¹⁰ Dénes Szucs 和 John P. A. Ioannidis，“当零假设显著性检验不适用于研究时：重新评估，” *人类神经科学前沿* 11, no. 390 (2017 年 8 月), doi: 10.3389/fnhum.2017.00390。
 
-^(11) 奥尔德里奇（Aldrich），“R. A. Fisher on Bayes and Bayes’ Theorem，” 163。
+¹¹ 奥尔德里奇（Aldrich），“R. A. Fisher on Bayes and Bayes’ Theorem，” 163。
 
-^(12) 格尔德·吉格伦泽尔（Gerd Gigerenzer），“统计仪式：复制错觉以及我们是如何到达这里的，” *心理科学方法与实践进展* (2018 年 6 月): 198–218, [*https://doi.org/10.1177/2515245918771329*](https://doi.org/10.1177/2515245918771329)。
+¹² 格尔德·吉格伦泽尔（Gerd Gigerenzer），“统计仪式：复制错觉以及我们是如何到达这里的，” *心理科学方法与实践进展* (2018 年 6 月): 198–218, [*https://doi.org/10.1177/2515245918771329*](https://doi.org/10.1177/2515245918771329)。
 
-^(13) 改编自维基共享资源上的一张图片。
+¹³ 改编自维基共享资源上的一张图片。
 
-^(14) 改编自维基共享资源上的一张图片。
+¹⁴ 改编自维基共享资源上的一张图片。
 
-^(15) “凯恩斯的投机活动，” 约翰·梅纳德·凯恩斯（John Maynard Keynes），访问于 2023 年 6 月 23 日，[*https://www.maynardkeynes.org/keynes-the-speculator.html*](https://www.maynardkeynes.org/keynes-the-speculator.html)。
+¹⁵ “凯恩斯的投机活动，” 约翰·梅纳德·凯恩斯（John Maynard Keynes），访问于 2023 年 6 月 23 日，[*https://www.maynardkeynes.org/keynes-the-speculator.html*](https://www.maynardkeynes.org/keynes-the-speculator.html)。
 
-^(16) 保罗·雷（Paul Lay），“长期看凯恩斯（Keynes in the Long Run）”，《今日历史》（History Today），访问于 2023 年 6 月 23 日，[*https://www.historytoday.com/keynes-long-run*](https://www.historytoday.com/keynes-long-run)。
+¹⁶ 保罗·雷（Paul Lay），“长期看凯恩斯（Keynes in the Long Run）”，《今日历史》（History Today），访问于 2023 年 6 月 23 日，[*https://www.historytoday.com/keynes-long-run*](https://www.historytoday.com/keynes-long-run)。

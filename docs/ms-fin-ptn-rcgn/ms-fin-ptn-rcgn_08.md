@@ -346,7 +346,7 @@ def candlestick_double_plot(data, buy_column, sell_column, window = 250):
 
 # K 的蜡烛图系统
 
-*K 的* 蜡烛图旨在进一步平滑 OHLC 值，以更好地理解潜在趋势，同时保留四个基本数据。^(1) 因此，K 的蜡烛图系统使用默认的回顾期三来计算 OHLC 数据的简单移动平均值。
+*K 的* 蜡烛图旨在进一步平滑 OHLC 值，以更好地理解潜在趋势，同时保留四个基本数据。¹ 因此，K 的蜡烛图系统使用默认的回顾期三来计算 OHLC 数据的简单移动平均值。
 
 ###### 注
 
@@ -539,4 +539,4 @@ def k_candlesticks(data, open_column, high_column, low_column,
 | 平均趋势图 | 由于平滑处理，趋势解释更佳 | 延迟小且价格不真实 |
 | K 线图 | 由于额外平滑处理，趋势解释更佳 | 延迟更大且价格不真实 |
 
-^(1) OHLC 数据。
+¹ OHLC 数据。

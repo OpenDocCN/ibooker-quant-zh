@@ -92,7 +92,7 @@ In [4]: plt.figure(figsize=(10, 6))
 
 +   <math alttext="alpha Subscript k Baseline greater-than-or-equal-to 0"><mrow><msub><mi>α</mi> <mi>k</mi></msub> <mo>≥</mo> <mn>0</mn></mrow></math>
 
-所有这些方程告诉我们，ARCH 是一个单变量且非线性的模型，其中波动率是通过过去回报的平方来估计的。ARCH 最显著的特征之一是具有时变条件方差的性质^(1)，因此 ARCH 能够模拟被称为*波动率聚集*的现象——即大变化往往会后续出现大的变化，不论其方向如何，而小变化则往往会后续出现小的变化，正如 Mandelbrot (1963)所描述的。因此，一旦市场发布重要公告，可能会导致巨大的波动。
+所有这些方程告诉我们，ARCH 是一个单变量且非线性的模型，其中波动率是通过过去回报的平方来估计的。ARCH 最显著的特征之一是具有时变条件方差的性质¹，因此 ARCH 能够模拟被称为*波动率聚集*的现象——即大变化往往会后续出现大的变化，不论其方向如何，而小变化则往往会后续出现小的变化，正如 Mandelbrot (1963)所描述的。因此，一旦市场发布重要公告，可能会导致巨大的波动。
 
 下面的代码块显示了如何绘制聚类图以及其效果：
 
@@ -856,7 +856,7 @@ In [48]: plt.figure(figsize=(10, 6))
 
 ###### 图 4-7\. SVR-GARCH 线性核波动率预测
 
-图 4-7 展示了预测值和实际观察结果。通过直观分析，我们可以看出 SVR-GARCH 表现良好。你可以猜到，如果数据集是线性可分的，线性核函数效果良好；这也被*奥卡姆剃刀*所推荐。^(3) 但如果数据集不是线性可分的呢？接下来我们继续使用径向基函数（RBF）和多项式核函数。前者使用椭圆形曲线围绕观察结果，而后者不同于前两者，专注于样本的组合。现在让我们看看它们是如何工作的。
+图 4-7 展示了预测值和实际观察结果。通过直观分析，我们可以看出 SVR-GARCH 表现良好。你可以猜到，如果数据集是线性可分的，线性核函数效果良好；这也被*奥卡姆剃刀*所推荐。³ 但如果数据集不是线性可分的呢？接下来我们继续使用径向基函数（RBF）和多项式核函数。前者使用椭圆形曲线围绕观察结果，而后者不同于前两者，专注于样本的组合。现在让我们看看它们是如何工作的。
 
 让我们从使用 RBF 核的 SVR-GARCH 应用程序开始，这是一个将数据投影到新向量空间的函数。从实际角度来看，使用不同核的 SVR-GARCH 应用程序并不是一个费时的过程；我们所需做的只是切换核名称，如下所示（并产生图 4-8）：
 
@@ -957,7 +957,7 @@ In [56]: plt.figure(figsize=(10, 6))
 
 其中*z*是线性变换，<math alttext="delta"><mi>δ</mi></math>表示误差。这里还有很多要说的，但为了使我们保持在正确的轨道上，我们将在这里停止。对于那些想深入了解神经网络背后数学的人，请参阅 Wilmott（2013）和 Alpaydin（2020）。
 
-现在，我们使用`MLPRegressor`模块从 scikit-learn 应用基于神经网络的波动率预测，即使在 Python 中运行神经网络有各种选项。^(4) 鉴于我们介绍的神经网络结构，结果如下：
+现在，我们使用`MLPRegressor`模块从 scikit-learn 应用基于神经网络的波动率预测，即使在 Python 中运行神经网络有各种选项。⁴ 鉴于我们介绍的神经网络结构，结果如下：
 
 ```py
 In [57]: from sklearn.neural_network import MLPRegressor ![1](img/1.png)
@@ -996,7 +996,7 @@ In [60]: plt.figure(figsize=(10, 6))
 
 ![3](img/#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-3)
 
-将 NN 模型拟合到训练数据中^(5)
+将 NN 模型拟合到训练数据中⁵
 
 ![4](img/#co_machine_learning_based___span_class__keep_together__volatility_prediction__span__CO7-4)
 
@@ -1449,12 +1449,12 @@ In [79]: plt.figure(figsize=(10, 6))
 
 +   Wilmott, Paul. 2019\. *机器学习：应用数学导论*. Panda Ohana Publishing.
 
-^(1) 条件方差意味着波动率估计是资产收益的过去值的函数。
+¹ 条件方差意味着波动率估计是资产收益的过去值的函数。
 
-^(2) 关于这些函数的更多信息，请参阅 Andrew Ng 的[讲义](https://oreil.ly/sTWGj)。
+² 关于这些函数的更多信息，请参阅 Andrew Ng 的[讲义](https://oreil.ly/sTWGj)。
 
-^(3) 奥卡姆剃刀，也称为简约法则，指出在一组解释中，简单的解释最为可能和可信。
+³ 奥卡姆剃刀，也称为简约法则，指出在一组解释中，简单的解释最为可能和可信。
 
-^(4) 在这些备选方案中，TensorFlow、PyTorch 和 NeuroLab 是最突出的库。
+⁴ 在这些备选方案中，TensorFlow、PyTorch 和 NeuroLab 是最突出的库。
 
-^(5) 更详细信息，请参阅[`MLPClassifier`文档](https://oreil.ly/HnrTk)。
+⁵ 更详细信息，请参阅[`MLPClassifier`文档](https://oreil.ly/HnrTk)。

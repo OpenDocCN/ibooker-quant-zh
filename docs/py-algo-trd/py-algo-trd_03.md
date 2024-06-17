@@ -967,9 +967,9 @@ In [63]: data.info()
 
 生成一个包含 5,000,000 行和十列的样本金融数据集；生成过程需要几秒钟时间。
 
-第二步是在磁盘上打开 `HDFStore` 对象（即 HDF5 数据库文件）并将 `DataFrame` 对象写入其中。^(1) 磁盘上的大小约为 440 MB，比内存中的 `DataFrame` 对象稍大。然而，写入速度比内存生成示例数据集快约五倍。
+第二步是在磁盘上打开 `HDFStore` 对象（即 HDF5 数据库文件）并将 `DataFrame` 对象写入其中。¹ 磁盘上的大小约为 440 MB，比内存中的 `DataFrame` 对象稍大。然而，写入速度比内存生成示例数据集快约五倍。
 
-在 Python 中使用像 HDF5 数据库文件这样的二进制存储通常可以获得接近硬件可用的理论最大写入速度：^(2)
+在 Python 中使用像 HDF5 数据库文件这样的二进制存储通常可以获得接近硬件可用的理论最大写入速度：²
 
 ```py
 In [64]: h5 = pd.HDFStore('data/data.h5', 'w')  ![1](img/1.png)
@@ -1577,6 +1577,6 @@ if __name__ == '__main__':
     print(generate_sample_data(rows, columns, freq))
 ```
 
-^(1) 当然，多个`DataFrame`对象也可以存储在单个`HDFStore`对象中。
+¹ 当然，多个`DataFrame`对象也可以存储在单个`HDFStore`对象中。
 
-^(2) 所有报告的数值均来自作者使用的 MacMini，配备 Intel i7 六核处理器（12 个线程），32 GB 随机存取内存（DDR4 RAM），以及 512 GB 固态驱动器（SSD）。
+² 所有报告的数值均来自作者使用的 MacMini，配备 Intel i7 六核处理器（12 个线程），32 GB 随机存取内存（DDR4 RAM），以及 512 GB 固态驱动器（SSD）。

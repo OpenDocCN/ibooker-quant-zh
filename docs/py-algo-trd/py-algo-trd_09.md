@@ -40,7 +40,7 @@ pip install fxcmpy
 
 `fxcmpy`包的文档可在[*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)下找到。
 
-要开始使用 FXCM 交易 API 和 `fxcmpy` 包，FXCM 的免费演示账户就足够了。可以在 [FXCM 演示账户](https://oreil.ly/v9H6z) 下开设此类账户。^(1) 接下来的步骤是在演示账户内创建一个唯一的 API 令牌（例如 `YOUR_FXCM_API_TOKEN`）。然后可以通过以下方式打开 API 连接：
+要开始使用 FXCM 交易 API 和 `fxcmpy` 包，FXCM 的免费演示账户就足够了。可以在 [FXCM 演示账户](https://oreil.ly/v9H6z) 下开设此类账户。¹ 接下来的步骤是在演示账户内创建一个唯一的 API 令牌（例如 `YOUR_FXCM_API_TOKEN`）。然后可以通过以下方式打开 API 连接：
 
 ```py
 import fxcmpy
@@ -160,7 +160,7 @@ Out[8]:                              Bid      Ask
 
 ![3](img/#co_fx_trading_with_fxcm_CO2-5)
 
-`.get_data()` 方法返回一个 `DataFrame` 对象，其中的索引已转换为 `DatetimeIndex`。^(2)
+`.get_data()` 方法返回一个 `DataFrame` 对象，其中的索引已转换为 `DatetimeIndex`。²
 
 由于 ticks 数据存储在 `DataFrame` 对象中，因此很容易选择数据的子集并在其上执行典型的金融分析任务。Figure 9-1 展示了从子集中派生的中间价格及其简单移动平均线（SMA）的绘图：
 
@@ -471,7 +471,7 @@ In [42]: api.unsubscribe_market_data('EUR/USD')  ![4](img/4.png)
 
 ## 下单
 
-FXCM API 允许下达和管理所有类型的订单，这些订单也可以通过 FXCM 的交易应用程序使用（例如入场订单或追踪止损订单）。^(3) 然而，以下代码仅说明基本的市场买卖订单，因为它们通常足以开始算法交易。
+FXCM API 允许下达和管理所有类型的订单，这些订单也可以通过 FXCM 的交易应用程序使用（例如入场订单或追踪止损订单）。³ 然而，以下代码仅说明基本的市场买卖订单，因为它们通常足以开始算法交易。
 
 以下代码首先验证是否有空仓位，然后通过`.create_market_buy_order()`方法开设不同的仓位：
 
@@ -504,7 +504,7 @@ Out[48]:      tradeId  amountK currency  grossPL  isBuy
 
 ![2](img/#co_fx_trading_with_fxcm_CO9-2)
 
-开设`EUR/USD`货币对的 100,000 的仓位。^(4)
+开设`EUR/USD`货币对的 100,000 的仓位。⁴
 
 ![3](img/#co_fx_trading_with_fxcm_CO9-3)
 
@@ -631,10 +631,10 @@ Out[57]:                           0
 
 +   `fxcmpy` 包：[*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io)
 
-^(1) 注意，FXCM 的演示账户仅限于特定国家。
+¹ 注意，FXCM 的演示账户仅限于特定国家。
 
-^(2) `DatetimeIndex` 转换非常耗时，这就是为什么有两种与 Tick 数据检索相关的不同方法。
+² `DatetimeIndex` 转换非常耗时，这就是为什么有两种与 Tick 数据检索相关的不同方法。
 
-^(3) 参见 [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io) 下的文档。
+³ 参见 [*http://fxcmpy.tpq.io*](http://fxcmpy.tpq.io) 下的文档。
 
-^(4) 货币对的数量单位为千分之一，此外，请注意不同账户可能具有不同的杠杆比率。这意味着相同的头寸可能需要更多或更少的资产（保证金），具体取决于相关的杠杆比率。如有必要，请将示例数量调整为较低的值。参见 [*https://oreil.ly/xUHMP*](https://oreil.ly/xUHMP)。
+⁴ 货币对的数量单位为千分之一，此外，请注意不同账户可能具有不同的杠杆比率。这意味着相同的头寸可能需要更多或更少的资产（保证金），具体取决于相关的杠杆比率。如有必要，请将示例数量调整为较低的值。参见 [*https://oreil.ly/xUHMP*](https://oreil.ly/xUHMP)。

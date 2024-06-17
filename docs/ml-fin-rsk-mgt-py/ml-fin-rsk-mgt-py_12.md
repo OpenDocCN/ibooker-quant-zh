@@ -76,7 +76,7 @@ MCD 的算法可以如下给出：
 
 1.  基于数据检测初始的稳健聚类。
 
-1.  为每个聚类计算均值向量<math alttext="upper M Superscript a"><msup><mi>M</mi> <mi>a</mi></msup></math>和正定^(1)协方差矩阵<math alttext="sigma-summation Overscript a Endscripts"><msup><mo>∑</mo> <mi>a</mi></msup></math>。
+1.  为每个聚类计算均值向量<math alttext="upper M Superscript a"><msup><mi>M</mi> <mi>a</mi></msup></math>和正定¹协方差矩阵<math alttext="sigma-summation Overscript a Endscripts"><msup><mo>∑</mo> <mi>a</mi></msup></math>。
 
 1.  计算每个聚类中每个观测的 MCD。
 
@@ -983,4 +983,4 @@ In [60]: FE_crash = FixedEffectPanelModel()
 
 +   Yin, Yugang, 和 Rongfu Tian. 2017\. “投资者情绪、财务报告质量和股价崩盘风险：空头销售限制的作用。” *新兴市场金融与贸易* 53 (3): 493-510。
 
-^(1) 所有正特征值的对称矩阵称为*正定矩阵*。
+¹ 所有正特征值的对称矩阵称为*正定矩阵*。

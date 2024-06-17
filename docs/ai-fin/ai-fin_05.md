@@ -16,11 +16,11 @@
 
 # 不确定性和风险
 
-金融理论的核心是在不确定性和风险存在的情况下进行投资、交易和估值。本节在一定程度上正式介绍了与这些主题相关的中心概念。重点是从概率论中构建量化金融的基础概念。^(1)
+金融理论的核心是在不确定性和风险存在的情况下进行投资、交易和估值。本节在一定程度上正式介绍了与这些主题相关的中心概念。重点是从概率论中构建量化金融的基础概念。¹
 
 ## 定义
 
-假设经济体仅在两个时间点观察活动：今天，<math alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math> ，一年后，<math alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math> 。本章后面讨论的财务理论在很大程度上基于这样一个*静态经济*。^(2)
+假设经济体仅在两个时间点观察活动：今天，<math alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math> ，一年后，<math alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math> 。本章后面讨论的财务理论在很大程度上基于这样一个*静态经济*。²
 
 在 <math alttext="t equals 0"><mrow><mi>t</mi> <mo>=</mo> <mn>0</mn></mrow></math> 时，完全没有任何不确定性。在 <math alttext="t equals 1"><mrow><mi>t</mi> <mo>=</mo> <mn>1</mn></mrow></math> 时，经济体可以处于有限数量 <math alttext="upper S"><mi>S</mi></math> 的可能状态 <math alttext="omega element-of normal upper Omega equals StartSet omega 1 comma omega 2 comma ellipsis comma omega Subscript upper S Baseline EndSet"><mrow><mi>ω</mi> <mo>∈</mo> <mi>Ω</mi> <mo>=</mo> <mo>{</mo> <msub><mi>ω</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>ω</mi> <mn>2</mn></msub> <mo>,</mo> <mo>...</mo> <mo>,</mo> <msub><mi>ω</mi> <mi>S</mi></msub> <mo>}</mo></mrow></math> 。 <math alttext="normal upper Omega"><mi>Ω</mi></math> 被称为*状态空间*，其基数为 <math alttext="StartAbsoluteValue normal upper Omega EndAbsoluteValue equals upper S"><mrow><mo>|</mo> <mi>Ω</mi> <mo>|</mo> <mo>=</mo> <mi>S</mi></mrow></math>。
 
@@ -162,11 +162,11 @@ Out[10]: 2.0
 
 # 套利定价
 
-正如前面的例子所示，套利定价理论可以被认为是具有一些最强大数学结果之一的金融理论，例如*资产定价的基本定理（FTAP）*。^(4) 其中一个原因是，例如期权的价格可以从其他可观察的市场参数推导出来，比如期权所涉及的股票的股价。在这种意义上，套利定价不关心如何首先提出公平的股票价格，而只是将其作为输入。因此，套利定价已经使用了少量且温和的假设，比如*无套利*，而这在许多其他金融理论中并非如此。请注意，甚至概率测度也不用来推导套利价格。
+正如前面的例子所示，套利定价理论可以被认为是具有一些最强大数学结果之一的金融理论，例如*资产定价的基本定理（FTAP）*。⁴ 其中一个原因是，例如期权的价格可以从其他可观察的市场参数推导出来，比如期权所涉及的股票的股价。在这种意义上，套利定价不关心如何首先提出公平的股票价格，而只是将其作为输入。因此，套利定价已经使用了少量且温和的假设，比如*无套利*，而这在许多其他金融理论中并非如此。请注意，甚至概率测度也不用来推导套利价格。
 
 # 预期效用理论
 
-预期效用理论（EUT）是金融理论的基石之一。自 1940 年代制定以来，它一直是建模不确定情况下决策制定的中心范式之一。^(5) 基本上每本介绍金融理论和投资理论的入门教材都介绍了 EUT。其中一个原因是金融中的其他核心结果可以从 EUT 范式中推导出来。
+预期效用理论（EUT）是金融理论的基石之一。自 1940 年代制定以来，它一直是建模不确定情况下决策制定的中心范式之一。⁵ 基本上每本介绍金融理论和投资理论的入门教材都介绍了 EUT。其中一个原因是金融中的其他核心结果可以从 EUT 范式中推导出来。
 
 ## 假设和结果
 
@@ -210,7 +210,7 @@ EUT 通常基于与代理人在面对不确定选择时的*偏好*相关的少�
 
 ### 实用函数
 
-实用函数是以数学和数值方式表示代理人偏好 <math alttext="succeeds-above-single-line-equals"><mo>⪰</mo></math> 的一种方法，该函数为某种回报分配数值。在这种情况下，绝对值并不重要，而是由这些值引发的排序才是关键。^(6) 假设 <math alttext="double-struck upper X"><mi>𝕏</mi></math> 表示代理人可以表达偏好的所有可能回报。则实用函数 <math alttext="upper U"><mi>U</mi></math> 定义如下：
+实用函数是以数学和数值方式表示代理人偏好 <math alttext="succeeds-above-single-line-equals"><mo>⪰</mo></math> 的一种方法，该函数为某种回报分配数值。在这种情况下，绝对值并不重要，而是由这些值引发的排序才是关键。⁶ 假设 <math alttext="double-struck upper X"><mi>𝕏</mi></math> 表示代理人可以表达偏好的所有可能回报。则实用函数 <math alttext="upper U"><mi>U</mi></math> 定义如下：
 
 <math alttext="upper U colon double-struck upper X right-arrow double-struck upper R Subscript plus Baseline comma x right-arrow from bar upper U left-parenthesis x right-parenthesis" display="block"><mrow><mi>U</mi> <mo>:</mo> <mi>𝕏</mi> <mo>→</mo> <msub><mi>ℝ</mi> <mo>+</mo></msub> <mo>,</mo> <mi>x</mi> <mo>↦</mo> <mi>U</mi> <mrow><mo>(</mo> <mi>x</mi> <mo>)</mo></mrow></mrow></math>
 
@@ -352,7 +352,7 @@ Out[26]: 3.385015999493397
 
 ![2](img/#co_normative_finance_CO3-2)
 
-用于`minimize`的预算约束^(7)
+用于`minimize`的预算约束⁷
 
 ![3](img/#co_normative_finance_CO3-3)
 
@@ -410,7 +410,7 @@ MVP 的中心假设，根据马科维茨（1952 年）的说法，是投资者**
 
 <math alttext="mu equals Start 4 By 1 Matrix 1st Row  mu Superscript 1 Baseline 2nd Row  mu squared 3rd Row   ellipsis 4th Row  mu Superscript upper N EndMatrix" display="block"><mrow><mi>μ</mi> <mo>=</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><msup><mi>μ</mi> <mn>1</mn></msup></mtd></mtr> <mtr><mtd><msup><mi>μ</mi> <mn>2</mn></msup></mtd></mtr> <mtr><mtd><mo>⋮</mo></mtd></mtr> <mtr><mtd><msup><mi>μ</mi> <mi>N</mi></msup></mtd></mtr></mtable></mfenced></mrow></math>
 
-一个*投资组合*（向量）<math alttext="phi equals left-parenthesis phi Superscript 1 Baseline comma phi squared comma ellipsis comma phi Superscript upper N Baseline right-parenthesis Superscript upper T"><mrow><mi>ϕ</mi> <mo>=</mo> <msup><mfenced separators="" open="(" close=")"><msup><mi>ϕ</mi> <mn>1</mn></msup> <mo>,</mo><msup><mi>ϕ</mi> <mn>2</mn></msup> <mo>,</mo><mo>...</mo><mo>,</mo><msup><mi>ϕ</mi> <mi>N</mi></msup></mfenced> <mi>T</mi></msup></mrow></math>，其中<math alttext="phi Subscript n Baseline greater-than-or-equal-to 0"><mrow><msub><mi>ϕ</mi> <mi>n</mi></msub> <mo>≥</mo> <mn>0</mn></mrow></math>且<math alttext="sigma-summation Underscript n Overscript upper N Endscripts phi Superscript n Baseline equals 1"><mrow><msubsup><mo>∑</mo> <mi>n</mi> <mi>N</mi></msubsup> <msup><mi>ϕ</mi> <mi>n</mi></msup> <mo>=</mo> <mn>1</mn></mrow></math>，为投资组合中每个资产分配权重。^(8)
+一个*投资组合*（向量）<math alttext="phi equals left-parenthesis phi Superscript 1 Baseline comma phi squared comma ellipsis comma phi Superscript upper N Baseline right-parenthesis Superscript upper T"><mrow><mi>ϕ</mi> <mo>=</mo> <msup><mfenced separators="" open="(" close=")"><msup><mi>ϕ</mi> <mn>1</mn></msup> <mo>,</mo><msup><mi>ϕ</mi> <mn>2</mn></msup> <mo>,</mo><mo>...</mo><mo>,</mo><msup><mi>ϕ</mi> <mi>N</mi></msup></mfenced> <mi>T</mi></msup></mrow></math>，其中<math alttext="phi Subscript n Baseline greater-than-or-equal-to 0"><mrow><msub><mi>ϕ</mi> <mi>n</mi></msub> <mo>≥</mo> <mn>0</mn></mrow></math>且<math alttext="sigma-summation Underscript n Overscript upper N Endscripts phi Superscript n Baseline equals 1"><mrow><msubsup><mo>∑</mo> <mi>n</mi> <mi>N</mi></msubsup> <msup><mi>ϕ</mi> <mi>n</mi></msup> <mo>=</mo> <mn>1</mn></mrow></math>，为投资组合中每个资产分配权重。⁸
 
 投资组合的*预期回报*由投资组合权重向量与预期回报向量的点积给出：
 
@@ -800,7 +800,7 @@ In [73]: plt.figure(figsize=(10, 6))
 
 如何获得资本市场均衡的机制？可交易资产的当前价格是确保市场清算的机制。如果代理人对可交易资产的需求不足，其价格将下降。如果需求高于供给，其价格将上升。如果价格设置正确，对每种可交易资产的需求和供给将相等。虽然 MVP 将可交易资产的价格视为给定，但 CAPM 是关于资产均衡价格的理论和模型，*考虑其风险与回报特性，应当是*。
 
-CAPM 假设存在（至少）一种无风险资产，每个代理人都可以投资任意金额，并获得无风险利率 <math alttext="r overbar"><mover accent="true"><mi>r</mi> <mo>¯</mo></mover></math> 。因此，在均衡状态下，每个代理人将持有市场组合和无风险资产的组合，这被称为 *两基金分离定理* 。^(9) 所有这类投资组合的集合称为 *资本市场线* （CML）。图 3-5 示意地显示了 CML。位于市场组合右侧的投资组合仅在代理人被允许做空无风险资产和通过这种方式借钱时才能实现：
+CAPM 假设存在（至少）一种无风险资产，每个代理人都可以投资任意金额，并获得无风险利率 <math alttext="r overbar"><mover accent="true"><mi>r</mi> <mo>¯</mo></mover></math> 。因此，在均衡状态下，每个代理人将持有市场组合和无风险资产的组合，这被称为 *两基金分离定理* 。⁹ 所有这类投资组合的集合称为 *资本市场线* （CML）。图 3-5 示意地显示了 CML。位于市场组合右侧的投资组合仅在代理人被允许做空无风险资产和通过这种方式借钱时才能实现：
 
 ```py
 In [74]: plt.figure(figsize=(10, 6))
@@ -1047,7 +1047,7 @@ In [96]: plt.figure(figsize=(10, 6))
 
 ## 假设与结果
 
-APT 是 CAPM 在多个风险因素上的泛化。从这个意义上说，APT 不假定市场组合是唯一相关的风险因素；相反，假设有多种类型的风险共同驱动股票的表现（预期收益）。这些风险因素可能包括大小、波动性、价值和动量。^(10) 除了这一主要差异外，该模型依赖于类似的假设，如市场完全、可以（无限制地）以相同的恒定利率进行借贷等等。
+APT 是 CAPM 在多个风险因素上的泛化。从这个意义上说，APT 不假定市场组合是唯一相关的风险因素；相反，假设有多种类型的风险共同驱动股票的表现（预期收益）。这些风险因素可能包括大小、波动性、价值和动量。¹⁰ 除了这一主要差异外，该模型依赖于类似的假设，如市场完全、可以（无限制地）以相同的恒定利率进行借贷等等。
 
 在其最初的动态版本中，如 Ross (1976) 所述，APT 的形式如下：
 
@@ -1125,7 +1125,7 @@ Out[103]: 11.144718094850402
 
 因子载荷可用于估算风险资产<math alttext="upper V"><mi>V</mi></math>的无套利价格<math alttext="upper V 0"><msub><mi>V</mi> <mn>0</mn></msub></math>。
 
-很明显，这两个因素并不足以完全“解释”回报<math alttext="upper V 1"><msub><mi>V</mi> <mn>1</mn></msub></math>。鉴于线性代数的标准结果，这并不令人意外。^(11) 那么在模型经济中添加第三个风险因素<math alttext="upper U"><mi>U</mi></math>呢？假设第三个风险因素<math alttext="upper U"><mi>U</mi></math>由以下定义：
+很明显，这两个因素并不足以完全“解释”回报<math alttext="upper V 1"><msub><mi>V</mi> <mn>1</mn></msub></math>。鉴于线性代数的标准结果，这并不令人意外。¹¹ 那么在模型经济中添加第三个风险因素<math alttext="upper U"><mi>U</mi></math>呢？假设第三个风险因素<math alttext="upper U"><mi>U</mi></math>由以下定义：
 
 <math alttext="upper U 1 equals Start 3 By 1 Matrix 1st Row  12 2nd Row  5 3rd Row  11 EndMatrix" display="block"><mrow><msub><mi>U</mi> <mn>1</mn></msub> <mo>=</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><mn>12</mn></mtd></mtr> <mtr><mtd><mn>5</mn></mtd></mtr> <mtr><mtd><mn>11</mn></mtd></mtr></mtable></mfenced></mrow></math>
 
@@ -1231,24 +1231,24 @@ Out[111]: 10.267303102625307
 
 +   von Neumann, John, 和 Oskar Morgenstern. 1944\. *Theory of Games and Economic Behavior*. 普林斯顿：普林斯顿大学出版社。
 
-^(1) 参见 Jacod 和 Protter（2004 年）关于概率论的入门文本。
+¹ 参见 Jacod 和 Protter（2004 年）关于概率论的入门文本。
 
-^(2) 在一个*动态*的经济中，不确定性会逐渐在时间的推移中解决，比如，在今天和一年后的每一天。
+² 在一个*动态*的经济中，不确定性会逐渐在时间的推移中解决，比如，在今天和一年后的每一天。
 
-^(3) 关于风险中性估值和套利估值的详细内容，请参阅 Hilpisch (2015, 第四章)。
+³ 关于风险中性估值和套利估值的详细内容，请参阅 Hilpisch (2015, 第四章)。
 
-^(4) 同样，请参阅 Hilpisch (2015, 第四章)及其所列参考文献。
+⁴ 同样，请参阅 Hilpisch (2015, 第四章)及其所列参考文献。
 
-^(5) 欲了解更多背景和详情，请参阅 Eichberger 和 Harper (1997, 第一章)或 Varian (2010, 第十二章)。
+⁵ 欲了解更多背景和详情，请参阅 Eichberger 和 Harper (1997, 第一章)或 Varian (2010, 第十二章)。
 
-^(6) 一般称之为*序数*。街道上的房屋号码是序数的一个很好的例子。
+⁶ 一般称之为*序数*。街道上的房屋号码是序数的一个很好的例子。
 
-^(7) 欲了解详情，请参阅[*http://bit.ly/aiif_minimize*](http://bit.ly/aiif_minimize)。
+⁷ 欲了解详情，请参阅[*http://bit.ly/aiif_minimize*](http://bit.ly/aiif_minimize)。
 
-^(8) 这些假设并非真正必要。例如，即使允许卖空，也不会显著改变分析。
+⁸ 这些假设并非真正必要。例如，即使允许卖空，也不会显著改变分析。
 
-^(9) 欲了解更多详情，请参阅 Jones (2012, 第九章)。
+⁹ 欲了解更多详情，请参阅 Jones (2012, 第九章)。
 
-^(10) 欲了解实际应用中使用的因子的更多背景信息，请参阅 Bender 等人 (2013)。
+¹⁰ 欲了解实际应用中使用的因子的更多背景信息，请参阅 Bender 等人 (2013)。
 
-^(11) 当然，支付 <math alttext="upper V 1"><msub><mi>V</mi> <mn>1</mn></msub></math> 可能（偶然地）位于两个因子支付向量 <math alttext="upper S 1 comma upper T 1"><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>T</mi> <mn>1</mn></msub></mrow></math> 的范围内。
+¹¹ 当然，支付 <math alttext="upper V 1"><msub><mi>V</mi> <mn>1</mn></msub></math> 可能（偶然地）位于两个因子支付向量 <math alttext="upper S 1 comma upper T 1"><mrow><msub><mi>S</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>T</mi> <mn>1</mn></msub></mrow></math> 的范围内。

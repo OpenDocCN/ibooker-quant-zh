@@ -244,7 +244,7 @@ In [10]: liq_vol_all['mid_price'] = (liq_vol_all.ASKHI + liq_vol_all.BIDLO) / 2
 
 其中 <math alttext="normal upper Delta p Subscript t"><mrow><mi>Δ</mi> <msub><mi>p</mi> <mi>t</mi></msub></mrow></math> 和 <math alttext="normal upper Delta p Subscript t minus 1"><mrow><mi>Δ</mi> <msub><mi>p</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub></mrow></math> 是时间 *t* 和时间 *t* – 1 的价格差异，<math alttext="cov"><mtext>cov</mtext></math> 表示这些价格差异之间的协方差。
 
-假设市场是有效的^(1)，并且观察到的价格变化的概率分布是稳定的，Roll 的价差是由价格变化的串行相关性良好代理流动性的事实所激发。
+假设市场是有效的¹，并且观察到的价格变化的概率分布是稳定的，Roll 的价差是由价格变化的串行相关性良好代理流动性的事实所激发。
 
 计算 Roll 的价差中最重要的一点是，正协方差并不是定义良好的，并且几乎占了案例的一半。文献提出了几种方法来解决这个缺点，我们将在接下来采纳 Harris 的方法（1990 年）：
 
@@ -978,4 +978,4 @@ In [42]: gmcm_fit = gmcm.fit(scaled_liq,method='kmeans',
 
 +   VanderPlas, Jake. 2016\. *Python 数据科学手册：处理数据的基本工具*。塞巴斯托波尔：奥莱利。
 
-^(1) *有效市场* 指当前价格多么快速地反映了有关基础资产价值的所有可用信息。
+¹ *有效市场* 指当前价格多么快速地反映了有关基础资产价值的所有可用信息。

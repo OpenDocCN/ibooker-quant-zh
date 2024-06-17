@@ -254,7 +254,7 @@ Out[29]: 0.07681782193617318
 
 ![3](img/#co_interactive_neural_networks_CO4-5)
 
-反向传播（这里 `d = e`）^(1)
+反向传播（这里 `d = e`）¹
 
 ![4](img/#co_interactive_neural_networks_CO4-7)
 
@@ -863,4 +863,4 @@ Out[94]: array([1.])
 
 +   Chollet, Francois. 2017\. *Python 深度学习*. Shelter Island: Manning.
 
-^(1) 由于没有隐藏层，反向传播的导数值为 1。输出层和输入层直接连接。
+¹ 由于没有隐藏层，反向传播的导数值为 1。输出层和输入层直接连接。

@@ -130,7 +130,7 @@ Out[10]: True
 
 数百年历史
 
-最小二乘法，特别是与回归结合使用，已经使用了 200 多年。^(1)
+最小二乘法，特别是与回归结合使用，已经使用了 200 多年。¹
 
 简单性
 
@@ -199,7 +199,7 @@ Python 及许多其他编程语言中提供了高效的实现。
 
 ## 结构化历史数据
 
-首先，将通过程序检索结构化历史数据类型。为此，以下 Python 代码使用[Eikon 数据 API](https://oreil.ly/uDMSk)。^(2)
+首先，将通过程序检索结构化历史数据类型。为此，以下 Python 代码使用[Eikon 数据 API](https://oreil.ly/uDMSk)。²
 
 要通过 Eikon 数据 API 访问数据，必须运行本地应用程序，例如[Refinitiv Workspace](https://oreil.ly/NPEav)，并且必须在 Python 级别上配置 API 访问：
 
@@ -249,7 +249,7 @@ Out[17]: CLOSE       AAPL.O  MSFT.O  NFLX.O   AMZN.O
 
 ![1](img/#co_data_driven_finance_CO2-1)
 
-定义要检索数据的`RICs`（符号）列表^(3)
+定义要检索数据的`RICs`（符号）列表³
 
 ![2](img/#co_data_driven_finance_CO2-2)
 
@@ -1635,7 +1635,7 @@ Out[122]: 0.7639257294429708
 
 ### 样本数据集
 
-为了说明，考虑以下 Python 代码生成的标准正态分布随机数集合。^(4) 图 4-16 显示了结果直方图的典型钟形曲线：
+为了说明，考虑以下 Python 代码生成的标准正态分布随机数集合。⁴ 图 4-16 显示了结果直方图的典型钟形曲线：
 
 ```py
 In [1]: import numpy as np
@@ -2226,10 +2226,10 @@ def generate_key_words(text, no):
     return words
 ```
 
-^(1) See, for example, Kopf (2015).
+¹ See, for example, Kopf (2015).
 
-^(2) 此数据服务仅通过付费订阅可用。
+² 此数据服务仅通过付费订阅可用。
 
-^(3) `RIC` 代表*Reuters Instrument Code*。
+³ `RIC` 代表*Reuters Instrument Code*。
 
-^(4) 由`NumPy`的随机数生成器生成的数字是*伪随机数*，尽管在整本书中它们被引用为*随机数*。
+⁴ 由`NumPy`的随机数生成器生成的数字是*伪随机数*，尽管在整本书中它们被引用为*随机数*。

@@ -32,7 +32,7 @@
 
 虚拟环境管理器
 
-像[`virtualenv`](https://oreil.ly/xMnlC)或`conda`这样的虚拟环境管理器可以让你并行管理多个 Python 安装（例如，在单台机器上同时安装 Python 2.7 和 3.8，或者测试最新的 Python 包的开发版本而不会有风险）^(1)。
+像[`virtualenv`](https://oreil.ly/xMnlC)或`conda`这样的虚拟环境管理器可以让你并行管理多个 Python 安装（例如，在单台机器上同时安装 Python 2.7 和 3.8，或者测试最新的 Python 包的开发版本而不会有风险）¹。
 
 容器
 
@@ -52,7 +52,7 @@
 
 ## 安装 Miniconda
 
-您可以在[Miniconda 页面](https://oreil.ly/-Z_6H)下载不同版本的 Miniconda。以下假设为 Python 3.8 的 64 位版本，适用于 Linux、Windows 和 Mac OS。本小节的主要示例是在基于 Ubuntu 的 Docker 容器中进行的会话，该容器通过`wget`下载 Linux 64 位安装程序，然后安装 Miniconda。如所示的代码应该可以（也许需要进行轻微修改）在任何其他基于 Linux 或 Mac OS 的机器上运行：^(2)
+您可以在[Miniconda 页面](https://oreil.ly/-Z_6H)下载不同版本的 Miniconda。以下假设为 Python 3.8 的 64 位版本，适用于 Linux、Windows 和 Mac OS。本小节的主要示例是在基于 Ubuntu 的 Docker 容器中进行的会话，该容器通过`wget`下载 Linux 64 位安装程序，然后安装 Miniconda。如所示的代码应该可以（也许需要进行轻微修改）在任何其他基于 Linux 或 Mac OS 的机器上运行：²
 
 ```py
 $ docker run -ti -h pyalgo -p 11111:11111 ubuntu:latest /bin/bash
@@ -198,7 +198,7 @@ Hello Python for Algorithmic Trading World.
 
 `conda list`
 
-有了这些功能，例如安装`NumPy`（作为所谓的*科学堆栈*中最重要的包之一）只需要一个命令。当在装有 Intel 处理器的机器上安装时，该过程会自动安装[Intel 数学核心库`mkl`](https://oreil.ly/Tca2C)，它不仅加速了`NumPy`在 Intel 机器上的数值运算，也为其他几个科学 Python 包提速：^(3)
+有了这些功能，例如安装`NumPy`（作为所谓的*科学堆栈*中最重要的包之一）只需要一个命令。当在装有 Intel 处理器的机器上安装时，该过程会自动安装[Intel 数学核心库`mkl`](https://oreil.ly/Tca2C)，它不仅加速了`NumPy`在 Intel 机器上的数值运算，也为其他几个科学 Python 包提速：³
 
 ```py
 (base) root@pyalgo:~# conda install numpy
@@ -819,9 +819,9 @@ Deleted: sha256:40adf11b689fc778297c36d4b232c59fedda8c631b4271672cc86f505710502d
 
 # 使用云实例
 
-本节展示了如何在[DigitalOcean](http://digitalocean.com)云实例上设置完整的 Python 基础设施。市面上有许多其他云提供商，其中以[Amazon Web Services](http://aws.amazon.com)（AWS）为主要提供商。然而，DigitalOcean 以其简易性和较低的小型云实例费率而闻名，其称之为*Droplet*。最小的 Droplet，通常足以进行探索和开发，每月只需 5 美元或每小时 0.007 美元。按小时计费，因此可以（例如）轻松地启动一个 Droplet 两小时，销毁它，并只收取 0.014 美元的费用。^(7)
+本节展示了如何在[DigitalOcean](http://digitalocean.com)云实例上设置完整的 Python 基础设施。市面上有许多其他云提供商，其中以[Amazon Web Services](http://aws.amazon.com)（AWS）为主要提供商。然而，DigitalOcean 以其简易性和较低的小型云实例费率而闻名，其称之为*Droplet*。最小的 Droplet，通常足以进行探索和开发，每月只需 5 美元或每小时 0.007 美元。按小时计费，因此可以（例如）轻松地启动一个 Droplet 两小时，销毁它，并只收取 0.014 美元的费用。⁷
 
-本节的目标是在 DigitalOcean 上设置一个 Droplet，该 Droplet 安装了 Python 3.8 并包含通常所需的包（如`NumPy`和`pandas`），并结合密码保护和安全套接层（SSL）加密的[Jupyter Lab](http://jupyter.org)服务器安装。^(8) 作为一个基于 Web 的工具套件，`Jupyter Lab`提供了几个可以通过常规浏览器使用的工具：
+本节的目标是在 DigitalOcean 上设置一个 Droplet，该 Droplet 安装了 Python 3.8 并包含通常所需的包（如`NumPy`和`pandas`），并结合密码保护和安全套接层（SSL）加密的[Jupyter Lab](http://jupyter.org)服务器安装。⁸ 作为一个基于 Web 的工具套件，`Jupyter Lab`提供了几个可以通过常规浏览器使用的工具：
 
 Jupyter Notebook
 
@@ -1077,7 +1077,7 @@ Ubuntu 20.04 LTS x64（撰写本文时的最新版本）
 
 SSH 密钥
 
-为了无密码登录添加一个（新的）SSH 密钥^(10)
+为了无密码登录添加一个（新的）SSH 密钥¹⁰
 
 Droplet 名称
 
@@ -1141,22 +1141,22 @@ Robbins (2016) 提供了对 `Bash` *脚本语言*的简洁介绍和概述：
 
 要在您的新账户中享受 10 美元的起始余额并注册 DigitalOcean，请访问 [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up)。这可以支付最小 Droplet 两个月的使用费。
 
-^(1) 最近一个名为 `pipenv` 的项目将包管理器 `pip` 的功能与虚拟环境管理器 `virtualenv` 的功能结合在一起。请参阅 [*https://github.com/pypa/pipenv*](https://github.com/pypa/pipenv)。
+¹ 最近一个名为 `pipenv` 的项目将包管理器 `pip` 的功能与虚拟环境管理器 `virtualenv` 的功能结合在一起。请参阅 [*https://github.com/pypa/pipenv*](https://github.com/pypa/pipenv)。
 
-^(2) 在 Windows 上，您也可以在 Docker 容器中运行完全相同的命令（参见 [*https://oreil.ly/GndRR*](https://oreil.ly/GndRR)）。直接在 Windows 上工作需要进行一些调整。例如，详细了解 Docker 使用情况，请参阅 Matthias 和 Kane (2018) 的书籍。
+² 在 Windows 上，您也可以在 Docker 容器中运行完全相同的命令（参见 [*https://oreil.ly/GndRR*](https://oreil.ly/GndRR)）。直接在 Windows 上工作需要进行一些调整。例如，详细了解 Docker 使用情况，请参阅 Matthias 和 Kane (2018) 的书籍。
 
-^(3) 安装元包 `nomkl`，比如 `conda install numpy nomkl`，可以避免自动安装和使用 `mkl` 及相关其他包。
+³ 安装元包 `nomkl`，比如 `conda install numpy nomkl`，可以避免自动安装和使用 `mkl` 及相关其他包。
 
-^(4) 在官方文档中，您会找到以下解释：“Python *虚拟环境*允许在特定应用程序的隔离位置安装 Python 包，而不是全局安装。”请参阅 [创建虚拟环境页面](https://oreil.ly/5Jgjc)。
+⁴ 在官方文档中，您会找到以下解释：“Python *虚拟环境*允许在特定应用程序的隔离位置安装 Python 包，而不是全局安装。”请参阅 [创建虚拟环境页面](https://oreil.ly/5Jgjc)。
 
-^(5) 有关 Docker 技术的全面介绍，请参阅 Matthias 和 Kane (2018)。
+⁵ 有关 Docker 技术的全面介绍，请参阅 Matthias 和 Kane (2018)。
 
-^(6) 有关 `Bash` 脚本的简洁介绍和快速概述，请参阅 Robbins (2016) 的书籍。另请参阅 [GNU Bash](https://oreil.ly/SGHn1)。  
+⁶ 有关 `Bash` 脚本的简洁介绍和快速概述，请参阅 Robbins (2016) 的书籍。另请参阅 [GNU Bash](https://oreil.ly/SGHn1)。  
 
-^(7) 对于尚未与云提供商建立帐户的人，在 [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up) 上，新用户可获得 10 美元的起始信用额度用于 DigitalOcean。
+⁷ 对于尚未与云提供商建立帐户的人，在 [*http://bit.ly/do_sign_up*](http://bit.ly/do_sign_up) 上，新用户可获得 10 美元的起始信用额度用于 DigitalOcean。
 
-^(8) 从技术上讲，`Jupyter Lab` 是 `Jupyter Notebook` 的扩展。但是，这两个表达有时会交替使用。
+⁸ 从技术上讲，`Jupyter Lab` 是 `Jupyter Notebook` 的扩展。但是，这两个表达有时会交替使用。
 
-^(9) 使用这样的自动生成证书时，您可能需要在浏览器提示时添加安全异常。在 Mac OS 上，您甚至可能需要显式将证书注册为可信任。
+⁹ 使用这样的自动生成证书时，您可能需要在浏览器提示时添加安全异常。在 Mac OS 上，您甚至可能需要显式将证书注册为可信任。
 
-^(10) 如果需要帮助，请访问[如何在 DigitalOcean Droplets 中使用 SSH 密钥](https://oreil.ly/Tggw7)或者[如何在 DigitalOcean Droplets 上使用 PuTTY 进行 SSH 密钥管理（Windows 用户）](https://oreil.ly/-jTif)。
+¹⁰ 如果需要帮助，请访问[如何在 DigitalOcean Droplets 中使用 SSH 密钥](https://oreil.ly/Tggw7)或者[如何在 DigitalOcean Droplets 上使用 PuTTY 进行 SSH 密钥管理（Windows 用户）](https://oreil.ly/-jTif)。

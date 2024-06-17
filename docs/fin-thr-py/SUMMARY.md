@@ -1,3 +1,4 @@
++   [Python 金融理论指南](README.md)
 +   [序言](fin-thr-py_0.md)
 +   [第一章：金融与 Python](fin-thr-py_1.md)
 +   [第二章：两态经济](fin-thr-py_2.md)
@@ -5,4 +6,4 @@
 +   [第四章：优化与均衡](fin-thr-py_4.md)
 +   [第五章：静态经济](fin-thr-py_5.md)
 +   [第六章：动态经济](fin-thr-py_6.md)
-+   [第七章：Chapter 7\. Where to Go from Here?](fin-thr-py_7.md)
++   [第七章：Where to Go from Here?](fin-thr-py_7.md)

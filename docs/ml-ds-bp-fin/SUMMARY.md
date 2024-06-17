@@ -1,5 +1,6 @@
++   [金融机器学习与数据科学蓝图](README.md)
 +   [序言](ml-ds-bp-fin_00.md)
-+   [第一章：Part I. 框架](ml-ds-bp-fin_01.md)
++   [第一部分：框架](ml-ds-bp-fin_01.md)
 +   [第一章：机器学习在金融中的景观](ml-ds-bp-fin_02.md)
 +   [第二章：在 Python 中开发机器学习模型](ml-ds-bp-fin_03.md)
 +   [第三章：人工神经网络](ml-ds-bp-fin_04.md)

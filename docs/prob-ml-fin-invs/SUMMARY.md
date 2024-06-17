@@ -1,3 +1,4 @@
++   [金融投资中的概率机器学习](README.md)
 +   [前言](prob-ml-fin-invs_0.md)
 +   [第一章：概率机器学习的需求](prob-ml-fin-invs_1.md)
 +   [第二章：分析和量化不确定性](prob-ml-fin-invs_2.md)

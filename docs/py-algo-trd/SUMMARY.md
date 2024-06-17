@@ -1,3 +1,4 @@
++   [Python 算法交易指南](README.md)
 +   [前言](py-algo-trd_00.md)
 +   [第一章：Python 和算法交易](py-algo-trd_01.md)
 +   [第二章：Python 基础设施](py-algo-trd_02.md)

@@ -1,5 +1,6 @@
++   [Python 机器学习金融风险管理](README.md)
 +   [序言](ml-fin-rsk-mgt-py_00.md)
-+   [第一章：Part I. 风险管理基础](ml-fin-rsk-mgt-py_01.md)
++   [第一部分：风险管理基础](ml-fin-rsk-mgt-py_01.md)
 +   [第一章：风险管理基础](ml-fin-rsk-mgt-py_02.md)
 +   [第二章：时间序列建模导论](ml-fin-rsk-mgt-py_03.md)
 +   [第三章：深度学习用于时间序列建模](ml-fin-rsk-mgt-py_04.md)

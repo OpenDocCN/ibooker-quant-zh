@@ -1,3 +1,4 @@
++   [精通金融模式识别](README.md)
 +   [前言](ms-fin-ptn-rcgn_00.md)
 +   [第一章：在 Python 中导入和处理金融数据](ms-fin-ptn-rcgn_01.md)
 +   [第二章：算法思维与函数](ms-fin-ptn-rcgn_02.md)

@@ -1,0 +1,2906 @@
+- en: Chapter 4\. Dates and Fixed Income Securities
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第4章。日期和固定收益证券
+- en: Dates and date calculations might not seem like the most compelling topic to
+    discuss, but they are vitally important in quantitative finance, particularly
+    in fixed income trading and analytics.
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 日期和日期计算可能看起来不是讨论的最引人注目的主题，但在量化金融中至关重要，特别是在固定收益交易和分析中。
+- en: 'As with distributional random number generation in the past, financial C++
+    programmers were left with similar options: either write their own date classes
+    and functions or use a commercial or open source external library. This has changed
+    with C++20\. It includes a date class that is determined by the integer year,
+    month, and day values. This class relies both on the already existing (since C++11)
+    `std::chrono` foundation of durations, timepoints, and the system clock – ie,
+    chronological computations – as well as calendrical computations, which are based
+    on the number of days relative to the epoch and take into account the non-uniform
+    number of days in each month.'
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与过去的分布式随机数生成类似，金融C++程序员面临相似的选择：要么编写自己的日期类和函数，要么使用商业或开源的外部库。这在C++20中已经改变。它包括一个日期类，该类由整数年、月和日值确定。该类依赖于已经存在的（自C++11以来）`std::chrono`的持续时间、时间点和系统时钟
+    - 即，时间计算 - 以及基于相对纪元的天数的日历计算，并考虑每个月的非均匀天数。
+- en: While the goal of this chapter is to demonstrate how to use the new date features
+    in financial applications, the author of `std::chrono`, Howard Hinnant, provides
+    more details on his GitHub site containing the original development code for `std::chrono`
+    dates{1}. (This will be referred to as “the GitHub date code site” going forward).
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然本章的目标是展示如何在金融应用中使用新的日期特性，但`std::chrono`的作者Howard Hinnant在他的GitHub网站上提供了更多关于其原始开发代码的细节，以及`std::chrono`日期的详细信息{1}。（此后将称为“GitHub日期代码站点”）。
+- en: Adding years and months can be effected by using calendrical options in `std::chrono`,
+    but adding days requires conversion to a chronological timepoint. These are important
+    operations to be discussed in due course, but first let us cover how dates are
+    represented and instantiated in C++20\. From there, we will look at common date
+    calculations that are required in finance, a class that encapsulates the functions
+    for us, day count conventions and yield curves, and finally an application in
+    valuing a coupon-paying bond.
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用`std::chrono`中的日历选项可以影响年份和月份的添加，但添加天数需要转换为时间点。这些是需要在适当时候讨论的重要操作，但首先让我们来看看C++20中如何表示和实例化日期。从那里开始，我们将看看在金融中所需的常见日期计算，一个封装这些功能的类，日计数约定和收益曲线，最后是在估值付息债券中的应用。
+- en: Representation of a Date
+  id: totrans-5
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 日期的表示
+- en: 'C++11 introduced the `std::chrono` library into the Standard Library, which
+    provided the following abstractions:'
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++11将`std::chrono`库引入了标准库中，提供了以下抽象：
+- en: 'Duration of time: A method of measurement over a given time interval, such
+    as in units of minutes, days, milliseconds, etc'
+  id: totrans-7
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 时间段：在给定时间间隔内的测量方法，例如以分钟、天、毫秒等为单位
+- en: 'Timepoint: A duration of time relative to an epoch, such as the UNIX epoch
+    1970-1-1'
+  id: totrans-8
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 时间点：相对于纪元的时间段，例如UNIX纪元1970-1-1
+- en: 'Clock: The object that specifies the epoch and normalizes duration measurements
+    {0}'
+  id: totrans-9
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 时钟：指定纪元并标准化持续时间测量的对象{0}
+- en: Dates in `std::chrono` are based on these chronological foundations, but as
+    part of the new C++20 features, conversions to calendrical forms are also now
+    available. These can be used for calculations involving years and months.
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`std::chrono`中的日期基于这些时间基础，但作为新C++20功能的一部分，现在也提供了到日历形式的转换。这些可用于涉及年份和月份的计算。'
+- en: A standard date in `std::chrono` is represented by an object of the class `std::chrono::year_month_day`.
+    There are a variety of constructors for this class, among which several are discussed
+    here.
+  id: totrans-11
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在`std::chrono`中，标准日期由类`std::chrono::year_month_day`的对象表示。这个类有各种构造函数，其中几个在这里讨论。
+- en: First, a constructor taking in the year, month, and day is provided. But instead
+    of integer values for each, these constructor arguments must be defined as separate
+    `std::chrono::year`, `std::chrono::month`, and `std::chrono::day` objects. For
+    example, to create an object holding the date 14 November 2002, we would create
+    it as follows.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，提供了一个接受年、月和日的构造函数。但是，每个构造函数参数不是整数值，而是必须定义为单独的`std::chrono::year`、`std::chrono::month`和`std::chrono::day`对象。例如，要创建一个保存日期为2002年11月14日的对象，我们将如下创建它。
+- en: '[PRE0]'
+  id: totrans-13
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: 'Alternatively, individual constant `month` objects are defined in `std::chrono`
+    by name, so an equivalent approach to constructing the same month above is to
+    replace the constructed month object in the previous example with the pre-defined
+    `November` instance:'
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 或者，通过名称在`std::chrono`中定义单独的常量`month`对象，因此构造上述相同月份的等效方法是用先前示例中构造的月份对象替换为预定义的`November`实例：
+- en: '[PRE1]'
+  id: totrans-15
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: 'For assignment, the `/` operator has also been overloaded to define a `year_month_day`
+    object:'
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于赋值，`/`运算符也已被重载以定义一个`year_month_day`对象：
+- en: '[PRE2]'
+  id: totrans-17
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: Different orders can be used, along with integer types, as long as the first
+    argument is obvious. For yyyy/mm/dd format, putting
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可以使用不同的顺序，以及整数类型，只要第一个参数是明显的。对于yyyy/mm/dd格式，放置
+- en: '[PRE3]'
+  id: totrans-19
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: 'would yield the same result, with the compiler interpreting the 11 and 14 as
+    `unsigned` types. mm/dd/yyyy format can also be used: `auto mdy = std::chrono::November
+    / 14 / 2002;`'
+  id: totrans-20
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 将产生相同的结果，编译器将11和14解释为`unsigned`类型。也可以使用mm/dd/yyyy格式：`auto mdy = std::chrono::November
+    / 14 / 2002;`
+- en: In this case, the 14 is recognized as `unsigned`, and the year as an `int`.
+    In `std::chrono`, `month` and `day` types can be cast to `unsigned`, while a `year`
+    can only be cast to an `int`. The examples above are non-exhaustive, and a more
+    comprehensive list can be found on the GitHub date code site{1}.
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在这种情况下，14被识别为`unsigned`，年份被识别为`int`。在`std::chrono`中，`month`和`day`类型可以转换为`unsigned`，而`year`只能转换为`int`。上面的示例并非详尽无遗，更全面的列表可以在GitHub日期代码网站{1}上找到。
+- en: Note that the output stream operator is overloaded for `year_month_day`, so
+    any of the above can be output to the console with `cout`. For example,
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，输出流运算符已被重载为`year_month_day`，因此可以使用`cout`将上述任何内容输出到控制台。例如，
+- en: '[PRE4]'
+  id: totrans-23
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: will display the date on the screen as `2002-11-14`
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 将在屏幕上显示日期为`2002-11-14`
+- en: 1.1 Serial Representation and Date Differences
+  id: totrans-25
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 1.1 串行表示和日期差异
+- en: A `year_month_day` date can also be measured in terms of the number of days
+    since an epoch, with the `system_clock` default being the UNIX epoch January 1,
+    1970\. Similar to Excel – whose epoch is January 1, 1900 – this representation
+    can be convenient for certain types of date arithmetic in finance, particularly
+    in determining the number of days between two dates. Unlike Excel, however, the
+    UNIX epoch is represented by 0 rather than 1, in the sense that serial dates are
+    measured in *days since the epoch*. Consider the following example, with dates
+    1970-1-1 and 1970-1-2.
+  id: totrans-26
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个`year_month_day`日期也可以根据自纪元以来的天数来衡量，`system_clock`的默认值是UNIX纪元1970年1月1日。类似于Excel
+    - 其纪元是1900年1月1日 - 这种表示法对于金融中某些类型的日期算术可能很方便，特别是确定两个日期之间的天数。然而，与Excel不同，UNIX纪元由0而不是1表示，即串行日期是以*自纪元以来的天数*来衡量的。考虑以下示例，日期为1970-1-1和1970-1-2。
+- en: '[PRE5]'
+  id: totrans-27
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: 'Then, the respective serial dates can be accessed as follows:'
+  id: totrans-28
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，可以按如下方式访问相应的串行日期：
+- en: '[PRE6]'
+  id: totrans-29
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: These return `int` values 0 and 1, respectively. Also unlike Excel, `std::chrono`
+    dates before the epoch are also valid but carry a negative integer value. In the
+    statement that follows, the returned value is -1.
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些分别返回`int`值0和1。与Excel不同，`std::chrono`日期在纪元之前也是有效的，但带有负整数值。在接下来的语句中，返回的值为-1。
+- en: '[PRE7]'
+  id: totrans-31
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: For typical financial trading, it is usually not necessary to go back before
+    1970, but in some fields, such as actuarial valuations of pension liabilities,
+    many retirees were born before this date. Historical simulations of markets also
+    might use data going back many decades.
+  id: totrans-32
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于典型的金融交易，通常不需要回溯到1970年之前，但在一些领域，如养老金责任的精算估值中，许多退休人员出生在此日期之前。市场的历史模拟也可能使用追溯数十年的数据。
+- en: Recalling that the `year_month_day` class is built upon the three `std::chrono`
+    abstractions listed at the outset, technically what is happening here is the `sys_days`
+    operator returns the `ymd` date as a `std::chrono::time_point` object, where `sys_days`
+    is an alias for `time_point`. Then, its `time_since_epoch` member function returns
+    a `std::chrono::duration` type. The corresponding integer value is then accessed
+    with the `count` function.
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 回想一下`year_month_day`类是建立在最初列出的三个`std::chrono`抽象之上的，从技术上讲，在这里发生的是`sys_days`运算符将`ymd`日期返回为`std::chrono::time_point`对象，其中`sys_days`是`time_point`的别名。然后，它的`time_since_epoch`成员函数返回一个`std::chrono::duration`类型。然后，相应的整数值通过`count`函数访问。
+- en: 'An important calculation to have in finance is the number of days between two
+    dates. Using `ymd` again as 2002-11-14, and initializing `ymd_later` to six months
+    later – 2003-5-14 – take the difference between the two `sys_days` objects obtained
+    with `sys_days` and apply the `count` function to the difference:'
+  id: totrans-34
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在金融中一个重要的计算是两个日期之间的天数。再次使用 `ymd` 作为2002-11-14，并将 `ymd_later` 初始化为六个月后的日期 - 2003-5-14
+    - 取得两个 `sys_days` 对象的差异，然后应用 `count` 函数来计算差异：
+- en: '[PRE8]'
+  id: totrans-35
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: The result of 181 is again returned as an `int`.
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结果为181，再次返回为一个 `int`。
+- en: Next, when working with dates, there are several checks that are often necessary
+    to perform, namely whether a date is valid, whether it is in a leap year, finding
+    the number of days in a month, and whether a date is a weekend. Some of the machinery
+    for this is immediate with functions conveniently contained in `std::chrono`,
+    but in other cases, there will be a little more work involved.
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，在处理日期时，通常需要执行几个检查，即日期是否有效，是否为闰年，找到一个月中的天数，以及日期是否为周末。在 `std::chrono` 中方便地包含了一些函数来处理这些检查，但在其他情况下，可能需要更多的工作。
+- en: 1.2 Accessor Functions for Year, Month, and Day
+  id: totrans-38
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 1.2 年、月和日的访问函数
+- en: Accessor functions on `year_month_day` are provided for obtaining the year,
+    month and day, but they are returned as their respective `year`, `month`, and
+    `day` objects.
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了获取年、月和日，提供了在 `year_month_day` 上的访问函数，但它们作为它们各自的 `year`、`month` 和 `day` 对象返回。
+- en: '[PRE9]'
+  id: totrans-40
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: Suppose we have two `year_month_day` objects `date1` and `date2` Then, conveniently,
+    applying the `count` function on the difference (a `duration`), the results are
+    `int` types.
+  id: totrans-41
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设我们有两个 `year_month_day` 对象 `date1` 和 `date2`，方便地应用于差异（一个 `duration`）的 `count`
+    函数，结果是 `int` 类型。
+- en: '[PRE10]'
+  id: totrans-42
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: Each of the individually accessed year, month, and day components can also be
+    cast to integers (in the mathematical sense), but an important point to be aware
+    of is a `year` can be cast to an `int`, but for a `month` or `day`, these need
+    to be cast to `unsigned`.
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每个单独访问的年、月和日组件也可以转换为整数（在数学意义上），但需要注意的重要一点是 `year` 可以转换为 `int`，但对于 `month` 或
+    `day`，这些需要转换为 `unsigned`。
+- en: '[PRE11]'
+  id: totrans-44
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: Note
+  id: totrans-45
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Going forward, for convenience we will use the namespace alias `namespace date
+    = std::chrono;`
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 未来，为了方便起见，我们将使用命名空间别名 `namespace date = std::chrono;`
+- en: 1.3 Validity of a Date
+  id: totrans-47
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 1.3 日期的有效性
+- en: It is possible to set `year_month_day` objects to invalid dates. For example,
+    as will be seen shortly, adding a month to a date of January 31 will result in
+    February 31\. In addition, the constructor will also allow month and day values
+    out of range. Instead of throwing an exception, it is left up to the programmer
+    to check if a date is valid. Fortunately, this is easily accomplished with the
+    boolean `ok` member function. In the following example, the `ymd` date (same as
+    above) is valid, while the two that follow are obviously not.
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`year_month_day` 对象可以设置为无效日期。例如，稍后将看到，将一个日期设置为1月31日再加一个月会导致2月31日。此外，构造函数还允许月份和日期值超出范围。不会抛出异常，而是由程序员来检查日期是否有效。幸运的是，可以通过布尔值
+    `ok` 成员函数轻松实现这一点。在下面的例子中，`ymd` 日期（与上述相同）是有效的，而其后的两个显然是无效的。'
+- en: '[PRE12]'
+  id: totrans-49
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: The `ok` member function will come in handy in subsequent examples, particularly
+    in cases where a date operation results in the correct year and month, but an
+    incorrect day setting in end-of-the month cases. This will be addressed shortly.
+    The upshot is it is up to the consumer of the `year_month_day` class to check
+    for validity, as it does not throw an exception or adjust automatically.
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在后续的示例中，`ok` 成员函数将非常有用，特别是在日期操作导致正确的年和月，但在月末情况下设置错误的日期时。很快就会解决这个问题。总之，`year_month_day`
+    类的消费者需要检查有效性，因为它不会抛出异常或自动调整。
+- en: 1.4 Leap Years and Last Day of the Month
+  id: totrans-51
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 1.4 闰年和月末最后一天
+- en: 'You can easily check whether a date is a leap year or not. A boolean member
+    function, not surprisingly called `is_leap`, takes care of this for us:'
+  id: totrans-52
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 您可以轻松地检查一个日期是否为闰年。一个布尔值成员函数，不出所料地称为 `is_leap`，帮助我们处理这个问题：
+- en: '[PRE13]'
+  id: totrans-53
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: There is no member function available on `year_month_day` that will return the
+    last day of the month. A workaround exists using a separate class in std::chrono
+    that represents an end-of-month date, `year_month_day_last`, from which the last
+    day of its month can also be accessed as before, and then cast to unsigned.
+  id: totrans-54
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 `year_month_day` 上没有一个成员函数可以返回月的最后一天。可以使用 `std::chrono` 中的一个单独类来解决这个问题，表示月末日期
+    `year_month_day_last`，从中也可以像以前一样访问其月的最后一天，然后转换为无符号整数。
+- en: '[PRE14]'
+  id: totrans-55
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: 'This can also be used as a device to check whether a date falls on the end
+    of a month:'
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这也可以用作检查日期是否落在月末的一种方法：
+- en: '[PRE15]'
+  id: totrans-57
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: 'The last day of the month for an arbitrary date can also be determined:'
+  id: totrans-58
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于任意日期，月底最后一天也可以确定：
+- en: '[PRE16]'
+  id: totrans-59
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: 'It should also be noted a `year_month_day_last` type is implicitly convertible
+    to a `year_month_day` via reassignment:'
+  id: totrans-60
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 还应注意，`year_month_day_last`类型通过重新分配隐式转换为`year_month_day`类型：
+- en: '[PRE17]'
+  id: totrans-61
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: More background can be found in {2}.
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 更多背景信息可以在{2}中找到。
+- en: Although this works, it carries the overhead of creating a `year_month_day_last`
+    each time it is called, and additional object copy if reassigned, as shown in
+    the last line of the code example just above. While your mileage may vary, it
+    is possible this could have a negative performance impact in financial systems
+    managing heavy trading volume and large portfolios containing fixed income securities.
+  id: totrans-63
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管这有效，但每次调用时都带有创建`year_month_day_last`的开销，并在重新分配时有额外的对象复制，就像上面代码示例的最后一行所示。尽管结果可能有所不同，但在金融系统中管理大量交易和包含固定收益证券的大型投资组合时，这可能会对性能产生负面影响。
+- en: A set of “`chrono`-Compatible Low-Level Date Algorithms” is provided elsewhere
+    on the the GitHub date code site{3}. These alternatives apply methods that are
+    independent of `year_month_day` class methods, and their description in the documentation
+    states these low level algorithms are “key algorithms that enable one to write
+    their own date class”. This is the direction in which we are eventually headed.
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在GitHub日期代码站点{3}的其他地方提供了一组“`chrono`兼容的低级日期算法”。这些替代方法适用于独立于`year_month_day`类方法的方法，并且它们在文档中的描述中声明这些低级算法是“能够编写自己的日期类的关键算法”。这是我们最终要达到的方向。
+- en: 'To determine the last day of the month, a more efficient user-defined function
+    can be derived from code provided in this set of algorithms, as follows:'
+  id: totrans-65
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要确定月末的最后一天，可以从本组算法提供的代码中推导出一个更有效的用户定义函数，如下所示：
+- en: '[PRE18]'
+  id: totrans-66
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: This is more of a brute force approach in hard-coding the days in each month
+    of a non-leap year, but it does obviate additional object creation and copying.
+  id: totrans-67
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这更像是一种通过硬编码非闰年每个月的天数来暴力解决的方法，但它确实避免了额外的对象创建和复制。
+- en: 'One other point is the use here of `constexpr`, another language feature added
+    to C++11\. Because the length of the `array` and its contents are known a priori,
+    `constexpr` instructs the compiler to initialize `end_dates` at compile time,
+    thus eliminating re-initialization every time the `last_day_of_the_month` function
+    is called. Two related points follow:'
+  id: totrans-68
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里使用的另一个要点是`constexpr`，这是C++11中添加的另一个语言特性。由于`array`的长度和其内容是预先已知的，`constexpr`指示编译器在编译时初始化`end_dates`，因此消除了每次调用`last_day_of_the_month`函数时的重新初始化。接下来有两个相关的要点：
+- en: Using `constexpr` in this specific case may or may not have a significant impact
+    on performance, but it is possible in cases where the function is called many
+    times in computationally intensive code, such as in portfolio risk simulations
+    and calculations.
+  id: totrans-69
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 在这种特定情况下使用`constexpr`可能对性能产生重要影响，但在计算密集型代码中多次调用函数的情况下可能有效，例如在投资组合风险模拟和计算中。
+- en: Most financial data, such as market and trade data, will be inevitably dynamic
+    and thus unknown at compile time, so `constexpr` may be of limited use in financial
+    applications. The example above, however, demonstrates an example of how and when
+    it can potentially be used effectively.
+  id: totrans-70
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 大多数金融数据，如市场和交易数据，将不可避免地是动态的，因此在编译时是未知的，因此`constexpr`在金融应用中的使用可能有限。然而，上面的例子演示了何时和如何可以有效地使用它的示例。
+- en: 1.5 Weekdays and Weekends
+  id: totrans-71
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 1.5 周工作日和周末
+- en: Similar to end of the month dates, there is no member function to check whether
+    a date falls on a weekend. There is again a workaround from which we can derive
+    the result we need.
+  id: totrans-72
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与月底日期类似，没有成员函数可以检查日期是否落在周末。再次有一个解决方法，我们可以从中得到我们需要的结果。
+- en: '`std::chrono` contains a `weekday` class that represents the day of the week
+    – Monday through Sunday – not just weekdays per se (the terminology here might
+    be slightly confusing). It can be constructed by again applying the `sys_days`
+    operator in the constructor argument.'
+  id: totrans-73
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`std::chrono`包含一个`weekday`类，表示一周的日子，从星期一到星期日，而不仅仅是工作日（这里的术语可能有些令人困惑）。它可以通过在构造函数参数中再次应用`sys_days`运算符来构造。'
+- en: '[PRE19]'
+  id: totrans-74
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: The day of the week can be identified by an `unsigned` integer value returned
+    from the `iso_encoding` member function, where values 1 through 7 represent Monday
+    through Sunday, respectively. The stream operator is overloaded so that the abbreviated
+    day of the week is displayed.
+  id: totrans-75
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从 `iso_encoding` 成员函数返回的无符号整数值可以标识星期几，其中值 1 到 7 分别代表星期一到星期日。流操作符被重载，以便显示缩写的星期几。
+- en: '[PRE20]'
+  id: totrans-76
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: The output is then `2022-10-26, Wed, 3` This allows us to define our own function,
+    in this case a lambda, to determine whether a date falls on a weekend or not.
+  id: totrans-77
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 输出结果是 `2022-10-26, Wed, 3`，这使我们可以定义自己的函数，比如这里的 lambda 函数，来判断一个日期是否为周末。
+- en: '[PRE21]'
+  id: totrans-78
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: 'Now, also construct a `year_month_day` date that falls on a Saturday:'
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在，还构造一个落在星期六的 `year_month_day` 日期：
+- en: '[PRE22]'
+  id: totrans-80
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: Then, we can use the lambda to test whether each day is a business day or not.
+  id: totrans-81
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，我们可以使用 lambda 函数来测试每一天是否是工作日。
+- en: '[PRE23]'
+  id: totrans-82
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: Supplemental information on weekends in `std::chrono` can be found in {4}.
+  id: totrans-83
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 `std::chrono` 中可以找到关于周末的补充信息，详见 {4}。
+- en: 1.6 Adding Years, Months, and Days
+  id: totrans-84
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 1.6 添加年、月和日
+- en: One more set of important date operations of finance is adding years, months,
+    and days to existing dates. These are particularly useful for generating schedules
+    of fixed payments. Adding years or months is very similar – relying on the `+=`
+    operator – but adding days involves a different approach.
+  id: totrans-85
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一个金融重要日期操作是向现有日期添加年、月和日。这些操作尤其适用于生成固定支付计划。添加年或月非常简单，使用 `+=` 运算符，但添加天数则涉及不同的方法。
+- en: 1.6.1 Adding Years
+  id: totrans-86
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 1.6.1 添加年份
+- en: Adding years is very straightforward. For example, add two years to 2002-11-14,
+    and then add another 18 years to the result. Note that the number of years being
+    added needs to be expressed as a `std::chrono::years` object, an alias for a `duration`
+    representing one year.
+  id: totrans-87
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 添加年份非常简单。例如，将两年添加到 2002-11-14，然后再向结果添加另外 18 年。需要注意，要添加的年数必须表示为 `std::chrono::years`
+    对象，这是一个代表一年的 `duration` 的别名。
+- en: '[PRE24]'
+  id: totrans-88
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE24]'
+- en: We run into a problem, however, if the date is the last day of February in a
+    leap year. Adding two years to 2016-02-29 results in an invalid year.
+  id: totrans-89
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，我们遇到了一个问题，如果日期是闰年二月的最后一天。向 2016-02-29 加两年会导致无效年份。
+- en: '[PRE25]'
+  id: totrans-90
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE25]'
+- en: Dates in `std::chrono` will again neither throw an exception or adjust the day,
+    so it is up to the developer to handle the case where years are added to a February
+    29 date in a leap year.
+  id: totrans-91
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 `std::chrono` 中，日期既不会抛出异常，也不会调整日期，因此开发人员需要处理将年份添加到闰年二月29日的情况。
+- en: 1.6.2 Adding Months and End-of-the-Month Cases
+  id: totrans-92
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 1.6.2 添加月份和月末边缘情况
+- en: Adding months to a `year_month_day` object is similar to adding years, but this
+    now requires handling multiple end-of-month edge cases due to different numbers
+    of days in different months, plus again the case of a February in a leap year.
+  id: totrans-93
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 向 `year_month_day` 对象添加月份类似于添加年份，但现在需要处理多个月末边缘情况，因为不同月份的天数不同，还有闰年中二月的情况。
+- en: When no end-of-month date is involved, the operation is straightforward, similar
+    to adding years, using the addition assignment operator. Similar to adding years,
+    the number of months needs to be represented as a `duration` object, in this case
+    an alias for a period of one month.
+  id: totrans-94
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果没有涉及月末日期，操作非常直接，类似于添加年份，使用加法赋值运算符。与添加年份类似，月份数量需要表示为 `duration` 对象，在这种情况下是一个代表一个月的周期的别名。
+- en: '[PRE26]'
+  id: totrans-95
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: 'Subtraction assignment is also available:'
+  id: totrans-96
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 也可以使用减法赋值：
+- en: '[PRE27]'
+  id: totrans-97
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE27]'
+- en: 'With end-of-the-month cases as well, the `+=` operation can again result in
+    invalid dates. To see this, construct the following end-of-month dates:'
+  id: totrans-98
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 同样，使用 `+=` 运算符进行月末情况操作可能会导致无效日期。为了验证这一点，构造以下月末日期：
+- en: '[PRE28]'
+  id: totrans-99
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE28]'
+- en: 'Naively attempting month addition results in invalid dates:'
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 简单地尝试添加月份会导致无效日期：
+- en: '[PRE29]'
+  id: totrans-101
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: Although the results are not valid, the year and month of each is correct. That
+    is, for example, adding one month to 2015-01-31 should map to 2015-02-28.
+  id: totrans-102
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然结果无效，但每一个年份和月份都是正确的。也就是说，例如，将 2015-01-31 加一个月应映射到 2015-02-28。
+- en: 'Going the other way, if we were to start on 2015-02-28 and add one month, the
+    result will be correct: 2015-03-28.'
+  id: totrans-103
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 反过来说，如果我们从 2015-02-28 开始，再加一个月，结果将是正确的：2015-03-28。
+- en: Recalling the `last_day_of_the_month` function defined previously, a workaround
+    is fairly straightforward. Addition assignment is naively applied, but if the
+    result is invalid, it must be due to the day value exceeding the actual number
+    of days in a month. In this case, because the resulting year and month will be
+    valid, it just becomes a case of resetting the day with the number of days in
+    the month.
+  id: totrans-104
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 回顾先前定义的`last_day_of_the_month`函数，一个解决方法相当简单。添加赋值是天真地应用的，但如果结果无效，则必须是由于天数值超过了一个月中实际天数。在这种情况下，因为结果年份和月份将是有效的，所以这只是将天数重置为该月的天数。
+- en: '[PRE30]'
+  id: totrans-105
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: 1.6.3 Adding Days
+  id: totrans-106
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 1.6.3 添加天数
+- en: Unlike for years and months, there is no `+=` operator defined for adding days.
+    For this reason, we will need to obtain the `sys_days` equivalent before adding
+    the number of days.
+  id: totrans-107
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于年份和月份而言，并没有为添加天数定义`+=`运算符。因此，在添加天数之前，我们需要获取`sys_days`的等效值。
+- en: '[PRE31]'
+  id: totrans-108
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: 'Note that at this point, `ymd` has not been modified, and the result, `add_days`,
+    is also a `sys_days` type. To set a `year_month_day` object to the equivalent,
+    the assignment operator provides implicit conversion. Similar to previous applications
+    of `sys_days`, we can just update the original `ymd` date to three days later:'
+  id: totrans-109
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，在这一点上，`ymd`还没有被修改，而结果`add_days`也是一个`sys_days`类型。为了将`year_month_day`对象设置为等效值，赋值运算符提供了隐式转换。类似于先前应用的`sys_days`，我们只需将原始`ymd`日期更新为三天后：
+- en: '[PRE32]'
+  id: totrans-110
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: More information on adding days can be found in {5}.
+  id: totrans-111
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 更多有关添加天数的信息可以在{5}中找到。
+- en: A Date Class Wrapper
+  id: totrans-112
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 一个日期类包装器
+- en: As you can probably see by now, managing all the intricacies of `std::chrono`
+    dates can eventually become complicated. For this reason, we will now outline
+    the typical requirements for financial date calculations and declare them in a
+    class based on a `year_month_day` member. This way, the adjustments and `year_month_day`
+    function calls are implemented once behind interfacing member functions and operators
+    that are arguably more intuitive for the consumer. These can be divided into two
+    broad categories, namely checking possible states of a date, and performing arithmetic
+    operations on dates. A summary of what we have covered so far is provided in the
+    list of requirements below. Most of these results will be integrated into the
+    class implementation.
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如你现在可能看到的那样，管理`std::chrono`日期的所有复杂性最终可能变得复杂起来。因此，我们现在将概述财务日期计算的典型要求，并在基于`year_month_day`成员的类中声明它们。这样，调整和`year_month_day`函数调用将在接口成员函数和运算符的后面一次性实现，这些运算符对于消费者来说可能更直观。这些可以分为两大类，即检查日期可能状态和执行日期的算术操作。我们已经涵盖的总结列在以下的要求列表中。大多数这些结果将被集成到类的实现中。
+- en: '**State**'
+  id: totrans-114
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '**状态**'
+- en: Days in month
+  id: totrans-115
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 月份中的天数
+- en: Leap year
+  id: totrans-116
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 闰年
+- en: '**Arithmetic Operations**'
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '**算术操作**'
+- en: Number of days between two dates
+  id: totrans-118
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 两个日期之间的天数
+- en: Addition
+  id: totrans-119
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 添加
+- en: Years
+  id: totrans-120
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 年份
+- en: Days
+  id: totrans-121
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 天数
+- en: Months
+  id: totrans-122
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 月份
+- en: Additional functionality that we will want to have is listed next. These additional
+    requirements will be also be part of the implementation.
+  id: totrans-123
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们想要的额外功能列在下面。这些额外要求也将成为实现的一部分。
+- en: '**Accessors**'
+  id: totrans-124
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '**访问器**'
+- en: Year, Month, Day
+  id: totrans-125
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 年、月、日
+- en: Serial date integer representation (days since epoch)
+  id: totrans-126
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 串行日期整数表示（自纪元以来的天数）
+- en: '`year_month_day` data member'
+  id: totrans-127
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`year_month_day`数据成员'
+- en: '**Comparison operators**'
+  id: totrans-128
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '**比较运算符**'
+- en: '[PRE33]'
+  id: totrans-129
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE33]'
+- en: To begin, the class declaration will give us an implementation roadmap to follow.
+  id: totrans-130
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，类声明将为我们提供一个实现路线图来遵循。
+- en: Class Declaration
+  id: totrans-131
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 类声明
+- en: We will incorporate the requirements listed above into a class called `ChronoDate`.
+    It will wrap a `std::chrono::year_month_day` object along with some of its associated
+    member functions that are useful in financial calculations. The only other data
+    member will be the serial date representation of the date object.
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们将上述列出的要求整合到一个名为`ChronoDate`的类中。它将包装一个`std::chrono::year_month_day`对象以及一些在财务计算中有用的关联成员函数。日期对象的唯一其他数据成员将是日期对象的串行日期表示。
+- en: Before working through the member functions, let us start with the constructors.
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在处理成员函数之前，让我们从构造函数开始。
+- en: Constructors
+  id: totrans-134
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 构造函数
+- en: For convenience, a constructor is provided that takes in integer values for
+    year, month, and day, rather than requiring the user to create individual `year`,
+    `month`, and `day` objects. ChronoDate{ int year, unsigned month, unsigned day
+    }; Note that the argument for the year is an `int`, while those for the month
+    and day are `unsigned`. This is due to the design of the `year_month_day` class,
+    as previously discussed.
+  id: totrans-135
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了方便起见，提供了一个构造函数，它接受整数值用于年、月和日，而不是要求用户创建单独的 `year`、`month` 和 `day` 对象。`ChronoDate{
+    int year, unsigned month, unsigned day }`; 请注意，年份的参数是 `int`，而月份和日期的参数是 `unsigned`。这是由于`year_month_day`类的设计，正如前面讨论的那样。
+- en: 'As we will see for convenience later, a second constructor will take in a `year_month_day`
+    object:'
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如我们稍后将看到的方便起见，第二个构造函数将接受一个 `year_month_day` 对象：
+- en: '[PRE34]'
+  id: totrans-137
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE34]'
+- en: And finally, a default constructor will construct a `ChronoDate` set to the
+    UNIX epoch.
+  id: totrans-138
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，一个默认构造函数将构造一个设置为 UNIX 纪元的 `ChronoDate`。
+- en: Public Member Functions and Operators
+  id: totrans-139
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 公共成员函数和运算符
+- en: These should mostly be self-explanatory from the member function declarations
+    below. Furthermore, it will mainly be a case of integrating the previously developed
+    functionality into the respective member functions. As for the comparison operators
+    `==` and [PRE35], as well as the friend stream operator, these are already defined
+    on the `year_month_day` class, so it is simply a matter of wrapping them into
+    the same operators on `ChronoDate`.
+  id: totrans-140
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些大部分应该从下面的成员函数声明中可以自解释。此外，主要是将先前开发的功能集成到各自的成员函数中。至于比较运算符 `==` 和 [PRE35]，以及友元流运算符，这些已经在
+    `year_month_day` 类上定义好了，因此只需将它们包装成 `ChronoDate` 上的相同运算符即可。
+- en: There is one remaining public function in the declaration not yet covered, `weekend_roll`,
+    which will be used to roll a date to the nearest business day in the event a date
+    falls on a Saturday or Sunday. Its implementation will be covered shortly.
+  id: totrans-141
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在声明中还有一个未涵盖的公共函数 `weekend_roll`，它将用于在日期落在星期六或星期日时将日期滚动到最近的工作日。其实现将很快介绍。
+- en: '[PRE36]'
+  id: totrans-142
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE36]'
+- en: Private Members and Helper Function
+  id: totrans-143
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 私有成员和辅助函数
+- en: Two private member variables will store the underlying `year_month_day` object
+    and serial representation of the date. One private function will wrap the function
+    calls required to obtain the number of days since the UNIX epoch, so that the
+    serial date can be set at construction, as well as updated anytime the state of
+    an object of the class is modified.
+  id: totrans-144
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 两个私有成员变量将存储基础的 `year_month_day` 对象和日期的序列化表示。一个私有函数将封装所需的函数调用，以获取自 UNIX 纪元以来的天数，以便可以在构造时设置序列化日期，并且在修改类对象的状态时随时更新。
+- en: '[PRE37]'
+  id: totrans-145
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE37]'
+- en: Class Implementation
+  id: totrans-146
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 类的实现
+- en: As we have almost all of the necessary functionality, what remains is mostly
+    a case of wrapping it into the member functions, plus implementing the `weekend_roll`
+    function and a couple of private helper functions. In addition, two constructors
+    are presented, as well as the private `reset_serial_date_` method that will calculate
+    and set the serial representation of the date, either at construction, or whenever
+    the state of an active `ChronoDate` is modified.
+  id: totrans-147
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于我们几乎已经具备了所有必要的功能，剩下的主要是将其包装成成员函数，再实现 `weekend_roll` 函数和一些私有辅助函数。此外，还介绍了两个构造函数，以及私有的
+    `reset_serial_date_` 方法，它将计算并设置日期的序列化表示，无论是在构造时，还是在修改活动 `ChronoDate` 的状态时。
+- en: Constructors
+  id: totrans-148
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 构造函数
+- en: The implementation of the first declared constructor allows one to create an
+    instance of `ChronoDate` with integer values (`int` and `unsigned`) rather than
+    require individual instances of `year`, `month`, and `day` objects.
+  id: totrans-149
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第一个声明的构造函数的实现允许使用整数值（`int` 和 `unsigned`）创建一个 `ChronoDate` 的实例，而不是需要单独的 `year`、`month`
+    和 `day` 对象。
+- en: '[PRE38]'
+  id: totrans-150
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE38]'
+- en: Recall also that because it is possible to construct invalid `year_month_day`
+    objects, such as February 30, a validation check is also included in the constructor,
+    utilizing the `ok` member function on `year_month_day`. One more setting that
+    needs to occur when a date is constructed is the serial date. This is delegated
+    to the private method `reset_serial_date_`. As shown at the outset of the chapter,
+    this is an application of `sys_days` operator to provide the number of days since
+    the UNIX epoch.
+  id: totrans-151
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 还要记住，由于可能构造无效的 `year_month_day` 对象，比如 2 月 30 日，构造函数中还包括一个验证检查，利用 `year_month_day`
+    上的 `ok` 成员函数。在构造日期时还需要进行的一个设置是序列化日期。这委托给了私有方法 `reset_serial_date_`。正如本章开头所示，这是对
+    `sys_days` 操作符的应用，以提供自 UNIX 纪元以来的天数。
+- en: '[PRE39]'
+  id: totrans-152
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE39]'
+- en: This function will also be called from each modifying member function.
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这个函数也将从每个修改成员函数中调用。
+- en: 'Finally, the default constructor just sets the date to the UNIX epoch, and
+    initializes the serial date to 0:'
+  id: totrans-154
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，默认构造函数仅将日期设置为UNIX纪元，并将序列日期初始化为0：
+- en: '[PRE40]'
+  id: totrans-155
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE40]'
+- en: Member Functions and Operators
+  id: totrans-156
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 成员函数和运算符
+- en: The following describes implementation of the functions previously introduced
+    in the declaration section.
+  id: totrans-157
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下描述了先前在声明部分引入的函数的实现。
+- en: Accessors
+  id: totrans-158
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+  zh: 访问器
+- en: 'Implementation of accessors for the serial date and `year_month_day` members
+    is trivial, but a little more work is involved in returning integer values for
+    the year, month, and day. a `std::chrono::year` object can be cast to an `int`,
+    while `month` and `day` are castable to `unsigned` types. With this in mind, their
+    accessors are straightforward to implement:'
+  id: totrans-159
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为序列日期和`year_month_day`成员实现访问器的实现是微不足道的，但在返回年份、月份和日期的整数值时需要做更多工作。`std::chrono::year`对象可以转换为`int`，而`month`和`day`可以转换为`unsigned`类型。考虑到这一点，它们的访问器实现是直接的：
+- en: '[PRE41]'
+  id: totrans-160
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE41]'
+- en: State Methods
+  id: totrans-161
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+  zh: 状态方法
+- en: Checking whether a date is in a leap year simply involves wrapping the respective
+    `year_month_day` member function.
+  id: totrans-162
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 检查日期是否为闰年只需包装相应的`year_month_day`成员函数即可。
+- en: '[PRE42]'
+  id: totrans-163
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE42]'
+- en: Obtaining the number of days in the month is more involved, but it is just a
+    rehash of the function adapted from the `std::chrono` low-level algorithms in
+    Section [1.4].
+  id: totrans-164
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 获取月份中的天数更加复杂，但只是对来自第[1.4]节中`std::chrono`低级算法的函数进行了重新调整。
+- en: '[PRE43]'
+  id: totrans-165
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE43]'
+- en: Arithmetic Operations
+  id: totrans-166
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+  zh: 算术运算
+- en: These are the core member functions that will be used for typical fixed income
+    applications, such as in calculating year fractions and generating payment schedules.
+    To start, let us revisit calculation of the number of days between two dates.
+    As we already store the serial date on the class and update it only at construction
+    or when a date is modified, we can remove the `sys_days` conversions and function
+    calls, and implement the subtraction operator as the difference between the integer
+    equivalents.
+  id: totrans-167
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些是将用于典型固定收益应用程序的核心成员函数，例如计算年分数和生成支付计划。首先，让我们重新审视计算两个日期之间天数的计算。由于我们已经在类上存储了序列日期，并且仅在构造或修改日期时更新它，因此我们可以删除`sys_days`转换和函数调用，并将减法运算符实现为整数等效值之间的差异。
+- en: '[PRE44]'
+  id: totrans-168
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE44]'
+- en: Adding years and months are also pretty straightforward, as we now have ways
+    to handle pesky end-of-month issues when they arise. The only issue when adding
+    years is if the resulting date lands on the 29th of February in a non-leap year,
+    so this case is easily addressed by resetting the day value to 28\. Note that
+    because the result is based on the underlying `year_month_day` `+=` operator,
+    the state of the object is modified, and thus it becomes necessary to update the
+    serial date as well.
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 添加年份和月份也很简单，因为现在我们有了处理问题月末问题的方法。添加年份时唯一的问题是，如果结果日期落在非闰年的2月29日，那么可以通过将天数值重置为28来轻松解决此问题。请注意，由于结果基于底层的`year_month_day`
+    `+=`运算符，对象的状态被修改，因此有必要同时更新序列日期。
+- en: '[PRE45]'
+  id: totrans-170
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE45]'
+- en: When adding months to a date, the situation becomes more problematic with varying
+    days in each month plus a leap year condition in February, but with the `days_in_month`
+    member function now available, it becomes a reasonably easy exercise. The addition
+    of months is again naively attempted, with the number of days adjusted if the
+    resulting month is invalid. The only way this incorrect state can occur is if
+    the naïve result has more days than in its respective month.
+  id: totrans-171
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当向日期添加月份时，情况变得更加复杂，因为每个月的天数不同，并且在2月中有闰年条件，但现在有了`days_in_month`成员函数，这变得相对容易。再次尝试添加月份时，如果结果月份无效，则调整天数。这种错误状态只有在朴素结果的天数超过其相应月份的天数时才会发生。
+- en: '[PRE46]'
+  id: totrans-172
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE46]'
+- en: As seen earlier, there is no addition assignment operator for adding days, so
+    in `std::chrono` this will require conversion to `sys_days`.
+  id: totrans-173
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如前面所见，没有添加天数的加法赋值运算符，因此在`std::chrono`中，这将需要转换为`sys_days`。
+- en: '[PRE47]'
+  id: totrans-174
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE47]'
+- en: Note that the sum of the `sys_days` and the `days` to be added are implicitly
+    converted back to a `year_month_day` object when assigned to the `date_` member.
+    Further details behind this are also available in {5}.
+  id: totrans-175
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，将`sys_days`的总和和要添加的`days`隐式转换回`year_month_day`对象时，将分配给`date_`成员。关于此背后的更多细节也在{5}中可用。
+- en: Business Day Roll Rule
+  id: totrans-176
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+  zh: 工作日滚动规则
+- en: One important function we have not discussed yet is that which will roll a weekend
+    date to the next business date.
+  id: totrans-177
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们还没有讨论的一个重要函数是将周末日期滚动到下一个工作日的函数。
+- en: In practice, there are various commonly used roll methods. For the purposes
+    of this discussion, we will choose one that is used quite often in practice, namely
+    the Modified Following rule. Before proceeding, let us revisit determining the
+    day of the week using the `weekday` class contained in `std::chrono`.
+  id: totrans-178
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在实践中，有各种常用的计息方法。在本讨论中，我们将选择一个在实践中经常使用的方法，即Modified Following规则。在继续之前，让我们回顾一下使用`std::chrono`中的`weekday`类确定星期几的方法。
+- en: As mentioned earlier, the term “weekday” may be a little confusing. It does
+    not mean “weekday” as in Monday through Friday, but rather “day of the week”.
+    The `iso_encoding` member function will return an integer code for each day of
+    the week, beginning with 1 for Monday and 7 for Sunday; therefore, a value of
+    6 or 7 will indicate the date falls on a weekend.
+  id: totrans-179
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如前所述，“weekday”这个术语可能有些混淆。它不是指星期一到星期五，而是指一周中的“星期几”。`iso_encoding`成员函数将返回每周的整数代码，从星期一的1开始，到星期日的7；因此，6或7的值将表示日期落在周末。
+- en: The `weekend_roll` function will just reuse this functionality to first determine
+    if the date falls on a weekend. If it does, it will first naively roll forward
+    to the next Monday. However, if this new date advances to the next month, it will
+    roll back to the previous business date, namely the Friday of the original month.
+    This is why the original month is stored first.
+  id: totrans-180
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`weekend_roll`函数将简单地重用这个功能，首先确定日期是否落在周末。如果是，它将首先朴素地向前滚动到下一个星期一。然而，如果这个新日期进到了下个月，它将滚动回到上个工作日，即原月份的星期五。这就是为什么首先存储原月份的原因。'
+- en: '[PRE48]'
+  id: totrans-181
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE48]'
+- en: A rolled date will be modified, so it is necessary to update the serial date
+    here as well.
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 滚动日期将被修改，因此在这里也需要更新序列日期。
+- en: Comparison and Streaming Operators
+  id: totrans-183
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+  zh: 比较和流运算符
+- en: The comparison operators `==` and [PRE49] are immediate as these are defined
+    for `year_month_day`. We just need to be sure to use `std::strong_ordering` as
+    the return type for [PRE50], as it is ultimately two integer values – the days
+    since the epoch – that are being compared.
+  id: totrans-184
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 比较运算符`==`和[PRE49]是即时的，因为它们对`year_month_day`进行了定义。我们只需要确保对[PRE50]使用`std::strong_ordering`作为返回类型，因为最终比较的是两个整数值
+    - 自历元以来的天数。
+- en: '[PRE51]'
+  id: totrans-185
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE51]'
+- en: We can also piggyback off of the stream operator for `year_month_day` and define
+    it as a `friend` operator on `ChronoDate`.
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们还可以依靠`year_month_day`的流操作符，并将其定义为`ChronoDate`的友元运算符。
+- en: '[PRE52]'
+  id: totrans-187
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE52]'
+- en: Note
+  id: totrans-188
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Because this operator is a `friend` of the `ChronoDate` class, a separate `export`
+    of the implementation is needed even when included in the same module.
+  id: totrans-189
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为这个操作符是`ChronoDate`类的友元，所以即使在同一个模块中包含它，也需要单独的实现`export`。
+- en: With the `ChronoDate` class now ready to go, we can move on to day count conventions
+    and other components that are typically required for programming related to fixed
+    income trading.
+  id: totrans-190
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在`ChronoDate`类已准备就绪，我们可以继续处理与固定收益交易相关的日计数约定和其他通常所需的组件。
+- en: Day Count Bases
+  id: totrans-191
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 日计数基准
+- en: 'Day count bases are used to convert the interval between two dates into time
+    measured in units of years, or *year fractions*, as commonly referred to in fixed
+    income trading. Day count bases are used whenever an interest calculation is made.
+    Interest rates are defined by three attributes: an annual percentage value, e.g.
+    3%, a type, e.g. simple or compound, and a day count basis. Consider a term deposit
+    where 1000 dollars is invested at 3% compound interest, the investment being made
+    on 25 October 2022 and maturing on 31 December 2023\. The formula for calculating
+    F, the value of the investment at maturity, is'
+  id: totrans-192
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 日计数基准用于将两个日期之间的间隔转换为以年为单位的时间，或者*年分数*，在固定收益交易中通常被称为。每当进行利息计算时都会使用日计数基准。利率由三个属性定义：年百分比值，例如3％，类型，例如简单或复利，以及日计数基准。考虑一个定期存款，1000美元以3％复利投资，投资于2022年10月25日，到期于2023年12月31日。计算F，即到期时投资的价值的公式为
+- en: <math alttext="upper F equals 1000 left-parenthesis 1 plus 0.03 right-parenthesis
+    Superscript t" display="block"><mrow><mi>F</mi> <mo>=</mo> <mn>1000</mn> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>.</mo><mn>03</mn><mo>)</mo></mrow>
+    <mi>t</mi></msup></mrow></math>
+  id: totrans-193
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper F equals 1000 left-parenthesis 1 plus 0.03 right-parenthesis
+    Superscript t" display="block"><mrow><mi>F</mi> <mo>=</mo> <mn>1000</mn> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>.</mo><mn>03</mn><mo>)</mo></mrow>
+    <mi>t</mi></msup></mrow></math>
+- en: 'The value of *t* depends on the day count basis. Money market calculations
+    in the US and the EU are most likely to use the Actual/360 day count basis:'
+  id: totrans-194
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*t*的值取决于日计数基准。美国和欧盟的货币市场计算最可能使用Actual/360日计数基准：'
+- en: <math alttext="upper A c t Baseline 360 left-parenthesis d 1 comma d 2 right-parenthesis
+    equals StartFraction d 2 minus d 1 Over 360 EndFraction" display="block"><mrow><mi>A</mi>
+    <mi>c</mi> <mi>t</mi> <mn>360</mn> <mrow><mo>(</mo> <msub><mi>d</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><msub><mi>d</mi>
+    <mn>2</mn></msub> <mo>-</mo><msub><mi>d</mi> <mn>1</mn></msub></mrow> <mn>360</mn></mfrac></mrow></math>
+  id: totrans-195
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper A c t Baseline 360 left-parenthesis d 1 comma d 2 right-parenthesis
+    equals StartFraction d 2 minus d 1 Over 360 EndFraction" display="block"><mrow><mi>A</mi>
+    <mi>c</mi> <mi>t</mi> <mn>360</mn> <mrow><mo>(</mo> <msub><mi>d</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><msub><mi>d</mi>
+    <mn>2</mn></msub> <mo>-</mo><msub><mi>d</mi> <mn>1</mn></msub></mrow> <mn>360</mn></mfrac></mrow></math>
+- en: In UK, Canadian, and Australian money markets, the Actual/365 day count basis — where
+    the 360 swapped for 365 — is more common. Other common day count bases used in
+    broader fixed income trading include the 30/360 method, which assumes every month
+    has 30 days, and a year has 360 days. The Actual/Actual method uses the actual
+    number of days in both the numerator and denominator. In equity portfolio management,
+    An Actual/252 basis is often used, where 252 business days per year are assumed.
+  id: totrans-196
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在英国、加拿大和澳大利亚的货币市场中，实际/365日计算基数 —— 将360替换为365 —— 更为常见。在更广泛的固定收益交易中使用的其他常见日计算基数包括30/360方法，该方法假设每个月有30天，一年有360天。实际/实际方法使用分子和分母中的实际天数。在股票组合管理中，经常使用实际/252基数，假设一年有252个工作日。
+- en: Implementing day count conventions in C++ is an example of where interface inheritance
+    can be useful. We can define a pure abstract base class that mandates the implementation
+    of the day count-adjusted year fraction, and then leave it to the derived classes
+    to implement the specific calculations.
+  id: totrans-197
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在C++中实现日计算约定是接口继承能够有用的一个例子。我们可以定义一个纯抽象基类，强制实施日计算调整年分数的实现，然后由派生类实施具体的计算。
+- en: The interface simply declares a pure virtual `operator()` for the calculations
+    on the derived classes.
+  id: totrans-198
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接口简单声明一个纯虚拟的 `operator()` 用于派生类的计算。
+- en: '[PRE53]'
+  id: totrans-199
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE53]'
+- en: 'The Actual/365 year fraction calculation is trivial:'
+  id: totrans-200
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 实际/365年分数计算是微不足道的：
+- en: '[PRE54]'
+  id: totrans-201
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE54]'
+- en: An `Act360` class would be the same, except with the denominator replaced by
+    360.
+  id: totrans-202
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个 `Act360` 类将与之相同，只是分母被360替换。
+- en: The 30/360 case is a bit more complicated, in that the numerator must first
+    be calculated according to the formula {put here}.
+  id: totrans-203
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 30/360情况稍微复杂，因为分子必须根据公式 {放在这里} 首先进行计算。
+- en: End-of-month adjustments for the day values will depend on the particular form
+    of the 30/360, of which there are several that can depend upon the geographical
+    location of a trading desk. In the United States, the ISDA version (International
+    Swaps and Derivatives Association){6} is commonly used and is implemented in the
+    example below as the private `date_diff_` helper function. The result is then
+    divided by 360 in the public operator override.
+  id: totrans-204
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 日值的月末调整将取决于30/360的具体形式，其中有几种可以依赖于交易桌的地理位置。在美国，国际掉期与衍生品协会（ISDA）版本{6}常用，并在下面的示例中作为私有的
+    `date_diff_` 助手函数实现。然后，结果在公共操作符重载中除以360。
+- en: '[PRE55]'
+  id: totrans-205
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE55]'
+- en: 'Then, for some examples:'
+  id: totrans-206
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，举几个例子：
+- en: '[PRE56]'
+  id: totrans-207
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE56]'
+- en: The results are shown in the comments. Note that only the 30/360 day count basis
+    yields year fractions to half of a year exactly.
+  id: totrans-208
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结果显示在注释中。注意，只有30/360日计算基数产生半年的年分数完全精确。
+- en: As a quick application of day count bases {5.5} (Steiner), consider obtaining
+    the price of a short-term government Treasury Bill. In the US, these have maturities
+    from four months to a year, and pricing is based on an Actual/365 basis. In the
+    UK, maturities may be up to six months and carry an Actual/360 basis. We can write
+    a valuation function that will accommodate an arbitrary day count basis via runtime
+    polymorphism, so both US and UK cases can priced using the same function.
+  id: totrans-209
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为对日计算基数 {5.5}（斯泰纳）的快速应用，考虑获取短期政府国债的价格。在美国，这些国债的到期期限从四个月到一年不等，定价基于实际/365天。在英国，到期期限可能长达六个月，使用实际/360天基数。我们可以编写一个估值函数，通过运行时多态性来适应任意的日计算基数，因此美国和英国的情况可以使用相同的函数定价。
+- en: '[PRE57]'
+  id: totrans-210
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE57]'
+- en: Yield Curves
+  id: totrans-211
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 收益曲线
+- en: A yield curve is derived from market data — a set of fixed points over discrete
+    dates — as of its settle date (the day the prices are observed, eg the current
+    trading day). The valuation process of fixed income positions depends on a normalized
+    yield curve from discount factors can be obtained, so as to calculate present
+    values of each future payment. A review of this process is detailed in the next
+    section. These results will then be implemented within in the design of a yield
+    curve class that follows afterward.
+  id: totrans-212
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 收益曲线源自市场数据 —— 一组离散日期上的固定点 —— 截至其结算日期（价格观察日，例如当前交易日）。固定收益头寸的估值过程依赖于从贴现因子获得的标准化收益曲线，以计算每笔未来支付的现值。这个过程的审查在下一节中详细说明。然后，这些结果将在随后的收益曲线类设计中实施。
+- en: Deriving a Yield Curve from Market Data
+  id: totrans-213
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 从市场数据中派生收益曲线
+- en: Essentially a yield is an interest rate, looked at from a different perspective.
+    If money is invested in a deposit account at a known rate of interest, then the
+    accumulated value of the investment at some future date can be calculated. However,
+    suppose we can invest 1000 dollars on 25 October 2022 and receive 1035.60 dollars
+    on 31 December 2023\. In order to compare this investment with other investments
+    we calculate its yield. Assuming compounded interest and Actual/365 day count
+    basis, then
+  id: totrans-214
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本质上，收益率是从不同角度看待的利率。如果将资金投资于已知利率的存款账户，则可以计算出投资在未来某个日期的累积价值。然而，假设我们可以在2022年10月25日投资1000美元，并在2023年12月31日收到1035.60美元。为了与其他投资进行比较，我们计算其收益率。假设复利和实际/365天计息基准，则
+- en: <math alttext="1000 left-parenthesis 1 plus y right-parenthesis Superscript
+    432 slash 365 Baseline equals 1035.60" display="block"><mrow><mn>1000</mn> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>y</mi><mo>)</mo></mrow>
+    <mrow><mn>432</mn><mo>/</mo><mn>365</mn></mrow></msup> <mo>=</mo> <mn>1035</mn>
+    <mo>.</mo> <mn>60</mn></mrow></math>
+  id: totrans-215
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="1000 left-parenthesis 1 plus y right-parenthesis Superscript
+    432 slash 365 Baseline equals 1035.60" display="block"><mrow><mn>1000</mn> <msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>y</mi><mo>)</mo></mrow>
+    <mrow><mn>432</mn><mo>/</mo><mn>365</mn></mrow></msup> <mo>=</mo> <mn>1035</mn>
+    <mo>.</mo> <mn>60</mn></mrow></math>
+- en: from which we find the yield
+  id: totrans-216
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从中我们找到了产量
+- en: <math alttext="y equals exp left-parenthesis ln left-parenthesis 1035.60 slash
+    1000 right-parenthesis times 365 slash 432 right-parenthesis minus 1 equals 3
+    percent-sign" display="block"><mrow><mi>y</mi> <mo>=</mo> <mo form="prefix">exp</mo>
+    <mo>(</mo> <mo form="prefix">ln</mo> <mo>(</mo> <mn>1035</mn> <mo>.</mo> <mn>60</mn>
+    <mo>/</mo> <mn>1000</mn> <mo>)</mo> <mo>×</mo> <mn>365</mn> <mo>/</mo> <mn>432</mn>
+    <mo>)</mo> <mo>-</mo> <mn>1</mn> <mo>=</mo> <mn>3</mn> <mo>%</mo></mrow></math>
+  id: totrans-217
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="y equals exp left-parenthesis ln left-parenthesis 1035.60 slash
+    1000 right-parenthesis times 365 slash 432 right-parenthesis minus 1 equals 3
+    percent-sign" display="block"><mrow><mi>y</mi> <mo>=</mo> <mo form="prefix">exp</mo>
+    <mo>(</mo> <mo form="prefix">ln</mo> <mo>(</mo> <mn>1035</mn> <mo>.</mo> <mn>60</mn>
+    <mo>/</mo> <mn>1000</mn> <mo>)</mo> <mo>×</mo> <mn>365</mn> <mo>/</mo> <mn>432</mn>
+    <mo>)</mo> <mo>-</mo> <mn>1</mn> <mo>=</mo> <mn>3</mn> <mo>%</mo></mrow></math>
+- en: In general, the yield curve is a function of time, say <math alttext="y left-parenthesis
+    t right-parenthesis"><mrow><mi>y</mi> <mo>(</mo> <mi>t</mi> <mo>)</mo></mrow></math>
+    , and is constructed from market data, such as Treasury Bills, swaps and bonds.
+    The time values are in units of years (or year fractions).
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一般而言，收益率曲线是时间的函数，记为 <math alttext="y left-parenthesis t right-parenthesis"><mrow><mi>y</mi>
+    <mo>(</mo> <mi>t</mi> <mo>)</mo></mrow></math>，并且是由市场数据构建的，如国库券、互换和债券。时间值以年（或年分数）为单位。
+- en: These products all have known future cash flows, and are known as fixed income
+    securities. In addition, each type of fixed income security has its own yield
+    type (simple, discount or compounded), and its own day count basis, and these
+    may vary within a single product group. To avoid the use of multiple interest
+    types and day count bases, yield curves typically define their yields as continuously
+    compounded with an Actual/365 day count basis.
+  id: totrans-219
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些产品都有已知的未来现金流，被称为固定收益证券。此外，每种固定收益证券都有其自己的收益类型（简单、折扣或复利），以及其自己的计息基准，这些可能在单一产品组内有所不同。为避免使用多种利率类型和计息基准，收益率曲线通常将其收益定义为以实际/365天计息基准连续复利。
+- en: To illustrate how the inputs to the yield curve are derived, consider a US Treasury
+    Bill; the yield type is discount, the day count basis is Act/360, and the market
+    quote is the yield on the bill. Suppose the face value is *F*, the maturity date
+    is *m*, the market yield is <math alttext="y Subscript m"><msub><mi>y</mi> <mi>m</mi></msub></math>
+    for settlement on *s*. Then, the price, *P*, of the bill is
+  id: totrans-220
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了说明收益率曲线的输入是如何推导出来的，考虑一个美国国库券；其收益类型为折扣，计息基准为Act/360，市场报价为该券的收益率。假设面值为*F*，到期日期为*m*，结算时的市场收益率为<math
+    alttext="y Subscript m"><msub><mi>y</mi> <mi>m</mi></msub></math>。则该券的价格*P*为
+- en: <math alttext="upper P equals upper F left-parenthesis 1 minus normal upper
+    A normal c normal t Baseline 360 left-parenthesis s comma m right-parenthesis
+    y Subscript m Baseline right-parenthesis" display="block"><mrow><mi>P</mi> <mo>=</mo>
+    <mi>F</mi> <mfenced separators="" open="(" close=")"><mn>1</mn> <mo>-</mo> <mi>Act</mi>
+    <mn>360</mn> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>m</mi> <mo>)</mo></mrow>
+    <msub><mi>y</mi> <mi>m</mi></msub></mfenced></mrow></math>
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper P equals upper F left-parenthesis 1 minus normal upper
+    A normal c normal t Baseline 360 left-parenthesis s comma m right-parenthesis
+    y Subscript m Baseline right-parenthesis" display="block"><mrow><mi>P</mi> <mo>=</mo>
+    <mi>F</mi> <mfenced separators="" open="(" close=")"><mn>1</mn> <mo>-</mo> <mi>Act</mi>
+    <mn>360</mn> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>m</mi> <mo>)</mo></mrow>
+    <msub><mi>y</mi> <mi>m</mi></msub></mfenced></mrow></math>
+- en: For the yield curve, the corresponding yield is <math alttext="y left-parenthesis
+    t right-parenthesis"><mrow><mi>y</mi> <mo>(</mo> <mi>t</mi> <mo>)</mo></mrow></math>
+    , where <math alttext="t equals normal upper A normal c normal t Baseline 365
+    left-parenthesis s comma m right-parenthesis"><mrow><mi>t</mi> <mo>=</mo> <mi>Act</mi>
+    <mn>365</mn> <mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>m</mi> <mo>)</mo></mrow></math>
+    , so that
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于收益率曲线，对应的收益率为 <math alttext="y left-parenthesis t right-parenthesis"><mrow><mi>y</mi>
+    <mo>(</mo> <mi>t</mi> <mo>)</mo></mrow></math>，其中 <math alttext="t equals normal
+    upper A normal c normal t Baseline 365 left-parenthesis s comma m right-parenthesis"><mrow><mi>t</mi>
+    <mo>=</mo> <mi>Act</mi> <mn>365</mn> <mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>m</mi>
+    <mo>)</mo></mrow></math>，以便
+- en: <math alttext="upper P e Superscript t y left-parenthesis t right-parenthesis
+    Baseline equals upper F" display="block"><mrow><mi>P</mi> <msup><mi>e</mi> <mrow><mi>t</mi><mi>y</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msup>
+    <mo>=</mo> <mi>F</mi></mrow></math>
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper P e Superscript t y left-parenthesis t right-parenthesis
+    Baseline equals upper F" display="block"><mrow><mi>P</mi> <msup><mi>e</mi> <mrow><mi>t</mi><mi>y</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msup>
+    <mo>=</mo> <mi>F</mi></mrow></math>
+- en: The value of $y(t)$ can be found from these two equations. It is
+  id: totrans-224
+  prefs: []
+  type: TYPE_NORMAL
+  zh: $y(t)$的值可以从这两个方程中找到。它是
+- en: <math alttext="y left-parenthesis t right-parenthesis equals StartFraction minus
+    ln left-parenthesis 1 minus normal upper A normal c normal t Baseline 360 left-parenthesis
+    s comma m right-parenthesis y Subscript m Baseline right-parenthesis Over t EndFraction"
+    display="block"><mrow><mi>y</mi> <mrow><mo>(</mo> <mi>t</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mrow><mo>-</mo><mo form="prefix">ln</mo><mo>(</mo><mn>1</mn><mo>-</mo>
+    <mi>Act</mi> <mn>360</mn><mrow><mo>(</mo><mi>s</mi><mo>,</mo><mi>m</mi><mo>)</mo></mrow><msub><mi>y</mi>
+    <mi>m</mi></msub> <mo>)</mo></mrow> <mi>t</mi></mfrac></mrow></math>
+  id: totrans-225
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="y left-parenthesis t right-parenthesis equals StartFraction minus
+    ln left-parenthesis 1 minus normal upper A normal c normal t Baseline 360 left-parenthesis
+    s comma m right-parenthesis y Subscript m Baseline right-parenthesis Over t EndFraction"
+    display="block"><mrow><mi>y</mi> <mrow><mo>(</mo> <mi>t</mi> <mo>)</mo></mrow>
+    <mo>=</mo> <mfrac><mrow><mo>-</mo><mo form="prefix">ln</mo><mo>(</mo><mn>1</mn><mo>-</mo>
+    <mi>Act</mi> <mn>360</mn><mrow><mo>(</mo><mi>s</mi><mo>,</mo><mi>m</mi><mo>)</mo></mrow><msub><mi>y</mi>
+    <mi>m</mi></msub> <mo>)</mo></mrow> <mi>t</mi></mfrac></mrow></math>
+- en: It is essential that any set of interest rate products used to create a yield
+    curve have the same settle date. Let the maturity dates for the products be *d*[1],<
+    *d*[2] < …​ < *d[n]*, with *s* < *d*[1], and the associated yields be *y*[1],
+    *y*[2], …​, *y*[n], where <math alttext="y Subscript i Baseline equals y left-parenthesis
+    t Subscript i Baseline right-parenthesis"><mrow><msub><mi>y</mi> <mi>i</mi></msub>
+    <mo>=</mo> <mi>y</mi> <mrow><mo>(</mo> <msub><mi>t</mi> <mi>i</mi></msub> <mo>)</mo></mrow></mrow></math>
+    and *t[i]* = Act365(*s*,*d[i]*). Since the yields are calculated for a date interval
+    whose first date is the settlement date, these yields are known as spot yields.
+  id: totrans-226
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 任何用于创建收益率曲线的一组利率产品都必须具有相同的结算日期至关重要。让产品的到期日期为*d*[1],< *d*[2] < …​ < *d[n]*，其中
+    *s* < *d*[1]，关联的收益率为*y*[1], *y*[2], …​, *y*[n]，其中 <math alttext="y Subscript i
+    Baseline equals y left-parenthesis t Subscript i Baseline right-parenthesis"><mrow><msub><mi>y</mi>
+    <mi>i</mi></msub> <mo>=</mo> <mi>y</mi> <mrow><mo>(</mo> <msub><mi>t</mi> <mi>i</mi></msub>
+    <mo>)</mo></mrow></mrow></math> 和 *t[i]* = Act365(*s*,*d[i]*). 由于这些收益率是针对一个以结算日期为第一天的日期区间计算的，因此这些收益率被称为即期收益率。
+- en: There are many continuous curve which pass through the points
+  id: totrans-227
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有许多连续曲线穿过这些点
+- en: <math alttext="left-parenthesis t 1 comma y 1 right-parenthesis comma left-parenthesis
+    t 2 comma y 2 right-parenthesis comma ellipsis comma left-parenthesis t Subscript
+    n Baseline comma y Subscript n Baseline right-parenthesis" display="block"><mrow><mrow><mo>(</mo>
+    <msub><mi>t</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>y</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow> <mo>,</mo> <mrow><mo>(</mo> <msub><mi>t</mi> <mn>2</mn></msub>
+    <mo>,</mo> <msub><mi>y</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>,</mo> <mo>⋯</mo>
+    <mo>,</mo> <mrow><mo>(</mo> <msub><mi>t</mi> <mi>n</mi></msub> <mo>,</mo> <msub><mi>y</mi>
+    <mi>n</mi></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-228
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="left-parenthesis t 1 comma y 1 right-parenthesis comma left-parenthesis
+    t 2 comma y 2 right-parenthesis comma ellipsis comma left-parenthesis t Subscript
+    n Baseline comma y Subscript n Baseline right-parenthesis" display="block"><mrow><mrow><mo>(</mo>
+    <msub><mi>t</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>y</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow> <mo>,</mo> <mrow><mo>(</mo> <msub><mi>t</mi> <mn>2</mn></msub>
+    <mo>,</mo> <msub><mi>y</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>,</mo> <mo>⋯</mo>
+    <mo>,</mo> <mrow><mo>(</mo> <msub><mi>t</mi> <mi>n</mi></msub> <mo>,</mo> <msub><mi>y</mi>
+    <mi>n</mi></msub> <mo>)</mo></mrow></mrow></math>
+- en: The choice of an appropriate curve is a business decision made by the user of
+    the yield curve. This typically based on a curve-fitting technique employing a
+    particular interpolation method.
+  id: totrans-229
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 选择适当的曲线是收益曲线的使用者所做的商业决策。这通常基于一种采用特定插值方法的曲线拟合技术。
+- en: Discount Factors
+  id: totrans-230
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 贴现因子
+- en: Consider a unit payment amount made at time *m*. What is its value on a settle
+    date, *s* < *m*? Let *P*(*s*,*m*) be the price, paid on the settle date, let *t*=Act365(*s*,*m*)
+    and let *y*(*t*) be the associated yield. Then
+  id: totrans-231
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 考虑在时间 *m* 进行单位支付，其在结算日期 *s* < *m* 的价值是多少？设 *P*(*s*,*m*) 为在结算日期支付的价格，设 *t*=Act365(*s*,*m*)，设
+    *y*(*t*) 为相关收益率。那么
+- en: <math alttext="upper P left-parenthesis s comma m right-parenthesis e Superscript
+    t y left-parenthesis t right-parenthesis Baseline equals 1" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>m</mi> <mo>)</mo></mrow> <msup><mi>e</mi>
+    <mrow><mi>t</mi><mi>y</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msup> <mo>=</mo>
+    <mn>1</mn></mrow></math>
+  id: totrans-232
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper P left-parenthesis s comma m right-parenthesis e Superscript
+    t y left-parenthesis t right-parenthesis Baseline equals 1" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <mi>m</mi> <mo>)</mo></mrow> <msup><mi>e</mi>
+    <mrow><mi>t</mi><mi>y</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msup> <mo>=</mo>
+    <mn>1</mn></mrow></math>
+- en: from which *P*(*s*,*m*) = e^(*-ty*(*t*)). Now *P*(*s*,*m*) is the present value,
+    as seen on date *s* for unit payment made on date *m*. In other words, it is the
+    discount factor for the period *s* to *m*. Since *y*(*t*) is a spot yield, this
+    is a spot discount factor.
+  id: totrans-233
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从中可以得到 *P*(*s*,*m*) = e^(*-ty*(*t*)). 现在 *P*(*s*,*m*) 是在日期 *s* 看到的现值，用于在日期 *m*
+    进行单位支付。换句话说，这是从 *s* 到 *m* 期间的贴现因子。由于 *y*(*t*) 是即期收益率，这是一个即期贴现因子。
+- en: Forward Discount Factors
+  id: totrans-234
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 远期贴现因子
+- en: How do we calculate the discount factor for a period which begins at time *d*[1]
+    and ends at time *d*[2], where *s* < *d*[1] \leq d_2?
+  id: totrans-235
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们如何计算从时间 *d*[1] 开始到时间 *d*[2] 结束的期间的贴现因子，其中 *s* < *d*[1] \leq d_2？
+- en: Consider a unit payment to be made at time *d*[2] and let its value at *d*[1]
+    be represented by *P*(*s*; *d*[1],*d*[2]). Its spot value – hence the parameter
+    *s* – is
+  id: totrans-236
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 考虑在时间 *d*[2] 进行单位支付，并且让其在 *d*[1] 的价值表示为 *P*(*s*; *d*[1],*d*[2])。其即期价值 - 因此参数
+    *s* - 是
+- en: <math alttext="upper P left-parenthesis s comma d 1 right-parenthesis upper
+    P left-parenthesis s semicolon d 1 comma d 2 right-parenthesis" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>)</mo></mrow>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>d</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-237
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper P left-parenthesis s comma d 1 right-parenthesis upper
+    P left-parenthesis s semicolon d 1 comma d 2 right-parenthesis" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>)</mo></mrow>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>d</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow></mrow></math>
+- en: To avoid arbitrage opportunities we must have
+  id: totrans-238
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了避免套利机会，我们必须有
+- en: <math alttext="upper P left-parenthesis s comma d 2 right-parenthesis equals
+    upper P left-parenthesis s comma d 1 right-parenthesis upper P left-parenthesis
+    s semicolon d 1 comma d 2 right-parenthesis comma s o t h a t" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo>
+    <msub><mi>d</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>,</mo> <mi>s</mi> <mi>o</mi> <mi>t</mi> <mi>h</mi> <mi>a</mi>
+    <mi>t</mi></mrow></math><math alttext="upper P left-parenthesis s semicolon d
+    1 comma d 2 right-parenthesis equals StartFraction upper P left-parenthesis s
+    comma d 2 right-parenthesis Over upper P left-parenthesis s comma d 1 right-parenthesis
+    EndFraction" display="block"><mrow><mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo>
+    <msub><mi>d</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>P</mi><mo>(</mo><mi>s</mi><mo>,</mo><msub><mi>d</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow> <mrow><mi>P</mi><mo>(</mo><mi>s</mi><mo>,</mo><msub><mi>d</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mfrac></mrow></math>
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper P left-parenthesis s comma d 2 right-parenthesis equals
+    upper P left-parenthesis s comma d 1 right-parenthesis upper P left-parenthesis
+    s semicolon d 1 comma d 2 right-parenthesis comma s o t h a t" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow>
+    <mo>=</mo> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo>
+    <msub><mi>d</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>,</mo> <mi>s</mi> <mi>o</mi> <mi>t</mi> <mi>h</mi> <mi>a</mi>
+    <mi>t</mi></mrow></math><math alttext="upper P left-parenthesis s semicolon d
+    1 comma d 2 right-parenthesis equals StartFraction upper P left-parenthesis s
+    comma d 2 right-parenthesis Over upper P left-parenthesis s comma d 1 right-parenthesis
+    EndFraction" display="block"><mrow><mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo>
+    <msub><mi>d</mi> <mn>1</mn></msub> <mo>,</mo> <msub><mi>d</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>=</mo> <mfrac><mrow><mi>P</mi><mo>(</mo><mi>s</mi><mo>,</mo><msub><mi>d</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow> <mrow><mi>P</mi><mo>(</mo><mi>s</mi><mo>,</mo><msub><mi>d</mi>
+    <mn>1</mn></msub> <mo>)</mo></mrow></mfrac></mrow></math>
+- en: 'Substituting for the spot discount factors:'
+  id: totrans-240
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 替换即期贴现因子：
+- en: <math alttext="upper P left-parenthesis s semicolon d 1 comma d 2 right-parenthesis
+    equals StartFraction e Superscript minus t 2 y left-parenthesis t 2 right-parenthesis
+    Baseline Over e Superscript minus t 1 y left-parenthesis t 1 right-parenthesis
+    Baseline EndFraction equals e Superscript t 1 y left-parenthesis t 1 right-parenthesis
+    minus t 2 y left-parenthesis t 2 right-parenthesis" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><msup><mi>e</mi>
+    <mrow><mo>-</mo><msub><mi>t</mi> <mn>2</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow></mrow></msup> <msup><mi>e</mi> <mrow><mo>-</mo><msub><mi>t</mi>
+    <mn>1</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></mrow></msup></mfrac> <mo>=</mo> <msup><mi>e</mi> <mrow><msub><mi>t</mi>
+    <mn>1</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow><mo>-</mo><msub><mi>t</mi> <mn>2</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow></mrow></msup></mrow></math>
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper P left-parenthesis s semicolon d 1 comma d 2 right-parenthesis
+    equals StartFraction e Superscript minus t 2 y left-parenthesis t 2 right-parenthesis
+    Baseline Over e Superscript minus t 1 y left-parenthesis t 1 right-parenthesis
+    Baseline EndFraction equals e Superscript t 1 y left-parenthesis t 1 right-parenthesis
+    minus t 2 y left-parenthesis t 2 right-parenthesis" display="block"><mrow><mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>d</mi> <mn>1</mn></msub> <mo>,</mo>
+    <msub><mi>d</mi> <mn>2</mn></msub> <mo>)</mo></mrow> <mo>=</mo> <mfrac><msup><mi>e</mi>
+    <mrow><mo>-</mo><msub><mi>t</mi> <mn>2</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow></mrow></msup> <msup><mi>e</mi> <mrow><mo>-</mo><msub><mi>t</mi>
+    <mn>1</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow></mrow></msup></mfrac> <mo>=</mo> <msup><mi>e</mi> <mrow><msub><mi>t</mi>
+    <mn>1</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi> <mn>1</mn></msub>
+    <mo>)</mo></mrow><mo>-</mo><msub><mi>t</mi> <mn>2</mn></msub> <mi>y</mi><mrow><mo>(</mo><msub><mi>t</mi>
+    <mn>2</mn></msub> <mo>)</mo></mrow></mrow></msup></mrow></math>
+- en: Since *d*[1] > *s*, *P*(*s*;_d_[1],*d*[2]) is a forward discount factor.
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于 *d*[1] > *s*，*P*(*s*;_d_[1],*d*[2]) 是一个远期贴现因子。
+- en: The next sections will describe a framework for yield curves in C++, followed
+    by a simple example of a yield curve and its use to value a bond
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来的部分将描述 C++ 中的收益曲线框架，然后是一个简单的收益曲线示例及其用于估值债券的用法
+- en: A Yield Curve Class
+  id: totrans-244
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 一个收益曲线类
+- en: The essential function on a yield curve class will return a continuously compounded
+    forward discount factor between two arbitrary dates, as detailed in the previous
+    section. Fitting the resulting curve through the points <math alttext="left-parenthesis
+    t 1 comma y 1 right-parenthesis comma left-parenthesis t 2 comma y 2 right-parenthesis
+    comma ellipsis comma left-parenthesis t Subscript n Baseline comma y Subscript
+    n Baseline right-parenthesis"><mrow><mrow><mo>(</mo> <msub><mi>t</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>y</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>,</mo> <mrow><mo>(</mo>
+    <msub><mi>t</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>y</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <mrow><mo>(</mo> <msub><mi>t</mi>
+    <mi>n</mi></msub> <mo>,</mo> <msub><mi>y</mi> <mi>n</mi></msub> <mo>)</mo></mrow></mrow></math>
+    can be based on a plethora of numerical methods in the literature. As examples,
+    these can range from a simple linearly interpolated yield curve, to more sophisticated
+    examples such as a cubic spline-interpolated curve, Smoothest Yield Curves {7},
+    or the Monotone Convex Method {8}.
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 收益率曲线类的基本功能将返回两个任意日期之间的连续复利前向折现因子，如前一节详细说明。通过点 <math alttext="left-parenthesis
+    t 1 comma y 1 right-parenthesis comma left-parenthesis t 2 comma y 2 right-parenthesis
+    comma ellipsis comma left-parenthesis t Subscript n Baseline comma y Subscript
+    n Baseline right-parenthesis"><mrow><mrow><mo>(</mo> <msub><mi>t</mi> <mn>1</mn></msub>
+    <mo>,</mo> <msub><mi>y</mi> <mn>1</mn></msub> <mo>)</mo></mrow> <mo>,</mo> <mrow><mo>(</mo>
+    <msub><mi>t</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>y</mi> <mn>2</mn></msub>
+    <mo>)</mo></mrow> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <mrow><mo>(</mo> <msub><mi>t</mi>
+    <mi>n</mi></msub> <mo>,</mo> <msub><mi>y</mi> <mi>n</mi></msub> <mo>)</mo></mrow></mrow></math>
+    的结果曲线拟合可以基于文献中的大量数值方法。例如，这些可以是从简单的线性插值收益率曲线到更复杂的示例，如立方样条插值曲线、最平滑收益率曲线{7}或单调凸方法{8}。
+- en: At a high level then, we could define an abstract base class that
+  id: totrans-246
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在较高层面上，我们可以定义一个抽象基类，该类
+- en: Provides a common method to convert market yield data into continuously compounded
+    yields, based on the results above {[4.1]}
+  id: totrans-247
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 基于上述结果，提供一种将市场收益率数据转换为连续复利收益率的常用方法{[4.1]}。
+- en: Requires a derived class to implement its own curve-fitting method as a private
+    member function
+  id: totrans-248
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 要求派生类实现自己的曲线拟合方法作为私有成员函数
+- en: '{UML Diagram Here}'
+  id: totrans-249
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{UML Diagram Here}'
+- en: The base class will contain a non-virtual public function that calculates the
+    forward discount factor between two dates, using interpolated yields from the
+    overridden `yield_curve_` method on each derived class. The interpolated yields
+    determined from each derived class are assumed to be continuously compounded with
+    the Act/365 day count basis. The overridden `yield_curve_` method will depend
+    on market data, related to a specific settle date.
+  id: totrans-250
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 基类将包含一个非虚公共函数，用于计算两个日期之间的前向折现因子，使用从每个派生类的重载`yield_curve_`方法确定的插值收益率。假定每个派生类确定的插值收益率使用Act/365日计算基础进行连续复利。重载的`yield_curve_`方法将依赖于与特定结算日期相关的市场数据。
+- en: '[PRE58]'
+  id: totrans-251
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE58]'
+- en: The implementation of `discount_factor` then follows the mathematical derivation
+    presented in [[4.1.2]]. Note that if the first date `d1` is the settle date, the
+    result defaults to the spot discount factor at date `d2`.
+  id: totrans-252
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后根据数学推导，实施`discount_factor`，如在[[4.1.2]]中所示。请注意，如果第一个日期`d1`是结算日期，则结果默认为日期`d2`处的即期折现因子。
+- en: '[PRE59]'
+  id: totrans-253
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE59]'
+- en: A Linearly Interpolated Yield Curve Class Implementation
+  id: totrans-254
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 线性插值收益率曲线类实现
+- en: The simplest curve fitting method – but still sometimes used in practice – is
+    linear interpolation. More sophisticated interpolation methods also exist, such
+    as those referenced above, but these require considerably more mathematical horsepower.
+    So to keep the discussion concise, we will limit the example here to the linearly
+    interpolated case, but it is important to remember that more advanced methods
+    can also be integrated into the same inheritance structure.
+  id: totrans-255
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最简单的曲线拟合方法——有时仍然在实践中使用——是线性插值。还存在更复杂的插值方法，例如上面提到的方法，但这些方法需要更多的数学计算能力。因此，为了讨论简洁，我们将在此处将例子限制在线性插值情况下，但重要的是要记住，更高级的方法也可以集成到相同的继承结构中。
+- en: '[PRE60]'
+  id: totrans-256
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE60]'
+- en: The constructor will take in the maturities associated with each of the yield
+    data points relative to the settle date, based on the Actual/365 day count basis.
+    The corresponding spot yield values follow in the vector in the third argument.
+    Its implementation will check whether the maturity and yield vectors are of the
+    same length, and whether the settle date value is negative. If either is true,
+    an exception is thrown. For the purposes of demonstration, we will just assume
+    the maturities are in ascending order, but in production this would be another
+    invariant to check.
+  id: totrans-257
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 构造函数将根据实际/365天计息基础，根据结算日期接收与每个收益数据点相关的到期日期。相应的即期收益值随后在第三个参数的向量中跟随。其实现将检查到期和收益向量是否长度相同，以及结算日期值是否为负。如果有任何一个条件为真，则抛出异常。为了演示目的，我们假设到期日期按升序排列，但在实际生产中，这将是另一个不变量要检查的条件。
+- en: '[PRE61]'
+  id: totrans-258
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE61]'
+- en: The linear interpolation method is implemented in the mandated `yield_curve_`
+    private member function. If the year fraction at which a yield is to be interpolated
+    exceeds the maximum time value in the data, the result is just the last yield
+    value. Otherwise, the `while` loop locates the interval of time points that surrounds
+    the input value of time `t`. Then, the proportionally weighted yield is calculated
+    and returned.
+  id: totrans-259
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 线性插值方法实现在指定的`yield_curve_`私有成员函数中。如果要插值的年分超过数据中的最大时间值，则结果就是最后的收益值。否则，`while`循环将定位围绕时间`t`输入值的时间点间隔。然后，计算并返回比例加权收益。
+- en: '[PRE62]'
+  id: totrans-260
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE62]'
+- en: A Bond Class
+  id: totrans-261
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 一个债券类
+- en: We are now in position to utilize objects of the preceding classes, along with
+    a user-defined `Bond` class, to calculate the value of a coupon-paying bond. Common
+    examples of bonds in the include government-issued Treasury Bonds, agency bonds
+    (issued by a government-sponsored enterprise such as the Government National Mortgage
+    Association (GNMA) in the US), corporate bonds, and local state and municipal
+    bonds. As debt obligations, a series of regular payments over time is made in
+    exchange for an amount borrowed by the issuer. The main difference with a traditional
+    loan is the principal amount, ie the face value, is returned when the bond matures,
+    rather than being amortized over time.
+  id: totrans-262
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在，我们可以利用前面类的对象以及用户定义的`Bond`类来计算支付票息的债券的价值。包括在其中的普通债券的常见例子是由政府发行的国库券，机构债券（由美国政府赞助的企业如美国政府全国抵押协会（GNMA）发行），企业债券以及地方州和市政债券。作为债务义务，发行者以交换所借金额为代价，在一段时间内进行一系列定期支付。与传统贷款的主要区别在于，面值即本金金额在债券到期时偿还，而不是在一段时间内摊销。
+- en: Bond Payments and Valuation
+  id: totrans-263
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 债券支付和估值
+- en: Before proceeding with further code development, it is probably worthwhile to
+    summarize the mechanics of how bond payments are structured, and how a bond is
+    commonly valued. The details behind this are very important in writing real world
+    bond trading software, yet it is surprising they are so often glossed over in
+    computational finance courses and textbooks. The following discussion will then
+    essentially become the design requirements for a `Bond` class, to subsequently
+    follow.
+  id: totrans-264
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在继续进一步的代码开发之前，总结债券支付结构和债券通常如何估值可能是值得的。这些背后的细节在编写现实世界中的债券交易软件中非常重要，但令人惊讶的是，在计算金融课程和教科书中，它们经常被忽视。接下来的讨论将基本上成为随后实现的`Bond`类的设计要求。
+- en: The general idea is that a bond pays fixed amounts on dates in a regular schedule;
+    for example, suppose a bond has a face value of $1000 and pays 5% of its face
+    value every six months. Then the payment frequency is twice per year, and the
+    coupon amount would be
+  id: totrans-265
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 总体想法是债券按照固定的时间表支付固定金额；例如，假设一张债券的票面价值为$1000，并且每六个月支付其面值的5%。然后支付频率是每年两次，票息金额将是
+- en: <math alttext="StartFraction 0.05 left-parenthesis 1000 right-parenthesis Over
+    2 EndFraction equals 25" display="block"><mrow><mfrac><mrow><mn>0</mn><mo>.</mo><mn>05</mn><mo>(</mo><mn>1000</mn><mo>)</mo></mrow>
+    <mn>2</mn></mfrac> <mo>=</mo> <mn>25</mn></mrow></math>
+  id: totrans-266
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="StartFraction 0.05 left-parenthesis 1000 right-parenthesis Over
+    2 EndFraction equals 25" display="block"><mrow><mfrac><mrow><mn>0</mn><mo>.</mo><mn>05</mn><mo>(</mo><mn>1000</mn><mo>)</mo></mrow>
+    <mn>2</mn></mfrac> <mo>=</mo> <mn>25</mn></mrow></math>
+- en: In general, the formula is
+  id: totrans-267
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通常的公式是
+- en: <math alttext="r e g u l a r c o u p o n a m o u n t equals left-parenthesis
+    c o u p o n r a t e right-parenthesis StartFraction left-parenthesis f a c e v
+    a l u e right-parenthesis Over left-parenthesis c o u p o n f r e q u e n c y
+    right-parenthesis EndFraction" display="block"><mrow><mi>r</mi> <mi>e</mi> <mi>g</mi>
+    <mi>u</mi> <mi>l</mi> <mi>a</mi> <mi>r</mi> <mi>c</mi> <mi>o</mi> <mi>u</mi> <mi>p</mi>
+    <mi>o</mi> <mi>n</mi> <mi>a</mi> <mi>m</mi> <mi>o</mi> <mi>u</mi> <mi>n</mi> <mi>t</mi>
+    <mo>=</mo> <mrow><mo>(</mo> <mi>c</mi> <mi>o</mi> <mi>u</mi> <mi>p</mi> <mi>o</mi>
+    <mi>n</mi> <mi>r</mi> <mi>a</mi> <mi>t</mi> <mi>e</mi> <mo>)</mo></mrow> <mfrac><mrow><mo>(</mo><mi>f</mi><mi>a</mi><mi>c</mi><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mo>)</mo></mrow>
+    <mrow><mo>(</mo><mi>c</mi><mi>o</mi><mi>u</mi><mi>p</mi><mi>o</mi><mi>n</mi><mi>f</mi><mi>r</mi><mi>e</mi><mi>q</mi><mi>u</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>y</mi><mo>)</mo></mrow></mfrac></mrow></math>
+  id: totrans-268
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="r e g u l a r c o u p o n a m o u n t equals left-parenthesis
+    c o u p o n r a t e right-parenthesis StartFraction left-parenthesis f a c e v
+    a l u e right-parenthesis Over left-parenthesis c o u p o n f r e q u e n c y
+    right-parenthesis EndFraction" display="block"><mrow><mi>r</mi> <mi>e</mi> <mi>g</mi>
+    <mi>u</mi> <mi>l</mi> <mi>a</mi> <mi>r</mi> <mi>c</mi> <mi>o</mi> <mi>u</mi> <mi>p</mi>
+    <mi>o</mi> <mi>n</mi> <mi>a</mi> <mi>m</mi> <mi>o</mi> <mi>u</mi> <mi>n</mi> <mi>t</mi>
+    <mo>=</mo> <mrow><mo>(</mo> <mi>c</mi> <mi>o</mi> <mi>u</mi> <mi>p</mi> <mi>o</mi>
+    <mi>n</mi> <mi>r</mi> <mi>a</mi> <mi>t</mi> <mi>e</mi> <mo>)</mo></mrow> <mfrac><mrow><mo>(</mo><mi>f</mi><mi>a</mi><mi>c</mi><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mo>)</mo></mrow>
+    <mrow><mo>(</mo><mi>c</mi><mi>o</mi><mi>u</mi><mi>p</mi><mi>o</mi><mi>n</mi><mi>f</mi><mi>r</mi><mi>e</mi><mi>q</mi><mi>u</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>y</mi><mo>)</mo></mrow></mfrac></mrow></math>
+- en: 'The first task is to create a list of dates when payments are due and the coupon
+    payment amounts for each of those dates. Along with the face value and annual
+    coupon rate, the contractual conditions of the bond also include the following
+    four dates:'
+  id: totrans-269
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首要任务是创建一个付款日期列表，以及每个日期的票息支付金额。除了票面价值和年息率外，债券的合同条款还包括以下四个日期：
+- en: Issue date
+  id: totrans-270
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 发行日期
+- en: First coupon date
+  id: totrans-271
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 第一张票息付款日
+- en: Penultimate coupon date
+  id: totrans-272
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 倒数第二张票息付款日
+- en: Maturity date
+  id: totrans-273
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 到期日期
+- en: The *issue date* is the date on which the bond is first put on sale. A stream
+    of fixed payments is typically paid, eg every six months, beginning with the *first
+    coupon date*. The second to last payment occurs on the *penultimate coupon date*,
+    and the final payment, consisting of the last coupon payment plus repayment of
+    the face value, occurs on the *maturity date*. We will again assume the coupon
+    day is less than 29, to avoid problems with end of month cases.
+  id: totrans-274
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*发行日期*是债券首次上市销售的日期。通常会支付一系列固定付款，例如每六个月一次，从*第一个优惠券日期*开始。倒数第二笔付款发生在*倒数第二个优惠券日期*，最后一笔付款包括最后一个优惠券支付和面值的偿还，发生在*到期日期*。我们再次假设优惠券日期小于29，以避免月底问题。'
+- en: Determining the Payment Schedule
+  id: totrans-275
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 确定支付时间表
+- en: Returning to the example above, of a bond which pays 5% coupon on a face value
+    of $1000 with a coupon frequency of 2, when will the payments be made?
+  id: totrans-276
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 回到上面的例子，一张面值为$1000的债券支付5%的优惠券，优惠券频率为2，支付日期将是什么时候？
+- en: For coupons between the first coupon date and the penultimate date, payment
+    *due dates* fall on a *regular schedule*. This means a constant payment of $25
+    is due every six months. To ensure these dates belong to a regular schedule of
+    due dates, in general there are restrictions on the first and penultimate coupon
+    dates, and the coupon frequency. These two dates must be business days having
+    the same day of the month, the coupon frequency must be a divisor of twelve, and
+    the two dates must differ by a multiple of 12/(coupon frequency) months.
+  id: totrans-277
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在第一个优惠券日期和倒数第二个日期之间，支付*截止日期*将按照*常规时间表*安排。这意味着每六个月支付$25的常量。为确保这些日期属于常规截止日期时间表，通常对第一个和倒数第二个优惠券日期以及优惠券频率有一些限制。这两个日期必须是相同的工作日，并且必须以12/(优惠券频率)个月的倍数相差。
+- en: Since the due dates may not fall on business dates, the bond also has associated
+    *payment dates* that are adjusted for weekends and holidays. To simplify matters
+    we will assume there are no holidays except Saturday and Sunday, as well as assume
+    payments will not occur on any day with value greater than 28, so that if a due
+    date falls on a weekend, the regular coupon payment will be made on the following
+    Monday.
+  id: totrans-278
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于到期日期可能不是工作日，债券还有相应的*支付日期*，会根据周末和节假日进行调整。为了简化问题，我们假设除了星期六和星期日外没有其他假期，并且假设支付日期不会落在值大于28的任何一天上，因此如果到期日期落在周末，则正常的优惠券支付将在下一个周一进行。
+- en: For example, suppose the bond has a first coupon date of 17 Mar 2023 and a penultimate
+    coupon date of 17 Mar 2025\. The two dates differ by 36 months, which is a multiple
+    of 12/2=6, as required. Then, the intermediate due dates are 17 Sep 2023, 17 Mar
+    2024, …​, 17 Mar 2025\. These due dates will not all fall on business days, so
+    each will need to be checked and rolled forward if necessary to qualify as payment
+    dates.
+  id: totrans-279
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 例如，假设债券的第一个优惠券日期是2023年3月17日，倒数第二个优惠券日期是2025年3月17日。这两个日期相差36个月，这是12/2=6的倍数，符合要求。然后，中间的到期日期分别是2023年9月17日、2024年3月17日，……、2025年3月17日。这些到期日期不会全部落在工作日，因此每个日期都需要检查并在必要时向前推移，以符合支付日期的要求。
+- en: If the first and final payments also occur regular periods, they will be \$25
+    and \$1025, respectively. However, first and last coupon periods may or may not
+    be regular. The usually cited case is an irregular first payment period, but there
+    can also be cases over of an irregular period from penultimate to maturity date.
+  id: totrans-280
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果第一个和最后一个支付也按照常规周期发生，它们将分别是\$25和\$1025。但是，第一个和最后一个优惠券期间可能是不规则的。通常引用的案例是第一个支付期间不规则，但也可能存在从倒数第二个到到期日期的不规则期间。
+- en: 'In the case of a short first period, the coupon payment is calculated by multiplying
+    the annual coupon rate by the ratio of actual days in the period over the number
+    of days in what would be a normal first period. Again, let us use the example
+    of a \$1000 face value bond paying an annual coupon of 5% semiannually (\$25 regular
+    coupon payments). Suppose a ten-year bond is issued on 2022-7-12, with a first
+    payment date of 2022-12-21\. Subsequent payment dates are then on 21 June and
+    21 December. If the first payment period had been regular, the issue date would
+    have been 2022-6-21\. This date is called the *first prior date*. Now, the first
+    payment is prorated as follows:'
+  id: totrans-281
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于第一个期间较短的情况，票息支付通过将年票息率乘以期间实际天数与正常第一个期间天数的比率来计算。再次举例说明，假设一张面值为\$1000、年票息率为5%、半年付息（\$25定期票息支付）的十年期债券于2022年7月12日发行，第一次支付日期为2022年12月21日。随后的支付日期分别为6月21日和12月21日。如果第一次支付期间是常规的，发行日期将是2022年6月21日。这个日期称为*第一个先前日期*。现在，第一次支付如下分摊：
+- en: <math alttext="StartFraction left-parenthesis c o u p o n p a y m e n t right-parenthesis
+    left-parenthesis n u m b e r o f d a y s f r o m i s s u e t o Baseline 1 s t
+    p m t right-parenthesis Over left-parenthesis n u m b e r o f d a y s f r o m
+    Baseline 1 s t p r i o r t o Baseline 1 s t p m t EndFraction equals" display="block"><mrow><mfrac><mrow><mo>(</mo><mi>c</mi><mi>o</mi><mi>u</mi><mi>p</mi><mi>o</mi><mi>n</mi><mi>p</mi><mi>a</mi><mi>y</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>)</mo><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mi>i</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>e</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>m</mi><mi>t</mi><mo>)</mo></mrow>
+    <mrow><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>m</mi><mi>t</mi></mrow></mfrac>
+    <mo>=</mo></mrow></math><math alttext="25 left-parenthesis StartFraction 162 Over
+    183 EndFraction right-parenthesis equals normal dollar-sign 22.13" display="block"><mrow><mn>25</mn>
+    <mo>(</mo> <mfrac><mn>162</mn> <mn>183</mn></mfrac> <mo>)</mo> <mo>=</mo> <mi>$</mi>
+    <mn>22</mn> <mo>.</mo> <mn>13</mn></mrow></math>
+  id: totrans-282
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="StartFraction left-parenthesis c o u p o n p a y m e n t right-parenthesis
+    left-parenthesis n u m b e r o f d a y s f r o m i s s u e t o Baseline 1 s t
+    p m t right-parenthesis Over left-parenthesis n u m b e r o f d a y s f r o m
+    Baseline 1 s t p r i o r t o Baseline 1 s t p m t EndFraction equals" display="block"><mrow><mfrac><mrow><mo>(</mo><mi>c</mi><mi>o</mi><mi>u</mi><mi>p</mi><mi>o</mi><mi>n</mi><mi>p</mi><mi>a</mi><mi>y</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>)</mo><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mi>i</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>e</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>m</mi><mi>t</mi><mo>)</mo></mrow>
+    <mrow><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>m</mi><mi>t</mi></mrow></mfrac>
+    <mo>=</mo></mrow></math><math alttext="25 left-parenthesis StartFraction 162 Over
+    183 EndFraction right-parenthesis equals normal dollar-sign 22.13" display="block"><mrow><mn>25</mn>
+    <mo>(</mo> <mfrac><mn>162</mn> <mn>183</mn></mfrac> <mo>)</mo> <mo>=</mo> <mi>$</mi>
+    <mn>22</mn> <mo>.</mo> <mn>13</mn></mrow></math>
+- en: '![Figure 9-1: Irregular short first coupon period](Images/Fig_9_1.png)'
+  id: totrans-283
+  prefs: []
+  type: TYPE_IMG
+  zh: '![图 9-1：不规则的短第一票息期间](Images/Fig_9_1.png)'
+- en: In the case of a long first period, suppose we have a bond with the same terms
+    as in the short period example, but where the issue date is now 2022-5-12.
+  id: totrans-284
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于第一个期间较长的情况，假设我们有一张面值为\$1000、年票息率为5%、半年付息的债券，发行日期现在是2022年5月12日。
+- en: '![Figure 9-2: Irregular long first coupon period](Images/Fig_9_2.png)'
+  id: totrans-285
+  prefs: []
+  type: TYPE_IMG
+  zh: '![图 9-2：不规则的长第一票息期间](Images/Fig_9_2.png)'
+- en: In this case, the first coupon payment will be the regular coupon of $25 over
+    the period from the first prior date to issue, *plus* a partial payment (in red)
+    over the interval between issue and first prior date. This extra payment is prorated
+    over the six-month period from the *second prior date* to the first. That is,
+  id: totrans-286
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在这种情况下，第一次的票息支付将包括从发行之前的第一个日期到发行日期的正常票息$25，*加上*从第二个先前日期到第一个日期之间的部分支付（以红色显示）。这额外支付按照从第二个先前日期到第一个日期的六个月期间进行分摊。即，
+- en: <math alttext="StartFraction left-parenthesis c o u p o n p a y m e n t right-parenthesis
+    left-parenthesis n u m b e r o f d a y s f r o m i s s u e t o Baseline 1 s t
+    p r i o r right-parenthesis Over left-parenthesis n u m b e r o f d a y s f r
+    o m Baseline 2 n d p r i o r t o Baseline 1 s t p r i o r right-parenthesis EndFraction
+    equals" display="block"><mrow><mfrac><mrow><mo>(</mo><mi>c</mi><mi>o</mi><mi>u</mi><mi>p</mi><mi>o</mi><mi>n</mi><mi>p</mi><mi>a</mi><mi>y</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>)</mo><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mi>i</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>e</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mo>)</mo></mrow>
+    <mrow><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mn>2</mn><mi>n</mi><mi>d</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mo>)</mo></mrow></mfrac>
+    <mo>=</mo></mrow></math><math alttext="25 left-parenthesis StartFraction 40 Over
+    182 EndFraction right-parenthesis equals normal dollar-sign 5.49" display="block"><mrow><mn>25</mn>
+    <mo>(</mo> <mfrac><mn>40</mn> <mn>182</mn></mfrac> <mo>)</mo> <mo>=</mo> <mi>$</mi>
+    <mn>5</mn> <mo>.</mo> <mn>49</mn></mrow></math>
+  id: totrans-287
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="StartFraction left-parenthesis c o u p o n p a y m e n t right-parenthesis
+    left-parenthesis n u m b e r o f d a y s f r o m i s s u e t o Baseline 1 s t
+    p r i o r right-parenthesis Over left-parenthesis n u m b e r o f d a y s f r
+    o m Baseline 2 n d p r i o r t o Baseline 1 s t p r i o r right-parenthesis EndFraction
+    equals" display="block"><mrow><mfrac><mrow><mo>(</mo><mi>c</mi><mi>o</mi><mi>u</mi><mi>p</mi><mi>o</mi><mi>n</mi><mi>p</mi><mi>a</mi><mi>y</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>)</mo><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mi>i</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>e</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mo>)</mo></mrow>
+    <mrow><mo>(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>d</mi><mi>a</mi><mi>y</mi><mi>s</mi><mi>f</mi><mi>r</mi><mi>o</mi><mi>m</mi><mn>2</mn><mi>n</mi><mi>d</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mi>t</mi><mi>o</mi><mn>1</mn><mi>s</mi><mi>t</mi><mi>p</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mo>)</mo></mrow></mfrac>
+    <mo>=</mo></mrow></math><math alttext="25 left-parenthesis StartFraction 40 Over
+    182 EndFraction right-parenthesis equals normal dollar-sign 5.49" display="block"><mrow><mn>25</mn>
+    <mo>(</mo> <mfrac><mn>40</mn> <mn>182</mn></mfrac> <mo>)</mo> <mo>=</mo> <mi>¥</mi>
+    <mn>5</mn> <mo>.</mo> <mn>49</mn></mrow></math>
+- en: The total first coupon payment is then 25 + 5.49 = 30.49
+  id: totrans-288
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 总第一次票息支付为 25 + 5.49 = 30.49
+- en: Calculating prorated payments over irregular final periods are similar, except
+    that prior payment periods preceding issue, extra payment periods extending later
+    than maturity are utilized.
+  id: totrans-289
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计算不规则最终期间的比例付款类似，不过会利用在发行之前的前期付款期间，以及延伸到到期后的额外付款期间。
+- en: Valuing a Bond
+  id: totrans-290
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 估值债券
+- en: The issuer sells bonds on the issue date, pays the owners of the bonds the coupon
+    amounts and, at maturity, also pays back the face value of the bond. The owner
+    of a bond may then sell it on the secondary market, in which case the buyer and
+    seller agree to a business date, known as the bond settle date, on which the sale
+    will take place. On this settle date the seller receives his money, and the buyer
+    becomes the registered owner, with the right to receive all payments which fall
+    due after the settle date. Should the owner of the bond wish to value the bond
+    at any time, this can be done by calculating the discounted value of the bond,
+    using a yield curve of his own choice, and the discount factors calculated for
+    the periods from the settlement date to the corresponding payment dates.
+  id: totrans-291
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 发行人在发行日出售债券，向债券所有者支付票面利息，并在到期时还本付息。债券所有者随后可以在二级市场上出售债券，买卖双方会商定业务日期，称为债券结算日，交易将在此日进行。在此结算日，卖方收到款项，买方成为注册所有者，有权收取结算日后到期的所有付款。如果债券所有者希望随时估值债券，可以通过使用自己选择的收益率曲线，以及从结算日到相应付款日期计算的折现因子来完成。
+- en: '![Figure 9-3: Bond valuation at settle date](Images/Fig_9_3.png)'
+  id: totrans-292
+  prefs: []
+  type: TYPE_IMG
+  zh: '![Figure 9-3: 债券在结算日的估值](Images/Fig_9_3.png)'
+- en: Revisiting the example in Figure 9-1, suppose a bond is exchanged for cash on
+    2023-10-24, as indicated by the red hash mark in Figure 9-3 above. All preceding
+    coupon payments have been paid to the previous owner, so the value of the bond
+    will only depend on payments beginning with the third coupon payment through maturity.
+    If the bond and yield curve settle dates are the same, then using the discount
+    factor notation above, the value of the bond on this date will be
+  id: totrans-293
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 回顾图9-1中的示例，假设债券在2023-10-24以现金交换，如图9-3中的红色哈希标记所示。所有之前的付息已支付给前任所有者，因此债券的价值仅取决于从第三次付息开始到到期的付款。如果债券和收益率曲线的结算日期相同，则在此日期上使用上述折现因子表示法，债券的价值将为
+- en: <math alttext="25 left-parenthesis upper P left-parenthesis s comma d 3 right-parenthesis
+    plus ellipsis plus upper P left-parenthesis s comma d Subscript p Baseline right-parenthesis
+    right-parenthesis plus left-parenthesis 1000 plus 25 right-parenthesis upper P
+    left-parenthesis s comma d Subscript m Baseline right-parenthesis" display="block"><mrow><mn>25</mn>
+    <mrow><mo>(</mo> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi>
+    <mn>3</mn></msub> <mo>)</mo></mrow> <mo>+</mo> <mo>⋯</mo> <mo>+</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi> <mi>p</mi></msub> <mo>)</mo></mrow>
+    <mo>)</mo></mrow> <mo>+</mo> <mrow><mo>(</mo> <mn>1000</mn> <mo>+</mo> <mn>25</mn>
+    <mo>)</mo></mrow> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi>
+    <mi>m</mi></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-294
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="25 left-parenthesis upper P left-parenthesis s comma d 3 right-parenthesis
+    plus ellipsis plus upper P left-parenthesis s comma d Subscript p Baseline right-parenthesis
+    right-parenthesis plus left-parenthesis 1000 plus 25 right-parenthesis upper P
+    left-parenthesis s comma d Subscript m Baseline right-parenthesis" display="block"><mrow><mn>25</mn>
+    <mrow><mo>(</mo> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi>
+    <mn>3</mn></msub> <mo>)</mo></mrow> <mo>+</mo> <mo>⋯</mo> <mo>+</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi> <mi>p</mi></msub> <mo>)</mo></mrow>
+    <mo>)</mo></mrow> <mo>+</mo> <mrow><mo>(</mo> <mn>1000</mn> <mo>+</mo> <mn>25</mn>
+    <mo>)</mo></mrow> <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>,</mo> <msub><mi>d</mi>
+    <mi>m</mi></msub> <mo>)</mo></mrow></mrow></math>
+- en: where *s* = 2023-10-24 is the yield curve settlement date, *d[p]* = 2032-6-21
+    is the penultimate coupon date, and *d[m]* = 2032-12-21 is the maturity date.
+  id: totrans-295
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中*s* = 2023-10-24是收益率曲线结算日期，*d[p]* = 2032-6-21是倒数第二次付息日，*d[m]* = 2032-12-21是到期日。
+- en: It is also possible for a bond settle date to occur after the yield curve settle
+    date. Suppose the bond transaction is to occur two business days after the yield
+    curve settle date. If we let *s[b]* = 2023-10-26, then the bond value becomes
+  id: totrans-296
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 债券结算日期也可能晚于收益率曲线结算日期。假设债券交易发生在收益率曲线结算日期后的两个工作日。如果我们设定*s[b]* = 2023-10-26，则债券价值变为
+- en: <math alttext="25 left-parenthesis upper P left-parenthesis s semicolon s Subscript
+    b Baseline comma d 3 right-parenthesis plus ellipsis plus upper P left-parenthesis
+    s semicolon s Subscript b Baseline comma d Subscript p Baseline right-parenthesis
+    right-parenthesis plus left-parenthesis 1000 plus 25 right-parenthesis upper P
+    left-parenthesis s semicolon s Subscript b Baseline comma d Subscript m Baseline
+    right-parenthesis" display="block"><mrow><mn>25</mn> <mrow><mo>(</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>s</mi> <mi>b</mi></msub> <mo>,</mo>
+    <msub><mi>d</mi> <mn>3</mn></msub> <mo>)</mo></mrow> <mo>+</mo> <mo>⋯</mo> <mo>+</mo>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>s</mi> <mi>b</mi></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mi>p</mi></msub> <mo>)</mo></mrow> <mo>)</mo></mrow>
+    <mo>+</mo> <mrow><mo>(</mo> <mn>1000</mn> <mo>+</mo> <mn>25</mn> <mo>)</mo></mrow>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>s</mi> <mi>b</mi></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mi>m</mi></msub> <mo>)</mo></mrow></mrow></math>
+  id: totrans-297
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="25 left-parenthesis upper P left-parenthesis s semicolon s Subscript
+    b Baseline comma d 3 right-parenthesis plus ellipsis plus upper P left-parenthesis
+    s semicolon s Subscript b Baseline comma d Subscript p Baseline right-parenthesis
+    right-parenthesis plus left-parenthesis 1000 plus 25 right-parenthesis upper P
+    left-parenthesis s semicolon s Subscript b Baseline comma d Subscript m Baseline
+    right-parenthesis" display="block"><mrow><mn>25</mn> <mrow><mo>(</mo> <mi>P</mi>
+    <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>s</mi> <mi>b</mi></msub> <mo>,</mo>
+    <msub><mi>d</mi> <mn>3</mn></msub> <mo>)</mo></mrow> <mo>+</mo> <mo>⋯</mo> <mo>+</mo>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>s</mi> <mi>b</mi></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mi>p</mi></msub> <mo>)</mo></mrow> <mo>)</mo></mrow>
+    <mo>+</mo> <mrow><mo>(</mo> <mn>1000</mn> <mo>+</mo> <mn>25</mn> <mo>)</mo></mrow>
+    <mi>P</mi> <mrow><mo>(</mo> <mi>s</mi> <mo>;</mo> <msub><mi>s</mi> <mi>b</mi></msub>
+    <mo>,</mo> <msub><mi>d</mi> <mi>m</mi></msub> <mo>)</mo></mrow></mrow></math>
+- en: Discounted valuations are also routine calculations in trading and risk management
+    software. Modern professional traders use this value as a benchmark for determining
+    the fair (or equilibrium) market price of a bond. Risk managers will calculate
+    bonds under multiple shocked or random yield curve scenarios to derive measures
+    of their portfolio exposures to market risk.
+  id: totrans-298
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 折现估值也是交易和风险管理软件中的常规计算。现代专业交易员使用这个值作为确定债券公平（或均衡）市场价格的基准。风险管理人员将根据多个受冲击或随机收益率曲线情景计算债券，以确定其投资组合面临的市场风险度量。
+- en: A Bond Class
+  id: totrans-299
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 债券类
+- en: Our task now is to implement the requirements above in a user-defined `Bond`
+    class, using the contractual terms of a bond as input data. First, let us here
+    consolidate and review the essential data inputs associated with a bond issue.
+  id: totrans-300
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在我们的任务是在用户定义的`Bond`类中实现上述要求，使用债券的合同条款作为输入数据。首先，让我们在这里整合和审视与债券发行相关的基本数据输入。
+- en: Face value
+  id: totrans-301
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 面值
+- en: Annual coupon rate
+  id: totrans-302
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 年度利率
+- en: Number of coupon payments per year (coupon frequency)
+  id: totrans-303
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 每年的付息次数（付息频率）
+- en: Issue date
+  id: totrans-304
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 发行日期
+- en: First coupon date
+  id: totrans-305
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 首次付息日
+- en: Penultimate coupon date
+  id: totrans-306
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 倒数第二次付息日
+- en: Maturity date
+  id: totrans-307
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 到期日期
+- en: Day count basis
+  id: totrans-308
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 日计数基础
+- en: Our `Bond` class can be formally summarized as shown in the class declaration
+    below.
+  id: totrans-309
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们的`Bond`类可以如下类声明正式总结。
+- en: '[PRE63]'
+  id: totrans-310
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE63]'
+- en: Note that all the contractual information is captured in the constructor, and
+    valuation of the bond will be delegated to the public `discounted_value` function.
+    This separates what is essentially the “interface” – namely the input and processing
+    of contractual bond data – from the “implementation” where the bond value is calculated.
+    Per the discussion in {[5.1]}, this valuation function is based on the bond settlement
+    date and the market yield curve, inputs that are independent from the constructor
+    arguments. One specific advantage to this is a single `Bond` instance can be created,
+    and its valuation function called many times under different market scenarios
+    for risk reporting purposes, as noted previously.
+  id: totrans-311
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，所有合同信息都包含在构造函数中，债券的估值将委托给公共的`discounted_value`函数。这将“接口”（即合同债券数据的输入和处理）与“实现”（计算债券价值的地方）分离开来。根据{[5.1]}的讨论，这个估值函数基于债券结算日期和市场收益率曲线，这些输入独立于构造函数参数。其中一个特定优势是可以创建单个`Bond`实例，并在不同市场情景下多次调用其估值函数，用于风险报告目的，如前面提到的。
+- en: There are three vectors of equal length, `due_dates_`, `payment_dates_`, and
+    `payment_amounts_`, corresponding to the respective descriptions in Section {[5.1.1]}
+    {Determining the Payment Schedule} above. All three are necessary for calculating
+    the discounted value of a bond.
+  id: totrans-312
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 三个长度相等的向量，`due_dates_`，`payment_dates_`和`payment_amounts_`，分别对应上述第{[5.1.1]}
+    {确定付款计划}部分的描述。计算债券的折现价值需要这三个向量。
+- en: A bond ID field is also generally required for both trading and risk applications,
+    so it is added as a constructor argument and data member, along with a public
+    accessor. The `coupon_frequency` parameter represents the number of coupon payments
+    per year – ie 2 for semiannual, and 4 for quarterly – as defined in the bond contract.
+  id: totrans-313
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 债券ID字段通常也需要用于交易和风险应用程序，因此它作为构造函数参数和数据成员添加，以及一个公共访问器。`coupon_frequency`参数表示每年的票息支付次数
+    - 即半年度为2次，季度为4次 - 如在债券合同中定义。
+- en: Bond Class Implementation
+  id: totrans-314
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 债券类实现
+- en: Next, we will work through the class implementation step by step. The constructor
+    will generate the due and payment dates, and the payment amounts. Note that `first_coupon_date`,
+    `penultimate_coupon_date` and `maturity_date` are due dates which fall on business
+    days. The `first_coupon_date` and `penultimate_coupon_date` input objects are
+    also dates that are part of the regular schedule of due dates. The maturity date
+    may or may not be part of the regular schedule of due dates, as discussed previously.
+  id: totrans-315
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，我们将逐步完成类实现。构造函数将生成到期日和支付日期以及支付金额。请注意，`first_coupon_date`，`penultimate_coupon_date`和`maturity_date`是落在工作日的到期日。`first_coupon_date`和`penultimate_coupon_date`输入对象也是常规到期日计划的一部分。到期日可能是常规到期日计划的一部分，也可能不是，如前面讨论过的。
+- en: '[PRE64]'
+  id: totrans-316
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE64]'
+- en: First (1), although the `coupon_frequency` value is defined in the bond contract,
+    and often stored in a bond database, it is easier to use the length of the regular
+    coupon period – eg 3 months, 6 months, etc – in the tasks that follow. This equivalent
+    number of months is calculated as shown above and stored as the constant integer
+    value `months_in_regular_coupon_period`. Next (2), following the formula presented
+    above {[5.1]}, `regular_coupon_payment` stores this value as a constant. Recall
+    that regular coupon periods are those which span two adjacent due dates, and all
+    coupon periods except the first and last are guaranteed to be regular.
+  id: totrans-317
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先（1），尽管`coupon_frequency`值在债券合同中定义，并且通常存储在债券数据库中，但在接下来的任务中使用常规票息期间的长度更容易 -
+    例如3个月，6个月等等。这个等效的月数是按照上面显示的方式计算并存储为常量整数值`months_in_regular_coupon_period`。接下来（2），根据上面提出的公式{[5.1]}，`regular_coupon_payment`将此值存储为常量。请记住，常规票息期间是跨越两个相邻到期日的期间，除了第一个和最后一个之外，所有票息期间都保证是常规的。
+- en: Generating the Date and Payment Vectors
+  id: totrans-318
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 生成日期和支付向量
+- en: Now (3), the constructor implementation will generate the due and payment dates,
+    and the payment amounts. The `due_dates_` vector will contain the regular dates
+    that get generated for each respective coupon period – eg every six months – up
+    to the contractual penultimate coupon date. These are not adjusted for weekends.
+    Because the `+=` operator for months on `std::chrono::year_month_day` guarantees
+    the same day value, with the correct year and month result, we are OK as long
+    as the successive date is valid. Bonds have many variations, but since this is
+    not production code it is simplified by assuming the coupon day is less than 29\.
+    This avoids end of month calculations.
+  id: totrans-319
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在（3），构造函数实现将生成到期日和支付日期以及支付金额。`due_dates_`向量将包含为每个相应票息期间生成的常规日期 - 例如每六个月 - 直到合同倒数第二个票息日期。这些日期不会调整为周末。因为`std::chrono::year_month_day`上的`+=`运算符保证相同的日期值，具有正确的年份和月份结果，只要连续日期有效，我们就没问题。债券有许多变体，但由于这不是生产代码，因此通过假设票息日小于29来简化。这避免了月底计算。
+- en: At point (4), the `weekend_roll` member function is applied to successive copies
+    of each due date and pushed onto the `payment_dates_` vector prior to the penultimate
+    payment date. Thus, any due date falling on a weekend is rolled to the next business
+    date. The regular coupon payment amount is also appended to the `payment_amounts_`
+    vector corresponding to each regular date.
+  id: totrans-320
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在（4）点，`weekend_roll`成员函数被应用于每个到期日的连续副本，并在倒数第二个支付日期之前推送到`payment_dates_`向量中。因此，任何落在周末的到期日都会滚动到下一个工作日。常规票息支付金额也附加到与每个常规日期对应的`payment_amounts_`向量中。
+- en: In the previous step, the first coupon payment was naively set to the regular
+    amount, so in (5), a check is made whether the first payment period is irregular.
+    If so, a nested conditional statement determines whether this period is short
+    or long. In the event of a short period, the first prior date is found by subtracting
+    the number of months in a regular period from the first payment date, and then
+    the prorated coupon is calculated. In the event of a long period, the second prior
+    date is determined, and then the prorated coupon over the interval from issue
+    to the first prior date is calculated. The total first coupon payment is then
+    this prorated amount plus a regular payment {[see 5.1.1]}.
+  id: totrans-321
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在前一步骤中，第一次利息支付被天真地设置为正常金额，因此在（5）中，检查第一次支付期间是否不规则。如果是，则嵌套条件语句确定此期间是短期还是长期。在短期情况下，第一个先前日期是通过从第一个支付日期减去常规期间的月份数来确定，然后计算按比例分配的利息支付。在长期情况下，确定第二个先前日期，然后计算从发行到第一个先前日期间隔的按比例分配的利息支付。然后，总的第一次利息支付即为此按比例分配的金额加上正常支付
+    {[见 5.1.1]}。
+- en: The maturity date is a business day and is appended to each date vector. It
+    is provisionally assumed to follow a normal payment period, and thus the final
+    payment is set to the regular coupon amount plus the face value of the bond at
+    this point (6). Then, one more conditional statement checks if the final period
+    is regular or not. If so, an adjustment is made to the final payment. Similar
+    calculations to an irregular first period are performed, but using prospective
+    rather than retrospective extensions (7).
+  id: totrans-322
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 到期日是工作日，并附加到每个日期向量。暂定假设遵循正常支付周期，因此在这一点上（6），最终支付设为此时债券的正常利息金额加上面值。然后，另一个条件语句检查最后期间是否规则。如果是，则对最终支付进行调整。执行类似于不规则首期的计算，但使用前瞻性而不是回顾性延伸（7）。
+- en: Finally (8), the final payment consisting of the final coupon payment and return
+    of face value is appended to the vector of payments.
+  id: totrans-323
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后（8），最终支付包括最后的利息支付和面值的返回，附加到支付向量中。
+- en: Bond Valuation
+  id: totrans-324
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 债券估值
+- en: Although bonds can be traded at whichever price a buyer and seller agree, traders
+    will usually require having access to the benchmark “fair” price, namely the sum
+    of the discounted payments remaining as of the bond settlement date. As noted
+    in Section {[5.1.2]}, the buyer of a bond becomes entitled to receive all payments
+    that are due strictly *after* the settlement date. This introduces a special case
+    that is addressed in the code, namely if bond settlement occurs on a due date,
+    the coupon payment is paid to the seller. Therefore, only those coupon payments
+    due after settlement add to the bond value in the form of discounted amounts.
+    If a due date falls on a weekend, it cannot be a settle date, and therefore the
+    payment date is rolled to the next Monday and is payable to the buyer. It is for
+    this reason the `Bond` class has both due date and payment date vectors as data
+    members.
+  id: totrans-325
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管债券可以按照买卖双方的协议进行交易，但交易者通常需要访问基准“公平”价格，即债券结算日期剩余折现支付总和。正如第 {[5.1.2]} 节所述，债券买方有权获得在结算日期**之后**严格到期的所有支付。这引入了一个特殊情况，在代码中进行了处理，即如果债券结算日期恰逢到期日，则利息支付将支付给卖方。因此，只有结算日期后到期的利息支付以折现金额的形式增加到债券价值中。如果到期日恰逢周末，则不能作为结算日期，因此支付日期被推迟到下个周一并支付给买方。正因如此，`Bond`
+    类具有到期日和支付日期向量作为数据成员。
+- en: '[PRE65]'
+  id: totrans-326
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE65]'
+- en: The code will loop through the `due_dates_` member vector until the first due
+    date strictly later than settlement is located. At this point, each remaining
+    payment – starting with the same current index as `due_dates_` — is obtained from
+    the `payment_amounts_` vector. Each payment value is discounted from the payment
+    date back to the bond settlement date. The discount factor that multiplies each
+    payment is easily obtained by the eponymous member function on the `yield_curve`
+    input object. The cumulative sum of these discounted payments is then returned
+    as the fair market value of the bond.
+  id: totrans-327
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 代码将循环遍历 `due_dates_` 成员向量，直到找到严格晚于结算的第一个到期日期。此时，从 `payment_amounts_` 向量获取每个剩余支付
+    - 从与 `due_dates_` 相同的当前索引开始。每个支付值从支付日期折现回债券结算日期。通过 `yield_curve` 输入对象的同名成员函数轻松获得乘以每笔支付的折现因子。然后将这些折现支付的累积总和作为债券的公平市场价值返回。
+- en: As you may notice, this valuation function is short and compact, as the due
+    dates have been generated by the constructor, along with the payment dates adjusted
+    for business days where necessary. The payment amounts – including the final payment
+    comprised of the last coupon payment and return of face value – were also computed
+    by the constructor, including any adjustment to the first payment in the event
+    of an irregular short or long payment period.
+  id: totrans-328
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如您所注意到的，这个估值函数简短而紧凑，因为到期日已经由构造函数生成，并根据需要调整为工作日的付款日期。付款金额 - 包括最后一次付息和面值归还组成的最后一笔付款
+    - 也是由构造函数计算的，包括在不规则的短期或长期付款期间的第一笔付款的任何调整。
+- en: The discount factors back to the bond settlement date are easily obtained from
+    the member function `discounted_value` on the input `yield_curve` object, while
+    all the date functionality is wrapped in the `ChronoDate` class. In essence, the
+    `discounted_value` function doesn’t “need to care” about how the discount factors
+    or date calculations are obtained. It just uses public member functions on the
+    objects to get the information it needs and computes the result.
+  id: totrans-329
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从债券结算日期回溯的折现因子可以轻松地从输入`yield_curve`对象上的成员函数`discounted_value`中获得，而所有日期功能都封装在`ChronoDate`类中。实质上，`discounted_value`函数不需要关心折现因子或日期计算是如何获得的。它只是使用对象上的公共成员函数获取所需的信息并计算结果。
+- en: A Bond Valuation Example
+  id: totrans-330
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 债券估值示例
+- en: We can now put the individual classes previously presented into an example of
+    pricing a bond. Recall that the `YieldCurve` abstract base class will required
+    a derived curve fitting method. Again, there are many different approaches available,
+    ranging from simple to highly advanced, but to keep the example concise, we will
+    use linear interpolation. In constructing a `Bond` object, we will need to supply
+    the face value, issue date, first coupon date, penultimate payment date, and maturity
+    of the bond, along with its face value.
+  id: totrans-331
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在我们可以将之前介绍的各个类放入一个定价债券的示例中。请记住，`YieldCurve`抽象基类将需要一个派生的曲线拟合方法。同样，有许多不同的方法可供选择，从简单到高级不等，但为了保持示例简洁，我们将使用线性插值。在构建一个`Bond`对象时，我们需要提供债券的面值、发行日期、首次付息日期、倒数第二次付款日期和到期日期，以及其面值。
+- en: '{UML diagram here} As an example, suppose the term sheet of a 20-year bond
+    is as follows:'
+  id: totrans-332
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{UML图在此处} 举例来说，假设一张20年期债券的条款如下：'
+- en: 'Table 4-1\. Table 9-1: Contractual bond terms - example'
+  id: totrans-333
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 表4-1。表9-1：合同债券条款 - 示例
+- en: '|  |  |'
+  id: totrans-334
+  prefs: []
+  type: TYPE_TB
+  zh: '|  |  |'
+- en: '| --- | --- |'
+  id: totrans-335
+  prefs: []
+  type: TYPE_TB
+  zh: '| --- | --- |'
+- en: '| Face Value | $1000 |'
+  id: totrans-336
+  prefs: []
+  type: TYPE_TB
+  zh: '| 面值 | $1000 |'
+- en: '| Annual Coupon Rate | 6.2% |'
+  id: totrans-337
+  prefs: []
+  type: TYPE_TB
+  zh: '| 年付息率 | 6.2% |'
+- en: '| Payment Frequency | Every six months (semiannual) |'
+  id: totrans-338
+  prefs: []
+  type: TYPE_TB
+  zh: '| 付息频率 | 每六个月（半年度） |'
+- en: '| Issue Date | Mon 8 May 2023 |'
+  id: totrans-339
+  prefs: []
+  type: TYPE_TB
+  zh: '| 发行日期 | 周一，2023年5月8日 |'
+- en: '| First Coupon Date | Tue 7 Nov 2023 |'
+  id: totrans-340
+  prefs: []
+  type: TYPE_TB
+  zh: '| 首次付息日 | 周二，2023年11月7日 |'
+- en: '| Penultimate Coupon Date | Wed 7 May 2042 |'
+  id: totrans-341
+  prefs: []
+  type: TYPE_TB
+  zh: '| 倒数第二次付息日 | 周三，2042年5月7日 |'
+- en: '| Maturity Date | Fri 7 Nov 2042 |'
+  id: totrans-342
+  prefs: []
+  type: TYPE_TB
+  zh: '| 到期日 | 周五，2042年11月7日 |'
+- en: 'Data in practice would be taken in from an interface and converted to `ChronoDate`
+    types, but we can replicate the result as follows:'
+  id: totrans-343
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在实践中，数据将从接口中输入并转换为`ChronoDate`类型，但我们可以如下复制结果：
+- en: '[PRE66]'
+  id: totrans-344
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE66]'
+- en: 'Recall, however, the due dates, payment dates, and payment amounts are all
+    generated and adjusted in the body of the constructor. Each due date will carry
+    a day value of 7, and the payment dates are the same except for the due dates
+    falling on weekends that are rolled to the next Monday:'
+  id: totrans-345
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 但请记住，到期日、付款日期和付款金额都是在构造函数的主体中生成和调整的。每个到期日都将携带一个7的日期值，付款日期相同，除了落在周末的到期日会被推迟到下一个周一：
+- en: 2026-11-09, 2027-11-08, 2028-05-08,
+  id: totrans-346
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 2026年11月9日，2027年11月8日，2028年5月8日，
+- en: 2032-11-08, 2033-05-09, 2034-05-08,
+  id: totrans-347
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 2032年11月8日，2033年5月9日，2034年5月8日，
+- en: 2037-11-09, 2038-11-08, 2039-05-09
+  id: totrans-348
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 2037年11月9日，2038年11月8日，2039年5月9日
+- en: The regular coupon amount is
+  id: totrans-349
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 常规付息金额为
+- en: <math alttext="StartFraction 1000 left-parenthesis 0.0625 right-parenthesis
+    Over 2 EndFraction equals normal dollar-sign 31.00" display="block"><mrow><mfrac><mrow><mn>1000</mn><mo>(</mo><mn>0</mn><mo>.</mo><mn>0625</mn><mo>)</mo></mrow>
+    <mn>2</mn></mfrac> <mo>=</mo> <mi>$</mi> <mn>31</mn> <mo>.</mo> <mn>00</mn></mrow></math>
+  id: totrans-350
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="StartFraction 1000 left-parenthesis 0.0625 right-parenthesis
+    Over 2 EndFraction equals normal dollar-sign 31.00" display="block"><mrow><mfrac><mrow><mn>1000</mn><mo>(</mo><mn>0</mn><mo>.</mo><mn>0625</mn><mo>)</mo></mrow>
+    <mn>2</mn></mfrac> <mo>=</mo> <mi>$</mi> <mn>31</mn> <mo>.</mo> <mn>00</mn></mrow></math>
+- en: The only irregular period will be the from settle to the first coupon date,
+    2023-05-08 to 2023-11-07, resulting in the calculated coupon amount as
+  id: totrans-351
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 唯一的不规则期间将是从结算日到第一次付息日，从2023年5月8日到2023年11月7日，导致计算出的付息金额为
+- en: <math alttext="31 left-parenthesis StartFraction 183 Over 184 EndFraction right-parenthesis
+    equals normal dollar-sign 24.86" display="block"><mrow><mn>31</mn> <mo>(</mo>
+    <mfrac><mn>183</mn> <mn>184</mn></mfrac> <mo>)</mo> <mo>=</mo> <mi>$</mi> <mn>24</mn>
+    <mo>.</mo> <mn>86</mn></mrow></math>
+  id: totrans-352
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="31 left-parenthesis StartFraction 183 Over 184 EndFraction right-parenthesis
+    equals normal dollar-sign 24.86" display="block"><mrow><mn>31</mn> <mo>(</mo>
+    <mfrac><mn>183</mn> <mn>184</mn></mfrac> <mo>)</mo> <mo>=</mo> <mi>$</mi> <mn>24</mn>
+    <mo>.</mo> <mn>86</mn></mrow></math>
+- en: where <math alttext="StartFraction 183 Over 184 EndFraction"><mfrac><mn>183</mn>
+    <mn>184</mn></mfrac></math> is the ratio of the actual number of days in the first
+    period by the number of days from the first prior date to first coupon date.
+  id: totrans-353
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中<math alttext="分数 183 除以 184"><mfrac><mn>183</mn> <mn>184</mn></mfrac></math>是第一个期间实际天数与前一个日期到第一次付息日期天数的比率。
+- en: 'Next, suppose we want to value the bond on a date between issue and first coupon
+    date, say Tuesday, 10 October 2023\. Suppose also market data as of this date
+    imply the following spot yields:'
+  id: totrans-354
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，假设我们希望在发行日和第一个票息支付日之间的某一日期对债券进行估值，例如2023年10月10日星期二。假设截至此日期的市场数据表明以下即期收益率：
+- en: 'Table 4-2\. Table 9-2: Spot yields - example (figures rounded)'
+  id: totrans-355
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 表 4-2\. 表 9-2：即期收益率 - 示例（数字已四舍五入）
+- en: '| Period | Maturity | Year Fraction | Yield |'
+  id: totrans-356
+  prefs: []
+  type: TYPE_TB
+  zh: '| 期间 | 到期日 | 年分数 | 收益率 |'
+- en: '| --- | --- | --- | --- |'
+  id: totrans-357
+  prefs: []
+  type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
+- en: '| Overnight | 2023-10-11 | 0.00274 | 2% |'
+  id: totrans-358
+  prefs: []
+  type: TYPE_TB
+  zh: '| 隔夜 | 2023-10-11 | 0.00274 | 2% |'
+- en: '| 3 Month | 2024-01-10 | 0.25205 | 2.19% |'
+  id: totrans-359
+  prefs: []
+  type: TYPE_TB
+  zh: '| 3 个月 | 2024-01-10 | 0.25205 | 2.19% |'
+- en: '| 6 Month | 2024-04-10 | 0.50137 | 2.37% |'
+  id: totrans-360
+  prefs: []
+  type: TYPE_TB
+  zh: '| 6 个月 | 2024-04-10 | 0.50137 | 2.37% |'
+- en: '| 1 Year | 2024-10-10 | 1.00274 | 2.67% |'
+  id: totrans-361
+  prefs: []
+  type: TYPE_TB
+  zh: '| 1 年 | 2024-10-10 | 1.00274 | 2.67% |'
+- en: '| 2 Year | 2025-10-10 | 2.00274 | 3.12% |'
+  id: totrans-362
+  prefs: []
+  type: TYPE_TB
+  zh: '| 2 年 | 2025-10-10 | 2.00274 | 3.12% |'
+- en: '| 3 Year | 2026-10-12 | 3.00822 | 3.43% |'
+  id: totrans-363
+  prefs: []
+  type: TYPE_TB
+  zh: '| 3 年 | 2026-10-12 | 3.00822 | 3.43% |'
+- en: '| 5 Year | 2028-10-10 | 5.00548 | 3.78% |'
+  id: totrans-364
+  prefs: []
+  type: TYPE_TB
+  zh: '| 5 年 | 2028-10-10 | 5.00548 | 3.78% |'
+- en: '| 7 Year | 2030-10-10 | 7.00548 | 3.93% |'
+  id: totrans-365
+  prefs: []
+  type: TYPE_TB
+  zh: '| 7 年 | 2030-10-10 | 7.00548 | 3.93% |'
+- en: '| 10 Year | 2033-10-10 | 10.0082 | 4% |'
+  id: totrans-366
+  prefs: []
+  type: TYPE_TB
+  zh: '| 10 年 | 2033-10-10 | 10.0082 | 4% |'
+- en: '| 15 Year | 2038-10-11 | 15.0137 | 4.01% |'
+  id: totrans-367
+  prefs: []
+  type: TYPE_TB
+  zh: '| 15 年 | 2038-10-11 | 15.0137 | 4.01% |'
+- en: '| 20 Year | 2043-10-12 | 20.0192 | 4.01% |'
+  id: totrans-368
+  prefs: []
+  type: TYPE_TB
+  zh: '| 20 年 | 2043-10-12 | 20.0192 | 4.01% |'
+- en: '| 30 Year | 2053-10-10 | 30.0219 | 4% |'
+  id: totrans-369
+  prefs: []
+  type: TYPE_TB
+  zh: '| 30 年 | 2053-10-10 | 30.0219 | 4% |'
+- en: 'Create two vectors containing the maturities (as year fractions) and discount
+    bond prices above (again, in place of containers that would normally be initialized
+    in an interface):'
+  id: totrans-370
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 创建两个包含上述到期期限（作为年分数）和贴现债券价格的向量（再次强调，这些通常在接口中被初始化的容器被代替）：
+- en: '[PRE67]'
+  id: totrans-371
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE67]'
+- en: 'And also the settlement date:'
+  id: totrans-372
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 并且结算日期：
+- en: '[PRE68]'
+  id: totrans-373
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE68]'
+- en: 'With these, we can create an instance of a linearly interpolated yield curve:'
+  id: totrans-374
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有了这些，我们可以创建一个线性插值收益率曲线的实例：
+- en: '[PRE69]'
+  id: totrans-375
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE69]'
+- en: 'Then, to value the bond as of the same settlement date, provide the settlement
+    date and yield curve data to the corresponding member function on the `Bond` object:'
+  id: totrans-376
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，根据相同的结算日期将结算日期和收益率曲线数据提供给`Bond`对象的相应成员函数以对债券进行估值：
+- en: '[PRE70]'
+  id: totrans-377
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE70]'
+- en: This function will locate the first due date after settlement (in this case
+    the first coupon date), compute each continuously compounded discount factor from
+    each payment date back to the settle date using interpolated rates off of the
+    yield curve, multiply each payment by this discount factor, and sum the discounted
+    values to determine the discounted value of the bond. In this example, the result
+    is $1315.34.
+  id: totrans-378
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此函数将定位结算日期后的第一个到期日（在本例中为第一个票息支付日），使用收益率曲线上的插值率计算从每个支付日期到结算日期的每个连续复利贴现因子，将每个支付乘以此贴现因子，然后将贴现值求和以确定债券的贴现值。在本例中，结果为$1315.34。
+- en: Note the design separating the bond data “interface” from the “implementation”
+    provides flexibility in two respects. First, as noted above, a `Bond` object can
+    be created once, and then multiple random or shocked yield curve scenarios can
+    be applied to the valuation of the same bond. This can make calculations of risk
+    measures more efficient by obviating the need to create a whole new `Bond` object
+    for each scenario. Thousands of scenarios are often applied in these situations,
+    and there can be thousands of bonds in a portfolio, held in multiple bond portfolios
+    across all the international trading operations within a financial institution.
+    Avoiding new object creation at every step can make a measurable difference in
+    the time required to calculate risk values.
+  id: totrans-379
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意设计，将债券数据的“接口”与“实现”分开，可提供两方面的灵活性。首先，如上所述，可以创建一个`Bond`对象，然后将多个随机或冲击收益率曲线场景应用于对同一债券的估值。这可以通过避免为每个场景创建全新的`Bond`对象来提高风险测量的效率。在这些情况下通常应用数千个场景，并且在金融机构的所有国际交易运营中可能持有数千只债券的多个债券组合。在每一步避免创建新对象可以显著减少计算风险价值所需的时间。
+- en: The other case could be where the bond settlement date is set for some point
+    in the (near) future, but an expected valuation as of current market conditions
+    is needed today. As long as the bond settlement date is on or after yield curve
+    settlement, the valuation will be valid.
+  id: totrans-380
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一种情况可能是债券结算日期设定在（近）未来某一点，但需要根据当前市场条件进行预期估值。只要债券结算日期在或之后的收益率曲线结算日期，估值将有效。
+- en: Summary
+  id: totrans-381
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 摘要
+- en: TBD
+  id: totrans-382
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 待定
+- en: References
+  id: totrans-383
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 参考资料
+- en: '{0} Nicolai Josuttis, The C++ Standard Library 2E, Sec 5.7.1, pp 143-44'
+  id: totrans-384
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{0} 尼古拉·约苏蒂斯（Nicolai Josuttis），C++ 标准库第二版，5.7.1 节，第 143-144 页'
+- en: '{1} `std::chrono` date GitHub repository: [*https://github.com/HowardHinnant/date*](https://github.com/HowardHinnant/date)'
+  id: totrans-385
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{1} `std::chrono` date GitHub 仓库：[*https://github.com/HowardHinnant/date*](https://github.com/HowardHinnant/date)'
+- en: '{2} Howard Hinnant, Stack Overflow (Fact 5), [*https://stackoverflow.com/questions/59418514/using-c20-chrono-how-to-compute-various-facts-about-a-date*](https://stackoverflow.com/questions/59418514/using-c20-chrono-how-to-compute-various-facts-about-a-date)'
+  id: totrans-386
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{2} Howard Hinnant, Stack Overflow（Fact 5），[*https://stackoverflow.com/questions/59418514/using-c20-chrono-how-to-compute-various-facts-about-a-date*](https://stackoverflow.com/questions/59418514/using-c20-chrono-how-to-compute-various-facts-about-a-date)'
+- en: '{3} `chrono`-Compatible Low-Level Date Algorithms [*https://howardhinnant.github.io/date_algorithms.html*](https://howardhinnant.github.io/date_algorithms.html)'
+  id: totrans-387
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{3} `chrono`-兼容低级日期算法 [*https://howardhinnant.github.io/date_algorithms.html*](https://howardhinnant.github.io/date_algorithms.html)'
+- en: '{4} Howard Hinnant, Stack Overflow, “C++ chrono: Determine Whether a Day is
+    a Weekend” [*https://stackoverflow.com/questions/52776999/c-chrono-determine-whether-day-is-a-weekend*](https://stackoverflow.com/questions/52776999/c-chrono-determine-whether-day-is-a-weekend)'
+  id: totrans-388
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{4} Howard Hinnant, Stack Overflow, “C++ chrono: 确定一个日期是否为周末” [*https://stackoverflow.com/questions/52776999/c-chrono-determine-whether-day-is-a-weekend*](https://stackoverflow.com/questions/52776999/c-chrono-determine-whether-day-is-a-weekend)'
+- en: '{5} Howard Hinnant, Stack Overflow, “How Do I Add a Number of Days to a Date
+    in C++20 chrono” [*https://stackoverflow.com/questions/62734974/how-do-i-add-a-number-of-days-to-a-date-in-c20-chrono*](https://stackoverflow.com/questions/62734974/how-do-i-add-a-number-of-days-to-a-date-in-c20-chrono)'
+  id: totrans-389
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{5} Howard Hinnant, Stack Overflow, “如何在 C++20 chrono 中添加若干天到日期” [*https://stackoverflow.com/questions/62734974/how-do-i-add-a-number-of-days-to-a-date-in-c20-chrono*](https://stackoverflow.com/questions/62734974/how-do-i-add-a-number-of-days-to-a-date-in-c20-chrono)'
+- en: '{6} ISDA 30/360 Day Count Basis [*https://www.iso20022.org/15022/uhb/mt565-16-field-22f.htm*](https://www.iso20022.org/15022/uhb/mt565-16-field-22f.htm)'
+  id: totrans-390
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{6} ISDA 30/360 日计数基础 [*https://www.iso20022.org/15022/uhb/mt565-16-field-22f.htm*](https://www.iso20022.org/15022/uhb/mt565-16-field-22f.htm)'
+- en: '{6.5} Steiner pp 40-41'
+  id: totrans-391
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{6.5} Steiner 页码 40-41'
+- en: '{7} Kenneth J Adams, Smooth interpolation of zero curves, Algo Research Quarterly,
+    4(1/2):11-22, 2001'
+  id: totrans-392
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{7} Kenneth J Adams, 平滑插值的零曲线, Algo Research Quarterly, 4(1/2):11-22, 2001'
+- en: '{8} Hagan and West, Interpolation Methods for Curve Construction, Applied Mathematical
+    Finance, Vol. 13, No. 2\. 89-129, June 2006'
+  id: totrans-393
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{8} Hagan 和 West, 曲线构建的插值方法, Applied Mathematical Finance, Vol. 13, No. 2\.
+    89-129, June 2006'
+- en: '{9} C++ Add months to chrono::system_clock::time_point, Stack Overflow, [*https://stackoverflow.com/questions/43010362/c-add-months-to-chronosystem-clocktime-point/43018120#43018120*](https://stackoverflow.com/questions/43010362/c-add-months-to-chronosystem-clocktime-point/43018120#43018120)
+    (Not referenced directly)'
+  id: totrans-394
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{9} C++ 给 chrono::system_clock::time_point 添加月份, Stack Overflow, [*https://stackoverflow.com/questions/43010362/c-add-months-to-chronosystem-clocktime-point/43018120#43018120*](https://stackoverflow.com/questions/43010362/c-add-months-to-chronosystem-clocktime-point/43018120#43018120)
+    （未直接引用）'

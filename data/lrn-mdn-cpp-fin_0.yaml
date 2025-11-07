@@ -1,0 +1,1721 @@
+- en: Chapter 1\. An Overview of C++
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第 1 章。C++ 概述
+- en: Before launching into programming in C++, it will be useful to present a brief
+    overview of the language the C++ Standard Library, and the ways in which C++ continues
+    to have a major presence in quantitative finance.
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在深入学习 C++ 编程之前，介绍语言、C++ 标准库以及 C++ 在量化金融中继续占据主导地位的简要概述将非常有用。
+- en: You may have already felt intimidated by opinions and rumors claiming that C++
+    is extraordinarily difficult to learn and fraught with minefields. So, in this
+    chapter, we will try to allay these fears by first debunking some of the common
+    myths about C++, and then presenting straightforward examples to help you get
+    up and running.
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可能已经被声称 C++ 学习难度极大且充满陷阱的意见和传言所吓到。因此，在本章中，我们将试图首先揭穿关于 C++ 的一些常见神话，然后通过简单的示例帮助你快速上手。
+- en: Most of the content here is likely familiar for most readers, but the discussion
+    here attempts to extend some of the basics with points about quantitative programming
+    and best practices that often are not included in introductory books. We will
+    also have our first look at C++20, namely mathematical constants that have been
+    added to the C++ Standard Library.
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 大部分内容对大多数读者来说可能都很熟悉，但本节讨论尝试通过关于量化编程和通常不包括在入门书籍中的最佳实践来扩展一些基础知识。我们还将首次介绍 C++20，即已添加到
+    C++ 标准库中的数学常数。
+- en: By the end of the chapter, you should be able to write, compile, and run simple
+    C++ programs, understand basic numerical types, and employ mathematical functions
+    in the Standard Library that are fundamental in just about any quantitative discipline,
+    including finance.
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通过本章的学习，你应该能够编写、编译和运行简单的 C++ 程序，理解基本的数值类型，并在标准库中应用数学函数，这些函数在包括金融在内的任何量化学科中都是基础。
+- en: C++ and Quantitative Finance
+  id: totrans-5
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: C++ 和量化金融
+- en: C++ started its rapid growth in the financial sector around the mid-1990’s.
+    Many of us who were in the industry around this time had been raised on FORTRAN,
+    particularly for writing numerical routines and scientific applications. While
+    FORTRAN and its supporting libraries were very well-developed in terms of mathematical
+    and linear algebra support, it lacked support for object-oriented programming.
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++ 在 1990 年代中期开始在金融领域迅速发展。在这个时候，许多从事该行业的人都是在 FORTRAN 上成长起来的，特别是用于编写数值例程和科学应用程序。虽然
+    FORTRAN 及其支持库在数学和线性代数支持方面非常成熟，但在面向对象编程方面却有所欠缺。
+- en: 'Financial modeling in the abstract is naturally comprised of different components
+    that interact with each other. For example, to price even a simple derivative
+    contract based on foreign exchange and interest rates, one would typically require
+    the following:'
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 抽象中的金融建模自然由相互作用的不同组件组成。例如，即使是基于外汇和利率的简单衍生品合同的定价，通常也需要以下几点：
+- en: The term structure of interest rates for each currency
+  id: totrans-8
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 每种货币的利率期限结构
+- en: A market rate feed of live foreign exchange rate quotes
+  id: totrans-9
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 实时外汇汇率报价的市场利率信息源
+- en: Volatility curves or surfaces for movements in FX rates and interest rates
+  id: totrans-10
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 外汇汇率和利率的波动曲线或曲面
+- en: A set of pricing methods, eg closed form, simulation, or other numerical approximations
+  id: totrans-11
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 一组定价方法，例如封闭形式、模拟或其他数值逼近方法
+- en: Each of these components can be represented by an *object*, and C++ provided
+    the means for creating these objects and managing their relationships to each
+    other.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些组件中的每一个都可以用一个*对象*来表示，而 C++ 则提供了创建这些对象和管理它们彼此关系的手段。
+- en: Banks and other financial institutions also needed a way to calculate risk measures
+    at both a regional and global scale. This was a particular challenge for companies
+    with trading operations spread across the major financial centers of New York,
+    London, and Tokyo, as well as other capital markets. At the start of each trading
+    day, risk reporting was required for a firm’s headquarters in, say, New York that
+    took into account the portfolios maintained both locally and around the world.
+    This could be a computationally intensive task, but the performance of C++ made
+    it possible and was yet another significant factor in its early adoption in the
+    financial industry.
+  id: totrans-13
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 银行和其他金融机构还需要一种方法来计算区域和全球范围内的风险度量。对于在纽约、伦敦和东京等主要金融中心分布有交易业务的公司来说，这是一个特别的挑战，同时还要考虑本地和全球维护的投资组合在每个交易日开始时的风险报告。这可能是一个计算密集型的任务，但是
+    C++ 的性能使其成为可能，也是其在金融行业早期被广泛采用的另一个重要因素。
+- en: Around the turn of the century, newer object-oriented languages, such as Java
+    and C#, made software development a relatively simpler and faster process, while
+    more efficient processors became less expensive. However, the same features in
+    these languages that enabled quicker deployment, such as built-in managed memory
+    and intermediate compilation, could also introduce overhead in terms of run-time
+    performance. Management decisions on which language to adopt often came down to
+    a trade-off between more rapid development and run-time efficiency. Even if one
+    of these language alternatives was employed, computationally intensive pricing
+    models and risk calculations were -- and still are -- often delegated to existing
+    C++ libraries and called via an interface. It should also be noted that C++ also
+    offers certain compile-time optimizations that are not available in these other
+    programming languages.
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在世纪之交左右，新型面向对象语言如Java和C#使软件开发变得相对简单快捷，同时更高效的处理器价格也变得更加合理。然而，这些语言中带来更快部署的特性，如内置管理内存和中间编译，也可能在运行时性能方面引入额外开销。管理决策往往需要在更快开发与运行时效率之间权衡选择。即使选择其中一种语言，计算密集型的定价模型和风险计算通常仍然会委托给现有的C++库，并通过接口调用。还应注意，C++还提供了一些在其他编程语言中无法实现的编译时优化。
+- en: 'C++ 11: The Modern Era is Born'
+  id: totrans-15
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: C++11：现代时代诞生
+- en: 'In 2011, the [Standard C++ Foundation](https://isocpp.org) released a substantial
+    revision that addressed long-needed modernization and in particular provided some
+    very welcome abstractions that are immediately useful to quantitative developers.
+    These include:'
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 2011年，[标准C++基金会](https://isocpp.org)发布了一项重大修订，解决了长期以来需要现代化的问题，特别是提供了一些非常受量化开发者欢迎的抽象。其中包括：
+- en: Random number generation from a variety of probability distributions
+  id: totrans-17
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 从各种概率分布生成随机数
+- en: Lambda expressions that encapsulate mathematical functions that can also be
+    passed as arguments
+  id: totrans-18
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 封装数学函数的Lambda表达式，也可作为参数传递
+- en: Task-based concurrency that can parallelize computations without the need for
+    manual thread management
+  id: totrans-19
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 并行化计算的任务并发，无需手动线程管理
+- en: Smart pointers that prevent memory-related program crashes, without affecting
+    performance
+  id: totrans-20
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 智能指针可以防止与内存相关的程序崩溃，而不影响性能
+- en: 'These topics and more will be discussed in the chapters ahead. An excellent
+    reference that covers the history and evolution of C++ into the modern era is
+    also available from O’Reilly: *C++* *Today: The Beast is Back*, by Jon Kalb and
+    Gasper Azman [1]. It should also be noted that with more attention to, and promotion
+    of [best practices](https://isocpp.org/wiki/faq/coding-standards)[1] and [guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)[2]
+    by the ISO C++ committee, cross-platform development is now a much easier task
+    than in years past.'
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '这些主题及更多内容将在接下来的章节中讨论。还有一本出色的参考书籍，涵盖了C++进入现代时代的历史和演变，来自O’Reilly出版社：《C++ Today:
+    The Beast is Back》，作者为Jon Kalb和Gasper Azman [1]。还应注意，通过ISO C++委员会对[最佳实践](https://isocpp.org/wiki/faq/coding-standards)[1]和[指南](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)[2]的更多关注和推广，跨平台开发现在比过去容易得多。'
+- en: And following C++11, new releases with more and more modern features addressing
+    the demands of financial and data science industries are being rolled out on a
+    threeyear cadence, with the most recent release being C++20\. This book will primarily
+    cover developments through C++20, particularly those that should be of interest
+    to financial quant developers. Proposals currently in the works for future standards
+    are also mentioned where relevant.
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 随着C++11之后，每三年发布一次新版本，增加了越来越多面向金融和数据科学行业需求的现代特性，最新版本为C++20。本书主要涵盖了截至C++20的发展，特别是对金融量化开发者感兴趣的内容。还提到了正在进行中的未来标准的建议。
+- en: Proprietary and high-frequency trading firms have been at the forefront of adopting
+    the C++11 Standard and later, where the speed of acting on market and trading
+    book signals in statistical strategies can mean a profound difference in profit
+    and loss. Modern C++ is also in keen demand for derivatives pricing models utilized
+    by traders and risk managers at investment banks and hedge funds. The recent random
+    number generation and concurrency features in the Standard Library, for example,
+    provide built-in support for efficient Monte Carlo simulation that is a key component
+    in both evaluating trading strategies and pricing complex exotic options. These
+    tasks used to require many more hours of distributional random number generation
+    code development and time-consuming integration of platform-dependent threading
+    libraries.
+  id: totrans-23
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 私人和高频交易公司一直在积极采纳C++11及其后版本，因为在统计策略中对市场和交易簿信号做出反应的速度可能导致利润和损失上的深刻差异。现代C++在投资银行和对冲基金的交易员和风险管理人员中，也急需用于衍生品定价模型。例如，标准库中最近增加的随机数生成和并发特性提供了内置支持，用于高效的蒙特卡洛模拟，这是评估交易策略和定价复杂异国期权的关键组成部分。过去，这些任务通常需要大量分布式随机数生成代码的开发工作和耗时的平台相关线程库的集成。
+- en: Open Source Mathematical Libraries
+  id: totrans-24
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 开源数学库
+- en: Another very welcome development over the past decade has been the proliferation
+    of robust open-source mathematical libraries written in standard C++ that therefore
+    do not require the time-consuming C-language interface gymnastics of the past.
+    Primary among these are the Boost libraries, the Eigen and Armadillo matrix algebra
+    libraries, and machine learning libraries such as TensorFlow and PyTorch. We will
+    cover Boost and Eigen in more detail later in the book.
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 过去十年中另一个非常受欢迎的发展是，标准C++编写的健壮的开源数学库大量涌现，因此不再需要过去那种耗时的C语言接口操作。主要包括Boost库、Eigen和Armadillo矩阵代数库，以及TensorFlow和PyTorch等机器学习库。我们将在本书的后续部分详细介绍Boost和Eigen。
+- en: Debunking Myths About C++
+  id: totrans-26
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 拆解有关C++的神话
+- en: There are a multitude of myths about C++. Here are several of the more infamous
+    beliefs, and explanations which debunk them.
+  id: totrans-27
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 关于C++存在许多神话。以下是几个较为臭名昭著的信念，以及解释反驳它们。
+- en: '*Knowledge of C is necessary for learning C++*: While the C++ Standard retains
+    most of the C language, it is entirely possible to learn C++ without knowledge
+    of C, as we shall see. Clinging to C style can in fact hinder learning the powerful
+    abstractions and potential benefits of C++.'
+  id: totrans-28
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*学习C是学习C++的必要条件*：尽管C++标准保留了大部分C语言的特性，但完全可以在不了解C语言的情况下学习C++，我们将看到这一点。固守于C风格实际上可能阻碍对C++强大抽象和潜在优势的学习。'
+- en: '*C++ is too difficult*: There is no doubt that C++ is a rich language that
+    provides plenty of the proverbial rope with which one can hang oneself, but by
+    leveraging _modern_ features of the language while holding legacy issues in abeyance
+    at the outset, it is entirely possible to become very productive as a quantitative
+    developer in C++ very quickly.'
+  id: totrans-29
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*C++太难了*：毫无疑问，C++是一门丰富的语言，提供了大量谚语式的绞索，可以让人自缢，但通过利用语言的现代特性，并在初期暂时搁置传统问题，完全可以在C++中迅速成为一名非常高效的量化开发人员。'
+- en: '*Memory leaks are always a problem in* *C++*: With smart pointers available
+    since C++11, this no longer needs to be an issue in most financial model implementations,
+    as we shall see.'
+  id: totrans-30
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*内存泄漏在C++中总是一个问题*：自从C++11引入智能指针以来，在大多数金融模型实现中，这不再是一个问题，我们将会看到。'
+- en: Compiled vs Interpreted Code
+  id: totrans-31
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 编译与解释代码
+- en: As alluded to above, C++ is a compiled language, where commands typed into a
+    file by us mere mortals are translated into binary instructions, or *machine code*,
+    that a computer processor will understand. This is in contrast to non-typed and
+    interpreted quantitative languages such as Python, R, and Matlab, where each line
+    of code must be individually translated to machine code at run-time, thus slowing
+    down execution time for larger applications.
+  id: totrans-32
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如上文所暗示的，C++是一种编译语言，我们凡人在文件中键入的命令会被翻译成计算机处理器能理解的二进制指令，或者*机器码*。与Python、R和Matlab等非类型和解释性语言相比，这些语言中的每一行代码都必须在运行时单独翻译成机器码，因此会减慢大型应用程序的执行速度。
+- en: This is by no means a knock on these languages, as their power is evident in
+    their popularity for rapid implementations of models arising in quantitative fields
+    such as finance, data science, and biosciences, with their built-in mathematical
+    and statistical functions are often compiled in C, C++, or FORTRAN. However, the
+    financial world at least is replete with stories where a model would require days
+    to run in an interpreted language, where run times could be reduced to a matter
+    of minutes when reimplemented in C++.
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这绝不是对这些语言的贬低，因为它们的强大体现在它们在金融、数据科学和生物科学等量化领域中的流行度中，其内置的数学和统计函数通常是用 C、C++ 或 FORTRAN
+    编译的。然而，至少在金融界，有很多故事可以说明，一个模型在解释性语言中可能需要几天才能运行，而在 C++ 中重新实现后，运行时间可以缩短到几分钟。
+- en: An effective approach is to use interpreted mathematical languages with C++
+    in a complementary fashion. For example, when computationally intensive models
+    code is written in a C++ library, and then called either interactively or from
+    an application in R, for example, C++ efficiently takes care of the number crunching.
+    The results can then be used inside powerful plotting and other visualization
+    tools in R that are not available in C++.
+  id: totrans-34
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个有效的方法是以互补的方式将解释性数学语言与 C++ 结合使用。例如，当在 C++ 库中编写计算密集型模型代码，并且在 R 中的应用程序中以交互方式或调用方式调用时，C++
+    可以有效地处理数值计算。然后，结果可以在 R 中强大的绘图和其他可视化工具中使用，这些工具在 C++ 中不可用。
+- en: Another advantage is that the models code is written once and maintained in
+    a C++ library that can be deployed across many different departments, divisions,
+    and even international boundaries, and called via interfaces from applications
+    in written in different front-end languages, while ensuring consistent numerical
+    results throughout the organization. This can be particularly advantageous for
+    regulatory compliance purposes.
+  id: totrans-35
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一个优点是，模型代码仅需编写一次，并在可以跨多个部门、部门甚至跨国界部署的 C++ 库中维护，并通过不同前端语言编写的应用程序接口调用，同时确保整个组织内数值结果的一致性。这对于符合监管合规要求尤为有利。
+- en: Popular open-source C++ packages are available for both R and Python, namely
+    [Rcpp](http://www.rcpp.org/) and [pybind11](https://github.com/pybind/pybind11),
+    respectively. Matlab also provides options for C++ interfaces.
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 流行的开源 C++ 包分别适用于 R 和 Python，即 [Rcpp](http://www.rcpp.org/) 和 [pybind11](https://github.com/pybind/pybind11)。Matlab
+    也提供了用于 C++ 接口的选项。
+- en: The Components of C++
+  id: totrans-37
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: C++ 的组成部分
+- en: 'Standard C++ releases, at a high level, consist of two components: language
+    features, and the C++ Standard Library. A software library is essentially a set
+    of functions and classes that are not executable on their own but that are called
+    by an application or system. Library development -- both open source and commercial
+    -- now dominates modern C++ development compared to standalone applications that
+    were popular in previous decades, and we will discuss some of those later that
+    are useful for computational work. The most important C++ library is the Standard
+    Library that is shipped with modern compilers.'
+  id: totrans-38
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 标准的 C++ 发行版，从高层面来看，由两个组成部分组成：语言特性和 C++ 标准库。软件库本质上是一组函数和类，它们不能单独执行，而是由应用程序或系统调用。与前几十年流行的独立应用程序相比，现代
+    C++ 开发中的库开发（包括开源和商业）现在占据主导地位，我们稍后将讨论一些对计算工作有用的库。最重要的 C++ 库是与现代编译器一起提供的标准库。
+- en: C++ Language Features
+  id: totrans-39
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: C++ 语言特性
+- en: 'C++ language features mostly overlap with the essential operators and constructs
+    one would find in other programming languages, such as:'
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++ 语言特性大部分与其他编程语言中常见的基本运算符和结构重叠，比如：
+- en: Fundamental integer and floating-point numerical types
+  id: totrans-41
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 基本整数和浮点数数值类型
+- en: 'Conditional branching: `if/else if/else` statements and switch/case statements'
+  id: totrans-42
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 条件分支：`if/else if/else` 语句和 switch/case 语句
+- en: 'Iterative constructs: for loops and `while` loops'
+  id: totrans-43
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 迭代结构：for 循环和 `while` 循环
+- en: 'Standard mathematical variable types: integer, double precision floating point,
+    etc'
+  id: totrans-44
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 标准数学变量类型：整数、双精度浮点数等
+- en: 'Standard mathematical and logical operators for numerical types: addition,
+    subtraction, multiplication, division, modulus, and inequalities'
+  id: totrans-45
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 数值类型的标准数学和逻辑运算符：加法、减法、乘法、除法、模数和不等式
+- en: In addition, C++ is not limited to object-oriented programming; rather, the
+    language also supports the other three major programming paradigms, namely procedural
+    programming, generic programming, and functional programming. Each of these will
+    be discussed in subsequent chapters.
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此外，C++并不仅限于面向对象编程；相反，语言还支持另外三种主要的编程范式，即过程式编程、泛型编程和函数式编程。这些将在随后的章节中讨论。
+- en: 'C++ is a strongly-typed language, meaning that before we use a variable, we
+    must declare it by its type. The language provides a variety of numerical types;
+    however, those that we will primarily use are as follows:'
+  id: totrans-47
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++是一种强类型语言，这意味着在使用变量之前，我们必须声明它们的类型。语言提供了各种数值类型；然而，我们主要使用的是以下几种：
+- en: '| Type | Description | Minimum Value | Maximum Value |'
+  id: totrans-48
+  prefs: []
+  type: TYPE_TB
+  zh: '| 类型 | 描述 | 最小值 | 最大值 |'
+- en: '| --- | --- | --- | --- |'
+  id: totrans-49
+  prefs: []
+  type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
+- en: '| double | Double Precision | +/- 2.2e-308 | +/- 1.8e308 |'
+  id: totrans-50
+  prefs: []
+  type: TYPE_TB
+  zh: '| double | 双精度 | +/- 2.2e-308 | +/- 1.8e308 |'
+- en: '| int | Integer | -2,147,483,648 | 2,147,483,647 |'
+  id: totrans-51
+  prefs: []
+  type: TYPE_TB
+  zh: '| int | 整数 | -2,147,483,648 | 2,147,483,647 |'
+- en: Others, such as unsigned and extended integer types, will be introduced later
+    when we need them.
+  id: totrans-52
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其他类型，如无符号和扩展整数类型，将在需要时介绍。
+- en: The C++ Standard Library
+  id: totrans-53
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: C++标准库
+- en: 'As Nicolai Josuttis describes it in his indispensable text, *The C++ Standard
+    Library - A Tutorial and Reference, 2nd Edition*[3], the C++ Standard Library
+    “enable(s) programmers to use general components and a higher level of abstraction
+    without losing portability rather than having to develop all code from scratch.”
+    Up through the latest C++20 release, highly useful library features for quantitative
+    model implementations include:'
+  id: totrans-54
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如Nicolai Josuttis在他不可或缺的著作《*The C++ Standard Library - A Tutorial and Reference,
+    2nd Edition*》[3]中描述的那样，C++标准库“使程序员能够使用通用组件和更高层次的抽象，而不会失去可移植性，而不必从头开始开发所有代码。”直到最新的C++20发布，用于量化模型实现的非常有用的库功能包括：
+- en: Array-style containers, particularly the venerable `vector` class
+  id: totrans-55
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 数组样式的容器，特别是受尊敬的`vector`类
+- en: A wide set of standard algorithms that operate on these array containers, such
+    as sorting, searching, and efficiently applying functions to a range of elements
+    in a container
+  id: totrans-56
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 一系列标准算法，操作这些数组容器，如排序、搜索和高效地应用函数到容器中一系列元素
+- en: Standard real-valued mathematical functions such as square root, exponential,
+    and trigonometric functions
+  id: totrans-57
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 标准实数值数学函数，如平方根、指数和三角函数
+- en: Complex numbers and arithmetic
+  id: totrans-58
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 复数和复数运算
+- en: Random number generation from a set of standard probability distributions
+  id: totrans-59
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 从一组标准概率分布中生成随机数
+- en: Task-based concurrency that manages threads internally and safely
+  id: totrans-60
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 基于任务的并发，可以内部和安全地管理线程
+- en: Smart pointers that abstract away the dangers associated with memory management
+  id: totrans-61
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 智能指针，抽象了与内存管理相关的危险
+- en: A class to store and manage character data
+  id: totrans-62
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 一个用于存储和管理字符数据的类
+- en: Streaming functions to take input from and display results to the console
+  id: totrans-63
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 流函数用于从控制台获取输入并显示结果
+- en: Use of Standard Library components, however, requires the programmer to explicitly
+    import them into the code, as they reside in a separate library rather than within
+    the core language. The idea is similar to importing a NumPy array into a Python
+    program or loading an external package of functions into an R script. In C++,
+    this is a two-step process, starting with loading the file containing the Standard
+    Library declarations of functions and classes we wish to use, and then scoping
+    these functions with the Standard Library namespace name, `std` (often pronounced
+    as “stood” by C++ developers).
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用标准库组件需要程序员将它们显式地导入到代码中，因为它们存储在一个单独的库中，而不是在核心语言中。这个思想类似于将NumPy数组导入Python程序或在R脚本中加载外部函数包。在C++中，这是一个两步过程，首先加载包含我们希望使用的标准库函数和类声明的文件，然后使用标准库命名空间名`std`来限定这些函数（C++开发人员通常称之为“stood”）。
+- en: Compilers and IDE’s
+  id: totrans-65
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 编译器和集成开发环境（IDE）
+- en: 'In order to get started with learning C++, you will need to obtain a compiler
+    and a development environment. The three major modern and freely available compilers,
+    which ship with their implementations of the C++ Standard Library, are:'
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 学习C++的第一步是获取一个编译器和开发环境。现代主要的免费可用编译器有三种，并且它们都包含了它们的C++标准库的实现：
+- en: '[The Microsoft Visual Studio 2019 compiler](https://visualstudio.microsoft.com/vs/features/cplusplus/)'
+  id: totrans-67
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[Microsoft Visual Studio 2019编译器](https://visualstudio.microsoft.com/vs/features/cplusplus/)'
+- en: '[Clang (LLVM Project)](https://clang.llvm.org/)'
+  id: totrans-68
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[Clang (LLVM项目)](https://clang.llvm.org/)'
+- en: '[GNU gcc compiler](https://gcc.gnu.org/)'
+  id: totrans-69
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[GNU gcc编译器](https://gcc.gnu.org/)'
+- en: There are also several integrated development environments (IDE’s) available,
+    namely Visual Studio, Apple’s Xcode (which ships with the Clang compiler), and
+    CLion, a product that typically requires purchase from JetBrains. For this book,
+    Microsoft’s Visual Studio compiler and IDE are highly recommended. They are user-friendly
+    options to get up and running quickly on C++, with very powerful debugging tools.
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 也有几种集成开发环境（IDE's）可用，即Visual Studio、Apple的Xcode（附带Clang编译器）和CLion，后者是一款通常需要从JetBrains购买的产品。对于本书来说，强烈推荐使用微软的Visual
+    Studio编译器和IDE。它们是友好的选项，能够快速上手C++，并具有非常强大的调试工具。
+- en: Furthermore, the Visual Studio option also includes a Clang option that allows
+    a programmer to switch between it and the Microsoft compiler, helping to ensure
+    cross-platform compatibility.
+  id: totrans-71
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此外，Visual Studio选项还包括一个Clang选项，允许程序员在微软编译器和Clang之间切换，有助于确保跨平台兼容性。
+- en: Unfortunately, the Visual Studio option for C++ only exists for Windows, as
+    the Mac version does not ship with a C++ option. In this case, one might opt for
+    downloading Apple’s Xcode, which ships with the Clang compiler. Linux users will
+    typically want to opt for the gcc or Clang compiler.
+  id: totrans-72
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 不幸的是，C++的Visual Studio选项仅适用于Windows，因为Mac版本不提供C++选项。在这种情况下，可以选择下载附带Clang编译器的Apple
+    Xcode。Linux用户通常会选择gcc或Clang编译器。
+- en: Basic Review of C++
+  id: totrans-73
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: C++基础复习
+- en: The following will be a quick review of C++ using some simple code examples.
+    We will also have our first look at a new feature in C++20, namely mathematical
+    constants.
+  id: totrans-74
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下将是对C++的快速复习，使用一些简单的代码示例。我们还将首次看到C++20中的一个新功能，即数学常数。
+- en: Good Old “Hello World!”
+  id: totrans-75
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 经典的“Hello World！”
+- en: 'First, here is a “Hello World!” example to get started. The following code
+    will return the message to the screen, and then allow the user to input the name
+    of someone to whom to say hello:'
+  id: totrans-76
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，这里有一个“Hello World！”的示例以便开始。以下代码将消息返回到屏幕，然后允许用户输入要打招呼的人的名字：
+- en: '[PRE0]'
+  id: totrans-77
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: 'If you want to say hello to your mother, then after compiling and running the
+    code, the screen would resemble the following:'
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您想向您的母亲打招呼，那么编译并运行代码后，屏幕将如下所示：
+- en: '[PRE1]'
+  id: totrans-79
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: The main review points here are
+  id: totrans-80
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 主要复习点如下：
+- en: '`cout` and `cin`, along with the string class, depend upon including the C++
+    Standard Library declaration files iostream and string.'
+  id: totrans-81
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`cout`和`cin`以及string类，都依赖于包含C++标准库声明文件iostream和string。'
+- en: 'Members of the Standard Library need to be scoped by their namespace `std`.
+    An alternative is to put `using` statements with the namespace scopes at the top
+    of the file, indicating that anytime these elements appear in the code, they are
+    understood to be coming from the std namespace. Also, you may find it easier to
+    type `endl` (end of line) rather than ''\n’:'
+  id: totrans-82
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 标准库的成员需要在其命名空间`std`下进行作用域限定。另一种方法是将带有命名空间作用域的`using`语句放在文件顶部，表明每当这些元素出现在代码中时，它们来自std命名空间。此外，您可能会发现输入`endl`（行末）比'\n'更容易：
+- en: '[PRE2]'
+  id: totrans-83
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: Importing the std namespace into the global namespace with
+  id: totrans-84
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 使用以下方式将std命名空间导入全局命名空间中
+- en: '[PRE3]'
+  id: totrans-85
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: is sometimes used to replace the individual using statements; however, this
+    is not considered good practice, as it can result in naming clashes at compile
+    time. The motivation behind namespaces will be presented in Chapter 3.
+  id: totrans-86
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 有时用于替代单独的using语句；然而，这不被认为是良好的做法，因为它可能导致编译时命名冲突。命名空间背后的动机将在第3章中介绍。
+- en: Output to and input from the console is almost never used in production-level
+    financial programming. User input data will typically come from graphical user
+    interfaces (GUIs) or web applications, while market data usually comes from live
+    feeds. Results are typically displayed in the user interface and then stored in
+    a database, such as when a trade in executed.
+  id: totrans-87
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 几乎不会在生产级别的金融编程中使用控制台输入和输出。用户输入数据通常来自图形用户界面（GUI）或Web应用程序，而市场数据通常来自实时数据源。结果通常显示在用户界面中，然后存储在数据库中，例如在执行交易时。
+- en: We will use `cout` and `cin` to sometimes mimic these inputs, but they should
+    be avoided in production code.
+  id: totrans-88
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 我们将使用`cout`和`cin`来模拟这些输入，但在生产代码中应避免使用它们。
+- en: Simple Procedural Programming in C++
+  id: totrans-89
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: C++中的简单过程式编程
+- en: 'The structure of a procedural program should be familiar, namely:'
+  id: totrans-90
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 过程式程序的结构应该是熟悉的，即：
+- en: A `main()` function, which is called first in execution of a program, and
+  id: totrans-91
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`main()`函数，在程序执行中首先调用的函数，'
+- en: A set of user-defined functions that contain individual tasks that comprise
+    the program.
+  id: totrans-92
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 一组包含组成程序的各个任务的用户定义函数。
+- en: In the simplest case, these can all be written in a single executable file containing
+    `main()`.
+  id: totrans-93
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在最简单的情况下，所有这些都可以写在一个包含`main()`的单个可执行文件中。
+- en: We first *declare* each user-defined function in a function *declaration* statement,
+    prior to the start of program execution in the `main()` function. A function declaration
+    states its name, return type, and input argument types, followed by a semicolon.
+  id: totrans-94
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们首先在`main()`函数的开始之前，在函数*声明*语句中*声明*每个用户定义函数。 函数声明说明其名称，返回类型和输入参数类型，后跟一个分号。
+- en: The function *implementations* are written beneath `main()`, each containing
+    a series of commands within open and closed braces. User-defined function calls
+    can then be made within the `main` function, or from other user-defined functions.
+  id: totrans-95
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 函数*实现*写在`main()`下面，每个函数包含一系列在开放和关闭大括号中的命令。 可以在`main`函数中或从其他用户定义函数中进行用户定义函数调用。
+- en: 'Single line comments are indicated by two consecutive forward slashes. The
+    high-level format is shown here:'
+  id: totrans-96
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 单行注释由两个连续的斜杠表示。 高级格式如下所示：
+- en: '[PRE4]'
+  id: totrans-97
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: Note
+  id: totrans-98
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: For larger and more robust production applications, we will soon look at writing
+    functions in separate *modules*, using a new feature in C++20, in which the same
+    method of declaring and implementing functions will carry over.
+  id: totrans-99
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于更大更健壮的生产应用程序，我们很快将研究在单独的*C++20*模块中编写函数的方法，其中声明和实现函数的相同方法将延续。
+- en: Further details on functions follow in the next two subsections.
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 函数声明的更多细节将在接下来的两个小节中详细说明。
+- en: Function declarations
+  id: totrans-101
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 函数声明
+- en: C++ functions may or may not return a value; furthermore, they may or may not
+    take input arguments. A function that has no return value is indicated by a `void`
+    return type. For example, if we move our “Hello World” example into a separate
+    function, it would simply output a message to the screen without returning a value
+    when called from the `main` function, so it would be declared as a `void` function.
+    In addition, it does not require any input parameters, so its declaration would
+    take on the form
+  id: totrans-102
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++函数可能有可能没有返回值；此外，它们可能有可能没有输入参数。 没有返回值的函数由`void`返回类型指示。 例如，如果我们将我们的“Hello World”示例移到一个单独的函数中，当从`main`函数调用时，它只需向屏幕输出一条消息而不返回任何值，因此它将被声明为`void`函数。
+    另外，它不需要任何输入参数，因此其声明将采用以下形式
+- en: '[PRE5]'
+  id: totrans-103
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: Next, suppose we want to write a real-valued function that takes in a single
+    variable and returns twice its value. In this case, our declaration will have
+    a double precision floating type return, indicated by `double`, and an input of
+    the same type. If we name this function `twice_a_real`, and the input variable
+    `x`, our declaration would be written as
+  id: totrans-104
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，假设我们想编写一个真实值函数，该函数接受一个变量并返回其两倍值。 在这种情况下，我们的声明将具有双精度浮点返回类型，由`double`表示，并且具有相同类型的输入。
+    如果我们将此函数命名为`twice_a_real`，输入变量为`x`，则我们的声明将写为
+- en: '[PRE6]'
+  id: totrans-105
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: As a final example, as in other programming languages, a function can take in
+    more than one variable. Suppose we wish to add three integers in a function called
+    `add_three_ints` and return the sum of variables `i`, `j`, and `k`. Integer types
+    are indicated by `int`, so our function declaration would be
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后一个例子，与其他编程语言一样，函数可以接受多个变量。 假设我们希望在名为`add_three_ints`的函数中添加三个整数，并返回变量`i`，`j`和`k`的总和。
+    整数类型由`int`表示，因此我们的函数声明将是
+- en: '[PRE7]'
+  id: totrans-107
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: Function implementations
+  id: totrans-108
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 函数实现
+- en: Function implementations, also called function *definitions*, are where we implement
+    the actual commands to display a message to the screen, calculate a mathematical
+    result, or to perform other tasks. The *body* of the function is placed inside
+    braces, as shown here for the `hello_world` function. We again need to indicate
+    the `void` return type.
+  id: totrans-109
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 函数实现，也称为函数*定义*，是我们在其中实现显示消息到屏幕，计算数学结果或执行其他任务的实际命令的地方。 函数的*主体*放在括号内，如此处所示的`hello_world`函数。
+    我们再次需要指定`void`返回类型。
+- en: '[PRE8]'
+  id: totrans-110
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: 'Next, we can write the implementations of our two simple mathematical functions.
+    As in their declarations, the `double` and `int` return types, respectively, as
+    well as the types of their input variables, must be included:'
+  id: totrans-111
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，我们可以编写我们两个简单数学函数的实现。 就像它们的声明一样，必须包括`double`和`int`返回类型以及它们的输入变量类型：
+- en: '[PRE9]'
+  id: totrans-112
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: In the first case, we initialize a new `double` variable `y` and with the result
+    of the calculation. Because C++ is a strongly typed language, we need to indicate
+    the type of a variable when it is initialized. This variable is then returned
+    to the `main` function with the result. In the second function, we just put the
+    sum operations in the return statement itself; this is also perfectly legal.
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在第一种情况下，我们初始化了一个新的`double`变量`y`，并使用计算结果。因为C++是一个强类型语言，我们在初始化变量时需要注明变量的类型。然后，这个变量将结果返回给`main`函数。在第二个函数中，我们只将求和操作放在返回语句本身；这也是完全合法的。
+- en: 'Finally, we put this all together with a `main` function that is called when
+    the program starts and makes calls to our user-defined functions. It goes in between
+    the user-defined function declarations and their implementations below, as shown
+    here:'
+  id: totrans-114
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，我们将所有内容放在一个`main`函数中，当程序启动时调用，并调用我们的用户定义函数。它位于用户定义函数声明及其实现之间，如下所示：
+- en: '[PRE10]'
+  id: totrans-115
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: C++ Syntax and Style Guidelines
+  id: totrans-116
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: C++ 语法和风格指南
+- en: In this section a review of essential C++ syntax is provided, along with guidelines
+    on code formatting and variable naming. The guidelines discussion might not be
+    high on many people’s priority list, but this topic is in fact quite important
+    when writing critical production code in financial systems, in a feature-rich
+    language such as C++. Bugs, runtime errors, and program crashes are much more
+    easily avoided or addressed if the source code is written in a clean and maintainable
+    state.
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在本节中，提供了C++语法的基本回顾，以及关于代码格式和变量命名的指南。尽管许多人可能不把这些讨论放在优先事项上，但在编写金融系统中的关键生产代码时，这个话题实际上非常重要，尤其是在像C++这样的功能丰富的语言中。如果源代码写得清晰可维护，避免或解决bug、运行时错误和程序崩溃将更加容易。
+- en: We will review essential rules about C++ syntax. Even if you are familiar with
+    some of it already, a summary will be presented in one place that you may find
+    useful.
+  id: totrans-118
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们将回顾有关C++语法的基本规则。即使你已经熟悉其中一些内容，仍将在一个地方总结，可能会对你有所帮助。
+- en: Code Blocks in Braces
+  id: totrans-119
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 大括号中的代码块
+- en: Function implementations, also called *function definitions*, are placed inside
+    braces, as shown in each of the function implementations in 6.2.2 above. When
+    control reaches the closing brace, the function terminates. This is also true
+    for other code blocks such as in conditional statements, loops, user-defined functions,
+    and user-defined classes. When the closing brace is encountered, non-static local
+    variables and objects defined within the block are said to _go out of scope_.
+    That is, they are wiped from memory and no longer accessible. Pointers can be
+    an exception to this rule, but we will discuss this in more detail in Chapter
+    XX.
+  id: totrans-120
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 函数实现，也称为*函数定义*，被放置在大括号内，如上文6.2.2中每个函数实现所示。当控制到达闭括号时，函数终止。对于其他代码块，如条件语句、循环、用户定义的函数和用户定义的类，当遇到闭括号时，块内定义的非静态局部变量和对象被称为_超出作用域_。也就是说，它们从内存中被清除，无法再访问。指针可能是此规则的一个例外，但我们将在第XX章中详细讨论。
+- en: Syntax Review
+  id: totrans-121
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 语法复习
+- en: 'Commands and declarations in C++ terminate with a semicolon:'
+  id: totrans-122
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++中的命令和声明以分号结束：
+- en: '[PRE11]'
+  id: totrans-123
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: Again, as C++ is a strongly-typed language, numerical variable types should
+    be indicated before initialization.
+  id: totrans-124
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 同样，由于C++是一个强类型语言，数值变量类型应该在初始化之前注明。
+- en: '[PRE12]'
+  id: totrans-125
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: Note
+  id: totrans-126
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: C++11 introduced the `auto` keyword that can automatically deduce a variable
+    or object type, as well as uniform initialization (with braces). Varied opinions
+    on their use exist, but many programmers still prefer to explicitly state plain
+    old data (POD) types such as `int` and `double` to avoid ambiguity. This will
+    be the style followed in this book. `auto` and uniform initialization will be
+    discussed later within contexts where they tend to be more useful.
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++11引入了`auto`关键字，可以自动推断变量或对象类型，以及统一初始化（使用大括号）。对于它们的使用存在不同的意见，但许多程序员仍然倾向于显式声明普通数据类型（POD），如`int`和`double`，以避免模糊不清的情况。本书将遵循这种风格。`auto`和统一初始化将在后续的上下文中讨论，这些上下文中它们更为有用。
+- en: One-line comments are indicated with two forward slashes, eg,
+  id: totrans-128
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 单行注释用两个斜杠表示，例如，
+- en: '[PRE13]'
+  id: totrans-129
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: 'Multiple lines of comments in a block can also be commented out, as follows:'
+  id: totrans-130
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多行注释也可以在块中注释掉，如下所示：
+- en: '[PRE14]'
+  id: totrans-131
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: 'There is no difference to the compiler between a single space or multiple spaces;
+    for example, despite the variations in whitespace, the following code is legal:'
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于编译器来说，单个空格和多个空格没有区别；例如，尽管空白字符有变化，以下代码是合法的：
+- en: '[PRE15]'
+  id: totrans-133
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: 'A well-known mantra in programming, however, and particularly relevant to C++,
+    is *just because you can do something, doesn’t mean you should*. The above code
+    will be more readable and maintainable if written with clear and consistent spacing:'
+  id: totrans-134
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，在编程中众所周知的一句箴言，特别是在C++中，是*因为你可以做某事，并不意味着你应该这么做*。如果以清晰一致的间距编写，上述代码将更易读和易于维护：
+- en: '[PRE16]'
+  id: totrans-135
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: Again, for more realistic and complex code, this mantra should be kept in mind.
+    It will be a recurring theme throughout this book.
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 同样，对于更加真实和复杂的代码，这一箴言应该牢记于心。在本书的后续章节中，这将是一个经常出现的主题。
+- en: Code may also be continued onto multiple lines without the use of a continuation
+    character, and vertical spaces are ignored. Returning to our previous example,
+    writing
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 代码也可以跨多行而不使用连续字符，并且垂直空间被忽略。回到我们之前的例子，编写
+- en: '[PRE17]'
+  id: totrans-138
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: would yield the same result. As before, the preceding example, with uniform
+    spacing and each command placed in a single line, would be preferable. However,
+    it should be noted that, in quantitative programming where complex and nested
+    calculations are involved, it often becomes highly advisable to split up formulae
+    and algorithms on multiple lines for clarity and code maintainability. We will
+    see examples of this in subsequent chapters.
+  id: totrans-139
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 将得到相同的结果。与之前一样，具有统一间距且每个命令放在单独一行的前述示例更为可取。然而，需要注意的是，在涉及复杂和嵌套计算的量化编程中，通常非常建议将公式和算法拆分为多行以提高代码的清晰度和可维护性。我们将在后续章节中看到此类示例。
+- en: Finally, C++ syntax is *case sensitive*. For example, two `double` variables
+    `x` and `X` would be as different as two other variables `kirk` and `spock`. The
+    same applies to function names. In examples above, we used the Standard Library
+    function `std::cout`. Attempting to write `std::Cout` instead would trigger a
+    compiler error.
+  id: totrans-140
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，C++ 语法是*区分大小写*的。例如，两个`double`变量`x`和`X`会像`kirk`和`spock`等其他变量一样不同。函数名也是如此。在上面的例子中，我们使用了标准库函数`std::cout`。尝试写成`std::Cout`将触发编译器错误。
+- en: Naming Conventions
+  id: totrans-141
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 命名约定
+- en: 'Variable, function, and class names can be any contiguous combination of letters
+    and numbers, subject to the following conditions:'
+  id: totrans-142
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 变量、函数和类名可以是任意连续的字母和数字组合，但需满足以下条件：
+- en: Names must begin with a letter or an underscore; leading numerals are not allowed.
+  id: totrans-143
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 名称必须以字母或下划线开头；不能以数字开头。
+- en: Other than the underscore character, special characters, such as `@`, `=`, `$`
+    etc are not allowed.
+  id: totrans-144
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 除了下划线字符外，不允许使用特殊字符，如`@`、`=``$`等。
+- en: Spaces are not allowed. Names must be contiguous.
+  id: totrans-145
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 不允许使用空格。名称必须连续。
+- en: Language keywords are not allowed in naming, such as `double`, `if`, `while`,
+    etc. A complete listing can be found on https://en.cppreference.com/w/cpp/keyword.
+  id: totrans-146
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 不允许使用语言关键字命名，如`double`、`if`、`while`等。可以在https://en.cppreference.com/w/cpp/keyword
+    找到完整列表。
+- en: The maximum name length is compiler-dependent, and in at least one case – the
+    GNU gcc compiler – imposes no limitation; however, see the *mantra* discussed
+    above.
+  id: totrans-147
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最大名称长度取决于编译器，并且在至少一个情况下 - GNU gcc 编译器 - 没有限制；然而，请参考上述*箴言*。
+- en: Single letter variable and function names are fine for simple examples and plain
+    mathematical functions. However, for quantitative models, it will usually be better
+    to pass function arguments with more descriptive names. Function and class names
+    as well should also provide some indication of what they do.
+  id: totrans-148
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于简单示例和简单的数学函数，单个字母的变量和函数名是可以接受的。然而，在量化模型中，通常最好使用更具描述性的名称来传递函数参数。函数和类名也应该提供一些关于其功能的指示。
+- en: Several naming styles have been common over the years, namely
+  id: totrans-149
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多年来，几种命名风格已经很常见，即
+- en: 'Lower Camel case; eg, `optionDelta`, `riskFreeRate`, `efficientFrontier`: Letter
+    of first word in lower case, and following words capitalized'
+  id: totrans-150
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 小驼峰命名法；例如，`optionDelta`、`riskFreeRate`、`efficientFrontier`：第一个单词以小写字母开头，后续单词首字母大写
+- en: 'Upper Camel, aka Pascal case; eg, `OptionDelta`, `RiskFreeRate`, `EfficientFrontier`:
+    Letter of each word is in upper case'
+  id: totrans-151
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 大驼峰命名法；例如，`OptionDelta`、`RiskFreeRate`、`EfficientFrontier`：每个单词的首字母大写
+- en: 'Snake case; eg, `option_delta`, `risk_free_rate`, `efficient_frontier`: Each
+    word begins with lower case, separated by an underscore character'
+  id: totrans-152
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 蛇形命名法；例如，`option_delta`、`risk_free_rate`、`efficient_frontier`：每个单词以小写字母开头，用下划线分隔
+- en: Lower Camel and Snake cases are the most typical of what is found in C++ function
+    and variable names, and class names are usually in Upper Camel form. In recent
+    years – likely propelled by [Google’s C++ Style Guide](https://google.github.io/styleguide/cppguide.html=General_Naming_Rules)
+    [5] – variable and function names have gravitated more toward the snake case.
+    As such, we will adopt this convention in this book, and use Upper Camel for class
+    names.
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 小驼峰命名法和蛇形命名法是C++函数和变量名中最常见的形式，类名通常采用大驼峰形式。近年来，可能受到[Google的C++风格指南](https://google.github.io/styleguide/cppguide.html=General_Naming_Rules)
+    [5]的推动，变量和函数名更倾向于使用蛇形命名法。因此，在本书中，我们将采用这种约定，并使用大驼峰命名类名。
+- en: In cases where single characters are used for integral counting variables, it
+    is still common to use the FORTRAN convention of letters `i` through `n`, although
+    this is not required. We will also adopt this practice.
+  id: totrans-154
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在整数计数变量中使用单个字符时，仍然常见使用FORTRAN约定的字母 `i` 到 `n`，尽管这不是必须的。我们也将采纳这一做法。
+- en: Mathematical Operators, Functions, and Constants in C++
+  id: totrans-155
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: C++中的数学运算符、函数和常量
+- en: While the previous discussion was loads of fun, our focus in this book is on
+    math and finance. We have already used the mathematical operators for addition
+    and multiplication of built-in C++ numerical types above. These are language features
+    in C++, and a comprehensive discussion of these standard operators follows. Common
+    mathematical functions, however -- such as cosine, exponential, etc -- are provided
+    in the C++ Standard Library rather than in the core language.
+  id: totrans-156
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在前面的讨论非常有趣，但本书的重点在于数学和金融。我们已经在上文中使用了内置的C++数值类型的加法和乘法数学运算符。这些都是C++语言的特性，接下来会对这些标准运算符进行全面的讨论。然而，常见的数学函数如余弦、指数等，是由C++标准库提供而不是核心语言功能。
+- en: Standard Arithmetic Operators
+  id: totrans-157
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 标准算术运算符
+- en: 'As suggested in the examples above, addition, subtraction, multiplication,
+    and division of numerical types are provided in C++ with the operators `+`, `-`,
+    `*`, and `/`, respectively, as usually found in other programming languages. In
+    addition, the modulus operator, `%`, is also included. Examples are as follows:'
+  id: totrans-158
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如上面的例子所示，C++提供了整数和浮点数类型的加法、减法、乘法和除法运算符 `+`、`-`、`*` 和 `/`，这通常也是其他编程语言中的做法。此外，还包括取模运算符
+    `%`。示例如下：
+- en: '[PRE18]'
+  id: totrans-159
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: 'The order and precedence of arithmetic operators are the same as found in most
+    other programming languages, namely:'
+  id: totrans-160
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 算术运算符的顺序和优先级与大多数其他编程语言相同，即：
+- en: 'Order runs from left to right:'
+  id: totrans-161
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 顺序从左到右：
+- en: '[PRE19]'
+  id: totrans-162
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: Using the above integer values would result in 8 + 5 - 2 = 11
+  id: totrans-163
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用上述整数值会得到 8 + 5 - 2 = 11
+- en: 'Multiplication, division, and modulus take precedence over addition and subtraction:'
+  id: totrans-164
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 乘法、除法和取模运算优先于加法和减法：
+- en: '[PRE20]'
+  id: totrans-165
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: Using the above double precision values would result in 30.6 + 2.0 = 32.6
+  id: totrans-166
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用上述双精度值会得到 30.6 + 2.0 = 32.6
+- en: 'Use round brackets to change the precedence:'
+  id: totrans-167
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 使用圆括号改变优先级：
+- en: '[PRE21]'
+  id: totrans-168
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: This would yield ![](Images/1.1.png)
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这将产生 ![](Images/1.1.png)
+- en: with the same double precision values.
+  id: totrans-170
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用相同的双精度值。
+- en: Mathematical Functions in the Standard Library
+  id: totrans-171
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: C++标准库中的数学函数
+- en: 'Many of the usual mathematical functions one finds in other languages have
+    the same or similar syntax in C++. Functions commonly used in computational finance
+    include the following, where `x` and `y` are assumed to be double precision variables:'
+  id: totrans-172
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计算金融中常用的许多常见数学函数在C++中具有相同或类似的语法，其中假定 `x` 和 `y` 是双精度变量：
+- en: '| `cos(x)` | cosine of *x* |'
+  id: totrans-173
+  prefs: []
+  type: TYPE_TB
+  zh: '| `cos(x)` | *x* 的余弦 |'
+- en: '| `sin(x)` | sine of *x* |'
+  id: totrans-174
+  prefs: []
+  type: TYPE_TB
+  zh: '| `sin(x)` | *x* 的正弦 |'
+- en: '| `tan` | tangent of *x* |'
+  id: totrans-175
+  prefs: []
+  type: TYPE_TB
+  zh: '| `tan` | *x* 的正切 |'
+- en: '| `exp` | exponential function *e^x* |'
+  id: totrans-176
+  prefs: []
+  type: TYPE_TB
+  zh: '| `exp` | 指数函数 *e^x* |'
+- en: '| `log` | natural logarithm *ln(x)* |'
+  id: totrans-177
+  prefs: []
+  type: TYPE_TB
+  zh: '| `log` | 自然对数 *ln(x)* |'
+- en: '| `sqrt` | square root of *x* |'
+  id: totrans-178
+  prefs: []
+  type: TYPE_TB
+  zh: '| `sqrt` | *x* 的平方根 |'
+- en: '| `cbrt` | cube root of *x* |'
+  id: totrans-179
+  prefs: []
+  type: TYPE_TB
+  zh: '| `cbrt` | *x* 的立方根 |'
+- en: '| `pow` | *x* raised to the power of *y* |'
+  id: totrans-180
+  prefs: []
+  type: TYPE_TB
+  zh: '| `pow` | *x* 的 *y* 次幂 |'
+- en: '| `hypot` | computes ![](Images/1.2.png) for two numerical values x and y |'
+  id: totrans-181
+  prefs: []
+  type: TYPE_TB
+  zh: '| `hypot` | 计算两个数值 x 和 y 的 ![](Images/1.2.png) |'
+- en: 'As these are contained in the Standard Library rather than as language features.
+    The `cmath` header file should always be included, with the functions scoped by
+    the `std::` prefix:'
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于这些函数位于标准库而不是语言功能中。应始终包括 `cmath` 头文件，并使用 `std::` 前缀限定函数的作用域：
+- en: '[PRE22]'
+  id: totrans-183
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: 'Again, if you don’t feel like typing out `std::` all the time, putting `using`
+    statements after the `include` statement are also fine:'
+  id: totrans-184
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你不想每次都打出 `std::`，在 `include` 语句后面放置 `using` 语句也是可以的：
+- en: '[PRE23]'
+  id: totrans-185
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: We can also now write our first finance example. We want to price a zero coupon
+    bond
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在我们可以编写我们的第一个金融例子了。我们想要定价一张零息债券
+- en: Ae^(-rt)
+  id: totrans-187
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Ae^(-rt)
+- en: where
+  id: totrans-188
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中
+- en: A = the face value of the bond,
+  id: totrans-189
+  prefs: []
+  type: TYPE_NORMAL
+  zh: A = 债券的面值，
+- en: r is the interest rate, and
+  id: totrans-190
+  prefs: []
+  type: TYPE_NORMAL
+  zh: r是利率，而
+- en: t is the time to maturity as a year fraction.
+  id: totrans-191
+  prefs: []
+  type: TYPE_NORMAL
+  zh: t是到期时间，以年分数表示。
+- en: In C++, we could then write
+  id: totrans-192
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在C++中，我们可以这样写
+- en: '[PRE24]'
+  id: totrans-193
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE24]'
+- en: For a more comprehensive list of Standard Library math functions, again see
+    Josuttis, *The C++ Standard Library (2E)*[4], Section 17.3, or the listing available
+    on [the CppReference website](https://en.cppreference.com/w/cpp/numeric/math)
+    [6]. Both are indispensable references for any modern C++ developer and are highly
+    recommended advanced complementary resources for this book. Some additional guidance
+    on the use of Standard Library math functions follows in the next two sections.
+  id: totrans-194
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要获取更全面的标准库数学函数列表，请参阅Josuttis的《C++标准库（第2版）》[4]第17.3节，或者访问[CppReference网站](https://en.cppreference.com/w/cpp/numeric/math)
+    [6]上的列表。这两者对于任何现代C++开发者都是必不可少的参考资料，也是本书的高级补充资源强烈推荐。接下来的两个部分将进一步指导如何使用标准库数学函数。
+- en: There is No Power Operator in C++
+  id: totrans-195
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: C++中没有幂运算符
+- en: Unlike other languages, where an exponent is typically indicated by a `^` or
+    a `**` operator, this does not exist as a C++ language feature. Instead, one needs
+    to call the Standard Library `std::pow` function in `cmath`. When computing polynomials,
+    however, it is more efficient to apply factoring per Horner’s Method and reduce
+    the number of multiplicative operations[6]. For example, if we wish to implement
+    a function
+  id: totrans-196
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与其他语言不同，指数通常由`^`或`**`操作符表示，但这在C++语言中并不存在。相反，需要调用`cmath`中的标准库`std::pow`函数。然而，在计算多项式时，通过霍纳方法进行因式分解并减少乘法操作是更有效的。例如，如果我们希望实现一个函数
+- en: it would be preferable to write it in C++ as
+  id: totrans-197
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最好将其在C++中写成
+- en: '*f(x)* = 8*x*⁴ + 7*x*³ + 4*x*²- 10^x - 6'
+  id: totrans-198
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*f(x)* = 8*x*⁴ + 7*x*³ + 4*x*²- 10^x - 6'
+- en: '[PRE25]'
+  id: totrans-199
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE25]'
+- en: rather than
+  id: totrans-200
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 而不是
+- en: '[PRE26]'
+  id: totrans-201
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: For the case of a non-integer exponent, say
+  id: totrans-202
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于非整数指数的情况，比如
+- en: '*g(x,y)* = *x*^(-1.368*x*) + 4.19*y*'
+  id: totrans-203
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*g(x,y)* = *x*^(-1.368*x*) + 4.19*y*'
+- en: 'then there is no alternative but to use `std::pow`:'
+  id: totrans-204
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 则必须使用`std::pow`：
+- en: '[PRE27]'
+  id: totrans-205
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE27]'
+- en: '` < cmath >` Ensures Consistency Across Compilers'
+  id: totrans-206
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+  zh: '`<cmath>` 确保跨编译器的一致性'
+- en: It may be the case that you can use these math functions without `#include <cmath>`,
+    but one should adhere to including `cmath` and scoping the functions with `std::`.
+    First, because C++ is built upon C, some compilers retain the old math functions
+    from C in what is called the *global namespace*. Other compilers, however, might
+    put `cmath` into the global namespace. As a result, one might actually be calling
+    old C functions rather than the ISO C++ Standard versions, and this could cause
+    unexpected or inconsistent behavior among different compilers.
+  id: totrans-207
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 也许在某些情况下，可以在没有包含`#include <cmath>`的情况下使用这些数学函数，但是应坚持包含`<cmath>`并使用`std::`来限定函数的作用域。首先，因为C++建立在C之上，一些编译器保留了来自C的旧数学函数，放置在所谓的*全局命名空间*中。然而，其他编译器可能将`cmath`放置在全局命名空间中。因此，实际上可能调用的是旧的C函数而不是ISO
+    C++标准版本，这可能导致不同编译器之间的意外或不一致的行为。
+- en: Another example of inconsistencies that can arise is with the absolute value
+    function. In C, and on older C++ compilers, the `abs` function was only implemented
+    for integer types. In order to calculate the absolute value of a floating point
+    number, one would need to use the `fabs` function. However, `std::abs` is overloaded
+    for both integer and floating point (eg `double`) arguments and should be preferred.
+  id: totrans-208
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一个可能出现的不一致性的例子涉及绝对值函数。在C语言和旧版C++编译器中，`abs`函数仅适用于整数类型。要计算浮点数的绝对值，需要使用`fabs`函数。然而，`std::abs`函数对整数和浮点数（如`double`）参数都进行了重载，应优先选择使用。
+- en: 'This is unfortunately one of the quirks in C++ due to its long association
+    with C; however, the moral of the story is quite simple: to keep C++ code ISO-compliant,
+    we should always put `#include <cmath>`, and scope the math functions with `std::`.
+    This will help ensure cross-compatibility on different compilers and operating
+    system platforms.'
+  id: totrans-209
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 不幸的是，这是由于C++长期与C的关联而导致的一个怪异之处；然而，故事的教训非常简单：为了保持C++代码的ISO兼容性，我们应始终包含`#include
+    <cmath>`，并使用`std::`来限定数学函数的作用域。这将有助于确保在不同编译器和操作系统平台上的跨兼容性。
+- en: Note
+  id: totrans-210
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: 'Note: Regarding C headers and namespace std, this is clarified, for example,
+    in the specifications for the gcc compiler:'
+  id: totrans-211
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意：关于C头文件和命名空间std的问题，例如在gcc编译器的规范中已经明确说明：
+- en: '*The standard specifies that if one includes the C-style header (<**math.h**>
+    in this case), the symbols will be available in the global namespace and perhaps
+    in namespace* *std::* *(but this is no longer a firm requirement.) On the other
+    hand, including the C++-style header (<**cmath**>) guarantees that the entities
+    will be found in namespace std and perhaps in the global namespace*.[8]'
+  id: totrans-212
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*标准规定，如果包括C样式头文件（在本例中为<**math.h**>），则符号将在全局命名空间中可用，可能也在* *std::* *命名空间中可用（但这不再是一个确定的要求）。另一方面，包括C++样式头文件（<**cmath**>）将保证实体将在命名空间std中找到，可能也在全局命名空间中找到。*[8]'
+- en: Constants
+  id: totrans-213
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 常量
+- en: In any type of quantitative programming, there is often a need to use constant
+    values in calculations. In C++, one can define a constant by simply appending
+    the keyword `const` when a value is assigned. Furthermore, beginning with C++20,
+    a set of commonly used mathematical constants is now available.
+  id: totrans-214
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在任何类型的数量编程中，通常需要在计算中使用常量值。在C++中，可以通过简单地在赋值时附加关键字`const`来定义常量。此外，从C++20开始，现在还提供了一组常用的数学常量。
+- en: The `const` Keyword
+  id: totrans-215
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: '`const`关键字'
+- en: 'If a variable doesn’t change value, it is safer to declare it as a constant
+    type, by using the `const` keyword. For example, we could use it to store an approximation
+    of earth’s gravitational acceleration constant:'
+  id: totrans-216
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果一个变量不改变值，使用`const`关键字将其声明为常量类型更安全。例如，我们可以用它来存储地球的重力加速度常数的近似值：
+- en: '[PRE28]'
+  id: totrans-217
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE28]'
+- en: 'Then, if later within the same scope someone attempted to reassign it to a
+    different value:'
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，如果在相同作用域内尝试将其重新分配为不同的值：
+- en: '[PRE29]'
+  id: totrans-219
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: a compiler error would result, with a message indicating an attempt was made
+    to modify the value of a constant. Catching errors at compile time is better than
+    chasing them at runtime and tracking down the cause, especially in a live production
+    environment.
+  id: totrans-220
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 将导致编译器错误，并显示尝试修改常量值的消息。在编译时捕获错误比在运行时追踪并找出原因要好，特别是在实时生产环境中。
+- en: '`const` also has other important uses and interesting properties that we will
+    cover later, particularly in an object-oriented programming context.'
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`const`还有其他重要用途和有趣的属性，我们将在稍后介绍，特别是在面向对象编程的上下文中。'
+- en: Standard Library Mathematical Constants
+  id: totrans-222
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 标准库数学常量
+- en: A handy addition to the C++ 20 Standard Library is a set of commonly used mathematical
+    constants, such as the values of ![](Images/1.3.png), *e*, ![](Images/1.4.png),
+    etc. Some of those that are convenient for quantitative finance are shown in the
+    following table.
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++ 20标准库的一个方便之处是一组常用的数学常量，例如![](Images/1.3.png)，*e*，![](Images/1.4.png)等。以下表格显示了对量化金融方便的一些常量。
+- en: '| C++ constant | `e` | `pi` | `inv_pi` | `inv_sqrt_pi` | `sqrt2` |'
+  id: totrans-224
+  prefs: []
+  type: TYPE_TB
+  zh: '| C++常量 | `e` | `pi` | `inv_pi` | `inv_sqrt_pi` | `sqrt2` |'
+- en: '| --- | --- | --- | --- | --- | --- |'
+  id: totrans-225
+  prefs: []
+  type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- |'
+- en: '| Definition | *e* | ![](Images/1.3.png) | ![](Images/1.5.png) | ![](Images/1.6.png)
+    | ![](Images/1.4.png) |'
+  id: totrans-226
+  prefs: []
+  type: TYPE_TB
+  zh: '| 定义 | *e* | ![](Images/1.3.png) | ![](Images/1.5.png) | ![](Images/1.6.png)
+    | ![](Images/1.4.png) |'
+- en: To use these constants, one must first include the `numbers` header in the Standard
+    Library. At the time of this writing, each must be scoped with the `std::numbers`
+    namespace. For example, to implement the function
+  id: totrans-227
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要使用这些常量，必须首先在标准库中包含`numbers`头文件。在撰写本文时，每个常量必须使用`std::numbers`命名空间进行作用域限定。例如，要实现函数
+- en: '![](Images/1.7.png)'
+  id: totrans-228
+  prefs: []
+  type: TYPE_IMG
+  zh: '![](Images/1.7.png)'
+- en: we could write
+  id: totrans-229
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们可以编写
+- en: '[PRE30]'
+  id: totrans-230
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: This way, whenever ![](Images/1.3.png)is used in calculations for example, its
+    value will be consistent throughout the program, rather than leaving it up to
+    different programmers on a project who might use approximations out to varying
+    precisions, resulting in possible consistencies in numerical results.
+  id: totrans-231
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这样，例如在计算中使用![](Images/1.3.png)时，其值将在整个程序中保持一致，而不是交给项目中不同的程序员，他们可能会使用不同精度的近似值，从而导致数值结果可能不一致。
+- en: In addition, the value of ![](Images/1.4.png), which can crop up somewhat frequently
+    in mathematical calculations, does not have to be computed with
+  id: totrans-232
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此外，数学计算中可能经常出现的![](Images/1.4.png)的值无需重新计算
+- en: '[PRE31]'
+  id: totrans-233
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: each time it is needed. The constant
+  id: totrans-234
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每次需要时都必须引用常量
+- en: '[PRE32]'
+  id: totrans-235
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: holds the double precision approximation itself. While perhaps of trivial consequence
+    in terms of one-off performance, repeated calls to the `std::sqrt` function millions
+    of times in computationally intensive code could potentially have some effect.
+  id: totrans-236
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本身保存了双精度的近似值。尽管在单次性能方面可能无关紧要，但在计算密集型代码中数百万次重复调用`std::sqrt`函数可能会产生一定影响。
+- en: Note
+  id: totrans-237
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: While not essential to know at this point, it is worth at least mentioning that
+    these constants are set at *compile time* rather than runtime, using a C++11 designation
+    called `constexpr`. This ties in with the much broader and more advanced subject
+    of *template metaprogramming*, in which calculations of constant values to be
+    used at runtime are performed at compile time. [[Might return to this topic later,
+    although it is of limited used in financial modeling where the computations depend
+    on data only available at runtime]].
+  id: totrans-238
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管在这一点上了解它并非必要，但值得至少提到这些常量是在 *编译时* 而不是运行时设置的，使用了 C++11 中称为 `constexpr` 的设计。这与更广泛和更高级的
+    *模板元编程* 主题相关联，在其中计算常量值以在运行时使用时在编译时执行。
+- en: As a closing note, it is somewhat curious that the set of mathematical constants
+    provided in C++20 include the value ![](Images/1.8.png), but not ![](Images/1.9.png)or
+    ![](Images/1.10.png), despite the latter two being more commonly present in statistical
+    calculations. [[See later chapter on the Boost libraries – they are included there]].
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为结束语，有点奇怪的是，在 C++20 提供的数学常量集中包括值 ![](Images/1.8.png)，但不包括 ![](Images/1.9.png)
+    或 ![](Images/1.10.png)，尽管后两者在统计计算中更为常见。[[查看 Boost 库的后续章节 - 在那里包括它们]]
+- en: Conclusion
+  id: totrans-240
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 结论
+- en: This concludes our whirlwind overview of C++. We emphasized quantitative programming,
+    along with the mathematical constants now included in C++20.
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这就是我们对 C++ 的风潮性概述。我们强调了量化编程，以及现在包括在 C++20 中的数学常量。
+- en: Our coverage of best practices with respect to coding style will be a consistent
+    theme throughout the book, as C++ is an extremely feature-rich language with plenty
+    of the proverbial rope with which to hang oneself. Adhering to best practices
+    and consistent coding style is vital to ensure code maintainability and reliability.
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们在编码风格方面的最佳实践覆盖将是本书的一贯主题，因为 C++ 是一种功能极其丰富的语言，有足够的“绳索”让自己上吊。遵循最佳实践和一致的编码风格对于确保代码可维护性和可靠性至关重要。
+- en: One other point to remember is that while we use a lot of screen output and
+    input, this is not how C++ is typically used in quantitative development. `std::cout`,
+    and `std::cin` should be thought as placeholders for real-world interfaces. We
+    will continue to use them as devices to check our results, but they will mostly
+    be relegated to use within the test functions that are called from `main()`, rather
+    than within mathematical and models code itself where they should be avoided in
+    practice anyway.
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 还有一点要记住的是，虽然我们使用大量的屏幕输出和输入，但这并不是 C++ 在量化开发中典型的使用方式。`std::cout` 和 `std::cin`
+    应该被视为真实世界接口的占位符。我们将继续将它们用作检查结果的设备，但它们主要会被降低到从 `main()` 调用的测试函数内部使用，而不是在实际数学和模型代码中使用，实际上在这些代码中应该避免它们。
+- en: References
+  id: totrans-244
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 参考文献
+- en: '[1] Kalb and Azman, *C++* *Today: The Beast is Back*, available on [https://resources.jetbrains.com/storage/products/cpp/books/Cplusplus_Today.pdf](https://resources.jetbrains.com/storage/products/cpp/books/Cplusplus_Today.pdf)
+    (link)'
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[1] Kalb 和 Azman，*C++* *今天：野兽回归*，可在 [https://resources.jetbrains.com/storage/products/cpp/books/Cplusplus_Today.pdf](https://resources.jetbrains.com/storage/products/cpp/books/Cplusplus_Today.pdf)
+    上找到（链接）'
+- en: '[2] [Guideline Support Library (ISO)](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+    (link)'
+  id: totrans-246
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[2] [指南支持库（ISO）](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)（链接）'
+- en: '[3] [ISO C++ Coding Standards](https://isocpp.org/wiki/faq/coding-standards)
+    (link)'
+  id: totrans-247
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[3] [ISO C++ 编程标准](https://isocpp.org/wiki/faq/coding-standards)（链接）'
+- en: '[4] Nicolai Josuttis, [*The C++ Standard Library (2E)*](http://www.cppstdlib.com)
+    (link)'
+  id: totrans-248
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[4] Nicolai Josuttis，《*The C++ Standard Library (2E)*》（http://www.cppstdlib.com）（链接）'
+- en: '[5] Google C++ Style Guide (https://google.github.io/styleguide/cppguide.html)'
+  id: totrans-249
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[5] Google C++ 风格指南（https://google.github.io/styleguide/cppguide.html）'
+- en: '[6] cppreference.com'
+  id: totrans-250
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[6] cppreference.com'
+- en: '[7] Stepanov, Mathematics of Generic Programming (Horner’s Method)'
+  id: totrans-251
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[7] Stepanov，《泛型编程的数学》（霍纳方法）'
+- en: '[8] GNU gcc Compiler Documentation'
+  id: totrans-252
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[8] GNU gcc 编译器文档'
+- en: (https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_headers.html
+  id: totrans-253
+  prefs: []
+  type: TYPE_NORMAL
+  zh: （https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_headers.html

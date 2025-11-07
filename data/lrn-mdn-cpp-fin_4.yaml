@@ -1,0 +1,3395 @@
+- en: Chapter 5\. Linear Algebra
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第5章 线性代数
+- en: Introduction
+  id: totrans-1
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 介绍
+- en: Linear algebra is an essential part of computational finance, and as such it
+    is a necessary and fundamental component for financial C++ software development.
+    Options existing at present in the Standard Library are mostly limited to the
+    `valarray` container, to be discussed briefly below. Over the last 15 years or
+    so, some very good open source matrix algebra libraries have emerged that have
+    been adopted by the financial software industry, as well as other computationally
+    intensive domains such as data science and medical research. Progress is also
+    being made toward linear algebra capabilities eventually being adopted into the
+    Standard Library in C++23 and C++26.
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 线性代数是计算金融的重要组成部分，因此对于金融C++软件开发而言，它是一个必要且基本的组件。目前在标准库中存在的选项大多限于`valarray`容器，稍后将简要讨论。
+- en: As C++ did not have all the convenient built-in multidimensional array capabilities
+    that came with Fortran platforms, quantitative programmers making the transition
+    to C++ back in the 1990’s often found themselves in an inconvenient situation
+    with limited options. These included building up this functionality mostly from
+    scratch, wrestling with interfaces to numerical Fortran libraries such as BLAS
+    and LAPACK, or somehow convincing management to invest in a third-party C++ commercial
+    library.
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于C++在上世纪90年代没有Fortran平台提供的便利的内置多维数组功能，那些转向C++的量化程序员经常陷入不便之境，选项有限。这些选项包括从头开始构建这些功能，与数值Fortran库（如BLAS和LAPACK）的接口斗争，或以某种方式说服管理层投资于第三方C++商业库。
+- en: Contrived DIY solutions that were sometimes employed, based on what was available
+    in C++ at the time, included representing a matrix as a `vector` of `vector`(s),
+    or holding data in a two-dimensional dynamic C-array. Neither of these was particular
+    palatable, with the former being cumbersome and inefficient, and the latter exposing
+    the software to the risks associated with raw pointers and dynamic memory management.
+    One seemingly useful feature available in the Standard Library, but not without
+    controversy, was `std::valarray`. It has survived to the current day, and it provides
+    vectorized operations and functions highly suitable for matrix and vector math.
+    Its pros and cons will be presented momentarily.
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当时有时采用的人为DIY解决方案包括将矩阵表示为`vector`的`vector`，或将数据保存在二维动态C数组中。这两种方法都不太理想，前者繁琐且低效，后者则暴露软件于原始指针和动态内存管理相关的风险。标准库中似乎有用的一个特性是`std::valarray`，但也不是没有争议。它一直存活至今，提供了适合矩阵和向量数学的向量化操作和函数。它的优缺点将在稍后讨论。
+- en: The situation has improved substantially over the years with the release of
+    multiple open-source linear algebra libraries for C++. Among these, two that have
+    gained considerable critical mass in computational finance are the [Eigen](https://eigen.tuxfamily.org)
+    library **{1}**, and [Armadillo](http://arma.sourceforge.net) **{2}**. A third
+    option that has risen to some prominence in high-performance computing (HPC) is
+    the [Blaze](https://bitbucket.org/blaze-lib/blaze) library **{3}**. An earlier
+    library, [uBLAS](https://www.boost.org/doc/libs/1_81_0/libs/numeric/ublas/doc/index.html),
+    **{4}** is also available as part of the Boost libraries; however, it does not
+    include the matrix decompositions and other capabilities available in the aforementioned
+    offerings.
+  id: totrans-5
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多年来，情况有了显著改善，发布了多个开源线性代数库供C++使用。在这些库中，两个在计算金融领域中获得了相当大批评群体的是[Eigen](https://eigen.tuxfamily.org)库
+    **{1}** 和[Armadillo](http://arma.sourceforge.net) **{2}**。在高性能计算（HPC）领域，第三个备受关注的选择是[Blaze](https://bitbucket.org/blaze-lib/blaze)库
+    **{3}**。早期的库[uBLAS](https://www.boost.org/doc/libs/1_81_0/libs/numeric/ublas/doc/index.html)
+    **{4}** 也作为Boost库的一部分可用；但它不包括前述库中提供的矩阵分解和其他功能。
+- en: As a side note, open source R interface packages are available for each of these
+    libraries. **{5}** These packages enable the integration of C++ code dependent
+    on one or more of these libraries into R packages, usually to enhance run-time
+    performance.
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为一个旁注，这些库各自都有开源R接口包 **{5}**。这些包使得依赖于其中一个或多个库的C++代码可以集成到R包中，通常是为了提高运行时性能。
+- en: More recently, NVIDIA has released [GPU-accelerated C++ linear algebra libraries](https://developer.nvidia.com/gpu-accelerated-libraries#linear-algebra)
+    as part of its HPC SDK. **{6}**.
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最近，NVIDIA发布了作为其HPC SDK的一部分的[GPU加速C++线性代数库](https://developer.nvidia.com/gpu-accelerated-libraries#linear-algebra)
+    **{6}**。
+- en: A comparative list of both open source and commercial C++ linear algebra libraries,
+    including those mentioned here, can be found on [Wikipedia](https://en.wikipedia.org/wiki/Comparison_of_linear_algebra_libraries).**{7}**
+    A more in-depth view of the Eigen library follows later in this chapter.
+  id: totrans-8
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 包括这里提到的内容在内，比较列表中涵盖了开源和商业C++线性代数库，可在[Wikipedia](https://en.wikipedia.org/wiki/Comparison_of_linear_algebra_libraries)上找到**{7}**。本章后面将更详细地介绍Eigen库。
+- en: New features planned for C++23 and C++26 look set to finally provide the Standard
+    Library with long overdue robust and well-supported linear algebra capabilities.
+    Central among these new features is the `std::mdspan` multi-dimensional array
+    representation planned for C++23\. C++26 should then be updated with both a standardized
+    interface to external BLAS-compatible libraries, as well as its own set of linear
+    algebra facilities.
+  id: totrans-9
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计划中的C++23和C++26的新功能似乎最终将为标准库提供既强大又得到长久支持的线性代数功能。这些新功能中的核心是为C++23计划的`std::mdspan`多维数组表示。C++26应当随后更新，增加一个标准化接口以支持外部BLAS兼容库，以及其自身的线性代数工具集。
+- en: Below, we will first take a trip back in time and examine convenient mathematical
+    features of `valarray`, and then demonstrate how it can be used as a proxy for
+    a matrix. Following that, we will dive into the Eigen library of the present and
+    demonstrate the basic matrix operations, along with matrix decompositions frequently
+    used in financial modeling. Finally, a glimpse of the proposals for near-future
+    Standard Library releases will also be presented.
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下面，我们首先将时光倒流，探讨`valarray`的方便数学特性，然后演示它如何作为矩阵的代理使用。随后，我们将深入介绍当前的Eigen库，并展示基本的矩阵操作，以及在金融建模中经常使用的矩阵分解。最后，还将简要介绍近期标准库发布的建议。
+- en: valarray and Matrix Operations
+  id: totrans-11
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: '`valarray`和矩阵操作'
+- en: The workhorse STL container `std::vector`, as we have seen, is an option for
+    representing a vector in the mathematical sense. Common vector arithmetic, such
+    as inner products, can be performed using STL algorithms. However, having been
+    “designed to be a general mechanism for holding values…​and to fit into the architecture
+    of containers, iterators, and algorithms” {2.5 Stroustrup, Tour 2E} **{8}**, the
+    common arithmetic vector operators such as addition and multiplication were not
+    included as members in its implementation.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们已经看到，作为工作马的STL容器`std::vector`是表示数学向量的一个选项。可以使用STL算法执行常见的向量算术，如内积。然而，“设计为一种用于保存值的通用机制...并且适应容器、迭代器和算法的架构”
+    {2.5 Stroustrup, Tour 2E} **{8}**，作为其实现的一部分，常见的算术向量运算符如加法和乘法并未包含在其中。
+- en: A Standard Library container class separate from the STL, called `valarray`,
+    does support arithmetic operators and provides “optimizations that are often considered
+    essential for serious numerical work” {ibid}. With slice and stride functions
+    also accompanying the `valarray` class, it can also facilitate representation
+    arrays of higher dimension, in particular a matrix.
+  id: totrans-13
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个独立于STL的标准库容器类，称为`valarray`，确实支持算术运算符，并提供“通常被认为是严肃数值工作所必需的优化” {ibid}。随着切片和步幅函数也伴随在`valarray`类旁，它也可以促进更高维度的数组表示，特别是矩阵。
+- en: While `valarray` has these very useful properties that would seem to make it
+    an obvious choice for matrix math, it has played to mixed reviews. This dates
+    back to its original specification which was never fully complete due to debates
+    over whether to require a new technique at the time, expression templates (to
+    be introduced shortly), that can significantly optimize performance. In the end,
+    this was not mandated. As a result, [“initial implementations were slow, and thus
+    users did not want to rely on it.”](https://wg21.link/p1673) **{9}**
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然`valarray`具有这些非常有用的属性，似乎使其成为矩阵运算的明显选择，但它却饱受好评与差评并存。这一情况可以追溯到其最初的规范，由于当时是否要求一种新的技术——表达式模板（即将推出），可以显著优化性能而进行的辩论而从未完全完成。最终，这一要求未被强制执行。因此，“最初的实现速度较慢，因此用户不愿依赖它。”（来源：[链接](https://wg21.link/p1673)
+    **{9}**）
+- en: As of the time of this writing, however, two of the mainstream Standard Library
+    distributions have implemented expression template versions of `valarray`, namely
+    those that accompany the gcc and Clang compilers. In addition, the [Intel oneAPI
+    DPC++/C++ Compiler](https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html#dpcpp-cpp)
+    **{10}** ships with its own high-performance implementation of `valarray`. And
+    as an incidental remark, specializations of `begin` and `end` functions were included
+    as enhancements in C++11.
+  id: totrans-15
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 但截至本文撰写时，两个主流的标准库发行版已经实现了 `valarray` 的表达式模板版本，即伴随着 gcc 和 Clang 编译器的那些版本。此外，[Intel
+    oneAPI DPC++/C++ Compiler](https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html#dpcpp-cpp)
+    **{10}** 还配备了其自己的高性能 `valarray` 实现。作为一个附带说明，`begin` 和 `end` 函数的特化也作为 C++11 的增强功能包含在内。
+- en: 'The moral of the story seems to be: know the capabilities of the implementation
+    you intend to use. If its performance is suitable for your needs, then it can
+    potentially be a very convenient option for matrix/vector operations, and vectorized
+    versions of common mathematical functions. In addition, examining the properties
+    of `valarray` may provide some context for future linear algebra enhancements
+    planned for the Standard Library, with similar functionality in some cases, even
+    though the implementations behind the scenes will be considerably different.'
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 故事的寓意似乎是：了解你打算使用的实现的能力。如果其性能适合你的需求，那么它可能是矩阵/向量操作以及常见数学函数的矢量化版本的非常便利选项。此外，检查
+    `valarray` 的属性可能为标准库计划中未来的线性代数增强提供一些背景，尽管在幕后的实现在某些情况下会有显著差异。
+- en: Arithmetic Operators and Math functions
+  id: totrans-17
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 算术运算符和数学函数
+- en: The `valarray` container supports the standard arithmetic operators on an element-by-element
+    basis, as well as scalar multiplication.
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`valarray` 容器支持按元素进行的标准算术运算符，以及标量乘法。'
+- en: 'For example, the vector sum expression <math alttext="3 bold v 1 plus one-half
+    bold v 2"><mrow><mn>3</mn> <msub><mi>𝐯</mi> <mn>1</mn></msub> <mo>+</mo> <mfrac><mn>1</mn>
+    <mn>2</mn></mfrac> <msub><mi>𝐯</mi> <mn>2</mn></msub></mrow></math> can be naturally
+    transcribed from a mathematical statement into C++ using `valarray` objects:'
+  id: totrans-19
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 例如，向量和表达式 <math alttext="3 bold v 1 plus one-half bold v 2"><mrow><mn>3</mn>
+    <msub><mi>𝐯</mi> <mn>1</mn></msub> <mo>+</mo> <mfrac><mn>1</mn> <mn>2</mn></mfrac>
+    <msub><mi>𝐯</mi> <mn>2</mn></msub></mrow></math> 可以自然地转录为 C++ 中使用 `valarray` 对象的数学语句：
+- en: '[PRE0]'
+  id: totrans-20
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: The result is
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结果是
+- en: '[PRE1]'
+  id: totrans-22
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: '*Element-by-element* multiplication is also implemented with the `*` operator:'
+  id: totrans-23
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*逐元素*乘法也是通过`*`运算符实现的：'
+- en: '[PRE2]'
+  id: totrans-24
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: This gives us
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这给了我们
+- en: '[PRE3]'
+  id: totrans-26
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: 'The dot (or inner) product of <math alttext="v 1"><msub><mi>v</mi> <mn>1</mn></msub></math>
+    and <math alttext="v 2"><msub><mi>v</mi> <mn>2</mn></msub></math> is easily obtained
+    by summing the preceding result by invoking the `sum()` member function on the
+    `valarray` class:'
+  id: totrans-27
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 向量 <math alttext="v 1"><msub><mi>v</mi> <mn>1</mn></msub></math> 和 <math alttext="v
+    2"><msub><mi>v</mi> <mn>2</mn></msub></math> 的点（或内）积可通过在 `valarray` 类的 `sum()`
+    成员函数上调用前述结果来轻松获得：
+- en: '[PRE4]'
+  id: totrans-28
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: 'In addition to `sum`, `valarray` also has `max` and `min` functions, along
+    with an `apply(.)` member function that applies an auxiliary function similar
+    to `std::transform`:'
+  id: totrans-29
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了 `sum` 外，`valarray` 还有 `max` 和 `min` 函数，以及一个 `apply(.)` 成员函数，它类似于 `std::transform`
+    应用辅助函数：
+- en: '[PRE5]'
+  id: totrans-30
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: A subset of the `cmath` functions is conveniently defined for vectorized operations
+    on the entirety of a `valarray`. For example, the following operations will return
+    a `valarray` containing the images of the respective functions applied to each
+    element in `v1` and `neg_val` below. Note that we can also negate each element
+    in the same way as a plain numerical type with the subtraction operator.
+  id: totrans-31
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`cmath` 函数的子集被方便地定义用于 `valarray` 的矢量化操作。例如，以下操作将返回一个包含应用于 `v1` 和 `neg_val`
+    中每个元素的相应函数映像的 `valarray`。请注意，我们也可以像普通数值类型一样使用减法运算符对每个元素取反。'
+- en: '[PRE6]'
+  id: totrans-32
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: 'Finally, as of C++11, specializations of the `begin` and `end` functions analagous
+    to those provided for STL containers have been implemented for `valarray`. A simple
+    example is as follows:'
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，截至 C++11，类似于为 STL 容器提供的 `begin` 和 `end` 函数的特化已经为 `valarray` 实现。一个简单的例子如下：
+- en: '[PRE7]'
+  id: totrans-34
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: Given the `apply(.)` member function on `valarray` and the built-in vectorized
+    mathematical functions that are already available, STL algorithms `for_each` and
+    `transform` might not be needed as often in the case of `valarray` compared to
+    STL containers, however.
+  id: totrans-35
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 鉴于在`valarray`上给定`apply(.)`成员函数和已有的内置向量化数学函数，与STL容器相比，在`valarray`的情况下，可能不经常需要使用STL算法`for_each`和`transform`。
+- en: valarray as a Matrix Proxy
+  id: totrans-36
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 作为矩阵代理的`valarray`
+- en: '`valarray` provides the facilities to represent multidimensional arrays. In
+    our case, we are specifically concerned with representing a two-dimensional array
+    as a proxy for a matrix. This can be achieved with the `slice(.)` member function
+    that can extract a reference to an individual row or column.'
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`valarray`提供了表示多维数组的功能。在我们的情况下，我们特别关注将二维数组表示为矩阵的代理。这可以通过`slice(.)`成员函数来实现，该函数可以提取对单个行或列的引用。'
+- en: To demonstrate this, let us first lighten the notation by defining the alias
+  id: totrans-38
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了演示这一点，让我们首先通过定义别名来简化表示方式
+- en: '[PRE8]'
+  id: totrans-39
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: 'Then, create a `valarray` object `val`, with the code formatted in a way to
+    make it look like a 4 <math alttext="times"><mo>×</mo></math> 3 matrix:'
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，创建一个`valarray`对象`val`，并将代码格式化，使其看起来像一个4 <math alttext="times"><mo>×</mo></math>
+    3矩阵：
+- en: '[PRE9]'
+  id: totrans-41
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: The first row can be retrieved using the `std::slice` function, defined for
+    a `valarray`, using the square bracket operator.
+  id: totrans-42
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可以使用为`valarray`定义的`std::slice`函数检索第一行，使用方括号操作符。
+- en: '[PRE10]'
+  id: totrans-43
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: 'What this says is:'
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这句话的意思是：
+- en: 'Go to the first element of the `valarray`: index 0, value = 1.0.'
+  id: totrans-45
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 转到`valarray`的第一个元素：索引0，值为1.0。
+- en: Choose 3 elements, beginning with the first
+  id: totrans-46
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 选择3个元素，从第一个开始
+- en: Using a *stride* of 1, which in this case means to choose three consecutive
+    rowwise elements
+  id: totrans-47
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 使用*步长*为1，在这种情况下意味着选择连续的三个按行排列的元素
+- en: 'Similarly, the second column can be retrieved, using in this case a stride
+    of 3, the number of columns:'
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 同样地，第二列可以使用步长为3来检索，列数为：
+- en: '[PRE11]'
+  id: totrans-49
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: It is important to note the `slice(.)` function returns a lighter `slice_array`
+    type — that acts as a reference to the selected elements — rather than a full
+    `valarray`. It does not, however, provide the necessary member functions and operators
+    to access individual elements or compute, say, new rows comprising a matrix product.
+    If we want to apply these functions to row or column data, we will need to construct
+    corresponding new `valarray` objects. This will be seen in the next example, computing
+    the dot product of a row in one matrix by the column in another, a necessary option
+    in carrying out matrix multiplication.
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 需要注意的是，`slice(.)`函数返回一个较轻的`slice_array`类型，作为所选元素的引用，而不是完整的`valarray`。然而，它并不提供访问单个元素或计算新行（例如矩阵乘积）所需的成员函数和运算符。如果我们想将这些函数应用于行或列数据，我们将需要构造相应的新`valarray`对象。这将在下一个示例中看到，即计算一个矩阵中一行与另一个矩阵中一列的点积，这在执行矩阵乘法时是必需的选项。
+- en: To demonstrate this, suppose we have a 5 <math alttext="times"><mo>×</mo></math>
+    3 and a 3 <math alttext="times"><mo>×</mo></math> 5 matrix, each represented as
+    a `valarray`. Note that we are also storing the number of rows and columns of
+    each in separate variables.
+  id: totrans-51
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了演示这一点，假设我们有一个5 <math alttext="times"><mo>×</mo></math> 3和一个3 <math alttext="times"><mo>×</mo></math>
+    5的矩阵，每个都表示为`valarray`。注意，我们还分别存储了每个的行数和列数。
+- en: '[PRE12]'
+  id: totrans-52
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: 'If we were to apply matrix multiplication, it would require taking the dot
+    product of each row of the first “matrix” by each column of the second. As an
+    example, in order to get the dot product of the third row by the second column,
+    we would first need the slice for each:'
+  id: totrans-53
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果我们要应用矩阵乘法，需要计算第一个“矩阵”的每一行与第二个“矩阵”的每一列的点积。例如，为了获得第三行与第二列的点积，我们首先需要对每个进行切片：
+- en: '[PRE13]'
+  id: totrans-54
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: 'However, neither element-by-element multiplication nor the `sum()` member function
+    is defined on a `slice_array`, so we need to construct corresponding `valarray`
+    objects:'
+  id: totrans-55
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，`slice_array`上既不定义逐元素乘法，也不定义`sum()`成员函数，因此我们需要构造相应的`valarray`对象：
+- en: '[PRE14]'
+  id: totrans-56
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: 'The dot product is then computed in the usual way:'
+  id: totrans-57
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后按通常的方式计算点积：
+- en: '[PRE15]'
+  id: totrans-58
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: Caution
+  id: totrans-59
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: 'As previously noted, a `slice_array` acts as a reference to a block within
+    a `valarray`. Operations and member functions such as `\*` and `sum` are not defined
+    on `slice_array`, but assignment operators such as `*=` and `+=` are. Therefore,
+    modification of a `slice_array` such as in the following example will also be
+    reflected in the `valarray` itself. If we take the first row of `va01` as a slice:'
+  id: totrans-60
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如前面所述，`slice_array`充当`valarray`中块的引用。在`slice_array`上未定义操作和成员函数，如`\*`和`sum`，但是赋值运算符如`*=`和`+=`是定义过的。因此，对`slice_array`的修改，如下面的示例中所示，也会反映在`valarray`本身中。如果我们将`va01`的第一行作为一个切片：
+- en: '[PRE16]'
+  id: totrans-61
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: and then apply assignment operators
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后应用赋值运算符
+- en: '[PRE17]'
+  id: totrans-63
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: then the `valarray` contents would be
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后`valarray`的内容将是
+- en: '[PRE18]'
+  id: totrans-65
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: In summary, `valarray` conveniently provides the ability to apply mathematical
+    operators and functions on an entire array, similar to Fortran 90, as well as
+    more math-focused languages such as R and Matlab . As a reminder, however, performance
+    can be highly dependent on the implementation used in your Standard Library distribution.
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 总之，`valarray`方便地提供了在整个数组上应用数学运算符和函数的能力，类似于Fortran 90，以及更多专注于数学的语言如R和Matlab。然而，请记住，性能很大程度上取决于您标准库分发中使用的实现。
+- en: More information about `valarray`, its history, and its pros and cons can be
+    found in [the online supplemental chapter accompanying Josuttis, _The C++ Standard
+    Library, second edition](http://www.cppstdlib.com/cppstdlib_supplementary.pdf)).
+    **{11}**
+  id: totrans-67
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有关`valarray`、其历史以及其优缺点的更多信息，请参阅[《C++标准库 第二版》附带的在线补充章节](http://www.cppstdlib.com/cppstdlib_supplementary.pdf))。**{11}**
+- en: Subsequent to `valarray` and C++98, there have been some very positive developments
+    regarding linear algebra in C++, some of which will now be presented.
+  id: totrans-68
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在`valarray`和C++98之后，C++在线性代数方面有了一些非常积极的发展，其中一些现在将被介绍。
+- en: Eigen
+  id: totrans-69
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: Eigen
+- en: The first release of the Eigen library became available in 2006\. Since then,
+    it has been expanded to version 3.4.0 as of August of 2021\. Starting with version
+    3.3.1, it has been licensed under the reasonably liberal Mozilla Public License
+    (MPL) 2.0.
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen库的第一个版本于2006年发布。自那时起，截至2021年8月，它已扩展到版本3.4.0。从版本3.3.1开始，它已根据合理宽松的Mozilla
+    Public License (MPL) 2.0许可发布。
+- en: Eigen is comprised of template code that makes inclusion into other C++ projects
+    very easy, in that in its standard installation there is no linking necessary
+    to external binary files. Its incorporation of expression templates, facilitating
+    lazy evaluation, provides for enhanced computational performance. It also received
+    a a further boost in popularity after being chosen for incorporation into the
+    well-respected [TensorFlow](https://www.tensorflow.org) **{12}** machine learning
+    library, as well as the [Stan Math Library](https://mc-stan.org/users/interfaces/math).
+    **{13}** More background on its suitability and popularity in finance is presented
+    in a recent [Quantstart](https://www.quantstart.com/articles/Eigen-Library-for-Matrix-Algebra-in-C/)
+    article **{14}**.
+  id: totrans-71
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen由模板代码组成，使其非常容易包含到其他C++项目中，在其标准安装中不需要链接到外部二进制文件。它的表达式模板的整合，促进了惰性评估，提供了增强的计算性能。在被选择用于著名的[TensorFlow](https://www.tensorflow.org)机器学习库以及[Stan数学库](https://mc-stan.org/users/interfaces/math)合并之后，它的受欢迎程度进一步提升。**{12}**
+    关于它在金融领域适用性和受欢迎程度的更多背景可以在最近的[Quantstart](https://www.quantstart.com/articles/Eigen-Library-for-Matrix-Algebra-in-C/)文章中找到。**{13}**
+- en: Finally, the Eigen library is very well documented, with a tutorial and examples
+    to help the newcomer get up and running quickly.
+  id: totrans-72
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，Eigen库有非常好的文档，配有教程和示例，可以帮助新手快速上手。
+- en: Lazy Evaluation
+  id: totrans-73
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 惰性评估
+- en: Lazy evaluation defers and minimizes the number of operations required in matrix
+    and vector operations. Expression templates in C++ are used to encapsulate arithmetic
+    operations – that is, expressions – inside templates such that they are delayed
+    until they are actually needed. This can reduce the total number of operations,
+    assignments, and temporary objects that are created when using conventional approaches.
+  id: totrans-74
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 惰性评估推迟和最小化了矩阵和向量运算中所需的操作数。C++中的表达式模板用于封装算术操作（即表达式）在模板内，延迟直到实际需要它们。这可以减少使用传统方法时创建的总操作数、赋值和临时对象的数量。
+- en: An example of lazy evaluation that follows is based on a more comprehensive
+    and illustrative discussion in the book by [Peter Gottschling on modern C++ for
+    scientific programing](https://www.pearson.com/en-us/subject-catalog/p/discovering-modern-c-/P200000000286/9780136677642).
+    **{15}**
+  id: totrans-75
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下面是基于更全面和图解讨论的延迟评估示例，可以在[彼得·戈特林的现代科学程序设计中](https://www.pearson.com/en-us/subject-catalog/p/discovering-modern-c-/P200000000286/9780136677642)找到更详细的信息。
+    **{15}**
+- en: Suppose you have four vectors in the mathematical sense, each with the same
+    fixed number of elements, say
+  id: totrans-76
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设您在数学意义上有四个向量，每个向量都有相同数量的固定元素，比如
+- en: <math alttext="bold v 1 comma bold v 2 comma bold v 3 comma bold v 4" display="block"><mrow><msub><mi>𝐯</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>𝐯</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>𝐯</mi>
+    <mn>3</mn></msub> <mo>,</mo> <msub><mi>𝐯</mi> <mn>4</mn></msub></mrow></math>
+  id: totrans-77
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold v 1 comma bold v 2 comma bold v 3 comma bold v 4" display="block"><mrow><msub><mi>𝐯</mi>
+    <mn>1</mn></msub> <mo>,</mo> <msub><mi>𝐯</mi> <mn>2</mn></msub> <mo>,</mo> <msub><mi>𝐯</mi>
+    <mn>3</mn></msub> <mo>,</mo> <msub><mi>𝐯</mi> <mn>4</mn></msub></mrow></math>
+- en: and you wish to store their sum in a vector *y*. The traditional approach would
+    be to define the addition operator, take successive sums and store them in temporary
+    objects, ultimately computing the final sum and assigning it to *y*.
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 并且您希望将它们的和存储在向量*y*中。传统方法是定义加法运算符，连续求和并将它们存储在临时对象中，最终计算最终和并分配给*y*。
+- en: 'In code, the operator could be defined in the generic sense such that vector
+    addition would be defined for any arithmetic type:'
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在代码中，操作符可以以通用方式定义，使得向量加法对于任何算术类型都定义明确：
+- en: '[PRE19]'
+  id: totrans-80
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: Computing the sum of four vectors as follows
+  id: totrans-81
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计算四个向量的和如下
+- en: '[PRE20]'
+  id: totrans-82
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: 'results in the following:'
+  id: totrans-83
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 导致以下结果：
+- en: 4 - 1 = 3 `vector` instances created (two temporary plus one final `y` instance)
+  id: totrans-84
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 4 - 1 = 3个`vector`实例创建（两个临时加一个最终的`y`实例）
+- en: (4 - 1) <math alttext="times"><mo>×</mo></math> 3 assignments of `double` variables
+  id: totrans-85
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: (4 - 1) <math alttext="times"><mo>×</mo></math> 3个`double`变量的分配
+- en: As the number of vectors (say *m*) and the number of elements in each vector
+    (say *n*) get larger, this generalizes to
+  id: totrans-86
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当向量数量（比如*m*）和每个向量中的元素数量（比如*n*）增加时，这将变得更加普遍：
+- en: 'm – 1 `vector` objects allocated on the heap: m - 2 temporary, plus one return
+    object (`y`)'
+  id: totrans-87
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: m – 1个堆上分配的`vector`对象：m - 2个临时对象，加上一个返回对象(`y`)
+- en: <math alttext="left-parenthesis m minus 1 right-parenthesis n"><mrow><mo>(</mo>
+    <mi>m</mi> <mo>-</mo> <mn>1</mn> <mo>)</mo> <mi>n</mi></mrow></math> assignments
+  id: totrans-88
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: <math alttext="left-parenthesis m minus 1 right-parenthesis n"><mrow><mo>(</mo>
+    <mi>m</mi> <mo>-</mo> <mn>1</mn> <mo>)</mo> <mi>n</mi></mrow></math> 分配
+- en: With lazy evaluation, we can reduce the total number of steps, and thus improve
+    efficiency for “large” *m* and *n*. More specifically, this can be accomplished
+    by delaying the addition until all the data is ready, and then only at that time
+    perform the sums for each element in the result. In code, this could be accomplished
+    by writing a function as follows.
+  id: totrans-89
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用延迟评估，我们可以减少总步骤数，从而提高“大”*m*和*n*的效率。更具体地说，这可以通过延迟添加直到所有数据准备好，然后仅在那时为结果中的每个元素执行求和来实现。在代码中，这可以通过编写如下函数来实现。
+- en: '[PRE21]'
+  id: totrans-90
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: Now, in this case,
+  id: totrans-91
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在，在这种情况下，
+- en: There are *no* temporary `vector` objects created; only the `sum` result is
+    necessary
+  id: totrans-92
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 没有临时`vector`对象；只需要`sum`结果
+- en: The number of assignments is reduced to *n* = 4
+  id: totrans-93
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 减少分配数量至 *n* = 4
+- en: The Eigen documentation provides additional background in the section [Lazy
+    Evaluation and Aliasing](https://eigen.tuxfamily.org/dox/TopicLazyEvaluation.html).
+  id: totrans-94
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen文档在[延迟评估和别名](https://eigen.tuxfamily.org/dox/TopicLazyEvaluation.html)部分提供了更多背景信息。
+- en: The previous example demonstrates how lazy evaluation can work, but the obvious
+    problem is it would be unrealistic to write individual sum functions for all possible
+    fixed numbers of vectors. Generalizing with expression templates is a far more
+    challenging problem that will not be included here, but more information can be
+    found in the Gottschling book {ibid 12}, as well as in Chapter 27 of the comprehensive
+    book on C++ templates by [Vandevoorde, Josuttis, and Gregor](http://tmplbook.com/)
+    **{16}**.
+  id: totrans-95
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 上述示例演示了延迟评估如何工作，但显而易见的问题是为所有可能的固定向量数编写单独的求和函数是不现实的。使用表达式模板进行泛化是一个更具挑战性的问题，这里不包括详细介绍，但可以在戈特林的书中找到更多信息{ibid
+    12}，以及在[Vandevoorde、Josuttis和Gregor的C++模板综合书籍](http://tmplbook.com/)的第27章中 **{16}**。
+- en: Like any other optimization tool, it should not be applied blindly in the belief
+    it will automatically make your code more efficient, as again there are cases
+    where performance could actually be degraded.
+  id: totrans-96
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与任何其他优化工具一样，不应盲目应用以为它会自动使您的代码更高效，因为在某些情况下，性能实际上可能会降低。
+- en: Finally, for a very interesting presentation of a real-world case study of expression
+    templates in financial risk management, a talk on the subject [presented by Bowie
+    Owens at CppCon 2019](https://www.youtube.com/watch?v=4IUCBx5fIv0) **{17}** is
+    very well worth watching.
+  id: totrans-97
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，对于金融风险管理中表达式模板的非常有趣的实际案例演示，建议观看由Bowie Owens在CppCon 2019上展示的主题演讲 [presented
+    by Bowie Owens at CppCon 2019](https://www.youtube.com/watch?v=4IUCBx5fIv0) **{17}**
+    。
+- en: Eigen Matrices and Vectors
+  id: totrans-98
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: Eigen矩阵和向量
+- en: The heart of the Eigen library is, not surprisingly, the `Matrix` template class.
+    It is scoped with the `Eigen` namespace and requires the `Dense` header file be
+    included. At the time of this writing, corresponding module imports have not yet
+    been standardized. This means the header file will need to be included in the
+    global fragment of a module.
+  id: totrans-99
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen库的核心不出意外地是`Matrix`模板类。它在`Eigen`命名空间中定义，并需要包含`Dense`头文件。在撰写本文时，对应的模块导入尚未标准化。这意味着头文件需要包含在模块的全局片段中。
+- en: The `Matrix` class carries six template parameters, but a variety of aliases
+    are provided as specific types. These include fixed square matrix dimensions up
+    to a maximum of four, as well as dynamic types for arbitrary numbers of rows and
+    columns. The numerical type that a `Matrix` holds is also a template parameter,
+    but this setting is also incorporated into individual aliases. For example, the
+    following code will construct and display a fixed 3 <math alttext="times"><mo>×</mo></math>
+    3 matrix of `double` values, and a 4 <math alttext="times"><mo>×</mo></math> 4
+    matrix of `int`s. Braced (uniform) initialization by row can be used to load the
+    data at construction.
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Matrix`类具有六个模板参数，但提供了多种别名作为特定类型。这些包括固定方阵维度最多为四的类型，以及用于任意行和列数的动态类型。`Matrix`所持有的数值类型也是一个模板参数，但此设置也已合并到各个别名中。例如，以下代码将构造并显示一个`double`值的固定3
+    <math alttext="times"><mo>×</mo></math> 3矩阵，以及一个`int`的4 <math alttext="times"><mo>×</mo></math>
+    4矩阵。在构造时可以使用花括号（统一）初始化按行加载数据。'
+- en: '[PRE22]'
+  id: totrans-101
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: Note also that the `<<` stream operator is overloaded, so the result can be
+    easily displayed on the screen (in row-major order).
+  id: totrans-102
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 还要注意`<<`流操作符被重载，因此可以轻松地将结果显示在屏幕上（按行主序）。
+- en: '[PRE23]'
+  id: totrans-103
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: 'Individual rows and columns can also be accessed, using 0-based indexing. The
+    first column of the first matrix, and the third column of the second, for example
+    are obtained with respective accessor functions:'
+  id: totrans-104
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可以访问单独的行和列，使用基于0的索引。例如，第一个矩阵的第一列和第二个矩阵的第三列可以分别通过相应的访问器函数获取：
+- en: '[PRE24]'
+  id: totrans-105
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE24]'
+- en: 'This results in the following screen output:'
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这导致以下屏幕输出：
+- en: '[PRE25]'
+  id: totrans-107
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE25]'
+- en: Technically speaking, the type returned by either the `row` or `col` accessor
+    is an `Eigen::Block`. It is similar to a `slice_array` accessed from a `valarray`,
+    in that it acts as a lighter weight reference to the data. Unlike `slice_array`,
+    it does not carry any mathematical operators such as `+=`.
+  id: totrans-108
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从技术上讲，由`row`或`col`访问器返回的类型是`Eigen::Block`。它类似于从`valarray`访问的`slice_array`，因为它作为对数据的轻量级引用。与`slice_array`不同，它不包含任何数学运算符，如`+=`。
+- en: For most of the financial examples considered in this book, the dimensions of
+    a matrix will not be known a priori, nor will they necessarily be of a square
+    matrix. In addition, the contents will usually be real numbers. For these reasons,
+    we will primarily be concerned with the Eigen dynamic form for `double` types,
+    aliased as `Eigen::MatrixXd`.
+  id: totrans-109
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于本书中考虑的大多数金融示例，矩阵的维度事先不会知道，也不一定是方阵。此外，内容通常是实数。因此，我们将主要关注`double`类型的Eigen动态形式，别名为`Eigen::MatrixXd`。
+- en: Note
+  id: totrans-110
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: As just mentioned, we will primarily use the dynamic Eigen `MatrixXd` form of
+    a matrix (with `d` indicating `double` numerical elements); however, member and
+    non-member functions will usually apply to any class derived from the `Matrix`
+    template class. Where these functions are discussed, their relations with `Matrix`
+    rather than `MatrixXd` may also be mentioned. Similarly, vector representation
+    in Eigen will use `VectorXd`.
+  id: totrans-111
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 正如刚才提到的，我们主要使用动态的Eigen `MatrixXd`矩阵形式（其中`d`表示`double`数值元素）；然而，成员函数和非成员函数通常适用于任何从`Matrix`模板类派生的类。讨论这些函数时，它们与`Matrix`而不是`MatrixXd`的关系也可能被提及。类似地，Eigen中的向量表示将使用`VectorXd`。
+- en: Linear algebra will inevitably involve subscripts and superscripts, eg <math
+    alttext="x Subscript i j"><msub><mi>x</mi> <mrow><mi>i</mi><mi>j</mi></mrow></msub></math>
+    , where in mathematical notation *i* might run from 1 to *m*, and *j* from 1 to
+    *n*. However, C++ is 0-indexed, so a mathematical statement where *i* = 1 will
+    be represented by `i = 0` in C++, *j* = *n* by `j = n - 1`, and so forth.
+  id: totrans-112
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 线性代数必然涉及下标和上标，例如 <math alttext="x Subscript i j"><msub><mi>x</mi> <mrow><mi>i</mi><mi>j</mi></mrow></msub></math>
+    ，在数学符号中，*i* 可能从 1 到 *m*，*j* 从 1 到 *n*。然而，C++ 中是从 0 开始索引的，因此数学语句中的 *i* = 1 将在 C++
+    中表示为 `i = 0`，*j* = *n* 将表示为 `j = n - 1`，依此类推。
+- en: 'Construction of a `MatrixXd` can take on many forms. Data can be entered as
+    before in row-major order, with the number of rows and columns implied by uniform
+    initialization of individual rows. Alternatively, the dimensions can be used as
+    constructor arguments, with the data input by streaming in row-major order. And,
+    one more approach is to set each element one-by-one. An example of each is shown
+    here:'
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 构造 `MatrixXd` 可以采用多种形式。数据可以按行主序输入，每行的初始化统一决定了行数和列数。或者，可以使用构造函数参数作为维度，通过按行主序流式输入数据。还有一种方法是逐个设置每个元素。这里展示了每种方法的示例：
+- en: '[PRE26]'
+  id: totrans-114
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: Note that the round bracket operator serves as both a mutator and an accessor,
+    as demonstrated in the third example.
+  id: totrans-115
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，圆括号运算符同时作为改变器和访问器，如第三个示例所示。
+- en: 'Two special cases, where either the number of columns or rows is one, are aliased
+    as `VectorXd` and `RowVectorXd`. Construction options are similar to the `MatrixXd`
+    examples above, again as shown in the Eigen documentation:'
+  id: totrans-116
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 两个特殊情况，其中列数或行数为一，别名为 `VectorXd` 和 `RowVectorXd`。构造选项与上述 `MatrixXd` 的示例类似，如同在
+    Eigen 文档中展示的那样：
+- en: '[PRE27]'
+  id: totrans-117
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE27]'
+- en: Matrix and Vector Math Operations
+  id: totrans-118
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 矩阵和向量数学运算
+- en: Matrix addition and subtraction are are conveniently implemented as overloads
+    of the `+` and `-` operators, not unlike `valarray`. Similarly, these apply to
+    vectors. Unlike `valarray`, however, the multiplication operator `*` refers to
+    matrix multiplication rather than an element-by-element product. A separate set
+    of functions is available for a wide range of element-by-element operations.
+  id: totrans-119
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 矩阵加法和减法都方便地通过`+`和`-`运算符的重载实现，类似于`valarray`。同样，这些也适用于向量。但与`valarray`不同的是，乘法运算符`*`表示矩阵乘法而不是逐元素乘积。针对广泛的逐元素操作，提供了单独的函数集。
+- en: 'To multiply two matrices `A` and `B`, the code follows in natural mathematical
+    order:'
+  id: totrans-120
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要将两个矩阵 `A` 和 `B` 相乘，代码遵循自然的数学顺序：
+- en: '[PRE28]'
+  id: totrans-121
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE28]'
+- en: 'This gives us as output:'
+  id: totrans-122
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这使我们的输出结果为：
+- en: '[PRE29]'
+  id: totrans-123
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: Caution
+  id: totrans-124
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: In the Eigen documentation, it is strongly recommended to “not use the auto
+    keywords with Eigen’s expressions, unless you are 100% sure about what you are
+    doing. In particular, do not use the auto keyword as a replacement for a `Matrix<>`
+    type.”
+  id: totrans-125
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Eigen 文档中，强烈建议“不要在 Eigen 的表达式中使用 `auto` 关键字，除非你对自己所做的事情非常确定。特别是，不要将 `auto`
+    关键字用作 `Matrix<>` 类型的替代品。”
+- en: The reasons behind this require an advanced discussion about templates that
+    tie in with lazy evaluation. Lazy Evaluation provides advantages in efficiency,
+    but it also can involve return types using `auto` that might be in the form of
+    a reference rather than a full `Matrix` type. This can result in unexpected or
+    undefined behavior. It becomes less of an issue as you become more familiar with
+    various Eigen types, but for this introductory presentation, we will mostly heed
+    this admonishment.
+  id: totrans-126
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其背后的原因需要进行关于与懒惰求值相关的模板的高级讨论。懒惰求值在效率上提供了优势，但它也可能涉及返回类型的使用 `auto`，可能是引用而不是完整的
+    `Matrix` 类型。这可能导致意外或未定义的行为。随着您对各种 Eigen 类型的了解越来越深入，这个问题会变得不那么重要，但在这个入门演示中，我们大多数时候会遵循这个警告。
+- en: More information can be found [in the documentation](https://eigen.tuxfamily.org/dox/TopicPitfalls.html).
+    **{18}**
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 更多信息请参阅[文档](https://eigen.tuxfamily.org/dox/TopicPitfalls.html)。**{18}**
+- en: 'The `*` operator is also overloaded for matrix-vector and row vector-matrix
+    multiplication. As an example, suppose we have a portfolio of three funds, with
+    correlation matrix of the returns and the vector of individual fund volatilities
+    given (annualized). As is a typical problem, we might need to construct the covariance
+    matrix given the data in this form in order to calculate the portfolio volatility.
+    First, to form the covariance matrix, we would pre- and post-multiply the correlation
+    matrix by diagonal matrices containing the fund volatilities:'
+  id: totrans-128
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`*` 运算符还被重载用于矩阵-向量和行向量-矩阵乘法。例如，假设我们有一个包含三种基金的投资组合，具有收益相关性矩阵和给定的个别基金波动率向量（年化）。作为一个典型问题，我们可能需要以这种形式构造协方差矩阵，以计算投资组合波动率。首先，为了形成协方差矩阵，我们将通过包含基金波动率的对角矩阵对相关性矩阵进行前置和后置乘法：'
+- en: '[PRE30]'
+  id: totrans-129
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: Note how the `VectorXd` member function `asDiagonal()` conveniently forms a
+    diagonal matrix with the vector elements along the diagonal.
+  id: totrans-130
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意 `VectorXd` 的成员函数 `asDiagonal()` 如何方便地形成一个以向量元素为对角线的对角矩阵。
+- en: Then, given a vector of fund weights <math alttext="omega"><mi>ω</mi></math>
+    adding to 1, the portfolio volatility is then the square root of the quadratic
+    form
+  id: totrans-131
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，给定一个资金权重向量 <math alttext="omega"><mi>ω</mi></math> 总和为 1，投资组合波动率则是二次形式的平方根
+- en: <math alttext="omega Superscript sans-serif upper T Baseline bold upper Sigma
+    omega" display="block"><mrow><msup><mi>ω</mi> <mi>𝖳</mi></msup> <mi>Σ</mi> <mi>ω</mi></mrow></math>
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="omega Superscript sans-serif upper T Baseline bold upper Sigma
+    omega" display="block"><mrow><msup><mi>ω</mi> <mi>𝖳</mi></msup> <mi>Σ</mi> <mi>ω</mi></mrow></math>
+- en: 'where <math alttext="bold upper Sigma"><mi>Σ</mi></math> is the covariance
+    matrix:'
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中 <math alttext="bold upper Sigma"><mi>Σ</mi></math> 是协方差矩阵：
+- en: '[PRE31]'
+  id: totrans-134
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: 'For element-by-element matrix multiplication, use the `cwiseProduct` member
+    function. As an example, to multiply the individual elements in matrices of like
+    dimension, say <math alttext="bold upper A"><mi>𝐀</mi></math> and <math alttext="bold
+    upper B Superscript sans-serif upper T"><msup><mi>𝐁</mi> <mi>𝖳</mi></msup></math>
+    , we would write:'
+  id: totrans-135
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于逐元素矩阵乘法，使用 `cwiseProduct` 成员函数。例如，要对维度相同的矩阵 <math alttext="bold upper A"><mi>𝐀</mi></math>
+    和 <math alttext="bold upper B Superscript sans-serif upper T"><msup><mi>𝐁</mi>
+    <mi>𝖳</mi></msup></math> 中的个别元素进行乘法运算，我们可以这样写：
+- en: '[PRE32]'
+  id: totrans-136
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: There is in fact a set of `cwise...` (meaning *coefficient-wise*) member functions
+    on an Eigen `Matrix` that perform element-by-element operations on two compatible
+    matrices, such as `cwiseQuotient` and `cwiseNotEqual`. There are also unary `cwise`
+    member functions that return the absolute value and square root of each element.
+    These can be found in the [Eigen documentation](https://eigen.tuxfamily.org/dox/group__QuickRefPage.html#title6)
+    here. **{19}**
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 实际上，Eigen 的 `Matrix` 上有一组 `cwise...`（意思是逐系数）成员函数，可以在两个兼容矩阵上执行逐元素操作，如 `cwiseQuotient`
+    和 `cwiseNotEqual`。还有一元的 `cwise` 成员函数，返回每个元素的绝对值和平方根。这些可以在[Eigen文档](https://eigen.tuxfamily.org/dox/group__QuickRefPage.html#title6)中找到。**{19}**
+- en: The result of the `*` operator when applied to two vectors depends upon which
+    vector is transposed. For two vectors u and v, the dot (inner) product is computed
+    as
+  id: totrans-138
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`*` 运算符应用于两个向量时，取决于哪个向量被转置。对于两个向量 u 和 v，点（内）积计算为'
+- en: <math alttext="bold u Superscript sans-serif upper T Baseline bold v" display="block"><mrow><msup><mi>𝐮</mi>
+    <mi>𝖳</mi></msup> <mi>𝐯</mi></mrow></math>
+  id: totrans-139
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold u Superscript sans-serif upper T Baseline bold v" display="block"><mrow><msup><mi>𝐮</mi>
+    <mi>𝖳</mi></msup> <mi>𝐯</mi></mrow></math>
+- en: 'while the outer product results when the transpose is applied to v:'
+  id: totrans-140
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当应用转置于 v 时，外积的结果是：
+- en: <math display="block"><msup><mstyle style="font-weight:bold"><mi>u</mi> <mi>v</mi></mstyle>
+    <mi>T</mi></msup></math>
+  id: totrans-141
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math display="block"><msup><mstyle style="font-weight:bold"><mi>u</mi> <mi>v</mi></mstyle>
+    <mi>T</mi></msup></math>
+- en: 'So, one needs to be careful when using the `*` operator with vectors. Suppose
+    we have:'
+  id: totrans-142
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因此，在使用向量和 `*` 运算符时需要小心。假设我们有：
+- en: '[PRE33]'
+  id: totrans-143
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE33]'
+- en: 'The respective results of the following vector multiplications will be different:'
+  id: totrans-144
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下面的向量乘法将得到不同的结果：
+- en: '[PRE34]'
+  id: totrans-145
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE34]'
+- en: 'The first would result in a real value of 2.5, while the second would give
+    us a singular 3 <math alttext="times"><mo>×</mo></math> 3 matrix:'
+  id: totrans-146
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第一个将产生一个实值为 2.5，而第二个将给出一个 3 <math alttext="times"><mo>×</mo></math> 3 的矩阵：
+- en: '[PRE35]'
+  id: totrans-147
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE35]'
+- en: To make life easier, Eigen provides a member function, `dot`, on the `VectorXd`
+    class. By instead writing
+  id: totrans-148
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了简化操作，Eigen 在 `VectorXd` 类上提供了一个成员函数 `dot`。通过以下方式编写
+- en: '[PRE36]'
+  id: totrans-149
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE36]'
+- en: it should perhaps make it clearer which product we want. The result would be
+    the same as before, plus the operation is commutative.
+  id: totrans-150
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 或许应该更清楚地表明我们想要哪种乘积。结果将与以前相同，此操作也是可交换的。
+- en: STL Compatibility
+  id: totrans-151
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: STL 兼容性
+- en: A very nice feature of both the Eigen `Vector` and `Matrix` classes is their
+    compatibility with the Standard Template Library. This means you can iterate through
+    an Eigen container, apply STL algorithms, and exchange data with STL containers.
+  id: totrans-152
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen `Vector` 和 `Matrix` 类的一个非常好的特性是它们与标准模板库的兼容性。这意味着你可以遍历 Eigen 容器，应用 STL
+    算法，并与 STL 容器交换数据。
+- en: STL and `VectorXd`
+  id: totrans-153
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: STL 和 `VectorXd`
+- en: 'As a first example, suppose you wish to generate 12 random variates from a
+    t-distribution and place the results in a `VectorXd` container. The process is
+    essentially the same as what we saw using a `std::vector` and applying the `std::generate`
+    algorithm with a lambda auxiliary function:'
+  id: totrans-154
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为第一个例子，假设您希望从t分布中生成12个随机变量，并将结果放入`VectorXd`容器中。该过程本质上与我们看到的使用`std::vector`并应用带有lambda辅助函数的`std::generate`算法相同：
+- en: '[PRE37]'
+  id: totrans-155
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE37]'
+- en: Note
+  id: totrans-156
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: 'Prior to the recent Eigen 3.4 release, the `begin` and `end` member functions
+    were not defined. In this case, you would need to instead use the `data` and `size`
+    functions, as follows:'
+  id: totrans-157
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在最近的Eigen 3.4版本发布之前，`begin`和`end`成员函数未定义。在这种情况下，您需要使用`data`和`size`函数，如下所示：
+- en: '[PRE38]'
+  id: totrans-158
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE38]'
+- en: 'Non-modifying algorithms such as `std::max_element` are also valid:'
+  id: totrans-159
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 非修改算法（如`std::max_element`）也是有效的：
+- en: '[PRE39]'
+  id: totrans-160
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE39]'
+- en: 'Numeric algorithms, for example `std::inner_product`, can also be applied:'
+  id: totrans-161
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 数值算法，例如`std::inner_product`，也可以应用：
+- en: '[PRE40]'
+  id: totrans-162
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE40]'
+- en: 'The cleaner C++20 range versions are also supported on `VectorXd`:'
+  id: totrans-163
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`VectorXd`上也支持更干净的C++20范围版本：'
+- en: '[PRE41]'
+  id: totrans-164
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE41]'
+- en: Constructing a Matrix from STL Container Data
+  id: totrans-165
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 从STL容器数据构造矩阵
+- en: Matrix data can also be obtained from STL containers. This is convenient, as
+    data can often arrive via interfaces from other sources where Eigen might not
+    be included. The key is to use an `Eigen::Map`, which sets up a reference to (view
+    of) the `vector` data rather than taking a copy of it.
+  id: totrans-166
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 矩阵数据也可以从STL容器中获取。这很方便，因为数据通常可以通过从其他未包含Eigen的源接口接收。关键是使用`Eigen::Map`，它设置对（视图的）`vector`数据的引用，而不是复制它。
+- en: As a first example, data residing in a `std::vector` container can be transferred
+    to an `Eigen::Map`, which in turn can be used as the constructor argument for
+    a `MatrixXd`. Note that the `Map` takes in a pointer to the first element in the
+    `vector` (using the `data` member function), and the number of rows and columns,
+    in its constructor.
+  id: totrans-167
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为第一个例子，存储在`std::vector`容器中的数据可以转移到`Eigen::Map`，然后可以用作`MatrixXd`的构造函数参数。注意，`Map`在其构造函数中接受指向`vector`第一个元素的指针（使用`data`成员函数），以及行数和列数。
+- en: '[PRE42]'
+  id: totrans-168
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE42]'
+- en: 'By default, `mtx_map` will provide row/column access to the data. Note that
+    unlike creating a `MatrixXd` as before with an initializer list of data, the order
+    will be column-major rather than row-major. Using `cout` yields the following
+    output:'
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 默认情况下，`mtx_map`将提供对数据的行/列访问。请注意，与以前使用数据初始化列表创建`MatrixXd`不同，顺序将是列主序而不是行主序。使用`cout`输出如下：
+- en: '[PRE43]'
+  id: totrans-170
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE43]'
+- en: 'As a `Map` is a lighter weight view of the data in `v`, it does not carry with
+    it all of the functionality as found on a `Matrix` object, in a sense similar
+    to a slice taken from a`valarray`. If you need this functionality, then you can
+    construct a `MatrixXd` instance by putting the `Map` object in its constructor:'
+  id: totrans-171
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于`Map`是对`v`中数据的轻量级视图，它不像以前用数据初始化列表创建`MatrixXd`对象那样具有所有功能。在某种意义上类似于从`valarray`中取出的切片。如果您需要此功能，则可以通过将`Map`对象放入其构造函数中来构造`MatrixXd`实例：
+- en: '[PRE44]'
+  id: totrans-172
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE44]'
+- en: 'The default arrangement of the data in a `Map` will be in *column-major order*,
+    which is different from the earlier `MatrixXd` examples constructed with numerical
+    data. If row-major is required, you can specify row-major at the outset, but this
+    will require an `Eigen::Matrix` template parameter with storage explicitly set
+    to `RowMajor`, as `MatrixXd` does not have its own template parameter for storage
+    method:'
+  id: totrans-173
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Map`中数据的默认排列顺序将是*列主序*，这与早期使用数值数据构造的`MatrixXd`示例不同。如果需要行主序，可以在一开始指定行主序，但这将需要将`Eigen::Matrix`模板参数明确设置为`RowMajor`，因为`MatrixXd`没有自己的存储方法模板参数：'
+- en: '[PRE45]'
+  id: totrans-174
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE45]'
+- en: 'If the matrix is square, you can just transpose the `Map` in place to put it
+    in row-major order:'
+  id: totrans-175
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果矩阵是方阵，您可以直接就地转置`Map`以将其放置在行主序中：
+- en: '[PRE46]'
+  id: totrans-176
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE46]'
+- en: 'The result is then:'
+  id: totrans-177
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结果如下：
+- en: '[PRE47]'
+  id: totrans-178
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE47]'
+- en: Warning
+  id: totrans-179
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 警告
+- en: Attempting to transpose a non-square matrix using `Map` can result in a program
+    crash. In this case, you will need to create a full `MatrixXd` object before applying
+    `transposeInPlace`.
+  id: totrans-180
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尝试使用`Map`转置非方阵可能导致程序崩溃。在这种情况下，您需要在应用`transposeInPlace`之前创建一个完整的`MatrixXd`对象。
+- en: Applying STL Algorithms to a Matrix
+  id: totrans-181
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 将STL算法应用于矩阵
+- en: 'STL algorithms can also be applied to matrices row by row, or column by column.
+    Suppose we have a 4 <math alttext="times"><mo>×</mo></math> 3 matrix as follows:'
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: STL算法也可以按行或按列应用于矩阵。假设我们有一个4 <math alttext="times"><mo>×</mo></math> 3矩阵如下所示：
+- en: '[PRE48]'
+  id: totrans-183
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE48]'
+- en: 'The `rowwise()` member function on an Eigen `Matrix` sets up an iteration by
+    row. Each `row` is a reference to (view of) the respective data, so we can square
+    each element of the matrix in place as follows:'
+  id: totrans-184
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen中的`rowwise()`成员函数在`Matrix`上设置按行迭代。每个`row`是对相应数据的引用（视图），因此我们可以按如下方式就地对矩阵的每个元素进行平方：
+- en: '[PRE49]'
+  id: totrans-185
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE49]'
+- en: 'The `colwise()` member function is similar, in this case sorting each column
+    of the matrix:'
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`colwise()`成员函数类似，在这种情况下，对矩阵的每一列进行排序：'
+- en: '[PRE50]'
+  id: totrans-187
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE50]'
+- en: The end result after applying both algorithms gives us
+  id: totrans-188
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 应用这两种算法后的最终结果是
+- en: '[PRE51]'
+  id: totrans-189
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE51]'
+- en: Each element has been squared, and each column has been rearranged in ascending
+    order.
+  id: totrans-190
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每个元素已经被平方，并且每列已按升序重新排列。
+- en: 'Financial programmers often need to write code that will compute the log returns
+    on a set of equity or fund prices. For example, suppose we have a set of 11 monthly
+    prices for three ETF’s, in the following three columns:'
+  id: totrans-191
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 金融程序员经常需要编写代码来计算一组股票或基金价格的对数收益率。例如，假设我们有三个ETF的11个月价格，分别放在以下三列中：
+- en: '[PRE52]'
+  id: totrans-192
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE52]'
+- en: 'The first step in computing log returns is to compute the natural log of each
+    price. This can be done by applying the `transform` algorithm row by row:'
+  id: totrans-193
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计算对数收益率的第一步是计算每个价格的自然对数。可以通过逐行应用`transform`算法来完成：
+- en: '[PRE53]'
+  id: totrans-194
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE53]'
+- en: 'Then, to get the log returns, we need to subtract from each log price its predecessor.
+    For this, we can apply the `adjacent_difference` numeric algorithm to each column:'
+  id: totrans-195
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，要获得对数收益率，我们需要从每个对数价格中减去其前任。为此，我们可以对每列应用`adjacent_difference`数值算法：
+- en: '[PRE54]'
+  id: totrans-196
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE54]'
+- en: This result is still an 11 <math alttext="times"><mo>×</mo></math> 3 matrix,
+    with the first row still containing the logs of the prices in the first row.
+  id: totrans-197
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此结果仍然是一个11 <math alttext="times"><mo>×</mo></math> 3矩阵，第一行仍包含第一行中价格的对数。
+- en: '[PRE55]'
+  id: totrans-198
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE55]'
+- en: 'What we want are the monthly returns alone, so we need to remove the first
+    row. This can be achieved by applying the `seq` function, introduced in Eigen
+    3.4, which provides an intuitive way of extracting a submatrix view (an `Eigen::Block`)
+    from a `Matrix` object. The example here shows how to extract all rows below the
+    first:'
+  id: totrans-199
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们需要的是仅月度回报，因此需要移除第一行。这可以通过应用Eigen 3.4中引入的`seq`函数来实现，它提供了从`Matrix`对象中提取子矩阵视图（`Eigen::Block`）的直观方式。这里的示例展示了如何提取第一行以下的所有行：
+- en: '[PRE56]'
+  id: totrans-200
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE56]'
+- en: 'What this says is:'
+  id: totrans-201
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这句话的意思是：
+- en: 'Start with the second row (index 1) and include all rows down to the last row:
+    `Eigen::seq(1, Eigen::last)`'
+  id: totrans-202
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 从第二行（索引为1）开始，包括到最后一行的所有行：`Eigen::seq(1, Eigen::last)`
+- en: 'Take all columns from the first (index 0) to the last: `Eigen::seq(0, Eigen::last)`'
+  id: totrans-203
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 从第一个（索引为0）到最后一个列获取所有列：`Eigen::seq(0, Eigen::last)`
+- en: Use this submatrix data alone in the constructor for the resulting `returns_mtx`
+  id: totrans-204
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+  zh: 仅使用构造返回的`returns_mtx`中的此子矩阵数据。
+- en: 'The results held in `returns_mtx` are then the log returns alone:'
+  id: totrans-205
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`returns_mtx`中保存的结果仅为对数收益率：'
+- en: '[PRE57]'
+  id: totrans-206
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE57]'
+- en: 'Now, suppose the portfolio allocation is fixed at 35%, 40%, and 25% for each
+    respective fund (columnwise). We can get the monthly portfolio returns by multiplying
+    the vector of allocations by `returns_mtx`:'
+  id: totrans-207
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在，假设投资组合分配分别固定在35%、40%和25%（按列）。我们可以通过将分配向量乘以`returns_mtx`来获得每月的投资组合回报：
+- en: '[PRE58]'
+  id: totrans-208
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE58]'
+- en: The result is
+  id: totrans-209
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结果是
+- en: '[PRE59]'
+  id: totrans-210
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE59]'
+- en: Matrix Decompositions and Applications
+  id: totrans-211
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 矩阵分解与应用
+- en: Matrix decompositions are of course essential for a variety of financial engineering
+    problems. Below, we will discuss a few examples.
+  id: totrans-212
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 矩阵分解在各种金融工程问题中当然至关重要。接下来，我们将讨论几个示例。
+- en: Systems of Linear Equations and the LU Decomposition
+  id: totrans-213
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 线性方程组和LU分解
+- en: Systems of linear equations are ubiquitous in finance and economics, particularly
+    in optimization, hedging, and forecasting problems. To show how solutions can
+    be found in Eigen, let us just look at a generic problem and implement it in code.
+    The LU (Lower/Upper-triangular matrix) decomposition is a common approach in numerical
+    methods. As opposed to coding it ourselves, Eigen can get the job done in two
+    lines of code.
+  id: totrans-214
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在金融和经济中，线性方程组是无处不在的，特别是在优化、套期保值和预测问题中。为了展示如何在Eigen中找到解决方案，让我们看一个通用问题并在代码中实现它。LU（下/上三角矩阵）分解是数值方法中的常见方法。与自己编写代码相反，Eigen可以在两行代码中完成工作。
+- en: 'Suppose we want to solve the following system of linear equations for <math
+    alttext="x 1"><msub><mi>x</mi> <mn>1</mn></msub></math> , <math alttext="x 2"><msub><mi>x</mi>
+    <mn>2</mn></msub></math> , and <math alttext="x 3"><msub><mi>x</mi> <mn>3</mn></msub></math>
+    :'
+  id: totrans-215
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设我们想要解决以下线性方程组，求解<math alttext="x 1"><msub><mi>x</mi> <mn>1</mn></msub></math>，<math
+    alttext="x 2"><msub><mi>x</mi> <mn>2</mn></msub></math>和<math alttext="x 3"><msub><mi>x</mi>
+    <mn>3</mn></msub></math>：
+- en: <math alttext="3 x 1 minus 5 x 2 plus x 3 equals 0" display="block"><mrow><mn>3</mn>
+    <msub><mi>x</mi> <mn>1</mn></msub> <mo>-</mo> <mn>5</mn> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <msub><mi>x</mi> <mn>3</mn></msub> <mo>=</mo> <mn>0</mn></mrow></math><math
+    alttext="minus x 1 minus x 2 plus x 3 equals negative 4" display="block"><mrow><mo>-</mo>
+    <msub><mi>x</mi> <mn>1</mn></msub> <mo>-</mo> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <msub><mi>x</mi> <mn>3</mn></msub> <mo>=</mo> <mo>-</mo> <mn>4</mn></mrow></math><math
+    alttext="2 x 1 minus 4 x 2 plus x 3 equals negative 1" display="block"><mrow><mn>2</mn>
+    <msub><mi>x</mi> <mn>1</mn></msub> <mo>-</mo> <mn>4</mn> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <msub><mi>x</mi> <mn>3</mn></msub> <mo>=</mo> <mo>-</mo> <mn>1</mn></mrow></math>
+  id: totrans-216
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="3 x 1 minus 5 x 2 plus x 3 equals 0" display="block"><mrow><mn>3</mn>
+    <msub><mi>x</mi> <mn>1</mn></msub> <mo>-</mo> <mn>5</mn> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <msub><mi>x</mi> <mn>3</mn></msub> <mo>=</mo> <mn>0</mn></mrow></math><math
+    alttext="minus x 1 minus x 2 plus x 3 equals negative 4" display="block"><mrow><mo>-</mo>
+    <msub><mi>x</mi> <mn>1</mn></msub> <mo>-</mo> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <msub><mi>x</mi> <mn>3</mn></msub> <mo>=</mo> <mo>-</mo> <mn>4</mn></mrow></math><math
+    alttext="2 x 1 minus 4 x 2 plus x 3 equals negative 1" display="block"><mrow><mn>2</mn>
+    <msub><mi>x</mi> <mn>1</mn></msub> <mo>-</mo> <mn>4</mn> <msub><mi>x</mi> <mn>2</mn></msub>
+    <mo>+</mo> <msub><mi>x</mi> <mn>3</mn></msub> <mo>=</mo> <mo>-</mo> <mn>1</mn></mrow></math>
+- en: This sets up the usual matrix equation
+  id: totrans-217
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这设置了通常的矩阵方程
+- en: <math alttext="bold upper A bold x equals bold b" display="block"><mrow><mi>𝐀𝐱</mi>
+    <mo>=</mo> <mi>𝐛</mi></mrow></math>
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold upper A bold x equals bold b" display="block"><mrow><mi>𝐀𝐱</mi>
+    <mo>=</mo> <mi>𝐛</mi></mrow></math>
+- en: where
+  id: totrans-219
+  prefs: []
+  type: TYPE_NORMAL
+  zh: where
+- en: <math alttext="bold x equals Start 1 By 3 Matrix 1st Row 1st Column x 1 2nd
+    Column x 2 3rd Column x 3 EndMatrix Superscript sans-serif upper T" display="block"><mrow><mi>𝐱</mi>
+    <mo>=</mo> <msup><mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>x</mi>
+    <mn>1</mn></msub></mtd> <mtd><msub><mi>x</mi> <mn>2</mn></msub></mtd> <mtd><msub><mi>x</mi>
+    <mn>3</mn></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup></mrow></math>
+  id: totrans-220
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold x equals Start 1 By 3 Matrix 1st Row 1st Column x 1 2nd
+    Column x 2 3rd Column x 3 EndMatrix Superscript sans-serif upper T" display="block"><mrow><mi>𝐱</mi>
+    <mo>=</mo> <msup><mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>x</mi>
+    <mn>1</mn></msub></mtd> <mtd><msub><mi>x</mi> <mn>2</mn></msub></mtd> <mtd><msub><mi>x</mi>
+    <mn>3</mn></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup></mrow></math>
+- en: The matrix <math alttext="bold upper A"><mi>𝐀</mi></math> contains the coefficients,
+    and the column vector <math alttext="bold b"><mi>𝐛</mi></math> contains the constants
+    on the right-hand side of the equations. The LU algorithm decomposes the matrix
+    <math alttext="bold upper A"><mi>𝐀</mi></math> into the product of lower- and
+    upper-triangular matrices <math alttext="bold upper L"><mi>𝐋</mi></math> and <math
+    alttext="bold upper U"><mi>𝐔</mi></math> in order to solve for <math alttext="bold
+    x"><mi>𝐱</mi></math> .
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 矩阵 <math alttext="bold upper A"><mi>𝐀</mi></math> 包含系数，列向量 <math alttext="bold
+    b"><mi>𝐛</mi></math> 包含方程右侧的常数。LU 算法将矩阵 <math alttext="bold upper A"><mi>𝐀</mi></math>
+    分解为下三角和上三角矩阵的乘积 <math alttext="bold upper L"><mi>𝐋</mi></math> 和 <math alttext="bold
+    upper U"><mi>𝐔</mi></math>，以便解 <math alttext="bold x"><mi>𝐱</mi></math> 。
+- en: 'In Eigen, form the matrix <math alttext="bold upper A"><mi>𝐀</mi></math> and
+    the vector <math alttext="bold b"><mi>𝐛</mi></math> :'
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Eigen 中，形成矩阵 <math alttext="bold upper A"><mi>𝐀</mi></math> 和向量 <math alttext="bold
+    b"><mi>𝐛</mi></math>：
+- en: _
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: _
+- en: '[PRE60]'
+  id: totrans-224
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE60]'
+- en: 'The next step is to create an instance of the `Eigen::FullPivLU` class with
+    template parameter `MatrixXd`. This sets up the LU decomposition. To find the
+    vector containing the solution, all that is left to do is call the `solve(.)`
+    member function on this object. This means two lines of code, as promised:'
+  id: totrans-225
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下一步是创建 `Eigen::FullPivLU` 类的实例，使用模板参数 `MatrixXd`。这设置了LU分解。要找到包含解的向量，只需在此对象上调用
+    `solve(.)` 成员函数。这意味着只需两行代码，如约定：
+- en: '[PRE61]'
+  id: totrans-226
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE61]'
+- en: The solution for `x` is then (from top to bottom <math alttext="x 1"><msub><mi>x</mi>
+    <mn>1</mn></msub></math> , <math alttext="x 2"><msub><mi>x</mi> <mn>2</mn></msub></math>
+    , <math alttext="x 3"><msub><mi>x</mi> <mn>3</mn></msub></math> )
+  id: totrans-227
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 解 `x` 的解法是（从上到下 <math alttext="x 1"><msub><mi>x</mi> <mn>1</mn></msub></math>
+    , <math alttext="x 2"><msub><mi>x</mi> <mn>2</mn></msub></math> , <math alttext="x
+    3"><msub><mi>x</mi> <mn>3</mn></msub></math> ）
+- en: _
+  id: totrans-228
+  prefs: []
+  type: TYPE_NORMAL
+  zh: _
+- en: '[PRE62]'
+  id: totrans-229
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE62]'
+- en: 'Several other decomposition methods are available in Eigen for solving linear
+    systems, where as is often the case a choice between speed and accuracy needs
+    to be considered. The LU decomposition in the example above is among the best
+    for accuracy, although there are others that may be faster but do not offer the
+    same level of stability. The complete list can be found here:'
+  id: totrans-230
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen 中还提供了其他几种分解方法来解线性系统，通常需要在速度和精度之间做出选择。上面示例中的LU分解在精度方面是最佳的，尽管还有其他一些可能更快但稳定性不同的方法。完整列表可在此处找到：
+- en: '[Basic linear solving](http://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html)
+    **{20}**'
+  id: totrans-231
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[基本线性求解](http://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html)
+    **{20}**'
+- en: 'A comparison of the matrix decomposition methods in Eigen is also available:'
+  id: totrans-232
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen 中的矩阵分解方法比较也可用：
+- en: '[Catalogue of decompositions offered by Eigen](http://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html)
+    **{21}**'
+  id: totrans-233
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[Eigen 提供的分解目录](http://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html)
+    **{21}**'
+- en: Fund Tracking with Multiple Regression and the Singular Value Decomposition
+  id: totrans-234
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 使用多元回归和奇异值分解进行基金跟踪
+- en: Another common programming problem in finance is fund tracking with multiple
+    regression. Examples include
+  id: totrans-235
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 金融中另一个常见的编程问题是使用多元回归进行基金跟踪。例如
+- en: Tracking whether a fund of hedge funds is following its stated allocation targets
+    by regressing its returns on a set of hedge fund style index returns.
+  id: totrans-236
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 追踪一个对冲基金组合是否按照其声明的配置目标进行，通过将其回报与一组对冲基金风格指数的回归进行比较。
+- en: Tracking the sensitivity of a portfolio to changes in different market sectors.
+  id: totrans-237
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 追踪投资组合对不同市场部门变化的敏感性。
+- en: Tracking the goodness of fit of mutual funds offered in guaranteed investment
+    products such as variable annuities, with respect to their respective fund group
+    benchmarks.
+  id: totrans-238
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 追踪提供在保本投资产品（如可变年金）中的互惠基金的适应性，关于其各自的基金组指数。
+- en: In multiple regression, one is tasked with finding a vector
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在多元回归中，任务是找到一个向量
+- en: <math alttext="ModifyingAbove beta With caret equals Start 1 By 4 Matrix 1st
+    Row 1st Column beta 1 2nd Column beta 2 3rd Column  ellipsis 4th Column beta Subscript
+    n EndMatrix Superscript sans-serif upper T Baseline slash slash ModifyingAbove
+    beta With caret equals Start 1 By 4 Matrix 1st Row 1st Column beta 1 2nd Column
+    beta 2 3rd Column  ellipsis 4th Column beta Subscript n EndMatrix Superscript
+    down-tack Baseline slash slash Start 1 By 4 Matrix 1st Row 1st Column beta 1 2nd
+    Column beta 2 3rd Column  ellipsis 4th Column beta Subscript n Baseline EndMatrix
+    slash slash ModifyingAbove beta With caret equals Start 1 By 4 Matrix 1st Row
+    1st Column beta 1 2nd Column beta 2 3rd Column  ellipsis 4th Column beta Subscript
+    n Baseline EndMatrix slash slash ModifyingAbove beta With caret equals Start 1
+    By 4 Matrix 1st Row 1st Column beta 1 2nd Column beta 2 3rd Column  ellipsis 4th
+    Column beta Subscript n EndMatrix Superscript sans-serif upper T Baseline slash
+    slash Start 1 By 3 Matrix 1st Row 1st Column w Subscript t Superscript left-parenthesis
+    1 right-parenthesis Baseline 2nd Column  ellipsis 3rd Column w Subscript t Superscript
+    left-parenthesis m right-parenthesis Baseline EndMatrix slash slash ModifyingAbove
+    beta With caret equals left-bracket beta 1 beta 2 ellipsis beta Subscript n Baseline
+    right-bracket Superscript sans-serif upper T" display="block"><mrow><mover accent="true"><mi>β</mi>
+    <mo>^</mo></mover> <mo>=</mo> <msup><mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>β</mi>
+    <mn>1</mn></msub></mtd> <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup> <mo>/</mo>
+    <mo>/</mo> <mover accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <msup><mfenced
+    open="[" close="]"><mtable><mtr><mtd><msub><mi>β</mi> <mn>1</mn></msub></mtd>
+    <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mi>⊤</mi></msup> <mo>/</mo>
+    <mo>/</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>β</mi> <mn>1</mn></msub></mtd>
+    <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd> <mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mo>/</mo> <mo>/</mo> <mover
+    accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><mrow><msub><mi>β</mi>
+    <mn>1</mn></msub></mrow></mtd> <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd>
+    <mtd><msub><mi>β</mi> <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mo>/</mo>
+    <mo>/</mo> <mover accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <msup><mfenced
+    open="[" close="]"><mtable><mtr><mtd><mrow><msub><mi>β</mi> <mn>1</mn></msub></mrow></mtd>
+    <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup> <mo>/</mo>
+    <mo>/</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><msubsup><mi>w</mi> <mi>t</mi>
+    <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup></mtd> <mtd><mo>⋯</mo></mtd>
+    <mtd><msubsup><mi>w</mi> <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup></mtd></mtr></mtable></mfenced>
+    <mo>/</mo> <mo>/</mo> <mover accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo>
+    <msup><mrow><mo>[</mo><msub><mi>β</mi> <mn>1</mn></msub> <msub><mi>β</mi> <mn>2</mn></msub>
+    <mo>⋯</mo><msub><mi>β</mi> <mi>n</mi></msub> <mo>]</mo></mrow> <mi>𝖳</mi></msup></mrow></math>
+  id: totrans-240
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="ModifyingAbove beta With caret equals Start 1 By 4 Matrix 1st
+    Row 1st Column beta 1 2nd Column beta 2 3rd Column  ellipsis 4th Column beta Subscript
+    n EndMatrix Superscript sans-serif upper T Baseline slash slash ModifyingAbove
+    beta With caret equals Start 1 By 4 Matrix 1st Row 1st Column beta 1 2nd Column
+    beta 2 3rd Column  ellipsis 4th Column beta Subscript n EndMatrix Superscript
+    down-tack Baseline slash slash Start 1 By 4 Matrix 1st Row 1st Column beta 1 2nd
+    Column beta 2 3rd Column  ellipsis 4th Column beta Subscript n Baseline EndMatrix
+    slash slash ModifyingAbove beta With caret equals Start 1 By 4 Matrix 1st Row
+    1st Column beta 1 2nd Column beta 2 3rd Column  ellipsis 4th Column beta Subscript
+    n Baseline EndMatrix slash slash ModifyingAbove beta With caret equals Start 1
+    By 4 Matrix 1st Row 1st Column beta 1 2nd Column beta 2 3rd Column  ellipsis 4th
+    Column beta Subscript n EndMatrix Superscript sans-serif upper T Baseline slash
+    slash Start 1 By 3 Matrix 1st Row 1st Column w Subscript t Superscript left-parenthesis
+    1 right-parenthesis Baseline 2nd Column  ellipsis 3rd Column w Subscript t Superscript
+    left-parenthesis m right-parenthesis Baseline EndMatrix slash slash ModifyingAbove
+    beta With caret equals left-bracket beta 1 beta 2 ellipsis beta Subscript n Baseline
+    right-bracket Superscript sans-serif upper T" display="block"><mrow><mover accent="true"><mi>β</mi>
+    <mo>^</mo></mover> <mo>=</mo> <msup><mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>β</mi>
+    <mn>1</mn></msub></mtd> <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup> <mo>/</mo>
+    <mo>/</mo> <mover accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <msup><mfenced
+    open="[" close="]"><mtable><mtr><mtd><msub><mi>β</mi> <mn>1</mn></msub></mtd>
+    <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mi>⊤</mi></msup> <mo>/</mo>
+    <mo>/</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>β</mi> <mn>1</mn></msub></mtd>
+    <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd> <mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mo>/</mo> <mo>/</mo> <mover
+    accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><mrow><msub><mi>β</mi>
+    <mn>1</mn></msub></mrow></mtd> <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd>
+    <mtd><msub><mi>β</mi> <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mo>/</mo>
+    <mo>/</mo> <mover accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <msup><mfenced
+    open="[" close="]"><mtable><mtr><mtd><mrow><msub><mi>β</mi> <mn>1</mn></msub></mrow></mtd>
+    <mtd><msub><mi>β</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>β</mi>
+    <mi>n</mi></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup> <mo>/</mo>
+    <mo>/</mo> <mfenced open="[" close="]"><mtable><mtr><mtd><msubsup><mi>w</mi> <mi>t</mi>
+    <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup></mtd> <mtd><mo>⋯</mo></mtd>
+    <mtd><msubsup><mi>w</mi> <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup></mtd></mtr></mtable></mfenced>
+    <mo>/</mo> <mo>/</mo> <mover accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo>
+    <msup><mrow><mo>[</mo><msub><mi>β</mi> <mn>1</mn></msub> <msub><mi>β</mi> <mn>2</mn></msub>
+    <mo>⋯</mo><msub><mi>β</mi> <mi>n</mi></msub> <mo>]</mo></mrow> <mi>𝖳</mi></msup></mrow></math>
+- en: that satisfies the matrix form of the normal equations
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使得满足正规方程的矩阵形式
+- en: <math display="block"><mrow><mover><mi>𝛃</mi> <mo stretchy="false" style="math-style:normal;math-depth:0;">^</mo></mover>
+    <mo>=</mo> <msup><mrow><mo fence="true" form="prefix">[</mo> <mtable columnalign="center"><mtr><mtd><mrow><msup><mi
+    mathvariant="bold">X</mi> <mi>𝖳</mi></msup> <mi mathvariant="bold">X</mi></mrow></mtd></mtr></mtable>
+    <mo fence="true" form="postfix">]</mo></mrow> <mrow><mo>−</mo> <mn>1</mn></mrow></msup>
+    <msup><mi mathvariant="bold">X</mi> <mi>𝖳</mi></msup> <mi mathvariant="bold">Y</mi>
+    <mo lspace="0em" rspace="0em">⁄</mo> <mo lspace="0em" rspace="0em">⁄</mo> <mover><mi>𝛃</mi>
+    <mo stretchy="false" style="math-style:normal;math-depth:0;">^</mo></mover> <mo>=</mo>
+    <mo form="prefix" stretchy="false">[</mo> <msup><mi mathvariant="bold">X</mi>
+    <mi>𝖳</mi></msup> <mi mathvariant="bold">X</mi> <msup><mo form="postfix" stretchy="false">]</mo>
+    <mrow><mo>−</mo> <mn>1</mn></mrow></msup> <msup><mi mathvariant="bold">X</mi>
+    <mi>𝖳</mi></msup> <mi>𝐲</mi></mrow></math>
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math display="block"><mrow><mover><mi>𝛃</mi> <mo stretchy="false" style="math-style:normal;math-depth:0;">^</mo></mover>
+    <mo>=</mo> <msup><mrow><mo fence="true" form="prefix">[</mo> <mtable columnalign="center"><mtr><mtd><mrow><msup><mi
+    mathvariant="bold">X</mi> <mi>𝖳</mi></msup> <mi mathvariant="bold">X</mi></mrow></mtd></mtr></mtable>
+    <mo fence="true" form="postfix">]</mo></mrow> <mrow><mo>−</mo> <mn>1</mn></mrow></msup>
+    <msup><mi mathvariant="bold">X</mi> <mi>𝖳</mi></msup> <mi mathvariant="bold">Y</mi>
+    <mo lspace="0em" rspace="0em">⁄</mo> <mo lspace="0em" rspace="0em">⁄</mo> <mover><mi>𝛃</mi>
+    <mo stretchy="false" style="math-style:normal;math-depth:0;">^</mo></mover> <mo>=</mo>
+    <mo form="prefix" stretchy="false">[</mo> <msup><mi mathvariant="bold">X</mi>
+    <mi>𝖳</mi></msup> <mi mathvariant="bold">X</mi> <msup><mo form="postfix" stretchy="false">]</mo>
+    <mrow><mo>−</mo> <mn>1</mn></mrow></msup> <msup><mi mathvariant="bold">X</mi>
+    <mi>𝖳</mi></msup> <mi>𝐲</mi></mrow></math>
+- en: where <math alttext="bold upper X"><mi>𝐗</mi></math> is the design matrix containing
+    *p* columns of independent variable data, and *n* observations (rows), with the
+    number of observations *n* “comfortably” greater than the number of data columns
+    *p* to ensure stability. This is typically the case in these types of fund tracking
+    applications.
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中 <math alttext="bold upper X"><mi>𝐗</mi></math> 是包含 *p* 列自变量数据和 *n* 个观察（行）的设计矩阵，且观察数
+    *n* “舒适地”大于数据列数 *p*，以确保稳定性。这在这类基金追踪应用中通常是情况。
+- en: Note
+  id: totrans-244
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: For fund tracking applications, the intercept term <math alttext="beta 0"><msub><mi>β</mi>
+    <mn>0</mn></msub></math> can usually be dropped, so it is omitted here. For regression
+    cases where an intercept is required, a final column of ones needs to be appended
+    to the design matrix when using Eigen. _
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于基金追踪应用程序，拦截项 <math alttext="beta 0"><msub><mi>β</mi> <mn>0</mn></msub></math>
+    通常可以被删除，因此在此处被省略。对于需要截距的回归案例，当使用Eigen时，需要在设计矩阵中附加一个全为1的最后一列。 _
+- en: A commonly employed solution is the compact Singular Value Decomposition (SVD),
+    which replaces the matrix <math alttext="bold upper X"><mi>𝐗</mi></math> with
+    the decomposition <math alttext="bold upper U bold upper Sigma bold upper V Superscript
+    upper T"><mrow><mi>𝐔</mi> <mi>Σ</mi> <msup><mi>𝐕</mi> <mi>T</mi></msup></mrow></math>
+    , where <math alttext="bold upper U"><mi>𝐔</mi></math> is an <math alttext="n
+    times p"><mrow><mi>n</mi> <mo>×</mo> <mi>p</mi></mrow></math> matrix, <math alttext="bold
+    upper V"><mi>𝐕</mi></math> is <math alttext="p times p"><mrow><mi>p</mi> <mo>×</mo>
+    <mi>p</mi></mrow></math> , and <math alttext="bold upper Sigma"><mi>Σ</mi></math>
+    is a <math alttext="p times p"><mrow><mi>p</mi> <mo>×</mo> <mi>p</mi></mrow></math>
+    diagonal matrix of strictly positive values. Making this substitution in the original
+    formula for <math alttext="ModifyingAbove beta With caret"><mover accent="true"><mi>β</mi>
+    <mo>^</mo></mover></math> , we get
+  id: totrans-246
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一种常用的解决方案是紧凑的奇异值分解（SVD），它用分解 <math alttext="bold upper U bold upper Sigma bold
+    upper V Superscript upper T"><mrow><mi>𝐔</mi> <mi>Σ</mi> <msup><mi>𝐕</mi> <mi>T</mi></msup></mrow></math>
+    替换矩阵 <math alttext="bold upper X"><mi>𝐗</mi></math>，其中 <math alttext="bold upper
+    U"><mi>𝐔</mi></math> 是一个 <math alttext="n times p"><mrow><mi>n</mi> <mo>×</mo>
+    <mi>p</mi></mrow></math> 矩阵，<math alttext="bold upper V"><mi>𝐕</mi></math> 是 <math
+    alttext="p times p"><mrow><mi>p</mi> <mo>×</mo> <mi>p</mi></mrow></math> 矩阵，<math
+    alttext="bold upper Sigma"><mi>Σ</mi></math> 是一个由严格正数值构成的 <math alttext="p times
+    p"><mrow><mi>p</mi> <mo>×</mo> <mi>p</mi></mrow></math> 对角矩阵。将这一替换应用到 <math alttext="ModifyingAbove
+    beta With caret"><mover accent="true"><mi>β</mi> <mo>^</mo></mover></math> 的原始公式中，我们得到
+- en: <math alttext="ModifyingAbove beta With caret equals bold upper V bold upper
+    Sigma bold upper U Superscript sans-serif upper T Baseline bold y" display="block"><mrow><mover
+    accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <mi>𝐕</mi> <mi>Σ</mi> <msup><mi>𝐔</mi>
+    <mi>𝖳</mi></msup> <mi>𝐲</mi></mrow></math>
+  id: totrans-247
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="ModifyingAbove beta With caret equals bold upper V bold upper
+    Sigma bold upper U Superscript sans-serif upper T Baseline bold y" display="block"><mrow><mover
+    accent="true"><mi>β</mi> <mo>^</mo></mover> <mo>=</mo> <mi>𝐕</mi> <mi>Σ</mi> <msup><mi>𝐔</mi>
+    <mi>𝖳</mi></msup> <mi>𝐲</mi></mrow></math>
+- en: Eigen provides two SVD solvers that can be used for obtaining the least squares
+    estimates of the regression coefficients. The first of these, as described in
+    the Eigen documentation, is the [Jacobi SVD decomposition of a rectangular matrix_](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1JacobiSVD.html)
+    **{22}**. The documentation also states the Jacobi version is recommended for
+    design matrices of 16 columns or less, which is sometimes sufficient for fund
+    tracking problems.
+  id: totrans-248
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen 提供了两个可用于获取回归系数最小二乘估计的SVD求解器。其中之一，如Eigen文档中所述，是 [Jacobi SVD decomposition
+    of a rectangular matrix_](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1JacobiSVD.html)
+    **{22}**。文档还指出，Jacobi 版本建议用于设计矩阵列数不超过16列的情况，这在某些基金追踪问题中已足够。
+- en: 'The way this works is given the design matrix predictor data contained in a
+    `MatrixXd X`, Eigen sets up the SVD logic inside the class template `Eigen::JacobiSVD`.
+    Then, given the response data contained in a `VectorXd Y`, solving for <math alttext="ModifyingAbove
+    beta With caret"><mover accent="true"><mi>β</mi> <mo>^</mo></mover></math> is
+    again just two lines of code:'
+  id: totrans-249
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这种工作方式是，在给定设计矩阵预测数据包含在 `MatrixXd X` 中时，Eigen 在类模板 `Eigen::JacobiSVD` 中设置了SVD逻辑。然后，给定响应数据包含在
+    `VectorXd Y` 中，求解 <math alttext="ModifyingAbove beta With caret"><mover accent="true"><mi>β</mi>
+    <mo>^</mo></mover></math> 只需两行代码：
+- en: '[PRE63]'
+  id: totrans-250
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE63]'
+- en: Note
+  id: totrans-251
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: 'The `Eigen::ComputeThinU | Eigen::ComputeThinV` bitwise-or parameter instructs
+    the program to use the compact version of SVD. If the full SVD is desired, then
+    the above `JacobiSVD` instantiation would be:'
+  id: totrans-252
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Eigen::ComputeThinU | Eigen::ComputeThinV` 的按位或参数指示程序使用SVD的紧凑版本。如果需要完整的SVD，则以上`JacobiSVD`实例化将是：'
+- en: '[PRE64]'
+  id: totrans-253
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE64]'
+- en: In this case, the <math alttext="bold upper U"><mi>𝐔</mi></math> matrix will
+    be <math alttext="n times n"><mrow><mi>n</mi> <mo>×</mo> <mi>n</mi></mrow></math>
+    , and <math alttext="bold upper Sigma"><mi>Σ</mi></math> will be an <math alttext="n
+    times p"><mrow><mi>n</mi> <mo>×</mo> <mi>p</mi></mrow></math> pseudoinverse.
+  id: totrans-254
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在这种情况下，<math alttext="bold upper U"><mi>𝐔</mi></math> 矩阵将是 <math alttext="n
+    times n"><mrow><mi>n</mi> <mo>×</mo> <mi>n</mi></mrow></math> ，<math alttext="bold
+    upper Sigma"><mi>Σ</mi></math> 将是 <math alttext="n times p"><mrow><mi>n</mi> <mo>×</mo>
+    <mi>p</mi></mrow></math> 伪逆。
+- en: There are no default settings.
+  id: totrans-255
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 没有默认设置。
+- en: As an example, suppose we have three sector ETF’s and wish to examine their
+    relationship to the broader market (eg the S&P 500), and suppose we have 30 daily
+    observations.
+  id: totrans-256
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 例如，假设我们有三个行业ETF，并希望研究它们与更广泛市场（如标准普尔500指数）的关系，假设我们有30天的每日观察数据。
+- en: 'The design matrix will contain the three ETF returns and is stored in a `MatrixXd`
+    called `X`, as follows:'
+  id: totrans-257
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 设计矩阵将包含三个ETF回报，并存储在名为`X`的`MatrixXd`中，如下所示：
+- en: '[PRE65]'
+  id: totrans-258
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE65]'
+- en: 'Similarly, the market returns are stored in a `VectorXd` array `Y`:'
+  id: totrans-259
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 类似地，市场回报以`VectorXd`数组`Y`存储：
+- en: '[PRE66]'
+  id: totrans-260
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE66]'
+- en: 'Obtaining the regression coefficients is just a matter of compiling and running
+    the SVD using the two lines of code shown at the outset, which gives us for `beta`:'
+  id: totrans-261
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 获得回归系数只是通过编译和运行在一开始显示的两行代码，这给我们`beta`：
+- en: '[PRE67]'
+  id: totrans-262
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE67]'
+- en: 'The <math alttext="bold upper U"><mi>𝐔</mi></math> and <math alttext="bold
+    upper V"><mi>𝐕</mi></math> matrices can also be obtained if desired, along with
+    the <math alttext="bold upper Sigma"><mi>Σ</mi></math> matrix, using the following
+    accessor functions:'
+  id: totrans-263
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果需要，还可以使用以下访问器函数获得<math alttext="bold upper U"><mi>𝐔</mi></math> 和 <math alttext="bold
+    upper V"><mi>𝐕</mi></math> 矩阵，以及 <math alttext="bold upper Sigma"><mi>Σ</mi></math>
+    矩阵：
+- en: '[PRE68]'
+  id: totrans-264
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE68]'
+- en: An alternative SVD solver, the [*Bidiagonal Divide and Conquer SVD*](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1BDCSVD.html),
+    **{23}** is also available in Eigen. Per the documentation, it is recommended
+    for design matrices with greater than 16 columns for better performance.
+  id: totrans-265
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一种可选的SVD求解器，[*Bidiagonal Divide and Conquer SVD*](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1BDCSVD.html)，**{23}**
+    也可在Eigen中找到。根据文档，推荐用于设计矩阵列数大于16的情况以获得更好的性能。
+- en: 'The setup is the same as the Jacobi case, but using the `BDCSVD` class in place
+    of `JacobiSVD`:'
+  id: totrans-266
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 设置与Jacobi情况相同，但使用`JacobiSVD`的位置上的`BDCSVD`类：
+- en: '[PRE69]'
+  id: totrans-267
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE69]'
+- en: It should be noted Eigen also provides QR decompositions as well as the capability
+    of just coding in the normal equations with Eigen matrices and operations. As
+    noted in the documentation, [*Solving linear least squares systems*](https://eigen.tuxfamily.org/dox-devel/group__LeastSquares.html),
+    these can be faster than SVD methods, but they can be less accurate. **{24}**
+    These are alternatives you might want to consider if speed is an issue, but under
+    the right conditions.
+  id: totrans-268
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 值得注意的是Eigen还提供QR分解以及使用Eigen矩阵和操作进行正常方程求解的能力。如文档所述，[*解线性最小二乘系统*](https://eigen.tuxfamily.org/dox-devel/group__LeastSquares.html)，这些方法可能比SVD方法更快，但可能精度较低。**{24}**
+    如果速度是问题，这些都是您可以考虑的备选方案，但需要在适当的条件下使用。
+- en: Correlated Random Equity Paths and the Cholesky Decomposition
+  id: totrans-269
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 相关的随机股票路径和乔列斯基分解
+- en: 'The Cholesky decomposition is a popular tool in finance for generating correlated
+    Monte Carlo equity path simulations. For example, when pricing basket options,
+    covariances between movements in the basket securities need to be accounted for,
+    specifically in generating correlated random normal draws. This is in contrast
+    to generating a random price path for a single underlying security, as we saw
+    in Chapter 8:'
+  id: totrans-270
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在金融中，乔列斯基分解是生成相关的蒙特卡洛股票路径模拟的一种常用工具。例如，在定价篮子期权时，需要考虑篮子证券运动之间的协方差，特别是在生成相关的随机正态抽取时。这与生成单个基础证券的随机价格路径形成对比，正如我们在第8章中看到的那样。
+- en: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
+    1 Baseline e Superscript left-parenthesis StartFraction r minus sigma squared
+    Over 2 EndFraction right-parenthesis normal upper Delta t plus sigma epsilon Super
+    Subscript t Superscript StartRoot normal upper Delta t EndRoot" display="block"><mrow><msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <msup><mi>e</mi> <mrow><mrow><mo>(</mo><mfrac><mrow><mi>r</mi><mo>-</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mn>2</mn></mfrac><mo>)</mo></mrow><mi>Δ</mi><mi>t</mi><mo>+</mo><mi>σ</mi><msub><mi>ε</mi>
+    <mi>t</mi></msub> <msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup></mrow></math>
+  id: totrans-271
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper S Subscript t Baseline equals upper S Subscript t minus
+    1 Baseline e Superscript left-parenthesis StartFraction r minus sigma squared
+    Over 2 EndFraction right-parenthesis normal upper Delta t plus sigma epsilon Super
+    Subscript t Superscript StartRoot normal upper Delta t EndRoot" display="block"><mrow><msub><mi>S</mi>
+    <mi>t</mi></msub> <mo>=</mo> <msub><mi>S</mi> <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow></msub>
+    <msup><mi>e</mi> <mrow><mrow><mo>(</mo><mfrac><mrow><mi>r</mi><mo>-</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mn>2</mn></mfrac><mo>)</mo></mrow><mi>Δ</mi><mi>t</mi><mo>+</mo><mi>σ</mi><msub><mi>ε</mi>
+    <mi>t</mi></msub> <msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup></mrow></math>
+- en: where again <math alttext="epsilon Subscript t Baseline tilde upper N left-parenthesis
+    0 comma 1 right-parenthesis"><mrow><msub><mi>ε</mi> <mi>t</mi></msub> <mo>∼</mo>
+    <mi>N</mi> <mrow><mo>(</mo> <mn>0</mn> <mo>,</mo> <mn>1</mn> <mo>)</mo></mrow></mrow></math>
+    , <math alttext="sigma"><mi>σ</mi></math> is the equity volatility, and <math
+    alttext="r"><mi>r</mi></math> represents the risk-free interest rate,
+  id: totrans-272
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中再次 <math alttext="epsilon Subscript t Baseline tilde upper N left-parenthesis
+    0 comma 1 right-parenthesis"><mrow><msub><mi>ε</mi> <mi>t</mi></msub> <mo>∼</mo>
+    <mi>N</mi> <mrow><mo>(</mo> <mn>0</mn> <mo>,</mo> <mn>1</mn> <mo>)</mo></mrow></mrow></math>，<math
+    alttext="sigma"><mi>σ</mi></math> 是股票的波动率，<math alttext="r"><mi>r</mi></math>
+    表示无风险利率，
+- en: In the case of a basket option, we now need to generate a path for each of say
+    *m* assets at each time <math alttext="t"><mi>t</mi></math> , where the <math
+    alttext="sigma epsilon Subscript t"><mrow><mi>σ</mi> <msub><mi>ε</mi> <mi>t</mi></msub></mrow></math>
+    term is replaced by a random term <math alttext="w Subscript t Superscript left-parenthesis
+    i right-parenthesis"><msubsup><mi>w</mi> <mi>t</mi> <mrow><mo>(</mo><mi>i</mi><mo>)</mo></mrow></msubsup></math>
+    that is again based on a standard normal draw, but whose fluctuations also contain
+    correlations with the other assets in the basket. Therefore, we need to generate
+    a set of prices <math alttext="StartSet upper S Subscript t Superscript left-parenthesis
+    i right-parenthesis Baseline EndSet"><mfenced separators="" open="{" close="}"><msubsup><mi>S</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>i</mi><mo>)</mo></mrow></msubsup></mfenced></math>
+    where
+  id: totrans-273
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在篮子期权的情况下，现在我们需要为每个资产（总数为 *m* 个）在每个时间点 <math alttext="t"><mi>t</mi></math> 生成一条路径，其中术语
+    <math alttext="sigma epsilon Subscript t"><mrow><mi>σ</mi> <msub><mi>ε</mi> <mi>t</mi></msub></mrow></math>
+    被一个随机项 <math alttext="w Subscript t Superscript left-parenthesis i right-parenthesis"><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>i</mi><mo>)</mo></mrow></msubsup></math> 取代，这个随机项再次基于标准正态分布抽取，但其波动也包含与篮子中其他资产的相关性。因此，我们需要生成一组价格
+    <math alttext="StartSet upper S Subscript t Superscript left-parenthesis i right-parenthesis
+    Baseline EndSet"><mfenced separators="" open="{" close="}"><msubsup><mi>S</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>i</mi><mo>)</mo></mrow></msubsup></mfenced></math>，其中
+- en: <math alttext="upper S Subscript t Superscript left-parenthesis 1 right-parenthesis
+    Baseline equals upper S Subscript t minus 1 Superscript left-parenthesis 1 right-parenthesis
+    Baseline e Superscript left-parenthesis StartFraction r minus sigma squared Over
+    2 EndFraction right-parenthesis normal upper Delta t plus w Super Subscript t
+    Super Superscript left-parenthesis 1 right-parenthesis Superscript StartRoot normal
+    upper Delta t EndRoot Baseline left-parenthesis asterisk right-parenthesis" display="block"><mrow><msubsup><mi>S</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup> <mo>=</mo> <msubsup><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup>
+    <msup><mi>e</mi> <mrow><mrow><mo>(</mo><mfrac><mrow><mi>r</mi><mo>-</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mn>2</mn></mfrac><mo>)</mo></mrow><mi>Δ</mi><mi>t</mi><mo>+</mo><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup> <msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup>
+    <mrow><mo>(</mo> <mo>*</mo> <mo>)</mo></mrow></mrow></math><math alttext="period"
+    display="block"><mo>.</mo></math><math alttext="period" display="block"><mo>.</mo></math><math
+    alttext="period" display="block"><mo>.</mo></math><math alttext="upper S Subscript
+    t Superscript left-parenthesis m right-parenthesis Baseline equals upper S Subscript
+    t minus 1 Superscript left-parenthesis m right-parenthesis Baseline e Superscript
+    left-parenthesis StartFraction r minus sigma squared Over 2 EndFraction right-parenthesis
+    normal upper Delta t plus w Super Subscript t Super Superscript left-parenthesis
+    m right-parenthesis Superscript StartRoot normal upper Delta t EndRoot" display="block"><mrow><msubsup><mi>S</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup> <mo>=</mo> <msubsup><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup>
+    <msup><mi>e</mi> <mrow><mrow><mo>(</mo><mfrac><mrow><mi>r</mi><mo>-</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mn>2</mn></mfrac><mo>)</mo></mrow><mi>Δ</mi><mi>t</mi><mo>+</mo><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup> <msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup></mrow></math>
+  id: totrans-274
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="upper S Subscript t Superscript left-parenthesis 1 right-parenthesis
+    Baseline equals upper S Subscript t minus 1 Superscript left-parenthesis 1 right-parenthesis
+    Baseline e Superscript left-parenthesis StartFraction r minus sigma squared Over
+    2 EndFraction right-parenthesis normal upper Delta t plus w Super Subscript t
+    Super Superscript left-parenthesis 1 right-parenthesis Superscript StartRoot normal
+    upper Delta t EndRoot Baseline left-parenthesis asterisk right-parenthesis" display="block"><mrow><msubsup><mi>S</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup> <mo>=</mo> <msubsup><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup>
+    <msup><mi>e</mi> <mrow><mrow><mo>(</mo><mfrac><mrow><mi>r</mi><mo>-</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mn>2</mn></mfrac><mo>)</mo></mrow><mi>Δ</mi><mi>t</mi><mo>+</mo><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup> <msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup>
+    <mrow><mo>(</mo> <mo>*</mo> <mo>)</mo></mrow></mrow></math><math alttext="period"
+    display="block"><mo>。</mo></math><math alttext="period" display="block"><mo>。</mo></math><math
+    alttext="period" display="block"><mo>。</mo></math><math alttext="upper S Subscript
+    t Superscript left-parenthesis m right-parenthesis Baseline equals upper S Subscript
+    t minus 1 Superscript left-parenthesis m right-parenthesis Baseline e Superscript
+    left-parenthesis StartFraction r minus sigma squared Over 2 EndFraction right-parenthesis
+    normal upper Delta t plus w Super Subscript t Super Superscript left-parenthesis
+    m right-parenthesis Superscript StartRoot normal upper Delta t EndRoot" display="block"><mrow><msubsup><mi>S</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup> <mo>=</mo> <msubsup><mi>S</mi>
+    <mrow><mi>t</mi><mo>-</mo><mn>1</mn></mrow> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup>
+    <msup><mi>e</mi> <mrow><mrow><mo>(</mo><mfrac><mrow><mi>r</mi><mo>-</mo><msup><mi>σ</mi>
+    <mn>2</mn></msup></mrow> <mn>2</mn></mfrac><mo>)</mo></mrow><mi>Δ</mi><mi>t</mi><mo>+</mo><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup> <msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup></mrow></math>
+- en: for each asset <math alttext="i equals 1 comma ellipsis comma m"><mrow><mi>i</mi>
+    <mo>=</mo> <mn>1</mn> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <mi>m</mi></mrow></math>
+    at each time step <math alttext="t Subscript j Baseline comma j equals 1 comma
+    ellipsis comma n"><mrow><msub><mi>t</mi> <mi>j</mi></msub> <mo>,</mo> <mi>j</mi>
+    <mo>=</mo> <mn>1</mn> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <mi>n</mi></mrow></math>
+    . Our task is to calculate the random but correlated vector
+  id: totrans-275
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于每个资产 <math alttext="i equals 1 comma ellipsis comma m"><mrow><mi>i</mi> <mo>=</mo>
+    <mn>1</mn> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <mi>m</mi></mrow></math> 在每个时间步 <math
+    alttext="t Subscript j Baseline comma j equals 1 comma ellipsis comma n"><mrow><msub><mi>t</mi>
+    <mi>j</mi></msub> <mo>,</mo> <mi>j</mi> <mo>=</mo> <mn>1</mn> <mo>,</mo> <mo>⋯</mo>
+    <mo>,</mo> <mi>n</mi></mrow></math> 。我们的任务是计算随机但相关的向量
+- en: <math alttext="Start 1 By 3 Matrix 1st Row 1st Column w Subscript t Superscript
+    left-parenthesis 1 right-parenthesis 2nd Column  ellipsis 3rd Column w Subscript
+    t Superscript left-parenthesis m right-parenthesis EndMatrix Superscript sans-serif
+    upper T" display="block"><msup><mfenced open="[" close="]"><mtable><mtr><mtd><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup></mtd> <mtd><mo>⋯</mo></mtd><mtd><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup></mtd></mtr></mtable></mfenced>
+    <mi>𝖳</mi></msup></math>
+  id: totrans-276
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="Start 1 By 3 Matrix 1st Row 1st Column w Subscript t Superscript
+    left-parenthesis 1 right-parenthesis 2nd Column  ellipsis 3rd Column w Subscript
+    t Superscript left-parenthesis m right-parenthesis EndMatrix Superscript sans-serif
+    upper T" display="block"><msup><mfenced open="[" close="]"><mtable><mtr><mtd><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup></mtd> <mtd><mo>⋯</mo></mtd><mtd><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mi>m</mi><mo>)</mo></mrow></msubsup></mtd></mtr></mtable></mfenced>
+    <mi>𝖳</mi></msup></math>
+- en: for each time <math alttext="t"><mi>t</mi></math> . This is where the Cholesky
+    decomposition – available in Eigen – comes into play. For an <math alttext="n
+    times n"><mrow><mi>n</mi> <mo>×</mo> <mi>n</mi></mrow></math> covariance matrix
+    <math alttext="bold upper Sigma"><mi>Σ</mi></math> , assuming it is positive definite,
+    will have a Cholesky decomposition
+  id: totrans-277
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于每个时间 <math alttext="t"><mi>t</mi></math>。这就是Cholesky分解的作用。对于一个 <math alttext="n
+    times n"><mrow><mi>n</mi> <mo>×</mo> <mi>n</mi></mrow></math> 协方差矩阵 <math alttext="bold
+    upper Sigma"><mi>Σ</mi></math>，假设它是正定的，将有一个Cholesky分解
+- en: <math alttext="bold upper Sigma equals upper L upper L Superscript sans-serif
+    upper T" display="block"><mrow><mi>Σ</mi> <mo>=</mo> <mi>L</mi> <msup><mi>L</mi>
+    <mi>𝖳</mi></msup></mrow></math>
+  id: totrans-278
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold upper Sigma equals upper L upper L Superscript sans-serif
+    upper T" display="block"><mrow><mi>Σ</mi> <mo>=</mo> <mi>L</mi> <msup><mi>L</mi>
+    <mi>𝖳</mi></msup></mrow></math>
+- en: where *L* is a lower triangular matrix. Then, for a vector of standard normal
+    variates <math alttext="bold z"><mi>𝐳</mi></math> ,
+  id: totrans-279
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中 *L* 是一个下三角矩阵。然后，对于标准正态变量向量 <math alttext="bold z"><mi>𝐳</mi></math>，
+- en: <math alttext="Start 1 By 4 Matrix 1st Row 1st Column z 1 2nd Column z 2 3rd
+    Column  ellipsis 4th Column z Subscript m EndMatrix Superscript sans-serif upper
+    T" display="block"><msup><mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>z</mi>
+    <mn>1</mn></msub></mtd> <mtd><msub><mi>z</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>z</mi>
+    <mi>m</mi></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup></math>
+  id: totrans-280
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="Start 1 By 4 Matrix 1st Row 1st Column z 1 2nd Column z 2 3rd
+    Column  ellipsis 4th Column z Subscript m EndMatrix Superscript sans-serif upper
+    T" display="block"><msup><mfenced open="[" close="]"><mtable><mtr><mtd><msub><mi>z</mi>
+    <mn>1</mn></msub></mtd> <mtd><msub><mi>z</mi> <mn>2</mn></msub></mtd> <mtd><mo>⋯</mo></mtd><mtd><msub><mi>z</mi>
+    <mi>m</mi></msub></mtd></mtr></mtable></mfenced> <mi>𝖳</mi></msup></math>
+- en: 'the <math alttext="n times 1"><mrow><mi>n</mi> <mo>×</mo> <mn>1</mn></mrow></math>
+    vector generated by <math alttext="bold upper L bold z Superscript sans-serif
+    upper T"><mrow><mi>𝐋</mi> <msup><mi>𝐳</mi> <mi>𝖳</mi></msup></mrow></math> will
+    provide a set of correlated volatilities that can be used to generate in a single
+    time step a random scenario of prices for each underlying security. For each time
+    step <math alttext="t"><mi>t</mi></math> , we replace <math alttext="bold z"><mi>𝐳</mi></math>
+    with <math alttext="bold z Subscript bold t"><msub><mi>𝐳</mi> <mi>𝐭</mi></msub></math>
+    to then arrive at our desired result:'
+  id: totrans-281
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由 <math alttext="n times 1"><mrow><mi>n</mi> <mo>×</mo> <mn>1</mn></mrow></math>
+    向量生成的 <math alttext="bold upper L bold z Superscript sans-serif upper T"><mrow><mi>𝐋</mi>
+    <msup><mi>𝐳</mi> <mi>𝖳</mi></msup></mrow></math> 将提供一组相关波动率，可以用来生成每个基础证券的价格的随机场景。对于每个时间步
+    <math alttext="t"><mi>t</mi></math>，我们用 <math alttext="bold z"><mi>𝐳</mi></math>
+    替换为 <math alttext="bold z Subscript bold t"><msub><mi>𝐳</mi> <mi>𝐭</mi></msub></math>，从而得到我们想要的结果：
+- en: <math alttext="bold w Subscript bold t Baseline equals bold upper L bold z Subscript
+    t Superscript sans-serif upper T" display="block"><mrow><msub><mi>𝐰</mi> <mi>𝐭</mi></msub>
+    <mo>=</mo> <msubsup><mi>𝐋𝐳</mi> <mi>t</mi> <mi>𝖳</mi></msubsup></mrow></math>
+  id: totrans-282
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold w Subscript bold t Baseline equals bold upper L bold z Subscript
+    t Superscript sans-serif upper T" display="block"><mrow><msub><mi>𝐰</mi> <mi>𝐭</mi></msub>
+    <mo>=</mo> <msubsup><mi>𝐋𝐳</mi> <mi>t</mi> <mi>𝖳</mi></msubsup></mrow></math>
+- en: This can then be extended an arbitrary number of n time steps by placing each
+    vector <math alttext="bold z Subscript bold t"><msub><mi>𝐳</mi> <mi>𝐭</mi></msub></math>
+    into a column of a matrix, say <math alttext="bold upper Z"><mi>𝐙</mi></math>
+    . Then, we can generate the entire set of vectors of correlated random variables
+    in one step, and place the results in a matrix
+  id: totrans-283
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，通过将每个向量 <math alttext="bold z Subscript bold t"><msub><mi>𝐳</mi> <mi>𝐭</mi></msub></math>
+    放置到矩阵的一列中，比如 <math alttext="bold upper Z"><mi>𝐙</mi></math>，可以扩展任意数量的 n 个时间步骤。然后，我们可以一次生成一整套相关随机变量向量，并将结果放置在一个矩阵中
+- en: <math alttext="bold upper W equals bold upper L bold upper Z" display="block"><mrow><mi>𝐖</mi>
+    <mo>=</mo> <mi>𝐋𝐙</mi></mrow></math>
+  id: totrans-284
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <math alttext="bold upper W equals bold upper L bold upper Z" display="block"><mrow><mi>𝐖</mi>
+    <mo>=</mo> <mi>𝐋𝐙</mi></mrow></math>
+- en: Eigen provides a Cholesky decomposition of a `MatrixXd` object, using the `Eigen::LLT`
+    class template with parameter `MatrixXd`. It again consists of creating an object
+    of this class, and then calling a member function, `matrixL`, which returns the
+    matrix <math alttext="bold upper L"><mi>𝐋</mi></math> above.
+  id: totrans-285
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Eigen 提供了对 `MatrixXd` 对象的 Cholesky 分解，使用 `Eigen::LLT` 类模板和参数 `MatrixXd`。它再次包括创建这个类的对象，然后调用成员函数
+    `matrixL`，该函数返回上述矩阵 <math alttext="bold upper L"><mi>𝐋</mi></math>。
+- en: As an example, suppose we have four securities in the basket, with the following
+    covariance matrix.
+  id: totrans-286
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 举个例子，假设我们篮子里有四种证券，其协方差矩阵如下。
+- en: '[PRE70]'
+  id: totrans-287
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE70]'
+- en: 'The Cholesky decomposition is set up when the matrix data is used to construct
+    the `Eigen::LLT` object. Calling the member function `matrixL()` computes the
+    decomposition and returns the resulting lower triangle matrix:'
+  id: totrans-288
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当使用矩阵数据构造 `Eigen::LLT` 对象时，Cholesky分解被设置。调用成员函数 `matrixL()` 计算分解并返回结果的下三角矩阵：
+- en: '[PRE71]'
+  id: totrans-289
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE71]'
+- en: This gives us
+  id: totrans-290
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这给了我们
+- en: '[PRE72]'
+  id: totrans-291
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE72]'
+- en: Suppose now there will be six time steps in the Monte Carlo model over a period
+    of one year. This means we will need six vectors containing four standard normal
+    variates each. For this, we can use the Standard Library `<random>` functions
+    and generate a 4 <math alttext="times"><mo>×</mo></math> 6 matrix, and place the
+    random vectors in consecutive columns.
+  id: totrans-292
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在假设在蒙特卡罗模型中将有六个时间步长，持续一年。这意味着我们将需要六个包含四个标准正态变量的向量。为此，我们可以使用标准库 `<random>` 函数生成一个
+    4 <math alttext="times"><mo>×</mo></math> 6 矩阵，并将随机向量放置在连续的列中。
+- en: 'First, create a `MatrixXd` object with four rows and six columns:'
+  id: totrans-293
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，创建一个有四行六列的 `MatrixXd` 对象：
+- en: '[PRE73]'
+  id: totrans-294
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE73]'
+- en: 'The first step will be to populate this matrix with uncorrelated standard normal
+    draws. As we did previously (in Chapter 8), we can set up a random engine and
+    distribution, and capture these in a lambda to generate the standard normal variates:'
+  id: totrans-295
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，将此矩阵用无关的标准正态分布填充。如我们之前所做（第8章），我们可以设置一个随机引擎和分布，并将它们捕获在一个lambda函数中以生成标准正态变量：
+- en: '[PRE74]'
+  id: totrans-296
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE74]'
+- en: Because each column in a `MatrixXd` can be accessed as a `VectorXd`, we can
+    again iterate columnwise through the matrix and apply the `std::ranges::transform`
+    algorithm to each in a range-based `for` loop.
+  id: totrans-297
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为每个`MatrixXd`中的列可以被视为`VectorXd`，我们可以再次通过矩阵按列进行迭代，并在基于范围的`for`循环中对每列应用`std::ranges::transform`算法。
+- en: '[PRE75]'
+  id: totrans-298
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE75]'
+- en: 'This interim result would resemble the following, with actual results depending
+    on the compiler (in this case using the Microsoft Visual Studio 2022 compiler):'
+  id: totrans-299
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此中期结果将类似于以下内容，实际结果取决于编译器（在本例中使用Microsoft Visual Studio 2022编译器）：
+- en: '[PRE76]'
+  id: totrans-300
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE76]'
+- en: Then, to get the *correlated* normal values, multiply the above result by the
+    Cholesky matrix, and reassign `corr_norms` to the result.
+  id: totrans-301
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，为了得到*相关*正常值，将上述结果乘以Cholesky矩阵，并将`corr_norms`重新分配为结果。
+- en: '[PRE77]'
+  id: totrans-302
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE77]'
+- en: 'This result, which corresponds to the matrix <math alttext="bold upper W"><mi>𝐖</mi></math>
+    in the mathematical derivation, comes out to be:'
+  id: totrans-303
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这个结果对应于数学推导中的矩阵<math alttext="bold upper W"><mi>𝐖</mi></math>，其结果如下：
+- en: '[PRE78]'
+  id: totrans-304
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE78]'
+- en: 'Each successive column in `corr_norms` will provide a set of four correlated
+    random variates that can be substituted in for <math alttext="w Subscript t Superscript
+    left-parenthesis 1 right-parenthesis Baseline ellipsis w Subscript t Superscript
+    left-parenthesis 4 right-parenthesis"><mrow><msubsup><mi>w</mi> <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup>
+    <mo>⋯</mo> <msubsup><mi>w</mi> <mi>t</mi> <mrow><mo>(</mo><mn>4</mn><mo>)</mo></mrow></msubsup></mrow></math>
+    at each time <math alttext="t equals 1 comma ellipsis comma 6"><mrow><mi>t</mi>
+    <mo>=</mo> <mn>1</mn> <mo>,</mo> <mo>⋯</mo> <mo>,</mo> <mn>6</mn></mrow></math>
+    in (*) above. First, we will need the spot prices of the four underlying equities,
+    which can be stored in an Eigen `VectorXd` (pretend they are retrieved from a
+    live market feed). For example:'
+  id: totrans-305
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`corr_norms`中的每个连续列将提供一组四个相关随机变量，可以替换(*)中每个时间点<math alttext="w Subscript t
+    Superscript left-parenthesis 1 right-parenthesis Baseline ellipsis w Subscript
+    t Superscript left-parenthesis 4 right-parenthesis"><mrow><msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>1</mn><mo>)</mo></mrow></msubsup> <mo>⋯</mo> <msubsup><mi>w</mi>
+    <mi>t</mi> <mrow><mo>(</mo><mn>4</mn><mo>)</mo></mrow></msubsup></mrow></math>。首先，我们需要四个基础股票的现货价格，可以存储在Eigen的`VectorXd`中（假设它们来自实时市场数据源）。例如：'
+- en: '[PRE79]'
+  id: totrans-306
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE79]'
+- en: Next, we will need a matrix in which to store a random price path for each equity,
+    starting with each spot price, to be stored in an additional first column, making
+    it a 4 <math alttext="times"><mo>×</mo></math> 7 matrix.
+  id: totrans-307
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，我们需要一个矩阵来存储每个股票的随机价格路径，从每个现货价格开始，在额外的第一列中存储，使其成为一个4 <math alttext="times"><mo>×</mo></math>
+    7矩阵。
+- en: '[PRE80]'
+  id: totrans-308
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE80]'
+- en: Suppose then, the time to maturity is one year, divided into six equal time
+    steps. From this, we can get the <math alttext="normal upper Delta t"><mrow><mi>Δ</mi>
+    <mi>t</mi></mrow></math> value, say `dt`.
+  id: totrans-309
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设到期时间为一年，分为六个等时间步。因此，我们可以得到<math alttext="normal upper Delta t"><mrow><mi>Δ</mi>
+    <mi>t</mi></mrow></math>值，比如`dt`。
+- en: '[PRE81]'
+  id: totrans-310
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE81]'
+- en: Each successive price for a given underlying equity, as shown in (*), can be
+    computed in a lambda, where `price` is the previous price in the scenario, and
+    `vol` is the volatility of the particular equity.
+  id: totrans-311
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如(*)中所示，每个给定基础股票的每个连续价格可以在lambda函数中计算，其中`price`是场景中的前期价格，而`vol`是特定股票的波动率。
+- en: '[PRE82]'
+  id: totrans-312
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE82]'
+- en: 'Finally, for each underlying equity at each time step, we can set up an iteration
+    and call the lambda at each step:'
+  id: totrans-313
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，在每个时间步骤的每个基础股票上，我们可以设置一个迭代，并在每个步骤调用lambda函数：
+- en: '[PRE83]'
+  id: totrans-314
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE83]'
+- en: For this example, the results are
+  id: totrans-315
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于此示例，结果如下：
+- en: '[PRE84]'
+  id: totrans-316
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE84]'
+- en: Again, results may vary due to differences in the implementation of `<random>`
+    between different Standard Library releases among vendors.
+  id: totrans-317
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 再次提醒，由于不同供应商的标准库版本中`<random>`实现的差异，结果可能会有所不同。
+- en: Yield Curve Dynamics and Principal Components Analysis
+  id: totrans-318
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 收益率曲线动态和主成分分析
+- en: Principal Components Analysis (PCA) is a go-to tool for determining the sources
+    and magnitudes of variation that drive changes in the shape of a yield curve.
+    Given a covariance matrix of daily changes in yields spanning a range of bond
+    maturities, PCA is employed by first calculating the eigenvalues of this matrix,
+    and ordering them from highest to lowest. Then, the weightings are calculated
+    by dividing each eigenvalue by the some of all the eigenvalues.
+  id: totrans-319
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 主成分分析（PCA）是确定驱动收益率曲线形状变化的变动源和幅度的工具。通过首先计算跨多个债券到期期限的每日收益率变化的协方差矩阵的特征值，并按降序排序，然后通过将每个特征值除以所有特征值的总和来计算权重。
+- en: Empirical research has shown the contribution of first three eigenvalues will
+    comprise nearly the entirety of the weightings, where the first weighting corresponds
+    to parallel shifts in the yield curve, the second corresponds to variations in
+    its “tilt” or “slope”, and the third to the curvature. The reasons and details
+    behind this can be found in Chapter 18 of the very fine computational finance
+    book by [Ruppert and Matteson](https://link.springer.com/book/10.1007/978-1-4939-2614-5)
+    **{25}**, and in Chapter 3 of the classic text on interest rate derivatives by
+    Rebonato **{26}**.
+  id: totrans-320
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 实证研究表明，前三个特征值的贡献几乎构成了权重的全部，其中第一个权重对应于收益曲线的平行移动，第二个对应于其“倾斜”或“斜率”的变化，第三个对应于曲率。关于这一点的原因和详细内容可以在Ruppert和Matteson的计算金融优秀著作第18章中找到
+    **{25}**，以及Rebonato关于利率衍生品的经典文本第3章中 **{26}**。
+- en: Rigorous statistical tests exist for measuring significance, but the weights
+    alone can provide a relative estimated measure of each source of variation.
+  id: totrans-321
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 存在严格的统计检验来衡量显著性，但仅权重本身可以提供每个变化来源的相对估计量。
+- en: Section 18.2 of the text by Ruppert and Matteson {op cit 25} provides an excellent
+    example on how to apply principal components analysis to publicly available US
+    Treasury yield data {put URL here}. The resulting covariance matrix — input as
+    constructor data for the following `MatrixXd` object, is based on fluctuations
+    in differenced [US Treasury yields](https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202212)
+    **{28}** for eleven different maturities, ranging from one month to 30 years.
+    The underlying data is taken from the period from January 1990 to October 2008.
+  id: totrans-322
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Ruppert和Matteson的文本第18.2节 {op cit 25} 提供了一个关于如何应用主成分分析到公开可用的美国国债收益数据的优秀示例 {put
+    URL here}。结果的协方差矩阵 — 作为下述`MatrixXd`对象的构造器数据，基于十一种不同到期限的美国国债收益率的波动，从一个月到30年。基础数据来自1990年1月到2008年10月的时期。
+- en: To calculate the eigenvalues, first load the covariance matrix data into the
+    upper triangular region of a `MatrixXd` instance.
+  id: totrans-323
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要计算特征值，首先将协方差矩阵数据加载到`MatrixXd`实例的上三角区域。
+- en: '[PRE85]'
+  id: totrans-324
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE85]'
+- en: 'As a real symmetric matrix is trivially self-adjoint (no complex components),
+    Eigen can apply a function `selfadjointView<.>()` to an upper (or lower) triangular
+    matrix to define a view of a symmetric covariance matrix. The eigenvalues (all
+    real) can then be obtained by applying the `eigenvalues()` function on the symmetric
+    result:'
+  id: totrans-325
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于实对称矩阵在无复杂分量时是平凡自共轭的，Eigen可以将`selfadjointView<.>()`函数应用于上（或下）三角矩阵，以定义对称协方差矩阵的视图。然后，可以通过在对称结果上应用`eigenvalues()`函数来获得特征值（全部为实数）：
+- en: '[PRE86]'
+  id: totrans-326
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE86]'
+- en: 'In order to determine the weight of each principal component, we need to divide
+    each eigenvalue by the sum of all the eigenvalues:'
+  id: totrans-327
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了确定每个主成分的权重，我们需要将每个特征值除以所有特征值的总和：
+- en: '[PRE87]'
+  id: totrans-328
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE87]'
+- en: 'And finally, to view the results in order of the principal components, the
+    weighted values need to be arranged from largest to smallest:'
+  id: totrans-329
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，为了按主成分顺序查看结果，需要将加权值从大到小排列：
+- en: '[PRE88]'
+  id: totrans-330
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE88]'
+- en: 'Examining the contents of `eigenvals`, we would find the following results:'
+  id: totrans-331
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 检查`eigenvals`的内容，我们会发现以下结果：
+- en: '[PRE89]'
+  id: totrans-332
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE89]'
+- en: From this, we can see the effects of parallel shifts and the “tilt” of the yield
+    curve are the dominant effects, with relative weights of 67.2% and and 21.3%,
+    while the curvature effect is smaller at 7.4%.
+  id: totrans-333
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由此可见，平行移动和收益曲线的“倾斜”效应是主导效应，相对权重分别为67.2%和21.3%，而曲率效应较小，为7.4%。
+- en: 'Future Directions: Linear Algebra in the Standard Library'
+  id: totrans-334
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 未来方向：标准库中的线性代数
+- en: Three proposals related to linear algebra have been submitted to the ISO C++
+    committee.
+  id: totrans-335
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 已向ISO C++委员会提交了三个与线性代数相关的提案。
+- en: '`std::mdspan`: [A polymorphic multidimensional array reference (P0009)](https://wg21.link/p0009)
+    **{28}**'
+  id: totrans-336
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`std::mdspan`：[一个多态多维数组引用（P0009）](https://wg21.link/p0009) **{28}**'
+- en: '[A free function linear algebra interface based on the BLAS (P1673)](https://wg21.link/p1673)
+    **{29}**'
+  id: totrans-337
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[基于BLAS的自由函数线性代数接口（P1673）](https://wg21.link/p1673) **{29}**'
+- en: '[Add linear algebra support to the C++ standard library (P1385)](https://wg21.link/p1385)
+    **{30}**'
+  id: totrans-338
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[向C++标准库添加线性代数支持（P1385）](https://wg21.link/p1385) **{30}**'
+- en: '`mdspan` (P0009) can impose a multidimensional array structure on a reference
+    to a container, such as an STL `vector`. Using the example of a `vector` containing
+    the data, and a referring `mdspan` representing a matrix, the number of rows and
+    columns are set at construction of the `mdspan`. An `mdspan` can also take the
+    form of higher dimensional arrays, but for our purposes we will concern ourselves
+    with the two-dimensional case for matrix representations. `mdspan` is officially
+    slated for release in C++23.'
+  id: totrans-339
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`mdspan`（P0009）可以在对容器的引用上施加多维数组结构，例如STL `vector`。使用包含数据的`vector`和表示矩阵的引用`mdspan`作为示例，在构造`mdspan`时设置行数和列数。`mdspan`也可以采用更高维度的数组形式，但我们的目的是关注矩阵表示的二维情况。`mdspan`正式计划在C++23中发布。'
+- en: The second proposal (P1673) is for a standard interface to external linear algebra
+    “based on the dense Basic Linear Algebra Subroutines (BLAS)”, corresponding “to
+    a subset of the BLAS Standard.” {op cit 29}. In other words, code could be written
+    independently of whichever external linear algebra library is used, making code
+    maintenance much easier and less error-prone. As noted in the proposal, the “interface
+    is designed in the spirit of the C++ Standard Library’s algorithms”, and “uses
+    mdspan…​, to represent matrices and vectors” {ibid}. Furthermore, the “interface
+    is designed in the spirit of the C++ Standard Library’s algorithms"{ibid}. It
+    is currently planned for C++26.
+  id: totrans-340
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第二个提案（P1673）是为外部线性代数提供标准接口，“基于密集型基本线性代数子程序（BLAS）”，对应于“BLAS标准的子集”。换句话说，无论使用哪个外部线性代数库，代码都可以独立编写，从而使代码维护更加容易且不易出错。正如提案中所述，“接口的设计以C++标准库的算法精神为基础”，并使用“mdspan……表示矩阵和向量”（同上）。此外，“接口的设计以C++标准库的算法精神为基础”（同上）。目前计划在C++26中发布。
+- en: The third proposal (P1385) is to provide actual BLAS-type functionality within
+    the Standard Library. Its primary goal is to “provide a (sic) matrix vocabulary
+    types for representing the mathematical objects and fundamental operations relevant
+    to linear algebra” (op cit {30}). This proposal is also currently planned for
+    release with C++26.
+  id: totrans-341
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第三个提案（P1385）是在标准库中提供实际的BLAS类型功能。其主要目标是“为表示与线性代数相关的数学对象和基本操作提供矩阵词汇类型”（见30页）。该提案目前也计划在C++26中发布。
+- en: mdspan (P0009)
+  id: totrans-342
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: mdspan（P0009）
+- en: 'As mentioned above, for representing a matrix, `mdspan` establishes a reference
+    to a contiguous container and then imposes the number of rows and columns. If
+    these parameters are known at compile time, creating an `mdspan` is easy:'
+  id: totrans-343
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如上所述，为了表示矩阵，`mdspan`建立对连续容器的引用，然后强加行数和列数。如果这些参数在编译时已知，创建`mdspan`很容易：
+- en: '[PRE90]'
+  id: totrans-344
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE90]'
+- en: Note that `mdspan` uses the `data()` member function on `vector` to access its
+    contents.
+  id: totrans-345
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，`mdspan`使用`vector`的`data()`成员函数访问其内容。
+- en: In `mdspan` parlance, rows and columns are referred to as *extents*, with the
+    number of rows and columns accessed by the index of each, 0 for rows and 1 for
+    columns. The total number of extents is referred to as the *rank*, so in this
+    case, the rank is 2\. For higher-order multidimensional arrays, the rank would
+    be greater than two.
+  id: totrans-346
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在`mdspan`术语中，行和列被称为*extents*，通过每个索引访问行数和列数，行数索引为0，列数索引为1。总的*rank*表示为2，对于更高阶的多维数组，*rank*会大于两个。
+- en: '[PRE91]'
+  id: totrans-347
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE91]'
+- en: Note
+  id: totrans-348
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: The term *rank* as applied to `mdspan` is not the same as the mathematical definition
+    of the rank of a matrix. This naming might unfortunately seem confusing, but it’s
+    something one should be aware of.
+  id: totrans-349
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 术语*rank*在应用于`mdspan`时与矩阵秩的数学定义不同。这种命名可能会令人困惑，但这是需要注意的事项。
+- en: 'Elements of the `mdspan` object will be accessible with another new feature
+    in C++23, namely the square bracket operator with multiple indices:'
+  id: totrans-350
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在C++23中，`mdspan`对象的元素可以通过另一个新功能访问，即具有多个索引的方括号运算符：
+- en: '[PRE92]'
+  id: totrans-351
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE92]'
+- en: 'This is a welcome improvement, as it will no longer be necessary to put each
+    index in a separate bracket pair, as was the case with C-style arrays:'
+  id: totrans-352
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这是一个受欢迎的改进，因为不再需要将每个索引放在单独的括号对中，就像C风格数组的情况一样。
+- en: '[PRE93]'
+  id: totrans-353
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE93]'
+- en: 'The run-time result of the previous nested loop displays a 3 <math alttext="times"><mo>×</mo></math>
+    2 matrix:'
+  id: totrans-354
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 上述嵌套循环的运行时结果显示一个3 <math alttext="times"><mo>×</mo></math> 2矩阵：
+- en: '[PRE94]'
+  id: totrans-355
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE94]'
+- en: 'It is also possible to define a matrix with different dimensions to the same
+    data:'
+  id: totrans-356
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 也可以使用相同的数据定义具有不同维度的矩阵：
+- en: '[PRE95]'
+  id: totrans-357
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE95]'
+- en: 'Applying the same loop above, but replacing `mds1` with `mds2` would then display
+    as expected:'
+  id: totrans-358
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 应用上述相同的循环，但将`mds1`替换为`mds2`，则会如预期显示：
+- en: '[PRE96]'
+  id: totrans-359
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE96]'
+- en: One thing to be careful of is modifying data in the `mdspan` object or in the
+    original `vector` will change it in both locations due to the referential relationship
+    between the two. For example, modification of the last element of the vector
+  id: totrans-360
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 需要小心的一点是修改`mdspan`对象或原始`vector`中的数据将由于两者之间的引用关系而同时更改。例如，修改向量的最后一个元素
+- en: '[PRE97]'
+  id: totrans-361
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE97]'
+- en: will show up in both of the `mdspan` objects. `mds1` becomes
+  id: totrans-362
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 将显示在两个`mdspan`对象中。`mds1`变成
+- en: '[PRE98]'
+  id: totrans-363
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE98]'
+- en: and `mds2` is now
+  id: totrans-364
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 和`mds2`现在是
+- en: '[PRE99]'
+  id: totrans-365
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE99]'
+- en: Likewise, changing the value of an element in `mds2` will be reflected in both
+    `mds1` and the vector `v`.
+  id: totrans-366
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 同样，更改`mds2`中的元素值将反映在`mds1`和向量`v`中。
+- en: In quant finance applications, it will often be the case where the fixed number
+    of rows and columns are not known at compile time. Suppose `m` and `n` are the
+    numbers of rows and columns to be determined at runtime. These dimensions can
+    be set dynamically by replacing the fixed settings of 2 and 3 in the previous
+    example
+  id: totrans-367
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在量化金融应用中，往往情况是在编译时不知道固定的行数和列数。假设`m`和`n`是在运行时确定的行和列数。这些维度可以通过在前面示例中的固定设置2和3处动态设置来动态设置
+- en: '[PRE100]'
+  id: totrans-368
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE100]'
+- en: 'with the `std::extents{m, n}` object, as shown in the `mdspan` definition here:'
+  id: totrans-369
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 用`std::extents{m, n}`对象表示，如此处`mdspan`定义所示：
+- en: '[PRE101]'
+  id: totrans-370
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE101]'
+- en: The `std::extents{m, n}` parameter represents the number of elements in each
+    extent — ie in each row (`m`) and column (`n`) — which are determined dynamically
+    at runtime.
+  id: totrans-371
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`std::extents{m, n}`参数表示每个extent（即每行（`m`）和列（`n`））中的元素数量，这些在运行时动态确定。'
+- en: 'Pretend we have the following data set at runtime:'
+  id: totrans-372
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设我们在运行时有以下数据集：
+- en: '[PRE102]'
+  id: totrans-373
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE102]'
+- en: 'Using these as inputs to the `dynamic_mdspan(.)` function above will then generate
+    a 3 <math alttext="times"><mo>×</mo></math> 2 `mdspan` matrix:'
+  id: totrans-374
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用这些作为`dynamic_mdspan(.)`函数的输入，然后将生成一个3 <math alttext="times"><mo>×</mo></math>
+    2 `mdspan`矩阵：
+- en: '[PRE103]'
+  id: totrans-375
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE103]'
+- en: Note
+  id: totrans-376
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: The above examples make use of *Class Template Auto Deduction*, commonly referred
+    to as *CTAD*. Both `mdspan` and `extents` are class templates, but because `w`
+    in the example just above is a `vector` of `double` types, and the size of the
+    `vector` being of type `size_t`, when substituted in for `vec` in the `dynamic_mdspan`
+    function, the compiler will deduce that the `mdspan` and `extents` objects are
+    to use `double` and `size_t` as template parameters.
+  id: totrans-377
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 上面的例子利用了*类模板自动推导*（CTAD）。`mdspan`和`extents`都是类模板，但是因为上面示例中的`w`是`vector`的`double`类型，而`vector`的大小是`size_t`类型，当替换为`dynamic_mdspan`函数中的`vec`时，编译器将推断`mdspan`和`extents`对象要使用`double`和`size_t`作为模板参数。
+- en: 'Without CTAD, the function would be written something like:'
+  id: totrans-378
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 没有CTAD，函数将写成如下形式：
+- en: '[PRE104]'
+  id: totrans-379
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE104]'
+- en: The discussion in this chapter will rely on CTAD, but in cases where more generality
+    is required, it will be necessary to to write out the template arguments in full.
+  id: totrans-380
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章的讨论将依赖于CTAD，但在需要更一般性的情况下，将需要完全书写模板参数。
+- en: 'One more thing to note is in each of the examples so far, `mdspan` will arrange
+    the data in row-major order by default. Arranging it in column-major order requires
+    defining a `layout_left` policy *mapping*, in this case called `col_major`, as
+    shown here:'
+  id: totrans-381
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 还有一件事要注意的是，在迄今为止的每个例子中，`mdspan`将默认按行主顺序排列数据。通过定义一个`layout_left`策略*映射*，在本例中称为`col_major`，可以将其排列为列主顺序，如下所示：
+- en: '[PRE105]'
+  id: totrans-382
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE105]'
+- en: The corresponding column-major matrix can then be defined by substituting this
+    mapping in the extents argument in the `mdspan` constructor.
+  id: totrans-383
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后可以通过在`mdspan`构造函数的extents参数中替换此映射来定义相应的列主矩阵。
+- en: '[PRE106]'
+  id: totrans-384
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE106]'
+- en: 'The result is the column-major version of the matrix:'
+  id: totrans-385
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结果是矩阵的列主版本：
+- en: '[PRE107]'
+  id: totrans-386
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE107]'
+- en: Note
+  id: totrans-387
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Row-major order can also be set explicitly with the `std::layout_right` mapping.
+  id: totrans-388
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可以使用`std::layout_right`映射来明确设置行主顺序。
+- en: The `mdspan` proposal also includes a “slicing” function called `submdspan(.)`
+    to return a reference to an individual row or column from a matrix represented
+    by an mdspan. More generally, this would extend to subsets of higher-dimensional
+    arrays.
+  id: totrans-389
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`mdspan`提案还包括一个名为`submdspan(.)`的“切片”函数，用于返回由mdspan表示的矩阵的单个行或列的引用。更一般地说，这将扩展到更高维数组的子集。'
+- en: 'Returning to the row-major integer 3 <math alttext="times"><mo>×</mo></math>
+    2 `mds1` example, if we wanted to extract a reference to the first row (index
+    0), it could be obtained as follows, with the index in the first extent (row)
+    argument of `submdspan`:'
+  id: totrans-390
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 返回到行主整数3 <math alttext="times"><mo>×</mo></math> 2 `mds1`示例，如果我们想要提取对第一行（索引0）的引用，可以如下获得，使用`submdspan`中的第一个extent（行）参数中的索引：
+- en: '[PRE108]'
+  id: totrans-391
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE108]'
+- en: 'This would give us:'
+  id: totrans-392
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这将给我们：
+- en: '[PRE109]'
+  id: totrans-393
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE109]'
+- en: Rows 2 and 3 could also be referenced by replacing the `0` with `1` and `2`,
+    respectively.
+  id: totrans-394
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第 2 和第 3 行也可以通过将 `0` 替换为 `1` 和 `2` 进行引用。
+- en: 'By explicitly setting the second (column) extent argument to the column size
+    less 1, we could also access the last column:'
+  id: totrans-395
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通过将第二个（列）范围参数显式设置为列大小减 1，我们还可以访问最后一列：
+- en: '[PRE110]'
+  id: totrans-396
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE110]'
+- en: 'This would then be comprised of:'
+  id: totrans-397
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这将包括：
+- en: '[PRE111]'
+  id: totrans-398
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE111]'
+- en: As `submdspan` is a reference (view) to an `mdspan` containing a row or column,
+    it will obviate generating an additional `mdspan`, in contrast to the issue with
+    a `slice_array` taken from a `valarray`. Any public member function on `mdspan`
+    can be applied to a `submdspan`. On the downside, this would not include the vectorized
+    mathematical operators or functions that are provided with `valarray`, although
+    a different approach to the operators will be provided in `P1673`, to be discussed
+    in the next section.
+  id: totrans-399
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为 `submdspan` 是指向包含行或列的 `mdspan` 的引用（视图），所以不需要生成额外的 `mdspan`，与从 `valarray`
+    中取得的 `slice_array` 不同。可以对 `submdspan` 应用在 `mdspan` 上的任何公共成员函数。然而，由于其引用性质，不包括提供给
+    `valarray` 的向量化数学运算符或函数，尽管在 `P1673` 中将提供运算符的另一种方法，该方法将在下一节讨论。
+- en: 'On the flip side, also because it is a reference, modifying an element of a
+    `submdspan` will also modify the underlying `mdspan` object. Suppose the last
+    element in `col_last` is reset:'
+  id: totrans-400
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一方面，由于其是一个引用，修改 `submdspan` 的元素也会修改底层的 `mdspan` 对象。假设重置 `col_last` 中的最后一个元素：
+- en: '[PRE112]'
+  id: totrans-401
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE112]'
+- en: 'The original `mds1` would then become:'
+  id: totrans-402
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后原始的 `mds1` 将变为：
+- en: '[PRE113]'
+  id: totrans-403
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE113]'
+- en: One final remark is a proposal for a multi-dimensional array (P1684), called
+    `mdarray`, is also in review. As noted in the [proposal](https://wg21.link/p1684)
+    **{31}**, "`mdarray` is as similar as possible to mdspan, except with container
+    semantics instead of reference semantics”. In other words, an `mdarray` object
+    “owns” its data — similar to a `vector` — as opposed to existing as a reference
+    to data “owned” by another container as in the case of `mdspan`. The earliest
+    it would be released is also C++26.
+  id: totrans-404
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后一点是关于多维数组（P1684）的提议，称为 `mdarray`，也正在审核中。如在 [提议](https://wg21.link/p1684) **{31}**
+    中所述，“`mdarray` 尽可能与 `mdspan` 相似，但其具有容器语义而不是引用语义”。换句话说，`mdarray` 对象“拥有”其数据，类似于
+    `vector`，而不是像 `mdspan` 那样作为对另一个容器拥有的数据的引用。它可能最早会在 C++26 中发布。
+- en: Note
+  id: totrans-405
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: The code examples for `mdspan` above can be compiled in C++20 using the working
+    code currently available on the [P1673 GitHub site](https://github.com/kokkos/mdspan/blob/stable/include/experimental/__p0009_bits/mdspan.hpp)
+    **{31}**. Installation and building instructions are included with the repository,
+    but two particular items to know are first, the code is currently under the namespace
+    `std::experimental`, and second, as the square bracket operator for multiple indices
+    is set for C++23, you can replace it with the round bracket operator for C++20
+    and earlier; viz,
+  id: totrans-406
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 上述 `mdspan` 的代码示例可以在 C++20 中使用当前在 [P1673 GitHub 站点](https://github.com/kokkos/mdspan/blob/stable/include/experimental/__p0009_bits/mdspan.hpp)
+    **{31}** 上可用的工作代码编译。安装和构建说明包含在存储库中，但需要了解的两个特定项是，首先，该代码目前位于命名空间 `std::experimental`
+    下，其次，由于多重索引的方括号运算符设置为 C++23，您可以在 C++20 及更早版本中用圆括号运算符替换它；即，
+- en: _
+  id: totrans-407
+  prefs: []
+  type: TYPE_NORMAL
+  zh: _
+- en: '[PRE114]'
+  id: totrans-408
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE114]'
+- en: BLAS Interface (P1673)
+  id: totrans-409
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: BLAS 接口（P1673）
+- en: This proposal is for “a C++ Standard Library dense linear algebra interface
+    based on the dense Basic Linear Algebra Subroutines (BLAS)” {op cit 29}, also
+    simply referred to as “stdBLAS”. BLAS libraries date back a number of decades
+    and were originally written in Fortran, but it evolved into a standard in the
+    early 2000’s, with implementations in other languages such as C (OpenBLAS) and
+    CUDA C++ (NVIDIA) now available, as well as C bindings to Fortran.
+  id: totrans-410
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此提议是关于基于密集基本线性代数子程序（BLAS）的 C++ 标准库稠密线性代数接口的提案 {见引用 29}，也简称为“stdBLAS”。BLAS 库可以追溯到几十年前，最初是用
+    Fortran 编写的，但在 2000 年初发展为标准，现在有其他语言的实现，如 C（OpenBLAS）和 CUDA C++（NVIDIA），同时还有用于
+    Fortran 的 C 绑定。
+- en: 'Fortran BLAS distributions support four numerical types : `FLOAT`, `DOUBLE`,
+    `COMPLEX`, and `DOUBLE COMPLEX`. The C++ equivalents are `float`, `double`, `std::complex<float>`,
+    and `std::complex<double>`. BLAS libraries contain several matrix formats (standard,
+    symmetric, upper/lower triangular), matrix and vector operations such as element-by-element
+    addition and matrix/vector multiplication.'
+  id: totrans-411
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Fortran BLAS 分发支持四种数值类型：`FLOAT`, `DOUBLE`, `COMPLEX`, 和 `DOUBLE COMPLEX`。其 C++
+    等效类型为 `float`, `double`, `std::complex<float>`, 和 `std::complex<double>`。BLAS
+    库包含多种矩阵格式（标准、对称、上/下三角形）、矩阵和向量操作，如逐元素加法和矩阵/向量乘法。
+- en: With implementation of this proposal, it would be possible to apply the same
+    C++ code base to any compatible library containing BLAS functionality, provided
+    an interface has been made available, presumably by the library vendor. This will
+    allow for portable code, independent of the underlying library being used. It
+    remains to be seen at this stage which vendors will eventually come on board,
+    but one major development is NVIDIA’s implementation both of `mdspan` and stdBLAS,
+    now available in their [HPC SDK](https://developer.nvidia.com/hpc-sdk) **{33}**.
+  id: totrans-412
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用此提议的实现，可以将相同的 C++ 代码库应用于任何包含 BLAS 功能的兼容库，前提是库供应商已经提供了接口。这将允许可移植的代码，独立于所使用的基础库。在这个阶段，尚不清楚哪些供应商最终会参与，但
+    NVIDIA 的实现是一个重要的进展，包括它们的 [HPC SDK](https://developer.nvidia.com/hpc-sdk) **{33}**。
+- en: It should be noted stdBLAS itself would only provide access to a particular
+    subset of matrix operations — to be discussed next — even if the underlying library
+    provides additional features such as matrix decompositions, linear and least squares
+    solvers, etc.
+  id: totrans-413
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 值得注意的是，即使底层库提供额外的功能如矩阵分解、线性和最小二乘求解器等，stdBLAS 本身也只提供对特定矩阵操作的访问权限 — 下一步将进行讨论 — 。
+- en: BLAS functions are preceded by the type contained in the matrix and/or vector
+    to which they are applied. For example, the function for multiplication of a matrix
+    by a vector is of the form
+  id: totrans-414
+  prefs: []
+  type: TYPE_NORMAL
+  zh: BLAS 函数根据它们应用的矩阵和/或向量中包含的类型进行前置。例如，矩阵乘以向量的乘法函数的形式如下
+- en: '[PRE115]'
+  id: totrans-415
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE115]'
+- en: where the `x` can be `S`, `D`, `C`, or `Z`, meaning single precision (`REAL`
+    in Fortran), double precision (`DOUBLE`), complex (`COMPLEX`), and double precision
+    complex (`DOUBLE COMPLEX`) respectively.
+  id: totrans-416
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中 `x` 可以是 `S`、`D`、`C` 或 `Z`，分别表示单精度 (`REAL` 在 Fortran 中)、双精度 (`DOUBLE`)、复数
+    (`COMPLEX`) 和双精度复数 (`DOUBLE COMPLEX`)。
+- en: The C++ equivalent in the proposal, `matrix_vector_product` would instead take
+    in `mdspan` objects representing a matrix and a vector. For example, we can look
+    at a case involving `double` values, using `m` and `n` for the number of rows
+    and columns as before.
+  id: totrans-417
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在提议中的 C++ 等效函数 `matrix_vector_product` 取代了以前使用的 `mdspan` 对象表示矩阵和向量。例如，我们可以查看一个涉及
+    `double` 值的案例，使用 `m` 和 `n` 表示行数和列数。
+- en: '[PRE116]'
+  id: totrans-418
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE116]'
+- en: 'Then, performing the multiplication, the vector product is stored in `y`:'
+  id: totrans-419
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，进行乘法运算，向量积存储在 `y` 中：
+- en: '[PRE117]'
+  id: totrans-420
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE117]'
+- en: The following table provides a subset of BLAS functions proposed in P1673 that
+    should be useful in financial programming. The BLAS functions are assumed to be
+    double precision, and any given matrix/vector expressions can be assumed to be
+    of appropriate dimensions.
+  id: totrans-421
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下表提供了在金融编程中可能有用的 P1673 中的 BLAS 函数子集。假设 BLAS 函数为双精度，并且任何给定的矩阵/向量表达式均为适当的维度。
+- en: Table 5-1\. Selected BLAS Functions in Proposal P1673
+  id: totrans-422
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 表 5-1\. 提议 P1673 中选择的 BLAS 函数
+- en: '| BLAS Function | P1673 Function | Description |'
+  id: totrans-423
+  prefs: []
+  type: TYPE_TB
+  zh: '| BLAS 函数 | P1673 函数 | 描述 |'
+- en: '| --- | --- | --- |'
+  id: totrans-424
+  prefs: []
+  type: TYPE_TB
+  zh: '| --- | --- | --- |'
+- en: '| DSCAL | `scale` | Scalar multiplication of a vector |'
+  id: totrans-425
+  prefs: []
+  type: TYPE_TB
+  zh: '| DSCAL | `scale` | 向量的标量乘法 |'
+- en: '| DCOPY | `copy` | Copy a vector into another |'
+  id: totrans-426
+  prefs: []
+  type: TYPE_TB
+  zh: '| DCOPY | `copy` | 将一个向量复制到另一个向量 |'
+- en: '| DAXPY | `add` | Calculates <math alttext="alpha bold x plus bold y"><mrow><mi>α</mi>
+    <mi>𝐱</mi> <mo>+</mo> <mi>𝐲</mi></mrow></math> , vectors <math alttext="bold x"><mi>𝐱</mi></math>
+    & <math alttext="bold y"><mi>𝐲</mi></math> , scalar <math alttext="alpha"><mi>α</mi></math>
+    |'
+  id: totrans-427
+  prefs: []
+  type: TYPE_TB
+  zh: '| DAXPY | `add` | 计算 <math alttext="alpha bold x plus bold y"><mrow><mi>α</mi>
+    <mi>𝐱</mi> <mo>+</mo> <mi>𝐲</mi></mrow></math>，向量 <math alttext="bold x"><mi>𝐱</mi></math>
+    和 <math alttext="bold y"><mi>𝐲</mi></math>，标量 <math alttext="alpha"><mi>α</mi></math>
+    |'
+- en: '| DDOT | `dot` | Dot product of two vectors |'
+  id: totrans-428
+  prefs: []
+  type: TYPE_TB
+  zh: '| DDOT | `dot` | 两个向量的点积 |'
+- en: '| DNRM2 | `vector_norm2` | Euclidean norm of a vector |'
+  id: totrans-429
+  prefs: []
+  type: TYPE_TB
+  zh: '| DNRM2 | `vector_norm2` | 向量的欧几里德范数 |'
+- en: '| DGEMV | `matrix_vector_product` | Calculates <math alttext="alpha bold upper
+    A bold x plus beta bold y"><mrow><mi>α</mi> <mi>𝐀𝐱</mi> <mo>+</mo> <mi>β</mi>
+    <mi>𝐲</mi></mrow></math> , matrix <math alttext="bold upper A"><mi>𝐀</mi></math>
+    , vector <math alttext="bold y"><mi>𝐲</mi></math> , scalars <math alttext="alpha"><mi>α</mi></math>
+    & <math alttext="beta"><mi>β</mi></math> |'
+  id: totrans-430
+  prefs: []
+  type: TYPE_TB
+  zh: '| DGEMV | `matrix_vector_product` | 计算 <math alttext="alpha bold upper A bold
+    x plus beta bold y"><mrow><mi>α</mi> <mi>𝐀𝐱</mi> <mo>+</mo> <mi>β</mi> <mi>𝐲</mi></mrow></math>，矩阵
+    <math alttext="bold upper A"><mi>𝐀</mi></math>，向量 <math alttext="bold y"><mi>𝐲</mi></math>，标量
+    <math alttext="alpha"><mi>α</mi></math> 和 <math alttext="beta"><mi>β</mi></math>
+    |'
+- en: '| DSYMV | `symmetric_matrix_vector_product` | Same as DGEMV (`matrix_vector_product`)
+    but where <math alttext="bold upper A"><mi>𝐀</mi></math> is symmetric |'
+  id: totrans-431
+  prefs: []
+  type: TYPE_TB
+  zh: '| DSYMV | `symmetric_matrix_vector_product` | 与 DGEMV (`matrix_vector_product`)
+    相同，但矩阵 <math alttext="bold upper A"><mi>𝐀</mi></math> 是对称的 |'
+- en: '| DGEMM | `matrix_product` | Calculates <math alttext="alpha bold upper A bold
+    upper B plus beta bold upper C"><mrow><mi>α</mi> <mi>𝐀𝐁</mi> <mo>+</mo> <mi>β</mi>
+    <mi>𝐂</mi></mrow></math> , for matrices <math alttext="bold upper A"><mi>𝐀</mi></math>
+    , <math alttext="bold upper B"><mi>𝐁</mi></math> , & <math alttext="bold upper
+    C"><mi>𝐂</mi></math> , and scalars <math alttext="alpha"><mi>α</mi></math> & <math
+    alttext="beta"><mi>β</mi></math> |'
+  id: totrans-432
+  prefs: []
+  type: TYPE_TB
+  zh: '| DGEMM | `matrix_product` | 计算<math alttext="alpha bold upper A bold upper
+    B plus beta bold upper C"><mrow><mi>α</mi> <mi>𝐀𝐁</mi> <mo>+</mo> <mi>β</mi> <mi>𝐂</mi></mrow></math>，对于矩阵<math
+    alttext="bold upper A"><mi>𝐀</mi></math>，<math alttext="bold upper B"><mi>𝐁</mi></math>和<math
+    alttext="bold upper C"><mi>𝐂</mi></math>，以及标量<math alttext="alpha"><mi>α</mi></math>和<math
+    alttext="beta"><mi>β</mi></math> |'
+- en: Linear Algebra (P1385)
+  id: totrans-433
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 线性代数（P1385）
+- en: The authors of this proposal specifically recognized the importance of linear
+    algebra in financial modeling, along with other applications such as medical imaging,
+    machine learning, and high performance computing. {op cit 28}.
+  id: totrans-434
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本提案的作者特别认识到线性代数在金融建模中的重要性，以及在医学成像、机器学习和高性能计算等其他应用中的重要性。{引用 28}。
+- en: 'Initial technical requirements for a linear algebra library in C++ were outlined
+    in a [preceding proposal (P1166)](https://wg21.link/p1166) **{34}**, directly
+    quoted here (in italics):'
+  id: totrans-435
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++中线性代数库的初始技术要求在[之前的提案（P1166）](https://wg21.link/p1166) **{34}** 中概述，这里直接引用（斜体）：
+- en: '*The set of types and functions should be the minimal set required to perform
+    functions in finite dimensional spaces. This includes*:'
+  id: totrans-436
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*类型和函数的集合应该是在有限维空间中执行函数所需的最小集合。这包括*：'
+- en: '*A matrix template*'
+  id: totrans-437
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*矩阵模板*'
+- en: '*Binary operations for addition, subtraction and multiplication of matrices*'
+  id: totrans-438
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*矩阵加法、减法和乘法的二元运算*'
+- en: '*Binary operations for scalar multiplication and division of matrices*'
+  id: totrans-439
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*标量乘法和矩阵除法的二元运算*'
+- en: Building on this, the P1385 proposal states two primary goals, namely that the
+    library should be easy to use, with “run-time computational performance that is
+    close to what {users} could obtain with an equivalent sequence of function calls
+    to a more “traditional” linear algebra library, such as LAPACK, Blaze, Eigen,
+    etc.” {op cit 30}
+  id: totrans-440
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在此基础上，P1385提案规定了两个主要目标，即库应该易于使用，并且“运行时计算性能接近于用户通过等效的函数调用序列获得的传统线性代数库（如LAPACK、Blaze、Eigen等）”。{引用
+    30}
+- en: At a high level, a matrix is generically represented by a *MathObj* type, and
+    an *engine* “is an implementation type that manages the resources associated with
+    a *MathObj* instance.” Discussions are ongoing over the details, but “a *MathObj*
+    might own the memory in which it stores its elements, or it might employ some
+    non-owning view type, like `mdspan`, to manipulate elements owned by some other
+    object”. {ibid}. An *engine* object is proposed to be a private member on a *MathObj*,
+    and a *MathObj* may have either fixed or dynamic dimensions.
+  id: totrans-441
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从高层次来看，矩阵通常由*MathObj*类型泛化表示，而*engine*“是一个管理与*MathObj*实例相关资源的实现类型。”讨论仍在进行中，但“*MathObj*可能拥有存储其元素的内存，或者它可能使用一些非拥有视图类型，如`mdspan`，来操作由其他对象拥有的元素”。{同上}。*engine*对象被建议作为*MathObj*的私有成员，并且*MathObj*可以具有固定或动态维度。
+- en: More details should emerge over the next few years on the form the P1385 linear
+    albegra library will assume, but for now, this hopefully provides an initial high-level
+    glimpse of something that should be a very welcome addition to C++ for financial
+    software developers.
+  id: totrans-442
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在未来几年内，关于P1385线性代数库的形式应该会有更多细节浮出水面，但目前，这希望为金融软件开发人员提供一个初步的高层次预览，这应该是C++中非常受欢迎的一个补充。
+- en: Summary (Linear Algebra Proposals)
+  id: totrans-443
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 摘要（线性代数提案）
+- en: Recalling the results we saw with `valarray`, with the above proposals in place,
+    some of the same convenient functionality should be in place by C++26, this time
+    with rigorous, efficient, and consistent specifications that should avoid the
+    problems that plagued `valarray`. While `mdspan` differs from `valarray` as a
+    non-owning reference, it will still allow array storage, such as a `vector`, to
+    be adapted to a matrix proxy by specifiying the number of rows and columns. `submdspan`
+    will assume a similar role as a `valarray` slice, but without the performance
+    penalty due to object copy. P1673 will provide a common interface to libraries
+    containing BLAS functions, and function naming, as as with `matrix_vector_product`,
+    will be more expressive than their cryptic Fortran equivalents such as `DGEMV(.)`.
+    And, the `+`, `-`, and `*` operators in P1385 will provide the ability to to implement
+    linear algebra expressions in a natural mathematical format similar to the results
+    we saw with `valarray`.
+  id: totrans-444
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 回顾我们在`valarray`中看到的结果，有了上述提案，同样方便的功能应该在C++26中得以实现，这一次将有严格、高效和一致的规范，避免了`valarray`困扰的问题。虽然`mdspan`作为非拥有引用与`valarray`不同，但它仍允许数组存储（如`vector`）通过指定行数和列数来适应矩阵代理。`submdspan`将承担类似于`valarray`切片的角色，但不会因对象复制而带来性能损失。P1673将为包含BLAS函数的库提供一个公共接口，函数命名，例如`matrix_vector_product`，将比它们的Fortran等价物（如`DGEMV(.)`）更具表达性。而P1385中的`+`、`-`和`*`运算符将提供在自然数学格式中实现线性代数表达式的能力，这与我们在`valarray`中看到的结果类似。
+- en: This is an exciting development that will finally provide efficient and reliable
+    methods for implementing basic matrix calculations that are long overdue for C++.
+    Hopefully we will also eventually see implementations of P1673 BLAS interfaces
+    for popular open source libraries such as Eigen and others mentioned above, but
+    as of the time of this writing, this remains to be seen.
+  id: totrans-445
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这是一个令人兴奋的发展，将最终为C++实现长期以来期待的基本矩阵计算提供高效可靠的方法。希望我们最终也能看到P1673 BLAS接口在Eigen等流行的开源库中的实现，但在撰写本文时，这仍是未知数。
+- en: Chapter Summary
+  id: totrans-446
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 章节总结
+- en: This chapter has examined the past, present, and expected future of two-dimensional
+    array management and linear algebra in C++. `valarray`, dating back to C++98,
+    offered matrix-like capabilities for which quantitative developers certainly would
+    have found ample use cases. It is unforunate it never received the attention and
+    support of the Committee and community, even as C++ was being touted in the late
+    1990’s as the language of the future for computational finance. For specific compilers,
+    it might remain a viable option, but given the inconsistency of its implementations
+    across Standard Library vendors, it can limit code reuse across different platforms.
+  id: totrans-447
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章探讨了C++中二维数组管理和线性代数的过去、现在和预期未来。`valarray` 自C++98起提供了类似矩阵的功能，对量化开发者来说应该有大量使用案例。不幸的是，尽管在20世纪90年代末C++被宣传为计算金融的未来语言，但它从未得到委员会和社区的关注和支持。对于特定的编译器来说，它可能仍然是一个可行的选择，但由于其在标准库供应商中实现的不一致性，它会限制在不同平台上的代码复用。
+- en: In the late 2000’s, high quality open-source linear algebra libraries such as
+    Eigen and Armadillo came on the scene and were well-received by the financial
+    quant C++ programming community. In the present day, these libraries contain not
+    only much of the same functionality found in the BLAS standard, but also a plethora
+    of matrix decompositions that are frequently used in financial applications.
+  id: totrans-448
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在2000年代末，像Eigen和Armadillo这样的高质量开源线性代数库出现了，并受到金融量化C++编程社区的好评。如今，这些库不仅包含BLAS标准中的许多功能，还包括在金融应用中经常使用的大量矩阵分解功能。
+- en: Finally, the future also looks brighter for ISO C++ with the three proposals — `mdspan`
+    (P0009), BLAS interface (P1673), and linear algebra library (P1385) — slated for
+    inclusion in the Standard Library within the next three years. These are arguably
+    features that are long overdue, but they will provide a big step in satisfying
+    demand not just from the financial industry, but also other computationally intensive
+    domains.
+  id: totrans-449
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最终，ISO C++ 的未来看起来更加光明，因为三个提案——`mdspan`（P0009）、BLAS 接口（P1673）、线性代数库（P1385）——计划在接下来的三年内被纳入标准库中。这些功能可以说是早就应该有的，但它们将大步满足不仅来自金融行业，还包括其他计算密集型领域的需求。
+- en: References
+  id: totrans-450
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 参考文献
+- en: US Daily Treasury Par Yield Curve Rates [*https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202211*](https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202211)
+    _
+  id: totrans-451
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 美国每日财政部利率曲线收益率 [*https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202211*](https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202211)
+    _
+- en: '[Supplemental Chapter, _The C++ Standard Library, 2E](http://www.cppstdlib.com/cppstdlib_supplementary.pdf)'
+  id: totrans-452
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[附加章节，_C++标准库，第2版_](http://www.cppstdlib.com/cppstdlib_supplementary.pdf)'
+- en: '{2.5} Stroustrup, *A Tour of C++* (2E, but now in 3E)'
+  id: totrans-453
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{2.5} Stroustrup，*C++之旅*（第2版，现在是第3版）'
+- en: Quantstart article on Eigen [*https://www.quantstart.com/articles/Eigen-Library-for-Matrix-Algebra-in-C/*](https://www.quantstart.com/articles/Eigen-Library-for-Matrix-Algebra-in-C/)
+  id: totrans-454
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Quantstart关于Eigen的文章 [*https://www.quantstart.com/articles/Eigen-Library-for-Matrix-Algebra-in-C/*](https://www.quantstart.com/articles/Eigen-Library-for-Matrix-Algebra-in-C/)
+- en: Gottschling _Discovering Modern C++
+  id: totrans-455
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Gottschling _发现现代C++
+- en: Bowie Owens, CppCon 2019, [*https://www.youtube.com/watch?v=4IUCBx5fIv0*](https://www.youtube.com/watch?v=4IUCBx5fIv0)
+  id: totrans-456
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Bowie Owens，CppCon 2019，[*https://www.youtube.com/watch?v=4IUCBx5fIv0*](https://www.youtube.com/watch?v=4IUCBx5fIv0)
+- en: 'More information on the Jacobi and Bidiagonal Divide and Conquer SVD classes:'
+  id: totrans-457
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 关于雅可比和双对角分解SVD类的更多信息：
+- en: '[Two-sided Jacobi SVD decomposition of a rectangular matrix](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1JacobiSVD.html)'
+  id: totrans-458
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[矩形矩阵的双边雅可比SVD分解](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1JacobiSVD.html)'
+- en: '[Bidiagonal Divide and Conquer SVD](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1BDCSVD.html)'
+  id: totrans-459
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[双对角分解SVD](https://eigen.tuxfamily.org/dox-devel/classEigen_1_1BDCSVD.html)'
+- en: asciidoctor-latex -b html Ch10_v10_Split_LinearAlgebraOnly.adoc
+  id: totrans-460
+  prefs: []
+  type: TYPE_NORMAL
+  zh: asciidoctor-latex -b html Ch10_v10_Split_LinearAlgebraOnly.adoc
+- en: '{5} Rcpp Packages:'
+  id: totrans-461
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '{5} Rcpp包：'
+- en: '[RcppEigen](https://cran.r-project.org/web/packages/RcppEigen/vignettes/RcppEigen-Introduction.pdf)'
+  id: totrans-462
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[RcppEigen](https://cran.r-project.org/web/packages/RcppEigen/vignettes/RcppEigen-Introduction.pdf)'
+- en: '[RcppArmadillo](https://cran.r-project.org/web/packages/RcppArmadillo/vignettes/RcppArmadillo-intro.pdf)'
+  id: totrans-463
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[RcppArmadillo](https://cran.r-project.org/web/packages/RcppArmadillo/vignettes/RcppArmadillo-intro.pdf)'
+- en: '[RcppBlaze3](https://github.com/ChingChuan-Chen/RcppBlaze3)'
+  id: totrans-464
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[RcppBlaze3](https://github.com/ChingChuan-Chen/RcppBlaze3)'
+- en: '[Boost Headers, including uBLAS](https://www.rdocumentation.org/packages/BH/versions/1.78.0-0)'
+  id: totrans-465
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[Boost Headers，包括uBLAS](https://www.rdocumentation.org/packages/BH/versions/1.78.0-0)'

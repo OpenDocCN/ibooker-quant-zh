@@ -1,0 +1,939 @@
+- en: Chapter 3\. Writing User-Defined Functions and Classes in Modules
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第3章。在模块中编写用户定义的函数和类
+- en: In our code examples so far, we have placed all our code into one file with
+    a top-down design, beginning with the `main` function where execution of the program
+    begins. This is of course not practical for realistic production programming.
+    Prior to C++20, the usual approach to writing user-defined (non-templated) functions
+    and classes would first involve placing their declarations placed in header files
+    (usually `.h`, `.hpp`, or `.hxx` extensions). An implementation file (typically
+    `.cpp`, `.cxx`, or `.cc` extensions) would then load the declarations using the
+    `#include` preprocessor command. Each implementation file would then be compiled
+    into a *translation unit* (de facto standard extensions are `.o` for Clang and
+    gcc, and `.obj` for Visual Studio).
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 到目前为止，在我们的代码示例中，我们将所有代码放入一个文件中，采用自顶向下的设计，从`main`函数开始执行程序。当然，这对于实际的生产编程来说是不切实际的。在C++20之前，编写用户定义（非模板化）函数和类的通常方法首先涉及将它们的声明放在头文件中（通常是`.h`、`.hpp`或`.hxx`扩展名）。然后，一个实现文件（通常是`.cpp`、`.cxx`或`.cc`扩展名）会使用`#include`预处理器命令加载这些声明。然后，每个实现文件将被编译成一个*翻译单元*（事实上标准扩展名为`.o`用于Clang和gcc，以及`.obj`用于Visual
+    Studio）。
+- en: C++20 introduced *modules* which, without going into excessive detail here,
+    offer the advantages of reduced time required to compile and build a code base,
+    elimination of problems that can arise with header files and preprocessor directives,
+    and greater control over what is exported to other code files. One convenient
+    result is it is no longer necessary to wrap declarations in include guard macros.
+    In addition, the problem of header file leaking can also be avoided, as an imported
+    module into another does not carry with it everything that it imports, unlike
+    `#include` macros in one header file that get propagated into another. [[For more
+    details, see Ranier Grimm, and Niall Cooling (https://blog.feabhas.com/2021/08/c20-modules-with-gcc11/)]]
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: C++20引入了*模块*，在这里不详细展开，它们提供了编译和构建代码库所需时间减少、消除头文件和预处理器指令可能引发的问题、以及对导出到其他代码文件的内容更大的控制权等优势。一个方便的结果是不再需要将声明包装在包含保护宏中。此外，头文件泄漏的问题也可以避免，因为一个导入到另一个模块的模块不会携带它导入的所有内容，不像一个头文件中的`#include`宏会传播到另一个头文件中。[[更多细节，请参阅Ranier
+    Grimm和Niall Cooling (https://blog.feabhas.com/2021/08/c20-modules-with-gcc11/)]]
+- en: Modules also allow placing both declarations and implementations in a single
+    file, although it is also possible to separate them over multiple files with an
+    interface and multiple implementation files. For this book, we will limit the
+    discussion to the single file case [[at least for now]].
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 模块还允许将声明和实现放在一个文件中，尽管也可以将它们分开放在一个接口和多个实现文件中。对于本书，我们将把讨论限制在单文件情况下[[至少目前是这样]].
+- en: Single file modules can be used to implement functions and classes similar to
+    C# and Java, without separate declarations. But keeping the separation even within
+    one file still provides certain advantages, namely a clear separation of interface
+    and implementation, and the potential to reduce or eliminate the recompilation
+    of other code that consumes a module.
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 单文件模块可以用于实现类似于C#和Java的函数和类，而无需单独的声明。但即使在一个文件中保持分离仍然具有某些优势，即接口和实现的清晰分离，以及减少或消除消耗模块的其他代码重新编译的潜力。
+- en: Default file extensions for single file modules at this stage seem to be converging
+    around `.ixx` for Visual Studio, and `.cppm` on Clang, although using `.cpp` is
+    also an option. [[Check Ranier Grimm’s warning about using cppm; he recommends
+    using .cpp with Clang, or .ixx with Clang-Cl in MSVC]]. In this book, we will
+    use the `.ixx` extension for module files.
+  id: totrans-5
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 单文件模块的默认文件扩展名在这个阶段似乎正在收敛到`.ixx`用于Visual Studio，以及`.cppm`用于Clang，尽管使用`.cpp`也是一个选项。[[查看Ranier
+    Grimm关于使用cppm的警告；他建议在Clang中使用.cpp，或在MSVC中使用Clang-Cl中使用.ixx]]. 在本书中，我们将使用`.ixx`扩展名来命名模块文件。
+- en: Note
+  id: totrans-6
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: At the time of this writing, there are still various points with respect to
+    standardization that are still pending. This could change by the time this book
+    reaches publication.
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在撰写本文时，仍有一些关于标准化的问题尚未解决。这在本书出版时可能会发生变化。
+- en: In this chapter, we will firt show introductory first examples of using modules
+    for both user-defined non-member functions and classes. This will a good segue
+    into a deeper discussion on class design, including compiler-provided default
+    special functions, user-defined constructors and destructors, and operator overloading.
+    Move semantics, a language feature added in C++11, will also be introduced. For
+    some readers this will be review, but the examples will be shown again within
+    the context of C++20 modules.
+  id: totrans-8
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在本章中，我们首先展示了使用模块来定义用户自定义非成员函数和类的初步示例。这将为更深入讨论类设计铺平道路，包括编译器提供的默认特殊函数、用户定义的构造函数和析构函数以及运算符重载。移动语义是在
+    C++11 中添加的一种语言特性，也将被介绍。对于一些读者来说，这将是复习内容，但这些示例将在 C++20 模块的上下文中再次展示。
+- en: Using Modules to Write User-Defined Functions
+  id: totrans-9
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 使用模块编写用户自定义函数
+- en: We will now build up the process of writing functions in modules, starting from
+    a very simple example, and then introducing the details step-by-step.
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在，我们将逐步构建编写模块中函数的过程，从一个非常简单的示例开始，然后逐步介绍细节。
+- en: A First Example with Non-Member Functions
+  id: totrans-11
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 非成员函数的第一个示例
+- en: 'Suppose we want to write a function that sums up the elements in a vector of
+    integers:'
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设我们想编写一个函数，用于计算整数向量中元素的总和：
+- en: '[PRE0]'
+  id: totrans-13
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: This is placed in a module called `CppMod`, in a separate `.ixx` file, say `CppModule.ixx`.
+    It will be easier to follow by just writing out the entire code in this file and
+    then going through it section by section.
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这个模块被放置在一个名为 `CppMod` 的模块中，位于一个单独的 `.ixx` 文件中，比如 `CppModule.ixx`。通过在这个文件中直接编写整个代码，然后逐部分进行详细讨论，将更容易理解。
+- en: '[PRE1]'
+  id: totrans-15
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: The `module` statement on the first line determines where the *global fragment*
+    of the module begins. This section is [[exclusively]] reserved for pre-processor
+    commands, particularly for `#include` statements of header files in the Standard
+    Library and elsewhere that are needed for the implementation.
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第一行上的 `module` 语句确定了模块的 *全局片段* 开始的位置。这一部分专门用于预处理器命令，特别是用于标准库和其他地方的头文件的 `#include`
+    声明，这些声明在实现时是必需的。
+- en: Next, the `export module` statement indicates the end of the global fragment
+    and defines the module itself. This will make it available for *import* into other
+    modules and source code. What follows first is the declaration of the ` vector_sum_of_ints
+    ` function, preceded by another use of the `export` keyword. What this does is
+    indicate to the compiler that this function can be called externally from code
+    outside the module. Functions that are not marked as `export` will only be callable
+    from inside the module.
+  id: totrans-17
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，`export module` 语句表示全局片段的结束并定义模块本身。这将使其能够被 *import* 到其他模块和源代码中。首先是 ` vector_sum_of_ints
+    ` 函数的声明，前面是另一个 `export` 关键字的使用。这样做的作用是告诉编译器，该函数可以从模块外部的代码中调用。未标记为 `export` 的函数只能从模块内部调用。
+- en: After this, we can then write the function implementation. Note that we do not
+    need to put `export` here, as placing it with the function declaration is sufficient.
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在此之后，我们可以编写函数的实现。请注意，我们不需要在这里放置 `export`，因为在函数声明时放置它就足够了。
+- en: 'To see how we can use this module, we will import it into our usual `Main.cpp`
+    file (not a module itself at this stage). This is accomplished using the `import`
+    keyword before the `main` function. Then, from `main`, we will call ` vector_sum_of_ints
+    `:'
+  id: totrans-19
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了看看我们如何使用这个模块，我们将它导入到我们通常的 `Main.cpp` 文件中（此时还不是模块本身）。这是在 `main` 函数之前使用 `import`
+    关键字来实现的。然后，从 `main` 中，我们将调用 ` vector_sum_of_ints `：
+- en: '[PRE2]'
+  id: totrans-20
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: Running this code, you can verify the result is 6.
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 运行这段代码，你可以验证结果为 6。
+- en: 'Next, we can have a look at what happens if a non-export function, `add_stuff`
+    is added to the module. Again, a very simple example, this will just double an
+    integer value. If we call it from inside the exported function, then twice the
+    sum of the vector results is returned:'
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来，我们可以看看如果向模块添加一个非导出函数 `add_stuff` 会发生什么。再次，这是一个非常简单的例子，它只会将整数值加倍。如果我们从导出函数内部调用它，那么向量结果的两倍将被返回：
+- en: '[PRE3]'
+  id: totrans-23
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: Compiling and running the program again, the result is not surprisingly (drum
+    roll please), 12\. Attempting to call `add_stuff ` from the external `main` function,
+    however, would result in a compiler error.
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 再次编译和运行程序，结果毫不奇怪（请鼓掌），是 12。然而，试图从外部 `main` 函数调用 `add_stuff` 将导致编译器错误。
+- en: 'It is also possible to define a *variable* that is local to the module and
+    not accessible outside. For example, we could declare and initialize a non-exported
+    integer variable to 0, and then if it is reassigned, it will maintain its new
+    value inside the module. For example, we can set it equal to `n` inside the `add_stuff
+    ` function, and then add it again in the exported function where it retains its
+    reassigned value of 6:'
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 也可以定义一个局限于模块内部且外部不可访问的*变量*。例如，我们可以声明并初始化一个非导出的整数变量为0，然后如果重新赋值，它将在模块内部保持新值。例如，我们可以在`add_stuff`函数内将其设置为`n`，然后在导出的函数中再次添加它，它将保持其重新分配的值为6：
+- en: '[PRE4]'
+  id: totrans-26
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: The result now is 18, but that isn’t as important as the fact that `k` is local
+    to the module and cannot be accessed externally. Similar to a non-exported function,
+    an attempt to use `k` inside the `main` function will fail to compile. Conceptually,
+    both non-exported functions and variables act like private members on a class,
+    but with respect to the module and its non-member functions instead.
+  id: totrans-27
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在结果为18，但`k`局限于模块内部并且无法从外部访问这一点才更为重要。类似于非导出函数，尝试在`main`函数内使用`k`将无法编译通过。从概念上讲，非导出函数和变量都像类的私有成员一样，但是相对于模块和其非成员函数而言。
+- en: 'It is furthermore possible to make the separation of interface and implementation
+    clearer by rearranging the function implementations in what is called the *private
+    fragment* of a single-file module. This must be the final section in the module,
+    and it is indicated with `module: private` separating the declarations above with
+    the implementations below:'
+  id: totrans-28
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '此外，可以通过将函数实现重新排列到所谓的*私有片段*中来更清晰地分离接口和实现。这必须是模块中的最后部分，并且用`module: private`将上面的声明与下面的实现分开：'
+- en: '[PRE5]'
+  id: totrans-29
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: Using a private fragment also purportedly will/can prevent external code using
+    the module from recompiling when a change is made inside the module. There is
+    still some ambiguity on this point that will hopefully be clarified within the
+    next few months.
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用私有片段还据称可以防止使用模块的外部代码在模块内部发生更改时重新编译。对于这一点仍然存在一些模糊之处，希望在接下来的几个月内能够澄清。
+- en: We will soon see how a module with a private fragment can be useful in a more
+    realistic example.
+  id: totrans-31
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们很快将看到，在更实际的示例中，带有私有片段的模块如何有用。
+- en: Standard Library Header Units
+  id: totrans-32
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 标准库头单元
+- en: Proposals to the [ISO C++ Committee](https://isocpp.org/std/the-committee) for
+    reorganizing the Standard Library into “[a standard-module version](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2412r0.pdf)”
+    [Stroustrup P2412r0] were also drafted and submitted for inclusion in C++20, but
+    this effort has been deferred until the next release planned for 2023\. In the
+    interim, as a placeholder, *Standard Library header units* that guarantee [“[e]xisting
+    `#include`s of standard library headers transparently turn into module imports
+    in C++20](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1502r1.html)”
+    [ISO P1502R1] are now available. What this essentially means is preprocessor statements
+    such as
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 向[ISO C++委员会](https://isocpp.org/std/the-committee)提交的重组标准库为“[标准模块版本](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2412r0.pdf)”
+    [Stroustrup P2412r0] 的提案也已草拟并提交，以便包含在C++20中，但此努力已延期至2023年计划的下一个版本。在此期间，作为占位符，保证[“[现有的标准库头文件的`#include`在C++20中会透明地变为模块导入](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1502r1.html)”
+    [ISO P1502R1] 已经可用。这基本上意味着预处理器语句，如
+- en: '[PRE6]'
+  id: totrans-34
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: 'can be replaced by importing their header equivalents:'
+  id: totrans-35
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可以通过导入它们的头文件等价物进行替换：
+- en: '[PRE7]'
+  id: totrans-36
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: This applies to all C++ Standard Library declaration files; however, due to
+    complications arising in headers inherited from C – eg, <cassert> and <cmath>,
+    based on the legacy C headers <assert.h> and <math.h> respectively – these are
+    not covered.
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这适用于所有C++标准库声明文件；然而，由于继承自C的头文件引起的复杂性，例如<cassert>和<cmath>，分别基于遗留的C头文件<assert.h>和<math.h>
+    – 这些不在范围内。
+- en: In the above example then, we can eliminate the global fragment and import the
+    `vector` header file under the `export module` statement; viz,
+  id: totrans-38
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因此，在上述示例中，我们可以消除全局片段，并在`export module`语句下导入`vector`头文件；即，
+- en: '[PRE8]'
+  id: totrans-39
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: If other header files outside of the Standard Library need to be `#include`d,
+    as preprocessor directives, *these must* go into the global fragment of the module.
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果需要`#include`标准库之外的其他头文件，作为预处理指令，*必须*放入模块的全局片段中。
+- en: Beyond the convenience of importing Standard Library header units, they also
+    have been shown to decrease build times and binary file bloat, although this is
+    not always guaranteed.
+  id: totrans-41
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了导入标准库头文件单元的便利性外，它们还显示减少了构建时间和二进制文件的膨胀，尽管这并不总是保证的。
+- en: Examples can be found in Stroustrup [P2412r0].
+  id: totrans-42
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 示例可以在Stroustrup的[P2412r0]中找到。
+- en: Modules Prevent Leaking into Other Modules
+  id: totrans-43
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 模块防止泄漏到其他模块
+- en: A module will not “leak” imported modules within itself when imported into other
+    models. That is, if a module `A` imports another module `B`,
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当导入到其他模型时，一个模块不会在其内部“泄漏”导入的模块。也就是说，如果模块`A`导入另一个模块`B`，
+- en: '[PRE9]'
+  id: totrans-45
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: 'then if `A` is imported into another module `C`, or into a `Main.cpp` file,
+    `B` will not be implicitly imported as well unless it also is explicitly imported
+    as well:'
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后，如果将`A`导入到另一个模块`C`中，或者导入到`Main.cpp`文件中，`B`也不会隐式导入，除非它也显式地被导入：
+- en: '[PRE10]'
+  id: totrans-47
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: 'This is in contrast with `#include`d header files that will leak. For example,
+    a header file `MyHeader.h` includes a user-defined `YourHeader.h` and the STL
+    <vector> header:'
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这与`#include`的头文件不同，后者会泄漏。例如，头文件`MyHeader.h`包含用户定义的`YourHeader.h`和STL的`<vector>`头文件：
+- en: '[PRE11]'
+  id: totrans-49
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: 'If `MyHeader.h` is `#include`d in `Main.cpp`, then it will also carry functions
+    in “YourHeader.h” and the `std::vector` class will also be present in `Main.cpp`:'
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果在`Main.cpp`中`#include`了`MyHeader.h`，那么它将同时包含“YourHeader.h”中的函数和`std::vector`类：
+- en: // Main.cpp
+  id: totrans-51
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // Main.cpp
+- en: '[PRE12]'
+  id: totrans-52
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: With preprocessor `#include` statements, the content contained in `YourHeader.h`
+    and `std::vector` are “leaked” into the `main` function. In realistic situations
+    where many more header files might be involved, losing track of what is included
+    and what is not can potentially lead to unexpected behavior or errors at runtime.
+    In addition, this can also lead to longer build times. With modules, the programmer
+    has greater control over what is imported, and build times can be substantially
+    lower.
+  id: totrans-53
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用预处理器`#include`语句时，包含在`YourHeader.h`和`std::vector`中的内容会“泄漏”到`main`函数中。在实际情况下，可能涉及许多更多的头文件，迷失在哪些被包含和哪些没有被包含中可能会导致意外行为或运行时错误。此外，这也可能导致更长的构建时间。使用模块，程序员可以更好地控制导入的内容，并且构建时间可以大大缩短。
+- en: More details are available in [Ranier Grimm’s very informative ModernesCpp blog
+    site](https://www.modernescpp.com/index.php/cpp20-modules).
+  id: totrans-54
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 更多详细信息请参阅[Ranier Grimm的非常信息丰富的ModernesCpp博客网站](https://www.modernescpp.com/index.php/cpp20-modules)。
+- en: A Black-Scholes Module Example
+  id: totrans-55
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: Black-Scholes模块示例
+- en: 'For something closer to a realistic financial example, the Black-Scholes model
+    for pricing a European equity option can be written inside a module. Before coding
+    up the model, though, we will need a reliable way to indicate the payoff type,
+    call or put. For this, a module called `Enums` will contain an exported enum class
+    `PayoffType`:'
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于更接近现实的金融示例，可以将Black-Scholes模型用于定价欧式股票期权，该模型可以写在一个模块内。但在编写该模型之前，我们需要一种可靠的方法来指示期权的支付类型，即认购或认沽。为此，一个名为`Enums`的模块将包含一个导出的枚举类`PayoffType`：
+- en: For the Black-Scholes functions, the mathematical formulation shown in James,
+    Option Theory will be used.
+  id: totrans-57
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于Black-Scholes函数，将使用James的Option Theory中显示的数学公式。
+- en: '![](Images/3.1.png)'
+  id: totrans-58
+  prefs: []
+  type: TYPE_IMG
+  zh: '![](Images/3.1.png)'
+- en: A Module Containing Enum Definitions
+  id: totrans-59
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 包含枚举定义的模块
+- en: First, so as to prevent bogus input values of ɸ, an enum class is used to represent
+    the payoff type, and it resides in its own module and separate file, say `Enums.ixx`
+    so that it can be reused elsewhere.
+  id: totrans-60
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，为了防止ɸ的伪输入值，使用枚举类表示支付类型，并将其放置在自己的模块和独立文件中，例如`Enums.ixx`，以便可以在其他地方重复使用。
+- en: '[PRE13]'
+  id: totrans-61
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: In practice, other enum classes representing bond types, futures contract identifiers,
+    currency codes etc could be appended to this module and then imported into other
+    pricing and risk modules as needed.
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在实践中，可以附加表示债券类型、期货合约标识符、货币代码等的其他枚举类到这个模块中，然后根据需要将其导入其他定价和风险模块中。
+- en: The Black-Scholes Formula Module
+  id: totrans-63
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: Black-Scholes公式模块
+- en: The model requires a natural log function, and a way to compute the cumulative
+    distribution function for a standard normal distribution. We are in luck here,
+    because the CDF can be written as
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 该模型需要自然对数函数和计算标准正态分布的累积分布函数的方法。在这里，我们很幸运，因为累积分布函数可以写成
+- en: '![](Images/3.2.png)'
+  id: totrans-65
+  prefs: []
+  type: TYPE_IMG
+  zh: '![](Images/3.2.png)'
+- en: 'where erf is the [error function](https://en.wikipedia.org/wiki/Error_function),
+    and it is available in `<cmath>`, as is the natural log function `log`. However,
+    because this header does not have a header unit guaranteed by the C++20 Standard
+    [[discussed above]], it needs to be `#include`d in the global fragment of the
+    module:'
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其中 erf 是[误差函数](https://en.wikipedia.org/wiki/Error_function)，并且它在 `<cmath>`
+    中可用，如自然对数函数 `log`。然而，由于此头文件在 C++20 标准中没有保证的头部单元，因此它需要在模块的全局片段中 `#include`。
+- en: '[PRE14]'
+  id: totrans-67
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: An `export` statement follows next and defines the name of the module, say `BlackScholesFcns`.
+    For convenience, the required `<cmath>` function `using` aliases go next
+  id: totrans-68
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来是一个 `export` 语句，并定义了模块的名称，比如 `BlackScholesFcns`。为方便起见，所需的 `<cmath>` 函数 `using`
+    别名接下来会被引入。
+- en: '[PRE15]'
+  id: totrans-69
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: 'The formula also uses ![](Images/1.4.png), and this is now available as a constant
+    alias in C++20\. It also needs to determine the maximum between the option payoff
+    and zero at expiration. For these, the `sqrt2` constant in `<numbers>`, and the
+    `std::max` function in `<algorithms>` are available. Because `<numbers>` and `<algorithms>`
+    are available as header units, they can be `import`ed rather than `#include`d:'
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 公式还使用了 ![](Images/1.4.png)，这在 C++20 中现在作为常量别名可用。它还需要确定期权到期时期权支付和零之间的最大值。为此，在
+    `<numbers>` 中的 `sqrt2` 常量和 `<algorithms>` 中的 `std::max` 函数都是可用的。由于 `<numbers>`
+    和 `<algorithms>` 作为头部单元可用，因此可以 `import` 而不是 `#include`：
+- en: '[PRE16]'
+  id: totrans-71
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: '`export import`'
+  id: totrans-72
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: '`export import`'
+- en: The `BlackScholesFcns` module will need to `import` the `Enums` module in order
+    to indicate whether an option is a call or a put. But as described earlier, a
+    benefit of using a module is it will not leak an imported module into another
+    location. This means if `BlackScholesFcns` is imported into `Main.cpp`, the programmer
+    will need to know to also `import` the `Enums` module. This is not a desirable
+    approach, as it would require inspecting the source code of a module for others
+    it imports before it could be consumed elsewhere.
+  id: totrans-73
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`BlackScholesFcns` 模块需要 `import` `Enums` 模块，以指示期权是看涨还是看跌。但正如前面所述，使用模块的好处在于不会将已导入的模块泄漏到其他位置。这意味着如果将
+    `BlackScholesFcns` 导入到 `Main.cpp` 中，则程序员需要知道还需将 `Enums` 模块 `import` 进去。这不是一个理想的做法，因为这需要在可以在其他地方使用之前检查模块的源代码，看它导入了哪些模块。'
+- en: Fortunately, the `export import` command is available. It will first `import`
+    the `Enums` module into `BlackScholesFcns`, and then `export` it wherever the
+    latter is consumed.
+  id: totrans-74
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 幸运的是，`export import` 命令可用。它将首先将 `Enums` 模块 `import` 到 `BlackScholesFcns`，然后在任何消耗后者的地方
+    `export` 它。
+- en: '[PRE17]'
+  id: totrans-75
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: This way, when `BlackScholesFcns` is imported into another module or file, it
+    will not be necessary to hunt through the source code in `BlackScholesFcns` for
+    the imported `Enums`, and then re-import it into the new target. In addition,
+    and in general, the only imported modules that can be carried through are those
+    marked with `export import`. This way, unexpected behavior due to an unintentionally
+    leaked module can be avoided.
+  id: totrans-76
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这样，当 `BlackScholesFcns` 被导入到另一个模块或文件中时，就不需要在 `BlackScholesFcns` 的源代码中寻找已导入的
+    `Enums`，然后重新将其导入到新目标中。此外，一般来说，只有标记为 `export import` 的导入模块可以通过。这样可以避免由于意外泄漏的模块而导致的意外行为。
+- en: Note
+  id: totrans-77
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: The `<cmath>` header will leak into the target where `BlackScholesFcns` is imported
+    due to the `#include` statement. This should be rectified with the standard-module
+    version of the Standard Library currently slated for C++23.
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于 `#include` 语句，`<cmath>` 头文件将泄漏到导入 `BlackScholesFcns` 的目标中。这应该在预定用于 C++23
+    的标准模块版的标准库中得到纠正。
+- en: 'The calculations are naturally divided up into an exported Black-Scholes function,
+    and two private functions that compute the *d*1 and *d*2 values, and the Standard
+    Normal CDF. The declarations are:'
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计算自然分为一个导出的 Black-Scholes 函数，以及计算 *d*1 和 *d*2 值，以及标准正态分布函数的两个私有函数。声明如下：
+- en: '[PRE18]'
+  id: totrans-80
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: The salient point here is module users only need to be concerned with the `black_scholes_price`
+    function. The responsibility for calling other two is delegated to the exported
+    function.
+  id: totrans-81
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里的关键点是模块用户只需关注 `black_scholes_price` 函数。调用其他两个函数的责任被委托给了导出函数。
+- en: Because the *d*1 and *d*2 values are internal to the model, they are declared
+    and initialized, but also not exported. This makes them accessible to the functions
+    in the module but not to the outside world, much like a private member function
+    on a class.
+  id: totrans-82
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为 *d*1 和 *d*2 值是模块内部的，它们被声明和初始化，但也没有被导出。这使它们对模块中的函数可访问，但不对外部世界可访问，就像类的私有成员函数一样。
+- en: '[PRE19]'
+  id: totrans-83
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: The function implementations go last, with the exported `black_scholes_price`
+    function first, followed by the two helper functions in the private fragment.
+    Note that `dee_fcns` is a `void` function. Rather than have two separate functions
+    to calculate the *d*1 and *d*2 values, this can be done in one function by setting
+    the results on the `d1` and `d2` variables that are common to the module, but
+    hidden from its users.
+  id: totrans-84
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 函数实现放在最后，首先是导出的`black_scholes_price`函数，然后是私有片段中的两个辅助函数。请注意，`dee_fcns`是一个`void`函数。与其有两个单独的函数来计算*d*1和*d*2值，不如通过在一个函数中设置`d1`和`d2`变量的结果来完成，这两个变量对于模块是公共的，但对其用户是隐藏的。
+- en: '[PRE20]'
+  id: totrans-85
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: In the `Main.cpp` file, put
+  id: totrans-86
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在`Main.cpp`文件中，放入
+- en: '[PRE21]'
+  id: totrans-87
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: to import the model, and then call the exported function; eg, an in-the-money
+    put with about three months until expiration. Note that the payoff enum type can
+    be assigned because the `Enums` module was exported from `BlackScholesFcns` with
+    the `export import` command.
+  id: totrans-88
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要导入模型，然后调用导出的函数；例如，一个在到期前约三个月的实值看跌期权。请注意，可以分配支付枚举类型，因为`Enums`模块是通过`export import`命令从`BlackScholesFcns`导出的。
+- en: '[PRE22]'
+  id: totrans-89
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: This gives a price of 17.0649.
+  id: totrans-90
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这给出了一个价格为17.0649。
+- en: As can (hopefully) be seen, in addition to their other benefits, modules can
+    be quite useful for implementing financial models where a lot of internal calculations
+    are required but not necessary for the consumer to be concerned with. This way,
+    the intermediate values can be encapsulated similar to a private variable on a
+    class rather than passed around between functions and being exposed to unexpected
+    modification, without the overhead of creating an object. For models more complex
+    than Black-Scholes – and many of course exist – this means fewer moving parts
+    accessible to the outside world, and hence fewer things to go wrong.
+  id: totrans-91
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如（希望）所见，模块除了其他好处外，在实施需要大量内部计算但使用者不必关心的金融模型时也非常有用。这种方式，中间值可以封装成类的私有变量一样，而不是在函数之间传递并暴露于意外修改之下，而且不会增加对象的开销。对于比布莱克-斯科尔斯模型复杂的模型
+    - 当然存在许多模型 - 这意味着更少的外部可访问的运动部件，因此出错的可能性更少。
+- en: This is not to say it would be wrong to use a class to implement a financial
+    model, but the decision to use a module of non-member functions rather than a
+    class will come down to a design decision. There may be cases where it might be
+    preferable to have a set of models conform to a contract set on an abstract base
+    class, as we will discuss in the next chapter., so it really comes down to weighing
+    the pros and cons of each while considering the requirements set in the design
+    phase.
+  id: totrans-92
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这并不是说使用类来实现金融模型是错误的，但是选择使用非成员函数的模块而不是类将取决于设计决策。也许有些情况下，将一组模型符合在抽象基类上设置的契约中可能更可取，正如我们将在下一章讨论的那样。因此，真正的问题在于在设计阶段考虑到的每个要求时权衡每种方法的利弊。
+- en: As for writing classes, the modern approach also involves using modules. This
+    is the topic of the next section.
+  id: totrans-93
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 至于编写类，现代方法也涉及使用模块。这是下一节的主题。
+- en: User-Defined Class Implementation in Modules
+  id: totrans-94
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 模块中的用户定义类实现
+- en: The traditional way to write a (non-templated) class in C++ has also been to
+    write the declarations in a header file, and the implementations in a separate
+    file. For a class, this could also be beneficial in terms of code maintenance,
+    as the declarations alone – provided the member function and variable naming was
+    informative – essentially presented an outline up front about what the class did
+    without the “clutter” from all the function implementations.
+  id: totrans-95
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在C++中写（非模板）类的传统方法也是在头文件中编写声明，在单独的文件中编写实现。对于类来说，这在代码维护方面可能也有好处，因为仅仅是声明 - 假设成员函数和变量命名具有信息性
+    - 本质上就提前呈现了类的概要，而没有来自所有函数实现的“杂乱”。
+- en: Moving to modules, again the declarations and implementations can now be placed
+    in a single file, with the same best practice of keeping the class declaration
+    separate from the implementation. This way, compile times can be reduced, plus
+    the outline of the class once found in a header file is preserved inside a module.
+  id: totrans-96
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 转向模块，再次，现在可以将声明和实现放在单个文件中，同时保持将类声明与实现分开的最佳实践。这样一来，可以减少编译时间，而且在头文件中找到的类的概述也被保存在模块内部。
+- en: With the exception of a new module name to hold a class called `BlackScholes`,
+  id: totrans-97
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了用来保存名为`BlackScholes`的类的新模块名字以外，
+- en: '[PRE23]'
+  id: totrans-98
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: the same preliminary `import`, `export`, and `export import` statements, as
+    in the non-member function version, remain the same. Things then change with writing
+    the class declaration rather than those for individual functions. Note the entire
+    class declaration is placed inside the scope of the `export class` statement.
+  id: totrans-99
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与非成员函数版本相同的初步 `import`，`export` 和 `export import` 语句保持不变。然后，将类声明而不是单独的函数声明写入，注意整个类声明都放在
+    `export class` 语句的作用域内。
+- en: '[PRE24]'
+  id: totrans-100
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE24]'
+- en: 'The member functions are the same as before, but scoped with the class name:'
+  id: totrans-101
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 成员函数与之前相同，但与类名一起作用域：
+- en: '[PRE25]'
+  id: totrans-102
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE25]'
+- en: As the class declaration is marked `export`, the implementations are implicitly
+    exported, so there is no need to `export` the public `black_scholes_price` function.
+  id: totrans-103
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于类声明标记为 `export`，实现被隐式导出，所以不需要对公共的 `black_scholes_price` 函数进行 `export`。
+- en: Using Namespaces with Modules
+  id: totrans-104
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 在模块中使用命名空间
+- en: Namespaces have often been employed to prevent name clashes between functions
+    with the same name and signature, but from different source files or libraries.
+    They can also prevent similar compiler errors from two different modules.
+  id: totrans-105
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 命名空间经常被用来防止来自不同源文件或库的具有相同名称和签名的函数之间的名称冲突。它们也可以防止来自两个不同模块的类似编译器错误。
+- en: Suppose there are two modules, `ThisModule` and `ThatModule`, each containing
+    a `maximum` function that returns the maximum value of two real numbers.
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设有两个模块，`ThisModule` 和 `ThatModule`，每个模块都包含一个 `maximum` 函数，用于返回两个实数的最大值。
+- en: '[PRE26]'
+  id: totrans-107
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: If both modules are imported into another translation unit (eg Main.cpp) and
+    a call is made to the `maximum` function, the compiler will not be able to determine
+    which version of the function is intended, resulting in a compiler error.
+  id: totrans-108
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果两个模块都被导入到另一个翻译单元（例如 Main.cpp）中，并且调用 `maximum` 函数，则编译器将无法确定所需函数的版本，导致编译器错误。
+- en: '[PRE27]'
+  id: totrans-109
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE27]'
+- en: By wrapping the `maximum` function in a distinct namespace and indicating the
+    namespace scope when called outside the module, the compiler error is avoided.
+  id: totrans-110
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通过将 `maximum` 函数包装在一个独立的命名空间中，并在模块外部调用时指定命名空间作用域，可以避免编译器错误。
+- en: '[PRE28]'
+  id: totrans-111
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE28]'
+- en: 'Now, scope the function call with one of the namespaces, just as we do for
+    functions in classes in the `std` Standard Library namespace, and the code will
+    compile:'
+  id: totrans-112
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在，就像我们对标准库中的类函数一样，将函数调用限定在一个命名空间中，并且代码将能够编译：
+- en: '[PRE29]'
+  id: totrans-113
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: 'An alternative would be to use a `using` alias for one of the namespaces:'
+  id: totrans-114
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一种方法是为一个命名空间使用 `using` 别名：
+- en: '[PRE30]'
+  id: totrans-115
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: 'Note that if in `Main.cpp`, the entirety of each of these namespaces is loaded
+    into the global namespace with `using namespace` statements, and there is no scoping
+    of the `maximum` function, the same problem will ensue, as shown here:'
+  id: totrans-116
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，如果在 `Main.cpp` 中，每个命名空间的全部内容都加载到全局命名空间中，使用 `using namespace` 语句不对 `maximum`
+    函数进行作用域限定，将导致同样的问题：
+- en: '[PRE31]'
+  id: totrans-117
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: As a corollary, you can now see why global use of
+  id: totrans-118
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为推论，现在您可以看到为什么在全局使用
+- en: '[PRE32]'
+  id: totrans-119
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: is also not regarded as good practice. With so many classes and functions in
+    the Standard Library, it is entirely possible that someone might use a common
+    name as a user-defined class or function elsewhere, causing a name clash that
+    leads to a compiler error.
+  id: totrans-120
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 也不被视为良好的实践。由于标准库中有如此多的类和函数，完全有可能某人会在其他地方使用常见名称作为用户定义的类或函数，导致名称冲突从而导致编译器错误。
+- en: Note
+  id: totrans-121
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Many of the newer features in C++, beginning with C++11, have their roots in
+    the Boost Libraries. For example, smart pointers `unique_ptr` and `shared_ptr`
+    use the same names in Boost as well as in the Standard Library. As the Boost libraries
+    are in wide use, opening up both the entire `std` and `boost` namespaces globally
+    could create headaches for code maintenance and build teams
+  id: totrans-122
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 许多 C++ 的新特性，从 C++11 开始，都源于 Boost 库。例如，智能指针 `unique_ptr` 和 `shared_ptr` 在 Boost
+    和标准库中使用相同的名称。由于 Boost 库被广泛使用，全局打开 `std` 和 `boost` 命名空间可能会给代码维护和构建团队带来麻烦。
+- en: Both smart pointers in particular, and the Boost libraries more generally, will
+    be covered in later chapters of this book.
+  id: totrans-123
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 特别是智能指针和 Boost 库将在本书的后续章节中详细讨论。
+- en: Our discussion of namespaces here is related more specifically to modules, but
+    for more information about best practices using namespaces in C++, Sutter and
+    Alexandrescu, Coding Style, chapter X remains an excellent resource.
+  id: totrans-124
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们在这里讨论命名空间更具体地与模块相关，但有关在 C++ 中使用命名空间的最佳实践的更多信息，请参阅 Sutter 和 Alexandrescu 的《编码风格》第
+    X 章仍然是一个很好的资源。
+- en: As a general takeaway, classes and functions that belong to namespaces should
+    either be scoped explicitly; eg,
+  id: totrans-125
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为一个总体结论，属于命名空间的类和函数应明确作用域；例如，
+- en: '[PRE33]'
+  id: totrans-126
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE33]'
+- en: or contained in using aliases; eg,
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 或包含在使用别名中；
+- en: '[PRE34]'
+  id: totrans-128
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE34]'
+- en: rather than exposing entire namespaces globally.
+  id: totrans-129
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 而不是全局暴露整个命名空间。
+- en: Summary
+  id: totrans-130
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 摘要
+- en: TBD…
+  id: totrans-131
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 待定…
+- en: 'Some references:'
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一些参考资料：
+- en: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1502r1.html](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1502r1.html)'
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1502r1.html](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1502r1.html)'
+- en: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1453r0.html](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1453r0.html)'
+  id: totrans-134
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1453r0.html](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1453r0.html)'
+- en: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0581r1.pdf](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0581r1.pdf)'
+  id: totrans-135
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0581r1.pdf](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0581r1.pdf)'
+- en: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2412r0.pdf](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2412r0.pdf)'
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2412r0.pdf](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2412r0.pdf)'
+- en: '[https://devblogs.microsoft.com/cppblog/a-tour-of-cpp-modules-in-visual-studio/](https://devblogs.microsoft.com/cppblog/a-tour-of-cpp-modules-in-visual-studio/)'
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[https://devblogs.microsoft.com/cppblog/a-tour-of-cpp-modules-in-visual-studio/](https://devblogs.microsoft.com/cppblog/a-tour-of-cpp-modules-in-visual-studio/)'
+- en: '[https://github.com/microsoft/STL/issues/60](https://github.com/microsoft/STL/issues/60)'
+  id: totrans-138
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[https://github.com/microsoft/STL/issues/60](https://github.com/microsoft/STL/issues/60)'
+- en: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0955r0.pdf](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0955r0.pdf)'
+  id: totrans-139
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0955r0.pdf](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0955r0.pdf)'
